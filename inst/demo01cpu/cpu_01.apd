@@ -1,0 +1,28 @@
+#--- this does not work any longer, mainFile & mainCommand are now def'd in script_all.R ---
+#      if (is.na(match("tdm",ls()))) tdm <- list(); 
+#      tdm$mainFile <- "../../ClassifyTemplate/main_sonar.r";
+#      tdm$mainCommand <- "result <- main_sonar(opts)";
+
+      opts = tdmOptsDefaultsSet();     # set initial defaults for many elements of opts. See tdmOptsDefaults.r
+                                      # for the list of those elements and many explanatory comments                                                                                                         
+      opts$dir.output <- "Output/"
+      opts$filename = "cpu.csv"
+      opts$SRF.kind = "xperc"
+      opts$OCUT = 600         # cut records with output > OCUT (may be strong outliers, dropping
+                              # them makes rmse$test and rmse$OOB faster converge)
+      opts$OUTTRAFO = ""    
+      opts$method="RF";       # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in theClassifyLoop
+      opts$RF.ntree = 50
+      opts$RF.samp = 1000
+      opts$fct.postproc <- function(x,opts) { 
+        x[x<0] <- 0; 		# clip all negative predictions to value 0	
+        x;
+      }
+
+      opts$gr.log=TRUE        # if =T: log(x+1)-transform for graphics "true vs. predicted"   
+      opts$NRUN =  1          # how many runs with different train & test samples  - or - 
+                              # how many CV-runs, if TST.kind="cv"
+      opts$GRAPHDEV="non"     # ["pdf"|"win"|"non"]: all graphics to 
+                              # [one multi-page PDF | (several) windows (X11) | dev.null]
+      opts$GD.RESTART=FALSE;       
+      opts$VERBOSE <- opts$SRF.verbose <- 0;      

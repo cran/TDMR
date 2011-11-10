@@ -1,0 +1,36 @@
+\name{unbiasedBestRun_O}
+\alias{unbiasedBestRun_O}
+\title{Perform unbiased runs with best-solution parameters (optimization).}
+\usage{unbiasedBestRun_O(confFile, envT, finals, umode="DEF", withParams=F, tdm=tdm)
+}
+\description{Perform unbiased runs with best-solution parameters (optimization).
+Read the best solution of a optimization tuner run (either from envT$bst or from file), 
+perform a re-run  with these best parameters, to see whether the result quality is reproducible on 
+independent test data or on independently trained models.}
+\details{If envT$bst or envT$res is NULL, try to read it from the file (the filename is
+given confFile or envT$spotConfig and we try to find it in dir envT$theTuner).}
+\value{finals     a one-row data frame with final results}
+\author{Wolfgang Konen, FHK, Sep'2010 - May'2011}
+\arguments{\item{confFile}{the .conf filename, e.g. "appAcid_02.conf"}
+\item{envT}{environment, from which we need the objects
+\describe{
+\item{\code{bst}}{ data frame containing best results (merged over repeats)}
+\item{\code{res}}{ data frame containing all results}
+\item{\code{theTuner}}{ ["spot"] string}
+\item{\code{opts}}{ list with all parameter settings for the DM task, i.e. as read in from  spotConfig$io.apdFileName}
+\item{\code{spotConfig}}{ [NULL] a list with SPOT settings. If NULL, try to read spotConfig from confFile.} 
+}}
+\item{finals}{[NULL] a one-row data frame to which new columns with final results are added
+If NULL, create new one-row data frame finals with columns 
+\preformatted{CONF  TUNER  NRUN  NEVAL Y  sdY}}
+\item{umode}{["DEF"] -- not used --}
+\item{withParams}{[FALSE] if =TRUE, add columns with best parameters to data frame finals
+(should be FALSE, if different runs have different parameters)}
+\item{tdm}{a list with TDM settings from which we need here the elements
+\describe{
+\item{mainCommand}{ the command to be called for unbiased evaluations}
+\item{mainFile}{ change to the directory of mainFile before starting mainCommand}
+\item{nrun}{ how often to call the unbiased evaluation}
+}}
+}
+

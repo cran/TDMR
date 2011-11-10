@@ -1,0 +1,17 @@
+#--- this does not work any longer, mainFile & mainCommand are now def'd in script_all.R ---
+#      if (is.na(match("tdm",ls()))) tdm <- list(); 
+#      tdm$mainFile <- "../../ClassifyTemplate/main_sonar.r";
+#      tdm$mainCommand <- "result <- main_sonar(opts)";
+
+      opts = tdmOptsDefaultsSet();     # set initial defaults for many elements of opts. See tdmOptsDefaults.r
+                                      # for the list of those elements and many explanatory comments                                                                                                         
+      opts$filename = "sonar.txt"
+      opts$data.title <- "Sonar Data"
+      opts$RF.mtry = 4
+      opts$NRUN =  1          # how many runs with different train & test samples  - or - 
+                              # how many CV-runs, if TST.kind="cv"
+      opts$GRAPHDEV="non"     # ["pdf"|"win"|"non"]: all graphics to 
+                              # [one multi-page PDF | (several) windows (X11) | dev.null]
+      opts$GD.RESTART=F;       
+      opts$VERBOSE=0;      
+      opts$SRF.verbose = opts$VERBOSE; #

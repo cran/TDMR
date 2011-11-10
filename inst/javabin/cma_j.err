@@ -1,0 +1,60 @@
+Lade nötiges Paket: TDMR
+Lade nötiges Paket: SPOT
+Lade nötiges Paket: lattice
+Lade nötiges Paket: fields
+Lade nötiges Paket: spam
+Package 'spam' is loaded. Spam version 0.15-5 (2009-09-13).
+Type demo( spam) for some demos, help( Spam) for an overview
+of this package.
+Help for individual functions is optained byadding the
+suffix '.spam' to the function name, e.g. 'help(chol.spam)'.
+
+Attache Paket: 'spam'
+
+
+	The following object(s) are masked from package:base :
+
+	 backsolve,
+	 forwardsolve 
+
+ Try help(fields) for an overview of this library
+fields web: http://www.image.ucar.edu/Software/Fields 
+Lade nötiges Paket: rpart
+Lade nötiges Paket: maptree
+Lade nötiges Paket: cluster
+Lade nötiges Paket: colorspace
+Lade nötiges Paket: gtools
+Lade nötiges Paket: car
+Lade nötiges Paket: MASS
+Lade nötiges Paket: nnet
+Lade nötiges Paket: survival
+Lade nötiges Paket: splines
+
+Attache Paket: 'car'
+
+
+	The following object(s) are masked from package:gtools :
+
+	 logit 
+
+Lade nötiges Paket: randomForest
+randomForest 4.5-33
+Type rfNews() to see new features/changes/bug fixes.
+Lade nötiges Paket: e1071
+Lade nötiges Paket: class
+
+Attache Paket: 'e1071'
+
+
+	The following object(s) are masked from package:gtools :
+
+	 permutations 
+
+Lade nötiges Paket: snowfall
+Lade nötiges Paket: snow
+Warnmeldungen:
+1: Paket 'fields' wurde unter R Version 2.10.1 gebaut 
+2: Paket 'maptree' wurde unter R Version 2.10.1 gebaut 
+3: Paket 'car' wurde unter R Version 2.10.1 gebaut 
+4: Paket 'snowfall' wurde unter R Version 2.10.1 gebaut 
+Loading required package: mlbench

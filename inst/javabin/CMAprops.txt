@@ -1,0 +1,6 @@
+dimension=3
+initialX = 0.374335379316472 6.2601679097861 0.67230654193554
+initialStandardDeviations = 0.35 5 0.25
+lowerBounds = 0.1 5 0.5
+upperBounds = 0.8 15 1
+stopMaxFunEvals=40

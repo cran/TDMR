@@ -1,0 +1,55 @@
+# For each variable which appears in .roi (and thus in .des file): set its counterpart in list opts.
+# (For each variable not appearing: leave its opts value at its default from .apd file.)
+roiValue;   optsValue;          isInt
+MTRY;       opts$RF.mtry;       1
+NODESIZE;   opts$RF.nodesize;   1
+NTREE;      opts$RF.ntree;      1
+SAMPSIZE;   opts$RF.samp;       1
+VOTECUT;    opts$votecut;       0
+XPERC;      opts$SRF.XPerc;     0
+MINLSI;     opts$SRF.minlsi;    0
+EPSILON;    opts$SVM.epsilon;   0
+GAMMA;      opts$SVM.gamma;     0
+TOLERANCE;  opts$SVM.tolerance; 0
+SIGMA;      opts$SVM.sigma;     0
+COST;       opts$SVM.cost;      0
+CLASSWT1;   opts$CLASSWT[1];    0
+CLASSWT2;   opts$CLASSWT[2];    0
+CLASSWT3;   opts$CLASSWT[3];    0
+CLASSWT4;   opts$CLASSWT[4];    0
+CLASSWT5;   opts$CLASSWT[5];    0
+#                               
+CUTOFF1;    opts$RF.cutoff[1];  0
+CUTOFF2;    opts$RF.cutoff[2];  0
+CUTOFF3;    opts$RF.cutoff[3];  0
+CUTOFF4;    opts$RF.cutoff[4];  0
+# opts$RF.cutoff[N_c] is set in main_*.r
+#
+LEAKY1;     opts$PRE.leaky1;    0
+LEAKY2;     opts$PRE.leaky2;    0
+PRE_NPC;    opts$PRE.npc;       0
+#      
+# appTemp
+EMBDIM;     opts$PRE.embdim;    0
+embdimTemperature;   opts$PRE.embdimTemperature;  1
+embdimConductivity;  opts$PRE.embdimConductivity; 1
+embdimO2;   opts$PRE.embdimO2;  1
+embdimPO4P; opts$PRE.embdimPO4P;1
+embdimpH;   opts$PRE.embdimpH;  1
+PCA;        opts$PRE.PCA;       1
+# lag for functionf diff():
+lag;        opts$PRE.lag;       1
+# diff for function diff():
+diff;       opts$PRE.diff;      1
+# how many points for averaging:
+mvAVG;      opts$PRE.mvAVG;     1
+# how many values of differences to sum:
+depth;      opts$PRE.depth;     1
+
+# appStorm
+LAMBDA;     opts$lambda;        0
+LAMBDA2;    opts$lambda2;       0
+SEQ;        opts$seq;           0
+SEQ2;       opts$seq2;          0
+EMBDIM;     opts$embdim;        0
+EMBDIM2;    opts$embdim2;       0
