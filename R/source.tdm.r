@@ -39,8 +39,9 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
 
   tdmParallel = (tdmParallelCPUs>1);
   if(!tdmParallel){
-    require("randomForest")
-    require("e1071")          # svm(), Naive Bayes
+    require("randomForest");
+    require("e1071");         # svm(), Naive Bayes
+    require("matlab");        # repmat() etc., for tdmParaBootstrap.r 
     if (is.na(theSpotPath)) {
         require("SPOT");     # load SPOT from the installed library (package version)
     } else {
@@ -56,6 +57,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     source(createSourcePath("phase1/tdmModelingUtils.r"))    
     source(createSourcePath("phase1/classify/tdmClassify.r"))
     source(createSourcePath("phase1/classify/tdmMetacostRf.r"))
+    source(createSourcePath("phase1/classify/tdmParaBootstrap.r"))
     source(createSourcePath("phase1/regress/tdmEmbedDataFrame.r"))
     source(createSourcePath("phase1/regress/tdmRegress.r"))
 
@@ -79,6 +81,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
   {
     sfLibrary("randomForest",character.only=TRUE);
     sfLibrary("e1071",character.only=TRUE);        # svm(), Naive Bayes
+    sfLibrary("matlab",character.only=TRUE);       # repmat() etc., for tdmParaBootstrap.r 
     if (is.na(theSpotPath)) {
         sfLibrary("SPOT",character.only=TRUE);     # load SPOT from the installed library (package version)
     } else {
@@ -93,6 +96,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     sfSource(createSourcePath("phase1/tdmModelingUtils.r"))    
     sfSource(createSourcePath("phase1/classify/tdmClassify.r"))
     sfSource(createSourcePath("phase1/classify/tdmMetacostRf.r"))
+    sfSource(createSourcePath("phase1/classify/tdmParaBootstrap.r"))
     sfSource(createSourcePath("phase1/regress/tdmEmbedDataFrame.r"))
     sfSource(createSourcePath("phase1/regress/tdmRegress.r"))
 

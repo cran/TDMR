@@ -86,12 +86,13 @@ tdmOptsDefaultsSet <- function() {
       opts$rgain.type="rgain" # ["rgain" (def.)|"meanCA"|"minCA"]: the measure result$R_* will contain 
                               # relative gain (i.e. gain/gainmax), mean or minimum class accuracy. 
                               # In each case the goal is to maximize the measure.
+      opts$ncopies = 0;       # if >0, activate tdmParaBootstrap in tdmClassify                       
 
       opts$NRUN =  2          # how many runs with different train & test samples  - or -
                               # how many CV-runs, if opts$TST.kind=="cv"
       opts$rep=1;             # the number of the repeat (1,...,spotConfig$max.repeats) in case of repeated evocations from tuner
       opts$DO.POSTPROC = F;
-      opts$DO.GRAPHICS=T      # --- deprecated ---
+      opts$DO.GRAPHICS=T      # --- deprecated, use opts$GRAPHDEV="non" ---
       opts$GRAPHDEV="win"     # ="pdf": all graphics to one multi-page PDF
                               # ="win": all graphics to (several) windows (X11)
                               # ="non": no graphics at all

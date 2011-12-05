@@ -1,2 +1,3 @@
+demo00sonar	  Single TDMR classification on task 'Sonar' (one run / no tuning)
 demo01cpu    This demo shows a simple TDMR regression
-demo02sonar  This demo shows a simple TDMR classification
+demo02sonar  Tuning for TDMR classification task 'Sonar' (multiple runs / short tuning)

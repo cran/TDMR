@@ -674,7 +674,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
     
     C_train <- C_test <- C_test2 <- G_train <- G_test <- NULL # reserve names (dynamic extension of 
     R_train <- R_test <- R_test2 <- G_test2 <- NULL           # these vectors at and of for-i-loop)
-    
+
     if (opts$READ.TST==TRUE & opts$TST.kind!="col") 
       warning(sprintf("Are you sure you want opts$READ.TST=TRUE, but opts$TST.kind!='col'? Actual value is opts$TST.kind='%s'.",opts$TST.kind));
     
@@ -690,7 +690,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
         # NEW: when called via SPOT, the RNG might be at (different but) fixed seed in each call.
         #      But we want different seeds (for test set selection) to see the variability                                                                   
         if (is.null(opts$TST.SEED)) set.seed(tdmRandomSeed());  
-                                                                        
+                                               
         cvi <- tdmModCreateCVindex(dset,response.variables,opts,stratified=TRUE);
         nfold = max(cvi);
         
@@ -709,6 +709,8 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
             d_dis   <- bind_response(d_dis  , "IND.dset", which(cvi!=k & cvi==-1));
             #if (nrow(d_train)+nrow(d_test)+nrow(d_dis) != nrow(dset)) 
             #  stop("Something wrong, the union of d_train, d_test and d_dis does not cover dset");
+            
+            if (opts$ncopies>0) d_train <- tdmParaBootstrap(d_train,response.variables,input.variables,opts);
 
             res <- tdmClassify(d_train,d_test,d_dis,response.variables,input.variables,opts)
 
@@ -837,7 +839,7 @@ tdmClassifySummary <- function(result,opts,dset=NULL)
     }    
     cat1(opts,sprintf("\n%s Test   relative gain  : %7.3f",ifelse(opts$TST.kind=="cv","CV ",""),y));  
     cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_test)),""));
-#browser();    
+
     cat1(opts,ifelse(opts$TST.kind=="cv"
               ,  sprintf("   (on %d records in %d folds)",nrow(res$d_train)+nrow(res$d_test),opts$TST.NFOLD)
               ,  sprintf("   (on %d records)",nrow(res$d_test))
@@ -865,21 +867,32 @@ tdmClassifySummary <- function(result,opts,dset=NULL)
 #' @export
 ######################################################################################
 print.TDMclassifier <- function(x,...) {
-  if (!exists("type")) type="overview";
-  internalPrintC(x,type);
-}
+  internalPrintC <- function(result,type) {
+    opts = result$opts;
+    opts$VERBOSE = 2;
+    z <- switch(type
+      , "overview"= tdmClassifySummary(result,opts)
+      , "cm.train"= show.cm.train(result)
+      , "cm.test"= show.cm.test(result)
+      , "?"={cat("Help for print(<TDMclassifier>,type=t). Possible values for 't' are:\n"
+               ,"\"overview\": see tdmClassifySummary\n"
+               ,"\"cm.train\": confusion matrix on training data\n"
+               ,"\"cm.test\" : confusion matrix on test data\n"
+               ,"\"?\" : display this help message\n"
+               ); 1;}
+      , "invalid type"
+      );
+    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.test.");  
+    cat("\n");
+  }
+  
+  vaarg <- list(...)
+  #alternative: 
+  vavalues <- c(...) 
+  browser()
 
-internalPrintC <- function(result,type) {
-  opts = result$opts;
-  opts$VERBOSE = 2;
-  z <- switch(type
-    , "overview"= tdmClassifySummary(result,opts)
-    , "cm.train"= show.cm.train(result)
-    , "cm.test"= show.cm.test(result)
-    , "invalid type"
-    );
-  if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.test.");  
-  cat("\n");
+  if (is.null(vaarg$type)) vaarg$type="overview";
+  internalPrintC(x,vaarg$type);
 }
 
 show.cm.train <- function(result) {

@@ -574,19 +574,26 @@ tdmRegressSummary <- function(result,opts,dset=NULL)
 #'      }
 #' @export
 ######################################################################################
-"print.TDMregressor" <- function(x,...) {
-  if (!exists("type")) type="overview";
-  internalPrintR(x,type);
-}
+print.TDMregressor <- function(x,...) {
+  internalPrintR <- function(result,type) {
+    opts = result$opts;
+    opts$VERBOSE = 2;
+    z <- switch(type
+      , "overview"= tdmRegressSummary(result,opts)
+      , "?"={cat("Help for print(<TDMregressor>,type=t). Possible values for 't' are:\n"
+               ,"\"overview\": see tdmRegressSummary\n"
+               ,"\"?\" : display this help message\n"
+               ); 1;}
+      , "invalid type"
+      );
+    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview.");  
+    cat("\n");
+  }
+  
+  vaarg <- list(...)
+  #alternative: vavalues <- c(...) 
 
-internalPrintR <- function(result,type) {
-  opts = result$opts;
-  opts$VERBOSE = 2;
-  z <- switch(type
-    , "overview"= tdmRegressSummary(result,opts)
-    , "invalid type"
-    );
-  if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview.");  
-  cat("\n");
+  if (is.null(vaarg$type)) vaarg$type="overview";
+  internalPrintR(x,vaarg$type);
 }
 
