@@ -12,8 +12,9 @@
       opts$MOD.SEED = 124;
       opts$NRUN =  1          # how many runs with different train & test samples  - or - 
                               # how many CV-runs, if TST.kind="cv"
-      opts$GRAPHDEV="non"     # ["pdf"|"win"|"non"]: all graphics to 
+      opts$GD.DEVICE="non"    # ["pdf"|"win"|"non"]: all graphics to 
                               # [one multi-page PDF | (several) windows (X11) | dev.null]
       opts$GD.RESTART=F;       
       opts$VERBOSE=0;      
       opts$SRF.verbose = opts$VERBOSE; #
+

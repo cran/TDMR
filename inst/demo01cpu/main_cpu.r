@@ -17,7 +17,6 @@ main_cpu <- function(opts=NULL) {
                                       # for the list of those elements and many explanatory comments                                                                                                         
       opts$dir.output <- paste(directory, "Output/", sep="")
       opts$filename = "cpu.csv"
-      opts$filesuffix = ".csv"
       opts$SRF.kind = "ndrop"
       opts$SRF.ndrop =  2     # 0..n: how many variables (those with lowest importance) to drop
       opts$OCUT = 600         # cut records with output > OCUT (may be strong outliers, dropping
@@ -27,7 +26,7 @@ main_cpu <- function(opts=NULL) {
                               # values)
       opts$NFOLD = 5          # how many cross validation folds
       opts$OUTTRAFO = ""    
-      opts$method="RF";       # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in theClassifyLoop
+      opts$MOD.method="RF";       # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in theClassifyLoop
       opts$RF.ntree = 50
       opts$RF.samp = 1000
       opts$RF.mtry = 3
@@ -43,13 +42,13 @@ main_cpu <- function(opts=NULL) {
       }
 
       opts$gr.log=T           # if =T: log(x+1)-transform for graphics "true vs. predicted"   
-      opts$GRAPHDEV="win"     # ="pdf": all graphics to one multi-page PDF
+      opts$GD.DEVICE="win"     # ="pdf": all graphics to one multi-page PDF
                               # ="win": all graphics to (several) windows (X11)
       opts$VERBOSE=2;      
     }
     
-    filename = opts$filename;
-    opts <- tdmOptsDefaultsFill(opts,".csv");  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
+    opts <- tdmOptsDefaultsFill(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
+    filename = opts$filename; 
     
     tdmGraAndLogInitialize(opts);     # init graphics and log file
         
@@ -58,7 +57,7 @@ main_cpu <- function(opts=NULL) {
     #===============================================
     cat1(opts,filename,": Read data ...\n")
     dset <- read.csv2(file=paste(dir.data, filename, sep=""), dec=".",
-                      na.string="-1",nrow=-1)
+                      na.string="-1",nrow=opts$READ.NROW)
     # REMARK: when you have a large dataset (e.g. 100000 records), you may use 
     # nrow=100 as long as you experiment with R script and code (during 
     # debugging) in order to speed up things. When your real experiment starts, 

@@ -14,20 +14,21 @@ main_sonar <- function(opts=NULL) {
       opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
                                       # for the list of those elements and many explanatory comments                                                                                                         
       opts$filename = "sonar.txt"
+      opts$filesuffix = ".txt"
       opts$data.title <- "Sonar Data"
 
       opts$SRF.kind = "xperc"         # no variable ranking, no variable selection
-      opts$method="RF";               # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in tdmClassifyLoop
+      opts$MOD.method="RF";               # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in tdmClassifyLoop
       opts$PRE.PCA = "linear"         # ["none"|"linear"|"kernel"] PCA preprocessing
       opts$PRE.npc = 7      # tmp
       
       # Activate the following four lines to run the RF.default-(main_sonar.r)-experiment in Benchmark-Datasets.doc:
-      opts$GRAPHDEV = "pdf";
+      opts$GD.DEVICE = "pdf";
       opts$TST.kind <- "cv"           # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
       opts$TST.NFOLD =  3             # number of CV-folds (only for TST.kind=="cv")
       opts$NRUN =  1                  # how many CV-runs, if opts$TST.kind <- "cv"
     }
-    opts <- tdmOptsDefaultsFill(opts,".txt");  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
+    opts <- tdmOptsDefaultsFill(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     
     tdmGraAndLogInitialize(opts);     # init graphics and log file
 
@@ -35,13 +36,13 @@ main_sonar <- function(opts=NULL) {
     # PART 1: READ DATA
     #===============================================
     cat1(opts,opts$filename,": Read data ...\n")
-    require(mlbench); data(Sonar);      # 60 columns V1,...,V60 with input data, 
-                                        # one response column "Class" with levels ["M" (metal) | "R" (rock)] 
-    dset <- Sonar;
-    # alternative way:
-    #dset <- read.csv2(file=paste(opts$dir.data, opts$filename, sep=""), dec=".", sep=",",header=F)
-    #names(dset)[61] <- "Class"
+    dset <- read.csv2(file=paste(opts$dir.data, opts$filename, sep=""), dec=".", sep=",",header=FALSE)
+    names(dset)[61] <- "Class"
 
+    # alternative way (but this requires mlbench):
+    #require(mlbench); data(Sonar);      # 60 columns V1,...,V60 with input data, 
+    #dset <- Sonar;                      # one response column "Class" with levels ["M" (metal) | "R" (rock)] 
+    
     # which variable is response variable:
     response.variable <- "Class" 
     ID.variable <- NULL

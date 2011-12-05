@@ -216,31 +216,31 @@ tdmPrePCA <- function(dset,numeric.variables,opts)  {
       dset <- adjustDSet(dset,numeric.variables,rx,"PC");
     }
     
-    if (opts$PRE.PCA=="kernel") {
-      x <- makeX(dset,numeric.variables,fname,": Kernel PCA (KHA) with",opts);
-      
-      require(kernlab);
-      if (opts$PRE.knum>0) x <- x[1:opts$PRE.knum, ];
-      # *** big mem/other problems with kpca: R crashes when PRE.knum = 3000; error code from kpca when PRE.knum >190;
-      # *** runs for PRE.knum<=150 on appAcid, but with (of course) terrible result (rgain=45%)
-      #kpc <- kpca(~.,data=x,kernel="rbfdot",kpar=list(sigma=0.2),features=40);
-      # *** use instead kfa, much faster than kpca and no crash
-      #kpc <- kfa(~.,data=x,kernel="rbfdot",kpar=list(sigma=0.2),features=0);
-      # *** another option is kha, takes longer than kfa, but perhaps more reliable numerical results
-      kpc <- kha(~.,data=x,kernel="rbfdot",kpar=list(sigma=0.2),features=20, maxiter=100);
-      # pcv(kpc)[,i]: the ith eigenvector, i.e. its components from original space (x)  (not for kfa)
-      # eig(kpc)[i]: the corresponding ith eigenvalue (not for kfa)
-      eigval <- NULL # eig(kpc);
-      rx <- as.data.frame(predict(kpc,dset[,numeric.variables]));     
-      # rx contains in its rows the PC-rotated x-vectors for each case: The 1st component
-      # in each row is the projection of this case on PC1, the 2nd component in each row is
-      # the projection on PC2 and so on. Thus column rx[,1] contains the PC1-values of all cases,
-      # column rx[,2] the PC2-values and so on.
-      names(rx) <- sub("V","KP",names(rx));                               # names are KP1, KP2, ...
-
-      dset <- adjustDSet(dset,numeric.variables,rx,"KP");
-    }
-    
+#    if (opts$PRE.PCA=="kernel") {
+#      x <- makeX(dset,numeric.variables,fname,": Kernel PCA (KHA) with",opts);
+#      
+#      require(kernlab);
+#      if (opts$PRE.knum>0) x <- x[1:opts$PRE.knum, ];
+#      # *** big mem/other problems with kpca: R crashes when PRE.knum = 3000; error code from kpca when PRE.knum >190;
+#      # *** runs for PRE.knum<=150 on appAcid, but with (of course) terrible result (rgain=45%)
+#      #kpc <- kpca(~.,data=x,kernel="rbfdot",kpar=list(sigma=0.2),features=40);
+#      # *** use instead kfa, much faster than kpca and no crash
+#      #kpc <- kfa(~.,data=x,kernel="rbfdot",kpar=list(sigma=0.2),features=0);
+#      # *** another option is kha, takes longer than kfa, but perhaps more reliable numerical results
+#      kpc <- kha(~.,data=x,kernel="rbfdot",kpar=list(sigma=0.2),features=20, maxiter=100);
+#      # pcv(kpc)[,i]: the ith eigenvector, i.e. its components from original space (x)  (not for kfa)
+#      # eig(kpc)[i]: the corresponding ith eigenvalue (not for kfa)
+#      eigval <- NULL # eig(kpc);
+#      rx <- as.data.frame(predict(kpc,dset[,numeric.variables]));     
+#      # rx contains in its rows the PC-rotated x-vectors for each case: The 1st component
+#      # in each row is the projection of this case on PC1, the 2nd component in each row is
+#      # the projection on PC2 and so on. Thus column rx[,1] contains the PC1-values of all cases,
+#      # column rx[,2] the PC2-values and so on.
+#      names(rx) <- sub("V","KP",names(rx));                               # names are KP1, KP2, ...
+#
+#      dset <- adjustDSet(dset,numeric.variables,rx,"KP");
+#    }
+#    
     if (opts$PRE.PCA=="none") {
       rx = dset[,numeric.variables];
       eigval = NULL;

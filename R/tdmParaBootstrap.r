@@ -3,8 +3,8 @@
 #
 #'       Parametric bootstrap: add 'noisy copies' to a data frame (training data).
 #'
-#'   A normal distribution is approximated from the data given in \code{dset[,input.variables]} and for 
-#'   the columns \code{input.variables} new data are drawn from this distribution. The column \code{resp} 
+#'   A normal distribution is approximated from the data given in \code{dset[,input.variables]} and new  
+#'   data are drawn from this distribution for the columns \code{input.variables}. The column \code{resp} 
 #'   is filled at random with levels with the same relative frequency as in \code{dset[,resp]}. 
 #'   Other columns of dset are filled by copying the entries from the first row of dset.
 #'
@@ -27,7 +27,7 @@
 #'         
 #'   @return  data frame \code{dset} with the new parametric bootstrap records added as last rows.
 #'
-#' @references   \code{\link{tdmClassify}}
+#' @seealso   \code{\link{tdmClassify}}
 #' @author Wolfgang Konen, FHK, Nov'2011-Dec'2011
 #'
 #' @export
@@ -38,7 +38,7 @@ tdmParaBootstrap <- function(dset,resp,input.variables,opts) {
 
   new_dset=NULL;
   if (opts$ncopies>0){
-      # put input variables in matrix form, because calculation is faster:
+      # put input variables in matrix form, because matrix calculation is faster:
       #
       x = as.matrix(dset[,input.variables]);
       r0 = dset[,resp];
@@ -47,9 +47,9 @@ tdmParaBootstrap <- function(dset,resp,input.variables,opts) {
       c0 = getCentroid(x,r0,opts$ncmethod);
       s0 = getSigma(x,r0,opts$ncmethod);
 
-      sz1 = matlab::size(x,1);           #% number of training records in x
-      sz2 = matlab::size(x,2);
-      nn1 = fix(opts$ncopies/sz1)+1;  # % example: ncopies=220, sz1=100 --> nn1=3
+      sz1 = dim(x)[1];           # number of training records in x
+      sz2 = dim(x)[2];
+      nn1 = floor(opts$ncopies/sz1)+1;     # example: ncopies=220, sz1=100 --> nn1=3
       # We divide the generation of the ncopies bootstrap patterns
       # into nn1 loop steps. This division is only needed for opts.ncmethod=1
       # (each training record in turn serves as centroid). If
@@ -95,9 +95,16 @@ tdmParaBootstrap <- function(dset,resp,input.variables,opts) {
 }
 
 
+
 ###################################################################################
 # Helper functions for tdmParaBootstrap
 ###################################################################################
+
+repmat2 <- function(a,n,m) {
+  if (is.vector(a)) a=as.matrix(t(a));
+  kronecker(matrix(1,n,m),a);
+}
+
 # Get centroid for adding noisy copies
 #
 # @param x0 			matrix with training data
@@ -116,9 +123,9 @@ getCentroid <- function(x0,r0,ncmethod) {
     else{
         classes=unique(r0);
         c0 = x0*0; 
-        for(i in 1:numel(classes)){
+        for(i in 1:length(classes)){
             ind = which(r0==classes[i]);
-            c0[ind,] = repmat(apply(x0[ind,],2,mean), numel(ind), 1); # /WK/ col mean
+            c0[ind,] = repmat2(apply(x0[ind,],2,mean), length(ind), 1); # column mean
         }
     }
 	return(c0)
@@ -138,15 +145,15 @@ getCentroid <- function(x0,r0,ncmethod) {
 #
 ###################################################################################
 getSigma <- function(x0,r0,ncmethod) {
-    sz1 = matlab::size(x0,1);           #% number of training records in x0
+    sz1 = dim(x0)[1];           #% number of training records in x0
     if (ncmethod<3){ 
-        s0=repmat(std(x0),sz1,1);   #TODO row std, col stdt ?       
+        s0=repmat2(apply(x0,2,sd),sz1,1);   # column std      
     }else{
         classes=unique(r0);
         s0 = x0*0;
-        for(i in 1:numel(classes)){
+        for(i in 1:length(classes)){
             ind = which(r0==classes[i]);
-            s0[ind,] = repmat(apply(x0[ind,],2,std), numel(ind), 1);  # /WK/ col std
+            s0[ind,] = repmat2(apply(x0[ind,],2,sd), length(ind), 1);  # column std
         }
     }
 	return(s0)

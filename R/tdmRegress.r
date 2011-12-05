@@ -14,10 +14,10 @@
 #'     \item{\code{SRF.*}}{ several parameters for sorted_rf_importance (see tdmModelingUtils.r) }
 #'     \item{\code{RF.*}}{ several parameters for RF (Random Forest, defaults are set, if omitted)  }
 #'     \item{\code{SVM.*}}{ several parameters for SVM (Support Vector Machines, defaults are set, if omitted)}
-#'     \item{\code{method}}{ ["RF"] the main training method
-#'                   ["RF"|"SVM"|"LM"]: use [Random forest|  SVM| linear model] for the main model}
 #'     \item{\code{filename}}{ }
 #'     \item{\code{data.title}}{ }
+#'     \item{\code{MOD.method}}{ ["RF"] the main training method
+#'                   ["RF"|"SVM"|"LM"]: use [Random forest|  SVM| linear model] for the main model}
 #'     \item{\code{MOD.SEED}}{ =NULL: set the RNG to system time as seed (different RF trainings)
 #'                   =any value: set the random number seed to this value (+i) to get reproducible random
 #'                   numbers. In this way, the model training part (RF, NNET, ...) gets always a fixed seed.
@@ -40,9 +40,12 @@
 #'                   rmse and rmae are lists. If there is more than one response variable, then rmse and rmae 
 #'                   contain the *sum* over response.variables for each list-entry. }
 #'       \item{\code{allRMAE}}{ data frame with columns = list-entries in rmae and rows = response variables  }
+#'       \item{\code{lastModel}}{       the last model built (e.g. the last Random Forest in the case of MOD.method=="RF") }
 #'       \item{\code{opts}}{ parameter list from input, some default values might have been added }
-#---      }
 #'
+#'    The item \code{lastModel} is 
+#'    specific for the *last* model (the one built for the last response variable in the last run and last fold) 
+
 #'
 #' @author Wolfgang Konen, FHK, Sep'2009 - Oct'2011
 #'
@@ -54,7 +57,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
     filename <- opts$filename;
     input.variables_0 <- input.variables;      # save copy for response.variable loop
 
-    if (is.null(opts$method)) opts$method="RF";
+    if (is.null(opts$MOD.method)) opts$MOD.method="RF";
     if (is.null(opts$SRF.kind)) opts$SRF.kind="xperc";
     if (is.null(opts$RF.ntree)) opts$RF.ntree=500;
     if (is.null(opts$RF.samp)) opts$RF.samp=3000;
@@ -151,7 +154,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
             rf.options = paste(rf.options,"sampsize=opts$RF.sampsize",sep=",")
             rf.options = paste(rf.options,"na.action=na.roughfix","proximity=F",sep=",")
             if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,"mtry=opts$RF.mtry",sep=",")
-            if (!is.null(opts$RF.cutoff)) rf.options = paste(rf.options,"cutoff=opts$RF.cutoff",sep=",")
+            if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options,"cutoff=opts$CLS.cutoff",sep=",")
             if (!is.null(opts$RF.nodesize)) rf.options = paste(rf.options,"nodesize=opts$RF.nodesize",sep=",")
 
             eval(parse(text=paste("res.rf <- randomForest( formula, data=to.model,",rf.options,")"))) 
@@ -179,7 +182,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         ptm <- proc.time()
         cat1(opts, "Run ",ifelse(opts$the.nfold>1,paste(opts$i,".",opts$k,sep="")           ,opts$i)    ,"/",
                           ifelse(opts$the.nfold>1,paste(opts$NRUN,".",opts$the.nfold,sep=""),opts$NRUN) ,":\n"); 
-        res.rf = switch(opts$method
+        res.rf = switch(opts$MOD.method
           ,"RF"  =  train.rf(formula,to.model,opts)
           ,"SVM" =  train.svm(formula,to.model,opts) 
           ,"LM" =  train.lm(formula,to.model,opts) 
@@ -214,7 +217,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
             app;
         } 
         apply.other <- function(res.rf,to.model,to.test,opts) {
-            cat1(opts,opts$filename,": Apply",opts$method,"...\n")
+            cat1(opts,opts$filename,": Apply",opts$MOD.method,"...\n")
             app = list()
             app$train.predict <- predict(res.rf, newdata=to.model)
             app$test.predict <- predict(res.rf, newdata=to.test)
@@ -222,7 +225,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         }
         
         ptm <- proc.time()
-        app = switch(opts$method
+        app = switch(opts$MOD.method
           ,"RF"  =  apply.rf(res.rf,to.model,to.test,opts)
           ,"SVM" =, "LM" =  apply.other(res.rf,to.model,to.test,opts) 
           );
@@ -265,7 +268,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         naive.predict=mean(d_train[,response.variable])
         rmse=list()
         rmse$train <- sqrt(mean((train.predict-d_train[,response.variable])^2)) # this is the OOB-error
-        if (opts$method=="RF") rmse$OOB <- sqrt(res.rf$mse[res.rf$ntree])
+        if (opts$MOD.method=="RF") rmse$OOB <- sqrt(res.rf$mse[res.rf$ntree])
         else rmse$OOB <- 0;
         rmse$Theil.train <- rmse$train/sqrt(mean((naive.predict-d_train[,response.variable])^2))
         #naive.predict2=d_train[,opts$old.response.variable]
@@ -303,7 +306,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         #=============================================
         # PART 4.7: GRAPHICS
         #=============================================
-        if (opts$GRAPHDEV!="non") {
+        if (opts$GD.DEVICE!="non") {
           # point plot: true response (x) vs. predicted response (y)
           tdmGraphicNewWin(opts);
           if (opts$gr.log) {
@@ -331,7 +334,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
                  col=c("blue","red"), lty=c(1,1), lwd=c(1,1),
                  pch=c(5,5), pt.bg=c("white","white"), pt.cex=1.0,
                  text.col="blue4", bg="gray95")
-        } # if (opts$GRAPHDEV!="non")
+        } # if (opts$GD.DEVICE!="non")
         
         if (first) {
             RMSE=lapply(rmse,sum);
@@ -352,18 +355,24 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
     #=============================================
     # PART 4.8: WRITE RESULTS ON TEST SET TO FILE
     #=============================================
+    dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
+    if (!file.exists(dir.output)) dir.create(dir.output);     
     #outfile = paste(opts$dir.output,sub(".csv", "", filename), "_predictions.csv", sep="")
     #write.table(d_test, file=outfile, quote=F, sep=";", dec=".", row.names=F, col.names=TRUE)
 
     res =   list(rmse=RMSE          # root mean square error, summed over all response.variables
                 ,rmae=RMAE          # relative mean absolute error, summed over all response.variables
                 ,allRMAE=allRMAE	 	# RMAE for each response.variable 
+                ,lastModel = res.rf         #   from last response.variable 
                 ,d_train=d_train
                 ,d_test=d_test 
                 ,opts=opts          # some defaults might have been added  
                )
-    if (opts$method=="RF" & opts$RF.p.all) res$train.indiv=app$train.indiv;
+    if (opts$MOD.method=="RF" & opts$RF.p.all) res$train.indiv=app$train.indiv;
     
+    class(res) <- c("tdmRegre","TDM")     # this causes > res; or > print(res);
+                                          # NOT to print out the whole list (might be very long!!)
+                                          # but to call instead the function  print.tdmRegre
     res;
 } # tdmRegress
         
@@ -393,14 +402,14 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
 #'   @return \code{result},  an object of class TDMregressor, this is a list with results, containing
 #     \describe{
 #'       \item{opts}{ the res$opts from \code{\link{tdmRegress}}} 
-#'       \item{last_res}{ last run, last fold: result from \code{\link{tdmRegress}}} 
+#'       \item{lastRes}{ last run, last fold: result from \code{\link{tdmRegress}}} 
 #'       \item{R_train}{ RMAE / RMSE on training set (vector of length NRUN), depending on opts$rgain.type=="rmae" or "rmse"} 
 #'       \item{S_train}{ RMSE on training set (vector of length NRUN)} 
 #'       \item{T_train}{ Theil's U for RMAE on training set (vector of length NRUN)} 
 #'       \item{*_test}{ --- similar, with test set instead of training set} 
 #    } 
 #'     
-#' @references   \code{\link{tdmRegress}}, \code{\link{tdmClassifyLoop}}, \code{\link{tdmClassify}}
+#' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmClassifyLoop}}, \code{\link{tdmClassify}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
 #' @export
 ######################################################################################
@@ -417,7 +426,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
           tdmGraphicInit(opts);
         }   
         opts$i = i;
-        
+
         #=============================================================================
         # PART 3: CREATE NFOLD CROSSVALIDATION INDEX  OR DIVIDE IN TRAINING / TEST SET
         #=============================================================================
@@ -425,7 +434,8 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
                                                                   # but different for each run i
         # NEW: when called via SPOT, the RNG might be at (different but) fixed seed in each call.
         #      But we want different seeds (for test set selection) to see the variability                                                                   
-        if (is.null(opts$TST.SEED)) set.seed(as.integer(Sys.time()));                                                                  
+        if (is.null(opts$TST.SEED)) set.seed(tdmRandomSeed());    # OLD AND PROBLEMATIC: set.seed(as.integer(Sys.time()));                                                                  
+        
         cvi <- tdmModCreateCVindex(dset,response.variables,opts)
         nfold = max(cvi)
         
@@ -472,7 +482,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
         #=============================================
         # PART 5: SOME MORE GRAPHICS
         #=============================================
-        if (opts$GRAPHDEV!="non" & !is.null(opts$gr.fctcall)) {
+        if (opts$GD.DEVICE!="non" & !is.null(opts$gr.fctcall)) {
           # execute the graphics command given in text string opts$gr.fctcall
           eval(parse(text=opts$gr.fctcall));
         } 
@@ -494,7 +504,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
     }
     
     result = list(opts = res$opts
-              	, last_res = res     # last run, last fold: result from tdmRegress
+              	, lastRes = res     # last run, last fold: result from tdmRegress
               	, R_train = R_train
               	, R_test = R_test
               	, T_train = T_train
@@ -504,7 +514,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
               	);
     class(result) <- c("TDMregressor", "TDM")     # this causes > result; or > print(result);
                                                   # NOT to print out the whole list (might be very long!!)
-                                                  # but to call instead the function  printTDMregressor
+                                                  # but to call instead the function  print.TDMregressor
                                                   # (which in turn calls tdmRegressSummary)
     result;                                                  
 } # tdmRegressLoop
@@ -531,17 +541,17 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
 #'   @return \code{result},  an object of class \code{TDMregressor}, with \code{result$y}, \code{result$sd.y} 
 #'          (and optionally also \code{result$dset}) added
 #'
-#' @references   \code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}, \code{\link{tdmClassifySummary}}
+#' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}, \code{\link{tdmClassifySummary}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
 #' @export
 ######################################################################################
 tdmRegressSummary <- function(result,opts,dset=NULL)     
 {
-    res <- result$last_res;  
+    res <- result$lastRes;  
     #print2(opts,res$allRMAE);		   # RMAE for each response variable T1,...,T8
     y = mean(result$R_test);       # RMAE, average of opts$NRUN runs
     ytr = mean(result$R_train);
-    if (opts$method %in% c("RF","MC.RF")) {
+    if (opts$MOD.method %in% c("RF","MC.RF")) {
       cat1(opts,sprintf("\nTrain OOB RMAE: %7.3f",ytr));  
       cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_train)),""));
       cat1(opts,sprintf("   (on %d records)",nrow(res$d_train)));
@@ -561,39 +571,7 @@ tdmRegressSummary <- function(result,opts,dset=NULL)
     
 } # tdmRegressSummary
 
-######################################################################################
-# print.TDMregressor
-#
-#'   Print an overview for a \code{TDMregressor} object. 
-#'
-#'   @param x  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{TDMclassifier}.
-#'   @param ... e.g. 'type'    which information to print:
-#'      \describe{
-#'      \item{\code{"overview"}}{ (def.) RMAE on training/test set, number of records, see \code{\link{tdmRegressSummary}}}
-#'      \item{\code{"..."}}{ ... other choices, TODO ...}
-#'      }
-#' @export
-######################################################################################
-print.TDMregressor <- function(x,...) {
-  internalPrintR <- function(result,type) {
-    opts = result$opts;
-    opts$VERBOSE = 2;
-    z <- switch(type
-      , "overview"= tdmRegressSummary(result,opts)
-      , "?"={cat("Help for print(<TDMregressor>,type=t). Possible values for 't' are:\n"
-               ,"\"overview\": see tdmRegressSummary\n"
-               ,"\"?\" : display this help message\n"
-               ); 1;}
-      , "invalid type"
-      );
-    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview.");  
-    cat("\n");
-  }
-  
-  vaarg <- list(...)
-  #alternative: vavalues <- c(...) 
-
-  if (is.null(vaarg$type)) vaarg$type="overview";
-  internalPrintR(x,vaarg$type);
+predict.TDMregressor <- function(result,newdata,...) {
+  predict(result$lastRes$lastModel,newdata,...);
 }
 

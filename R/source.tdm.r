@@ -40,8 +40,8 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
   tdmParallel = (tdmParallelCPUs>1);
   if(!tdmParallel){
     require("randomForest");
-    require("e1071");         # svm(), Naive Bayes
-    require("matlab");        # repmat() etc., for tdmParaBootstrap.r 
+    require("e1071");        # svm(), Naive Bayes
+    #require("matlab");      # repmat() etc., for tdmParaBootstrap.r  - now deprecated 12/2011
     if (is.na(theSpotPath)) {
         require("SPOT");     # load SPOT from the installed library (package version)
     } else {
@@ -51,6 +51,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     }
     
     source(createSourcePath("phase1/tdmOptsDefaults.r"))
+    source(createSourcePath("phase1/tdmReadData.r"))
     source(createSourcePath("phase1/tdmPreprocUtils.r"))
     source(createSourcePath("phase1/tdmGeneralUtils.r"))
     source(createSourcePath("phase1/tdmGraphicUtils.r"))
@@ -58,8 +59,10 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     source(createSourcePath("phase1/classify/tdmClassify.r"))
     source(createSourcePath("phase1/classify/tdmMetacostRf.r"))
     source(createSourcePath("phase1/classify/tdmParaBootstrap.r"))
+    source(createSourcePath("phase1/classify/printTDMclassifier.r"))
     source(createSourcePath("phase1/regress/tdmEmbedDataFrame.r"))
     source(createSourcePath("phase1/regress/tdmRegress.r"))
+    source(createSourcePath("phase1/regress/printTDMregressor.r"))
 
     source(createSourcePath("phase2/tdmMapDesign.r"))
     source(createSourcePath("phase2/makeTdmStartOther.r"))
@@ -69,9 +72,8 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     source(createSourcePath("phase2/tdmDispatchTuner.r"))
     source(createSourcePath("phase2/tdmGetObj.r"))
     source(createSourcePath("phase2/tdmDefaultsFill.r"))
-    source(createSourcePath("phase2/unbiasedBestRun_C.r"))
+    source(createSourcePath("phase2/unbiasedRun.r"))
     source(createSourcePath("phase2/unbiasedBestRun_O.r"))
-    source(createSourcePath("phase2/unbiasedBestRun_R.r"))
     
     #source(paste(tdmPath,"source.tdm.1.r",sep="/")); source.tdm.1(tdmPath, tdmParallel);
     #source(paste(tdmPath,"source.tdm.2.r",sep="/")); source.tdm.2(tdmPath, tdmParallel);
@@ -81,7 +83,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
   {
     sfLibrary("randomForest",character.only=TRUE);
     sfLibrary("e1071",character.only=TRUE);        # svm(), Naive Bayes
-    sfLibrary("matlab",character.only=TRUE);       # repmat() etc., for tdmParaBootstrap.r 
+    #sfLibrary("matlab",character.only=TRUE);      # repmat() etc., for tdmParaBootstrap.r - now deprecated 12/2011
     if (is.na(theSpotPath)) {
         sfLibrary("SPOT",character.only=TRUE);     # load SPOT from the installed library (package version)
     } else {
@@ -90,6 +92,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
         setwd(oldwd);
     }
     sfSource(createSourcePath("phase1/tdmOptsDefaults.r"))
+    sfSource(createSourcePath("phase1/tdmReadData.r"))
     sfSource(createSourcePath("phase1/tdmPreprocUtils.r"))
     sfSource(createSourcePath("phase1/tdmGeneralUtils.r"))
     sfSource(createSourcePath("phase1/tdmGraphicUtils.r"))
@@ -97,8 +100,10 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     sfSource(createSourcePath("phase1/classify/tdmClassify.r"))
     sfSource(createSourcePath("phase1/classify/tdmMetacostRf.r"))
     sfSource(createSourcePath("phase1/classify/tdmParaBootstrap.r"))
+    sfSource(createSourcePath("phase1/classify/printTDMclassifier.r"))
     sfSource(createSourcePath("phase1/regress/tdmEmbedDataFrame.r"))
     sfSource(createSourcePath("phase1/regress/tdmRegress.r"))
+    sfSource(createSourcePath("phase1/regress/printTDMregressor.r"))
 
     sfSource(createSourcePath("phase2/tdmMapDesign.r"))
     sfSource(createSourcePath("phase2/makeTdmStartOther.r"))
@@ -107,9 +112,8 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     sfSource(createSourcePath("phase2/tdmCompleteEval.r"))
     sfSource(createSourcePath("phase2/tdmDispatchTuner.r"))
     sfSource(createSourcePath("phase2/tdmGetObj.r"))
-    sfSource(createSourcePath("phase2/unbiasedBestRun_C.r"))
+    sfSource(createSourcePath("phase2/unbiasedRun.r"))
     sfSource(createSourcePath("phase2/unbiasedBestRun_O.r"))
-    sfSource(createSourcePath("phase2/unbiasedBestRun_R.r"))
     
     #sfSource(paste(tdmPath,"source.tdm.1.r",sep="/")); source.tdm.1(tdmPath, tdmParallel);
     #sfSource(paste(tdmPath,"source.tdm.2.r",sep="/")); source.tdm.2(tdmPath, tdmParallel);

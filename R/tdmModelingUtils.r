@@ -72,6 +72,10 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
             # DIVIDE INTO TRAINING SET / TEST SET
             #=============================================
             if (opts$TST.kind=="rand") {   # make a (random) division
+              if (is.null(opts$TST.FRAC))
+                stop(sprintf("tdmModCreateCVindex: opts$TST.FRAC is not defined"));
+              if (opts$TST.FRAC >= 1)
+                stop(sprintf("tdmModCreateCVindex: opts$TST.FRAC must be < 1. Current value is opts$TST.FRAC = %f", opts$TST.FRAC));
               if (stratified) {
                 # ** NEW 06/2011 ** the division is done by ***stratified*** random sampling (recommended for classification):
                 cat1(opts,opts$filename,": Stratified random training-test-index with opts$TST.FRAC = ",opts$TST.FRAC*100,"%\n");
@@ -178,12 +182,11 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
 #'   @param input.variables   the input columns from \code{d_train} to use for the RF-model
 #'   @param opts options, here we use the elements [defaults in brackets]:
 #'    \itemize{
-#'     \item SRF.kind:  \itemize{
-#'          \item ="xperc": keep a certain importance percentage, starting from the most important variable
-#'          \item ="ndrop": drop a certain number of least important variables
-#'          \item ="nkeep": keep a certain number of most important variables
-#'          \item ="none": do not call tdmModSortedRFimport at all (see tdmRegress.r & tdmClassify.r)
-#'          }
+#'     \item SRF.kind:  \cr
+#'          ="xperc": keep a certain importance percentage, starting from the most important variable \cr
+#'          ="ndrop": drop a certain number of least important variables \cr
+#'          ="nkeep": keep a certain number of most important variables \cr
+#'          ="none": do not call \code{\link{tdmModSortedRFimport}} at all (see tdmRegress.r and tdmClassify.r)
 #'     \item SRF.ndrop:   [0] how many variables to drop (if SRF.kind=="ndrop")
 #'     \item SRF.XPerc:   [0.95] if >=0, keep that importance percentage, starting with the most
 #'                   important variables (if SRF.kind=="xperc")
@@ -194,8 +197,8 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
 #'     \item SRF.verbose [2]
 #'     \item SRF.maxS    [40] how many variables to show in plot
 #'     \item SRF.minlsi  [1] a lower bound for the length of SRF$input.variables
-#'     \item GRAPHDEV  if !="non", then make a bar plot on current graphic device
-#'     \item CLASSWT     class weight vector to use in random forest training
+#'     \item GD.DEVICE   if !="non", then make a bar plot on current graphic device
+#'     \item CLS.CLASSWT class weight vector to use in random forest training
 #'    }
 #' @return SRF    a list with the following elements:
 #'     \item{input.variables}{   the vector of input variables which remain after importance
@@ -212,18 +215,14 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
 ######################################################################################
 tdmModSortedRFimport <- function(d_train, response.variable, input.variables, opts)
 {
-    if (is.null(opts$SRF.XPerc)) opts$SRF.XPerc=0.95;
-    if (is.null(opts$SRF.calc)) opts$SRF.calc=TRUE;
-    if (is.null(opts$SRF.ntree)) opts$SRF.ntree=50;
-    #if (is.null(opts$SRF.samp)) opts$SRF.samp=3000;
-    if (is.null(opts$SRF.verbose)) opts$SRF.verbose=2;
-    if (is.null(opts$SRF.maxS)) opts$SRF.maxS=40;
-    if (is.null(opts$SRF.minlsi)) opts$SRF.minlsi=1;
-    if (is.null(opts$SRF.method)) opts$SRF.method="RFimp";
+    opts <- tdmOptsDefaultsFill(opts);
 
-    ptm <- proc.time()
+    ptm <- proc.time();
     filename <- opts$filename;
-    SRF.file <- paste(paste(opts$dir.output,filename,sep=""),"SRF",response.variable,"Rdata",sep=".")
+    dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
+    if (!file.exists(dir.output)) dir.create(dir.output);     
+    SRF.file <- paste(paste(dir.output,filename,sep="/"),"SRF",response.variable,"Rdata",sep=".")
+    
 
     if (opts$SRF.calc==TRUE) {
       if (opts$k>1) {
@@ -233,10 +232,10 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
       to.model <- d_train[,c(response.variable,input.variables)]
       cat1(opts,filename,": Train RF (importance, sampsize=", opts$RF.sampsize,") ...\n")
-      if (!is.null(opts$CLASSWT)) {
-        cat1(opts,"Class weights: ", opts$CLASSWT,"\n")
-        cwt = opts$CLASSWT*1;     # strange, but necessary: if we omit '*1' then cwt seems to be a copy-by-reference of
-                                  # opts$CLASSWT. After randomForest call  cwt is changed and also opts$CLASSWT would be changed (!)
+      if (!is.null(opts$CLS.CLASSWT)) {
+        cat1(opts,"Class weights: ", opts$CLS.CLASSWT,"\n")
+        cwt = opts$CLS.CLASSWT*1;     # strange, but necessary: if we omit '*1' then cwt seems to be a copy-by-reference of
+                                  # opts$CLS.CLASSWT. After randomForest call  cwt is changed and also opts$CLS.CLASSWT would be changed (!)
       } else { cwt=NULL; }
       if (!is.null(opts$SRF.cutoff)) cat1(opts,"Cutoff: ", opts$SRF.cutoff,"\n")
 
@@ -352,7 +351,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
     }
 
     # plot it:
-    if (opts$GRAPHDEV!="non") {
+    if (opts$GD.DEVICE!="non") {
       maxS <- min(length(s_imp1),opts$SRF.maxS)
       tdmGraphicNewWin(opts)
       par(mar=c(20,3,2,2)+0.1)
@@ -425,7 +424,7 @@ tdmModVote2Target <- function(vote0,pred,target) {
 ######################################################################################
 # tdmModConfmat
 #
-#'     Calculate confusion matrix & gain (used by tdmClassify.r)
+#'     Calculate confusion matrix and gain (used by \code{\link{tdmClassify}})
 #'
 #'  @param  d 		      data frame
 #'  @param  colreal     name of column in d which contains the real class
@@ -462,7 +461,7 @@ tdmModConfmat <- function(d,colreal,colpred,opts)
 {
     if (is.null(opts$rgain.type)) opts$rgain.type="rgain";
 
-    gainmat = opts$gainmat;
+    gainmat = opts$CLS.gainmat;
     col.real <- factor(d[,colreal],levels=colnames(gainmat));
     col.pred <- factor(d[,colpred],levels=colnames(gainmat));
     #cmat = matrix(0,nrow=nlevels(col.real),ncol=nlevels(col.pred),
@@ -537,8 +536,10 @@ tdmModConfmat <- function(d,colreal,colpred,opts)
 # debug info to chase the "Incorrect cutoff specified bug" in training randomForest
 dbg_chase_cutoff_bug <- function(formul,to.model,d_train,response.variable,rf.options,opts) {
   print2(opts,c(Targets=NA,table(to.model[,response.variable])))
-  save(formul,to.model,response.variable,rf.options,opts,file=paste(opts$dir.Rdata,"rf_input_dbg.Rdata",sep=""));
-  cat1(opts,"RF-debug-data saved to", paste(opts$dir.Rdata,"rf_input_dbg.Rdata",sep=""),"\n");
+  dir.Rdata <- paste(dirname(opts$dir.Rdata),basename(opts$dir.Rdata),sep="/")  # remove trailing "/", if it exists
+  if (!file.exists(dir.Rdata)) dir.create(dir.Rdata);     
+  save(formul,to.model,response.variable,rf.options,opts,file=paste(dir.Rdata,"rf_input_dbg.Rdata",sep="/"));
+  cat1(opts,"RF-debug-data saved to", paste(dir.Rdata,"rf_input_dbg.Rdata",sep="/"),"\n");
   if (!is.null(opts$SRF.cutoff))
     if (length(levels(d_train[,response.variable]))!=length(opts$SRF.cutoff)) {
       warning("Cutoff problems ahead!!",immediate.=TRUE)

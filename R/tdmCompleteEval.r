@@ -26,11 +26,11 @@ saveEnvT <- function(thisEnvT,runList) {
         eval(parse(text=paste("print(ele); envT$",ele," = thisEnvT$",ele,sep="")));
         
                                               # for the save on .rda file we delete also some potentially voluminous elements 
-      envT$result$last_res$d_train=NULL;      # from the local envT, we want only res and bst objects + describing vars
-      envT$result$last_res$d_test=NULL;
-      envT$result$last_res$d_dis=NULL;
-      envT$result$last_res$last.probs=NULL;
-      envT$result$last_res$last.rf=NULL;
+      envT$result$lastRes$d_train=NULL;      # from the local envT, we want only res and bst objects + describing vars
+      envT$result$lastRes$d_test=NULL;
+      envT$result$lastRes$d_dis=NULL;
+      envT$result$lastRes$lastProbs=NULL;
+      envT$result$lastRes$lastModel=NULL;
       envT$result$dset=NULL;
       save(envT,file=sub(".conf",".rda",runList[1],fixed=TRUE));              
                                               # ... but we leave thisEnvT (which is envT in tdmCompleteEval) untouched
@@ -52,7 +52,7 @@ checkRoiParams <- function(wP,confFile,sC,envT) {
             if (any(roiNames!=envT$roiNames1)) wP=FALSE;
           }
         }
-        if (wP==FALSE) warning("The design parameters in differents ROI files are different --> TDM sets tdm$withParams to FALSE (no param columns in envT$theFinals)");      
+        if (wP==FALSE) warning("The design parameters in differents ROI files are different --> TDMR sets tdm$withParams to FALSE (no param columns in envT$theFinals)");      
       }
       wP;
 }
@@ -180,7 +180,7 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
     ind = envT$getInd(confFile,nExp,theTuner);
     envT$resGrid[[ind]];
   }
-  
+
   #
   # do all necessary file reading **before**  branching into completeEvalConfNexpTuner
   # (completeEvalConfNexpTuner can be in parallel execution branch, where file access might be not possible)
@@ -198,9 +198,11 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
     opts <- NULL;     # just to make 'R CMD check' happy  (and in case that after sourcing pdFile 'opts' is not there as expected)
   	source(pdFile,local=TRUE);        # read problem design  (here: all elements of list opts)   
 		if (is.null(opts))
-		  warning(sprintf("%s does not define the required object opts.",opts));  	
+		  warning(sprintf("%s does not define the required object opts.",pdFile));  	
+    opts=tdmOptsDefaultsFill(opts);
  	  envT$sCList[[k]]$opts=opts;
   }
+
   tdmMapDesLoad(envT,tdm); 
   tdmMapDesSpot$load(tdm); 
   source(tdm$mainFile);
@@ -263,7 +265,7 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
               # but instead writes the corresponding .bst and .res file, then as a 2nd option
               # these results are fetched below with the tdmGetObj-calls and put into envT. 
               # This 2nd option can of course only work if tdm$fileMode==TRUE)
-         
+              
               if (spotStep=="auto") {
                 # copy .bst and .res files (they contain new results) into the right subdir:
                 copyToTunedir(theTuner,sC$io.resFileName);
@@ -319,7 +321,7 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
       		write.table(finals
       				, file = tFinalFile
       				, col.names= colNames
-      				, row.name = FALSE
+      				, row.names= FALSE
       				, append = !colNames
       				, sep = " ",
       				, quote = FALSE
@@ -330,7 +332,7 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
         		write.table(finals             # multiple execution of same experiment (nExperim>1 in script_all.R)
         				, file = tdm$experFile
         				, col.names= colNames
-        				, row.name = FALSE
+        				, row.names= FALSE
         				, append = !colNames
         				, sep = " ",
         				, quote = FALSE

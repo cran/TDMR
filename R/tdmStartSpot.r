@@ -1,22 +1,25 @@
 ######################################################################################
 # tdmStartSpot
 #
-#' Start a tuning evaluation of a DM task for SPOT and LHD tuner
+#' Start a tuning evaluation of a DM task for \link{SPOT} tuner
 #'
-#' This function is called by \code{spot} for tuning evaluations. It accumulates in 
+#' This function is called by \code{\link{spot}} for tuning evaluations. It accumulates in 
 #' \code{spotConfig$alg.currentResult} the RES data frame of all evaluations and in 
 #' \code{spotConfig$alg.currentBest} the BST data frame of the so far best solution.
 #'
-#' @param spotConfig    the list of configurations for SPOT. Besides the usual SPOT settings,
+#' \code{\link{spot}} is invoked from \code{\link{spotTuner}} or \code{\link{lhdTuner}}. 
+#' The latter is simply a \link{SPOT}-run with all budget devoted to the initial design. 
+#'
+#' @param spotConfig    the list of configurations for \link{SPOT}. Besides the usual \link{SPOT} settings,
 #'    this list has to contain an element \code{tdm} with the mandatory elements \itemize{
 #'      \item tdm$mainFile:     the R file of the DM task to source
 #'      \item tdm$mainCommand:  the R command to execute, usually \code{result <- main_TASK(opts)}. 
 #'          (It is expected that \code{mainCommand} returns \code{result} and that the element 
-#'          \code{result$y} contains the quantity to be minimized by SPOT.)
+#'          \code{result$y} contains the quantity to be minimized by \link{SPOT}.)
 #'      }
 #' @return spotConfig
 #'
-#' @seealso \code{\link{spotTuner}}, \code{\link{lhdTuner}}, \code{\link{tdmDispatchTuner}}
+#' @seealso \code{\link{spot}}, \code{\link{spotTuner}}, \code{\link{lhdTuner}}, \code{\link{tdmDispatchTuner}}
 #' 
 #' @author Wolfgang Konen
 #' @export
@@ -30,7 +33,7 @@ tdmStartSpot <- function(spotConfig) {
         # However, tdm has to specify the mandatory settings tdm$mainFile, tdm$mainCommand
     tdm <- spotConfig$tdm;
     opts <- spotConfig$opts;
-    
+
   	writeLines("tdmStartSpot run...", con=stderr());   
 # --- this is now for phase 3 in tdmCompleteEval.r (or for phase 2 in appropriate phase2-script) ---
 #   pdFile <- spotConfig$io.apdFileName;
@@ -69,7 +72,7 @@ tdmStartSpot <- function(spotConfig) {
       des <- tdmMapCutoff(des,k,spotConfig);  # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
       
   		for (r in 1:des$REPEATS[k]){
-  	
+  	    opts$rep <- r;
       	opts <- tdmMapDesSpot$apply(des,opts,k,tdm);
    			
         if (!is.null(des$STEP))	theStep <- des$STEP[k];
@@ -78,7 +81,7 @@ tdmStartSpot <- function(spotConfig) {
   			cat(sprintf("Config: %5d,   Repeat: %5d\n",des$CONFIG[k],r));
   			
   			oldwd = getwd(); setwd(dirname(tdm$mainFile));    # save & change working dir 		         			
-    		result = NULL; 
+    		result = NULL;     		
         eval(parse(text=tdm$mainCommand));                # execute the command given in string tdm$mainCommand
         if (is.null(result$y)) stop("tdm$mainCommand did not return a list 'result' containing an element 'y'");
   			setwd(oldwd);                                     # restore working dir 

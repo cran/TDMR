@@ -1,7 +1,7 @@
 require("TDMR");
 oldwd <- getwd();
 setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
-tdm <- list(unbiasedFunc="unbiasedBestRun_C"
+tdm <- list(unbiasedFunc="unbiasedRun"
             , mainFile="main_sonar.r" # in working dir
             , mainCommand="result <- main_sonar(opts)"
             , tuneMethod=c("spot")    # other choices: "cmaes", "bfgs"

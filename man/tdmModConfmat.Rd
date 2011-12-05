@@ -1,9 +1,9 @@
 \name{tdmModConfmat}
 \alias{tdmModConfmat}
-\title{Calculate confusion matrix & gain (used by tdmClassify...}
+\title{Calculate confusion matrix and gain (used by \link{tdmClassify})...}
 \usage{tdmModConfmat(d, colreal, colpred, opts)
 }
-\description{Calculate confusion matrix & gain (used by tdmClassify.r)}
+\description{Calculate confusion matrix and gain (used by \code{\link{tdmClassify}})}
 \value{cm   a list containing: 
 \item{mat}{ matrix with real class levels as rows, predicted class levels columns.
 mat[R1,P2]: number of records with real class R1

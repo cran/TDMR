@@ -9,7 +9,7 @@
 \code{result$y} is the quantity which the tuner seeks to minimize.}
 \value{\code{result},  an object of class \code{TDMregressor}, with \code{result$y}, \code{result$sd.y} 
 (and optionally also \code{result$dset}) added}
-\references{\code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}, \code{\link{tdmClassifySummary}}}
+\seealso{\code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}, \code{\link{tdmClassifySummary}}}
 \author{Wolfgang Konen, FHK, Sep'2010 - Oct'2011}
 \arguments{\item{result}{return value from a prior call to \code{\link{tdmRegressLoop}}, an object of class \code{TDMregressor}.}
 \item{opts}{a list from which we need here the following entries

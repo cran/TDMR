@@ -4,12 +4,12 @@
 \usage{tdmParaBootstrap(dset, resp, input.variables, opts)
 }
 \description{Parametric bootstrap: add 'noisy copies' to a data frame (training data).}
-\details{A normal distribution is approximated from the data given in \code{dset[,input.variables]} and for 
-the columns \code{input.variables} new data are drawn from this distribution. The column \code{resp} 
+\details{A normal distribution is approximated from the data given in \code{dset[,input.variables]} and new  
+data are drawn from this distribution for the columns \code{input.variables}. The column \code{resp} 
 is filled at random with levels with the same relative frequency as in \code{dset[,resp]}. 
 Other columns of dset are filled by copying the entries from the first row of dset.}
 \value{data frame \code{dset} with the new parametric bootstrap records added as last rows.}
-\references{\code{\link{tdmClassify}}}
+\seealso{\code{\link{tdmClassify}}}
 \author{Wolfgang Konen, FHK, Nov'2011-Dec'2011}
 \arguments{\item{dset}{data frame with training set}
 \item{resp}{name of column in dset which carries the target variable}

@@ -1,7 +1,7 @@
 # 
       source("sonar_01.apd", local=T)
       
-      opts$method="MC.RF";    # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in theClassifyLoop
+      opts$MOD.method="MC.RF";    # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in theClassifyLoop
 
       opts$VERBOSE=2;      
       opts$SRF.verbose = opts$VERBOSE; #

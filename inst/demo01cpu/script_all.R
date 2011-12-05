@@ -2,7 +2,7 @@
 # This script produces with tdm$tuneMethod="cmaes" an error after CONFIG=4
 #
 tdm <- list(tdmPath=NULL # from where to load TDMR: if NULL, load package TDMR, else: source R-files from this dir
-            , unbiasedFunc="unbiasedBestRun_R"
+            , unbiasedFunc="unbiasedRun"
             , umode=c("RSUB")     # ,"CV"
             , mainFile="main_cpu.r"
             , mainCommand="result <- main_cpu(opts)"

@@ -4,7 +4,7 @@
 \usage{tdmGraphicInit(opts, ...)
 }
 \description{Initialize graphic device. Open multipage PDF or (create and) clear opts$GD.PNGDIR.}
-\arguments{\item{opts}{with \code{opts$GRAPHDEV} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
-\item{...}{optional arguments to hand over to \code{\link{pdf}}}
+\arguments{\item{opts}{with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
+\item{...}{optional arguments to hand over to \code{\link{pdf}} (the other devices require no further arguments)}
 }
 

@@ -1,6 +1,7 @@
    oldwd <- getwd();
    setwd(paste(.find.package("TDMR"), "demo01cpu",sep="/"));
-   tdm <- list(unbiasedFunc="unbiasedBestRun_R"
+#   setwd(paste("../inst", "demo01cpu",sep="/"));
+   tdm <- list(unbiasedFunc="unbiasedRun"
               , mainFile="main_cpu.r"   # in working dir
               , mainCommand="result <- main_cpu(opts)"
               , umode=c("RSUB","CV")    # ["CV" | "RSUB" | "TST"]

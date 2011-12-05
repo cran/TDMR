@@ -11,16 +11,21 @@
 #'   @param tdm         (optional)
 #'   @param mainFile    (optional) if given, create or overwrite tdm$mainFile with this value
 #'   @param mainCommand (optional) if given, create or overwrite tdm$mainCommand with this value
-#'   @return \code{tdm}        the new / extended list  with default values
+#'   @return \code{tdm}     the new / extended list,  where additional elements, if they are not yet def'd,  are set as: 
 #'      \item{tuneMethod}{[spot]}
 #'      \item{nExperim}{[1]}
-#'      \item{umode}{["DEF"], one out of [ "RSUB" | "CV" | "TST" | "DEF" ], see \code{\link{unbiasedBestRun_C}}}
+#'      \item{umode}{["DEF"], one out of [ "RSUB" | "CV" | "TST" | "DEF" ], see \code{\link{unbiasedRun}}}
 #'      \item{timeMode}{[1] user time}
 #'      \item{fileMode}{[TRUE]}
-#'      \item{optsVerbosity}{[0] the verbosity for the unbiased runs}
 #'      \item{theSpotPath}{[NA] use SPOT's package version}
 #'      \item{parallelCPUs}{[1]}
 #'      \item{startDir}{[getwd()]}
+#'      \item{test2.string}{["default cutoff"] }
+#'      \item{optsVerbosity}{[0] the verbosity for the unbiased runs}
+#'      \item{nrun}{[5] number of runs for unbiased runs}
+#'      \item{tstFrac}{[0.2] test set fraction for unbiased runs (only for umode="RSUB") }
+#'      \item{tstCol}{["TST"] opts$TST.COL for unbiased runs (only for umode="TST") }
+#'      \item{nfold}{[10] number of CV-folds for unbiased runs (only for umode="CV") }
 #'
 #' @author Wolfgang Konen, Patrick Koch, Oct'2011
 #' @export
@@ -41,5 +46,11 @@ tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL,mainCommand=NULL) {
   if (is.null(tdm$parallelCPUs)) tdm$parallelCPUs <- 1;
   if (is.null(tdm$startDir)) tdm$startDir <- getwd();
   
+  if (is.null(tdm$test2.string)) tdm$test2.string="default cutoff";
+  if (is.null(tdm$tstCol)) tdm$tstCol="TST";
+  if (is.null(tdm$tstFrac)) tdm$tstFrac=0.2;
+  if (is.null(tdm$nfold)) tdm$nfold=10;
+  if (is.null(tdm$nrun)) tdm$nrun=5;
+
   tdm;
 }

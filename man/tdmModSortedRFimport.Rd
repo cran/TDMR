@@ -21,12 +21,11 @@ processing. These are sorted by decreasing importance.}
 \item{input.variables}{the input columns from \code{d_train} to use for the RF-model}
 \item{opts}{options, here we use the elements [defaults in brackets]:
 \itemize{
-\item SRF.kind:  \itemize{
-\item ="xperc": keep a certain importance percentage, starting from the most important variable
-\item ="ndrop": drop a certain number of least important variables
-\item ="nkeep": keep a certain number of most important variables
-\item ="none": do not call tdmModSortedRFimport at all (see tdmRegress.r & tdmClassify.r)
-}
+\item SRF.kind:  \cr
+="xperc": keep a certain importance percentage, starting from the most important variable \cr
+="ndrop": drop a certain number of least important variables \cr
+="nkeep": keep a certain number of most important variables \cr
+="none": do not call \code{\link{tdmModSortedRFimport}} at all (see tdmRegress.r and tdmClassify.r)
 \item SRF.ndrop:   [0] how many variables to drop (if SRF.kind=="ndrop")
 \item SRF.XPerc:   [0.95] if >=0, keep that importance percentage, starting with the most
 important variables (if SRF.kind=="xperc")
@@ -37,8 +36,8 @@ important variables (if SRF.kind=="xperc")
 \item SRF.verbose [2]
 \item SRF.maxS    [40] how many variables to show in plot
 \item SRF.minlsi  [1] a lower bound for the length of SRF$input.variables
-\item GRAPHDEV  if !="non", then make a bar plot on current graphic device
-\item CLASSWT     class weight vector to use in random forest training
+\item GD.DEVICE   if !="non", then make a bar plot on current graphic device
+\item CLS.CLASSWT class weight vector to use in random forest training
 }}
 }
 

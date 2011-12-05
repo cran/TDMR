@@ -4,6 +4,6 @@
 \usage{tdmGraAndLogFinalize(opts)
 }
 \description{Finalize graphics and log file}
-\arguments{\item{opts}{with \code{opts$GRAPHDEV} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
+\arguments{\item{opts}{with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
 }
 

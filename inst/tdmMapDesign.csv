@@ -13,17 +13,17 @@ GAMMA;      opts$SVM.gamma;     0
 TOLERANCE;  opts$SVM.tolerance; 0
 SIGMA;      opts$SVM.sigma;     0
 COST;       opts$SVM.cost;      0
-CLASSWT1;   opts$CLASSWT[1];    0
-CLASSWT2;   opts$CLASSWT[2];    0
-CLASSWT3;   opts$CLASSWT[3];    0
-CLASSWT4;   opts$CLASSWT[4];    0
-CLASSWT5;   opts$CLASSWT[5];    0
+CLASSWT1;   opts$CLS.CLASSWT[1];0
+CLASSWT2;   opts$CLS.CLASSWT[2];0
+CLASSWT3;   opts$CLS.CLASSWT[3];0
+CLASSWT4;   opts$CLS.CLASSWT[4];0
+CLASSWT5;   opts$CLS.CLASSWT[5];0
 #                               
-CUTOFF1;    opts$RF.cutoff[1];  0
-CUTOFF2;    opts$RF.cutoff[2];  0
-CUTOFF3;    opts$RF.cutoff[3];  0
-CUTOFF4;    opts$RF.cutoff[4];  0
-# opts$RF.cutoff[N_c] is set in main_*.r
+CUTOFF1;    opts$CLS.cutoff[1]; 0
+CUTOFF2;    opts$CLS.cutoff[2]; 0
+CUTOFF3;    opts$CLS.cutoff[3]; 0
+CUTOFF4;    opts$CLS.cutoff[4]; 0
+# opts$CLS.cutoff[N_c] is set in main_*.r
 #
 LEAKY1;     opts$PRE.leaky1;    0
 LEAKY2;     opts$PRE.leaky2;    0

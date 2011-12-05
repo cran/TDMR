@@ -4,7 +4,7 @@
 \usage{tdmGraphicCloseWin(opts, ...)
 }
 \description{Close active file ("png").}
-\arguments{\item{opts}{with \code{opts$GRAPHDEV} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
+\arguments{\item{opts}{with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
 \item{...}{optional arguments (currently not used)}
 }
 

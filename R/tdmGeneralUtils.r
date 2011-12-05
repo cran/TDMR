@@ -44,34 +44,38 @@ bind_response_OLD <- function(d,response.predict,vec)
 ######################################################################################
 # printout functions for different verbosity levels
 ######################################################################################
-#' Output the objects to \code{\link{cat}} if \code{opts$VERBOSE>=1}
+#' Output the objects to \code{cat} if \code{opts$VERBOSE>=1}
 #'
 #' @param opts from which we need the element VERBOSE
 #' @param ...  objects
 #' @return None
+#' @seealso   \code{\link{cat}}
 #' @export
 cat1 <- function(opts, ...) {  if (opts$VERBOSE>=1) cat(...); }
 ######################################################################################
-#' Output the objects to \code{\link{cat}} if \code{opts$VERBOSE>=2}
+#' Output the objects to \code{cat} if \code{opts$VERBOSE>=2}
 #'
 #' @param opts from which we need the element VERBOSE
 #' @param ...  objects
 #' @return None
+#' @seealso   \code{\link{cat}}
 #' @export
 cat2 <- function(opts, ...) {  if (opts$VERBOSE>=2) cat(...); }
 ######################################################################################
-#' Prints the objects using \code{\link{print}} if \code{opts$VERBOSE>=1}
+#' Prints the objects using \code{print} if \code{opts$VERBOSE>=1}
 #'
 #' @param opts from which we need the element VERBOSE
 #' @param ...  objects
 #' @return None
+#' @seealso   \code{\link{print}}
 #' @export
 print1 <- function(opts, ...) {  if (opts$VERBOSE>=1) print(...); }
 ######################################################################################
-#' Prints the objects using \code{\link{print}} if \code{opts$VERBOSE>=2}
+#' Prints the objects using \code{print} if \code{opts$VERBOSE>=2}
 #'
 #' @param opts from which we need the element VERBOSE
 #' @param ...  objects
 #' @return None
+#' @seealso   \code{\link{print}}
 #' @export
 print2 <- function(opts, ...) {  if (opts$VERBOSE>=2) print(...); }

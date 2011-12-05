@@ -5,12 +5,13 @@
 #'    resp. These maps are used by \code{\link{tdmMapDesApply}}.
 #'
 #'    \code{"tdmMapDesign.csv"} is searched in the TDMR library path \code{.find.package("TDMR")}.
-#'    (For the developer version: \code{<tdm$tdmPath>/inst}).
+#'    (For the developer version: \code{<tdm$tdmPath>/inst}). \cr
 #'    \code{"userMapDesign.csv"} is searched in the path \code{dirname(tdm$mainFile)}.
 #' @param envT  environment
-#' @param tdm   list 
+#' @param tdm   list, needed for \code{tdm$tdmPath} 
+#' @seealso  \code{\link{tdmMapDesApply}}
 #' @export
-tdmMapDesLoad <- function(envT,tdm) {
+tdmMapDesLoad <- function(envT,tdm=list()) {
       if (is.null(tdm$tdmPath)) {
         mapPath <- .find.package("TDMR");   # this is for the package version
       } else {
@@ -26,15 +27,17 @@ tdmMapDesLoad <- function(envT,tdm) {
 # tdmMapDesApply
 #
 #'    Apply the mapping from \code{des} to \code{opts}.     
-#'    For each variable which appears in .roi (and thus in .des file): set its counterpart in list \code{opts}.
+#'    For each variable which appears in .roi (and thus in .des file and design point data frame \code{des}): 
+#'    set its counterpart in list \code{opts} to the values of the \code{k}-th row in \code{des}.
 #'    For each variable not appearing: leave its counterpart in \code{opts} at its default value from .apd file.
 #'
 #' @param des   design points data frame
 #' @param opts  list of options
-#' @param k     apply mapping for the \code{k}th design point
-#' @param envT  environment
+#' @param k     apply mapping for the \code{k}-th design point
+#' @param envT  environment, we needed here \code{envT$map} and \code{envT$mapUser}, see \code{\link{tdmMapDesLoad}}
 #' @param tdm   list
-#' @return opts modified list of options
+#' @return \code{opts}, the modified list of options
+#' @seealso  \code{\link{tdmMapDesLoad}}
 #' @export
 tdmMapDesApply <- function(des,opts,k,envT,tdm) {
     cRound <- function(n,map,x) {
@@ -56,7 +59,7 @@ tdmMapDesApply <- function(des,opts,k,envT,tdm) {
         opts <- setMapValue(n,envT$mapUser,des,opts,k);
       }
     }
-    if (!is.null(opts$CLASSWT) && is.na(opts$CLASSWT[1])) opts$CLASSWT[1]=10;
+    if (!is.null(opts$CLS.CLASSWT) && is.na(opts$CLS.CLASSWT[1])) opts$CLS.CLASSWT[1]=10;
     
     opts;
 }
@@ -110,7 +113,7 @@ makeTdmMapDesSpot <- function() {
           opts <- setMapValue(n,mapUser,des,opts,k);
         }
       }
-      if (!is.null(opts$CLASSWT) && is.na(opts$CLASSWT[1])) opts$CLASSWT[1]=10;
+      if (!is.null(opts$CLS.CLASSWT) && is.na(opts$CLS.CLASSWT[1])) opts$CLS.CLASSWT[1]=10;
       
       opts;
     }
@@ -121,8 +124,7 @@ makeTdmMapDesSpot <- function() {
 # tdmMapDesSpot:
 #'   Helper fct for \code{\link{tdmStartSpot}}.
 #'   Map the parameters from \code{des} to \code{opts} for the \code{k}th line of \code{des}.
-#'
-#' @export
+#
 tdmMapDesSpot <- makeTdmMapDesSpot();
 
 ######################################################################################
@@ -150,29 +152,27 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 #   runs, depending on parameter umode, which controls the mode of the unbiased run
 # INPUT
 #   umode       # one of { "RSUB" | "CV" | "TST" }
-#               # ="RSUB": activate random subsampling with 20% test data
+#               # ="RSUB": activate random subsampling with tdm$tstFrac test data
 #               # ="CV": activate cross validation with tdm$nfold [10] folds
 #               # ="TST": activate test on unseen test data
 #   opts        # current state of parameter settings
 #   tdm         # list, here we use the elements
-#     nfold         # [10] value for opts$TST.NFOLD during unbiased run with umode="CV"
-#     nrun          # [5] value for opts$NRUN during each unbiased run
-#     test2.string  # ["default.cutoff"] value for opts$test2.string during each 
-#                   # unbiased run
+#     nfold         # [10] value for opts$TST.NFOLD during unbiased runs with umode="CV"
+#     tstFrac       # [0.2] value for opts$TST.FRAC during unbiased runs with umode="RSUB"
+#     tstFrac       # ["TST"] value for opts$TST.COL during unbiased runs with umode="TST"
+#     nrun          # [5] value for opts$NRUN during unbiased runs
+#     test2.string  # ["default.cutoff"] value for opts$test2.string during unbiased runs
+#   (the defaults in '[...]' are taken, if tdm does not define them.)
 # OUTPUT
 #   opts        #  enhanced state of parameter settings
 ######################################################################################
 tdmMapOpts <- function(umode,opts,tdm)
 {
-    if (is.null(tdm$test2.string)) tdm$test2.string="default cutoff";
-    if (is.null(tdm$tstCol)) tdm$tstCol="TST";
-    if (is.null(tdm$nfold)) tdm$nfold=10;
-    if (is.null(tdm$nrun)) tdm$nrun=5;
-    if (is.null(tdm$optsVerbosity)) tdm$optsVerbosity <- 0;   # the verbosity for the unbiased runs
+    tdm <- tdmDefaultsFill(tdm);      # fill in default values if they are not yet set
     
     setOpts.RSUB <- function(opts) {
       opts$TST.kind <- "rand" # select test set by random subsampling, see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$TST.FRAC = 0.20    # set this fraction of data aside for testing (only for TST.kind=="rand")
+      opts$TST.FRAC=tdm$tstFrac # set this fraction of data aside for testing (only for TST.kind=="rand")
       opts;
     } 
     setOpts.TST <- function(opts) {
@@ -232,7 +232,7 @@ tdmMapOpts.OLD <- function(umode,opts,test2.string="no postproc",nfold=10) {
 ######################################################################################
 tdmMapCutoff <- function(des,k,spotConfig) {   
     # note that nothing needs to be done here if only des$CUTOFF1 appears (two-class problem):
-    # then the dependent parameter opts$RF.cutoff[2] = 1-opts$RF.cutoff[1] is set in tdmModAdjustCutoff
+    # then the dependent parameter opts$CLS.cutoff[2] = 1-opts$CLS.cutoff[1] is set in tdmModAdjustCutoff
     #
   	if (!is.null(des$CUTOFF2)) {        # enforce parameter constraint if CUTOFF1,2,3,4 appears in .des-file:
       hig=spotConfig$alg.roi["CUTOFF1","high"];

@@ -70,7 +70,7 @@ lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT)
 
 ######################################################################################
 #' Perform CMA-ES tuning. Perform a parameter tuning by CMA-ES, using the *R*-implementation 
-#' (package \code{cmaes} from Olaf Mersmann).
+#' (package \code{cmaes} by Olaf Mersmann).
 #' 
 #' @param confFile task configuration for tuning algorithm
 #' @param tdm the TDMR object
@@ -134,7 +134,7 @@ cmaesTuner <- function(confFile,tdm,envT)
 
 ######################################################################################
 #' Perform CMA-ES tuning. Perform a parameter tuning by CMA-ES, using the *Java* 
-#' implementation of Niko Hansen.
+#' implementation by Niko Hansen.
 #' 
 #' @param confFile task configuration for tuning algorithm
 #' @param tdm the TDMR object
@@ -181,7 +181,7 @@ cma_jTuner <- function(confFile,tdm,envT)
     
 		oldWD = getwd(); setwd(javadir);        # save & change working dir
     save.image(file="cma_j1.rda")                      # all function objects def'd in .GlobalEnv 
-    save(list=ls(all=TRUE),file="cma_j2.rda")          # envT, tdm, tdmStartOther and other local variables
+    save(list=ls(all.names=TRUE),file="cma_j2.rda")    # envT, tdm, tdmStartOther and other local variables
    
 		write.table(t(c("dimension",length(roi$low))), file="CMAprops.txt"
                 , quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE);
@@ -367,16 +367,19 @@ bfgsTuner <- function(confFile,tdm,envT){
 
 
 ###########################################################################################
-#' tdmDispatchTuner:
-#'     helper function for tdmCompleteEval:
-#'     select and start the tuner specified by tuneMethod
-#' @param tuneMethod the tuning algorithm given as a char. Possible options are ("spot", "lhd", "cmaes", "bfgs", "powell").
+#tdmDispatchTuner:
+#
+#'     Helper function for \code{\link{tdmCompleteEval}}.
+#'     tdmDispatchTuner selects and starts the tuner specified by tuneMethod.
+#' @param tuneMethod the tuning algorithm given as a string. Possible values are ("spot", "lhd", "cmaes", "bfgs", "powell").
 #' @param confFile the configuration file.
-#' @param spotStep step for spot. At the moment "rep" and "auto" are supported by TDMR.
-#' @param tdm The TDMR object
-#' @param envT The environment variable.
+#' @param spotStep which step to execute for \link{SPOT} . Values "rep" and "auto" are supported by TDMR.
+#' @param tdm the TDMR object
+#' @param envT the environment variable
 #'
 #' @return the result of the tuning algorithm.
+#' @seealso   \code{\link{tdmCompleteEval}}
+#' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
 #' @export
 ###########################################################################################
 tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT)
