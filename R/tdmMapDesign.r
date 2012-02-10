@@ -6,7 +6,7 @@
 #'
 #'    \code{"tdmMapDesign.csv"} is searched in the TDMR library path \code{.find.package("TDMR")}.
 #'    (For the developer version: \code{<tdm$tdmPath>/inst}). \cr
-#'    \code{"userMapDesign.csv"} is searched in the path \code{dirname(tdm$mainFile)}.
+#'    \code{"userMapDesign.csv"} is searched in the path \code{dirname(tdm$mainFile)} (or in the current dir, if tdm$mainFile==NULL).
 #' @param envT  environment
 #' @param tdm   list, needed for \code{tdm$tdmPath} 
 #' @seealso  \code{\link{tdmMapDesApply}}
@@ -20,7 +20,8 @@ tdmMapDesLoad <- function(envT,tdm=list()) {
       tdmMapFile=paste(mapPath,"tdmMapDesign.csv",sep="/")
       if (!file.exists(tdmMapFile)) stop(sprintf("Could not find map file %s",tdmMapFile));
       envT$map <- read.table(tdmMapFile,sep=";",header=T)
-      userMapFile=paste(dirname(tdm$mainFile),"userMapDesign.csv",sep="/");
+      userMapDir=ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
+      userMapFile=paste(userMapDir,"userMapDesign.csv",sep="/");
       if (file.exists(userMapFile)) envT$mapUser <- read.table(userMapFile,sep=";",header=T)
 }    
 
@@ -49,6 +50,13 @@ tdmMapDesApply <- function(des,opts,k,envT,tdm) {
       # (The check "if (!is.null...)" assures that tdmMapDes will work for all different .roi files.)
     	eval(parse(text=cmd));
     	opts;
+    }
+    
+    # check whether each parameter in des can be found in map or mapUser (thus whether it can be mapped to a variable in opts):
+    dn=setdiff(names(des[-1]),c("COUNT","CONFIG"));
+    for (d in dn) {
+      if (length(which(envT$map$roiValue==d))+length(which(envT$mapUser$roiValue==d))==0)
+        stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
     }
     
     for (n in 1:nrow(envT$map)) {
@@ -89,7 +97,8 @@ makeTdmMapDesSpot <- function() {
       tdmMapFile=paste(mapPath,"tdmMapDesign.csv",sep="/")
       if (!file.exists(tdmMapFile)) stop(sprintf("Could not find map file %s",tdmMapFile));
       map <<- read.table(tdmMapFile,sep=";",header=T)
-      userMapFile=paste(dirname(tdm$mainFile),"userMapDesign.csv",sep="/");
+      userMapDir=ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
+      userMapFile=paste(userMapDir,"userMapDesign.csv",sep="/");
       mapUser <<- NULL;
       if (file.exists(userMapFile)) mapUser <<- read.table(userMapFile,sep=";",header=T)
     }    
@@ -103,6 +112,13 @@ makeTdmMapDesSpot <- function() {
       	cmd = paste("if(!is.null(des$",map$roiValue[n],")) ",map$optsValue[n],"=cRound(n,map,des$",map$roiValue[n],"[k])",sep="");
       	eval(parse(text=cmd));
       	opts;
+      }
+      
+      # check whether each param column in des can be mapped to a variable in opts:
+      dn=setdiff(names(des[-1]),c("COUNT","CONFIG"));
+      for (d in dn) {
+        if (length(which(map$roiValue==d))+length(which(mapUser$roiValue==d))==0)
+          stop(sprintf("tdmMapDesSpot: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
       }
       
       for (n in 1:nrow(map)) {
@@ -151,18 +167,19 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 #   helper fct for unbiasedBestRun_*.R, map certain parameters of opts for the unbiased
 #   runs, depending on parameter umode, which controls the mode of the unbiased run
 # INPUT
-#   umode       # one of { "RSUB" | "CV" | "TST" }
+#   umode       # one of { "RSUB" | "CV" | "TST" | "SP_T" }
 #               # ="RSUB": activate random subsampling with tdm$tstFrac test data
 #               # ="CV": activate cross validation with tdm$nfold [10] folds
-#               # ="TST": activate test on unseen test data
+#               # ="TST": activate test on unseen test data (user-def'd)
+#               # ="SP_T": activate test on unseen test data (randomly selected by tdmSplitTestData)
 #   opts        # current state of parameter settings
 #   tdm         # list, here we use the elements
 #     nfold         # [10] value for opts$TST.NFOLD during unbiased runs with umode="CV"
-#     tstFrac       # [0.2] value for opts$TST.FRAC during unbiased runs with umode="RSUB"
+#     tstFrac       # [0.2] value for opts$TST.valiFrac during unbiased runs with umode="RSUB"
 #     tstFrac       # ["TST"] value for opts$TST.COL during unbiased runs with umode="TST"
 #     nrun          # [5] value for opts$NRUN during unbiased runs
 #     test2.string  # ["default.cutoff"] value for opts$test2.string during unbiased runs
-#   (the defaults in '[...]' are taken, if tdm does not define them.)
+#   (the defaults in '[...]' are filled via tdmDefaultsFill, if tdm does not yet define them.)
 # OUTPUT
 #   opts        #  enhanced state of parameter settings
 ######################################################################################
@@ -172,7 +189,7 @@ tdmMapOpts <- function(umode,opts,tdm)
     
     setOpts.RSUB <- function(opts) {
       opts$TST.kind <- "rand" # select test set by random subsampling, see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$TST.FRAC=tdm$tstFrac # set this fraction of data aside for testing (only for TST.kind=="rand")
+      opts$TST.valiFrac=tdm$tstFrac # set this fraction of data aside for testing 
       opts;
     } 
     setOpts.TST <- function(opts) {
@@ -190,8 +207,9 @@ tdmMapOpts <- function(umode,opts,tdm)
     } 
     opts <- switch(umode
       , "RSUB" = setOpts.RSUB(opts)
-      , "TST" = setOpts.TST(opts)
       , "CV" = setOpts.CV(opts)
+      , "TST" = setOpts.TST(opts)
+      , "SP_T" = setOpts.TST(opts)
       , "INVALID"
       );
     if (opts[1]=="INVALID") 

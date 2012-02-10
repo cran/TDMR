@@ -2,8 +2,8 @@ tdm <- list(tdmPath=NULL  # "../../../tdm" #  source R-files for TDMR from this 
             , unbiasedFunc="unbiasedRun"
             , umode=c("CV")     # ,"RSUB"
             , mainFile="main_sonar.r"
-            , mainCommand="result <- main_sonar(opts)"
-            , tuneMethod=c("spot","cmaes")   #   ,  "spot"   "cmaes"   "bfgs"
+            , mainFunction="main_sonar"
+            , tuneMethod=c("spot")   #   ,  "spot"   "cmaes"   "bfgs"
             , finalFile="sonar.fin"
             , experFile=NULL # "sonar.exp"
             , nrun=5, nfold=2          # repeats and CV-folds for the unbiased runs

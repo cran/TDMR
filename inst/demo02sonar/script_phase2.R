@@ -1,6 +1,6 @@
 confFile = "sonar_01.conf";
 apdFile = "sonar_01.apd";
-tdm=list(mainCommand="result<-main_sonar(opts)",mainFile="main_sonar.r");
+tdm=list(mainFunction="main_sonar",mainFile="main_sonar.r");
 
 opts <- NULL;
 source(apdFile);      # read in opts-settings

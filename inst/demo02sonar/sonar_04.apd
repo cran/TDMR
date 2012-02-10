@@ -6,6 +6,7 @@
       opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
                                       # for the list of those elements and many explanatory comments                                                                                                         
       opts$filename = "sonar.txt"
+      opts$READ.CMD = "read.csv2(file=paste(opts$dir.txt, filename, sep=\"\"), dec=\".\", sep=\",\", nrow=opts$READ.NROW,header=F)"
       opts$data.title <- "Sonar Data"
       opts$RF.mtry = 4
       opts$TST.SEED = 124;

@@ -1,13 +1,16 @@
 # For each variable which appears in .roi (and thus in .des file): set its counterpart in list opts.
 # (For each variable not appearing: leave its opts value at its default from .apd file.)
 roiValue;   optsValue;          isInt
+PCA.npc;    opts$PRE.PCA.npc;   1
+SFA.npc;    opts$PRE.SFA.npc;   1
+SFA.PPRANGE;opts$PRE.SFA.PPRANGE;1
+SFA.ODIM;   opts$PRE.SFA.ODIM;  1
+XPERC;      opts$SRF.XPerc;     0
+NDROP;      opts$SRF.ndrop;     1
 MTRY;       opts$RF.mtry;       1
 NODESIZE;   opts$RF.nodesize;   1
 NTREE;      opts$RF.ntree;      1
 SAMPSIZE;   opts$RF.samp;       1
-VOTECUT;    opts$votecut;       0
-XPERC;      opts$SRF.XPerc;     0
-MINLSI;     opts$SRF.minlsi;    0
 EPSILON;    opts$SVM.epsilon;   0
 GAMMA;      opts$SVM.gamma;     0
 TOLERANCE;  opts$SVM.tolerance; 0
@@ -25,6 +28,11 @@ CUTOFF3;    opts$CLS.cutoff[3]; 0
 CUTOFF4;    opts$CLS.cutoff[4]; 0
 # opts$CLS.cutoff[N_c] is set in main_*.r
 #
+NCOPIES;    opts$ncopies;       1      
+#
+# DMC2010             
+VOTECUT;    opts$votecut;       0
+#
 LEAKY1;     opts$PRE.leaky1;    0
 LEAKY2;     opts$PRE.leaky2;    0
 PRE_NPC;    opts$PRE.npc;       0
@@ -36,7 +44,6 @@ embdimConductivity;  opts$PRE.embdimConductivity; 1
 embdimO2;   opts$PRE.embdimO2;  1
 embdimPO4P; opts$PRE.embdimPO4P;1
 embdimpH;   opts$PRE.embdimpH;  1
-PCA;        opts$PRE.PCA;       1
 # lag for functionf diff():
 lag;        opts$PRE.lag;       1
 # diff for function diff():

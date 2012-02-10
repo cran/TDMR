@@ -9,9 +9,9 @@ collectGarbage <- function()
 
 ######################################################################################
 #
-# source.tdm: function to load TDM, phase 1-3 and to load SPOT
+# source.tdm: function to load TDMR from source files and to load SPOT and rSFA
 #
-source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
+source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA) {
 
   createSourcePath <- function(sourceFileName){
     normalizePath(paste(tdmPath,sourceFileName, sep="/"));
@@ -27,14 +27,29 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
           if (Sys.info()["user"]=="konen") theSpotPath <- '~/svnspot/trunk/SPOT/R/';
         }
         if (.Platform$OS.type=="windows") {
-          theSpotPath <- 'C:/WUTemp/FH-MassenDaten/TBB.SPO/trunk/SPOT/R/';
-          if (Sys.info()["user"]=="wolfgang")  theSpotPath <- 'C:/WUTemp/FH-MassenDaten/TBB.SPO/trunk/SPOT/R/';
+          theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOT/R/';
+          if (Sys.info()["user"]=="wolfgang")  theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOT/R/';
         }
       }
-      #
       # if 'theSpotPath' is a string different from "USE.SOURCE", then we try 
       # to read the SPOT sources from this path 'theSpotPath'
-      #
+  }
+      
+  if (!is.na(theRsfaPath)) {
+      if (theRsfaPath=="USE.SOURCE") {
+        # load rSFA from source files at a specified location. 
+        # (this is useful for debugging rSFA code or for testing new developper versions)
+        # --- may need adjustment to your specific rSFA source directory location ---
+        if (.Platform$OS.type=="unix") {
+          theRsfaPath <- '~/Desktop/FH_Koeln/svnspot/trunk/SPOT/R/';
+          if (Sys.info()["user"]=="konen") theRsfaPath <- '~/svnspot/trunk/SPOT/R/';
+        }
+        if (.Platform$OS.type=="windows") {
+          theRsfaPath <- 'C:/WUTemp/FH-MassenDaten/fiwa_soma/trunk/doc/CaseStudies.d/201112.d/tdmExtensions.d/CodeR.d/rSFA/R';
+        }
+      }
+      # if 'theRsfaPath' is a string different from "USE.SOURCE", then we try 
+      # to read the rSFA sources from this path 'theRsfaPath'   
   }
 
   tdmParallel = (tdmParallelCPUs>1);
@@ -50,6 +65,14 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
         setwd(oldwd);
     }
     
+    if (is.na(theRsfaPath)) {
+        require("rSFA");     # load rSFA from the installed library (package version)
+    } else {
+        oldwd=getwd(); setwd(theRsfaPath);
+        for (f in dir())   source(f);
+        setwd(oldwd);
+    }
+    
     source(createSourcePath("phase1/tdmOptsDefaults.r"))
     source(createSourcePath("phase1/tdmReadData.r"))
     source(createSourcePath("phase1/tdmPreprocUtils.r"))
@@ -57,11 +80,13 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     source(createSourcePath("phase1/tdmGraphicUtils.r"))
     source(createSourcePath("phase1/tdmModelingUtils.r"))    
     source(createSourcePath("phase1/classify/tdmClassify.r"))
+    source(createSourcePath("phase1/classify/tdmClassifyLoop.r"))
     source(createSourcePath("phase1/classify/tdmMetacostRf.r"))
     source(createSourcePath("phase1/classify/tdmParaBootstrap.r"))
     source(createSourcePath("phase1/classify/printTDMclassifier.r"))
     source(createSourcePath("phase1/regress/tdmEmbedDataFrame.r"))
     source(createSourcePath("phase1/regress/tdmRegress.r"))
+    source(createSourcePath("phase1/regress/tdmRegressLoop.r"))
     source(createSourcePath("phase1/regress/printTDMregressor.r"))
 
     source(createSourcePath("phase2/tdmMapDesign.r"))
@@ -72,6 +97,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     source(createSourcePath("phase2/tdmDispatchTuner.r"))
     source(createSourcePath("phase2/tdmGetObj.r"))
     source(createSourcePath("phase2/tdmDefaultsFill.r"))
+    source(createSourcePath("phase2/tdmSplitTestData.r"))
     source(createSourcePath("phase2/unbiasedRun.r"))
     source(createSourcePath("phase2/unbiasedBestRun_O.r"))
     
@@ -91,6 +117,13 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
         for (f in dir())   sfSource(f);
         setwd(oldwd);
     }
+    if (is.na(theRsfaPath)) {
+        sfLibrary("rSFA",character.only=TRUE);     # load rSFA from the installed library (package version)
+    } else {
+        oldwd=getwd(); setwd(theRsfaPath);
+        for (f in dir())   sfSource(f);
+        setwd(oldwd);
+    }
     sfSource(createSourcePath("phase1/tdmOptsDefaults.r"))
     sfSource(createSourcePath("phase1/tdmReadData.r"))
     sfSource(createSourcePath("phase1/tdmPreprocUtils.r"))
@@ -98,11 +131,13 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     sfSource(createSourcePath("phase1/tdmGraphicUtils.r"))
     sfSource(createSourcePath("phase1/tdmModelingUtils.r"))    
     sfSource(createSourcePath("phase1/classify/tdmClassify.r"))
+    sfSource(createSourcePath("phase1/classify/tdmClassifyLoop.r"))
     sfSource(createSourcePath("phase1/classify/tdmMetacostRf.r"))
     sfSource(createSourcePath("phase1/classify/tdmParaBootstrap.r"))
     sfSource(createSourcePath("phase1/classify/printTDMclassifier.r"))
     sfSource(createSourcePath("phase1/regress/tdmEmbedDataFrame.r"))
     sfSource(createSourcePath("phase1/regress/tdmRegress.r"))
+    sfSource(createSourcePath("phase1/regress/tdmRegressLoop.r"))
     sfSource(createSourcePath("phase1/regress/printTDMregressor.r"))
 
     sfSource(createSourcePath("phase2/tdmMapDesign.r"))
@@ -112,12 +147,10 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA) {
     sfSource(createSourcePath("phase2/tdmCompleteEval.r"))
     sfSource(createSourcePath("phase2/tdmDispatchTuner.r"))
     sfSource(createSourcePath("phase2/tdmGetObj.r"))
+    sfSource(createSourcePath("phase2/tdmSplitTestData.r"))
     sfSource(createSourcePath("phase2/unbiasedRun.r"))
     sfSource(createSourcePath("phase2/unbiasedBestRun_O.r"))
     
-    #sfSource(paste(tdmPath,"source.tdm.1.r",sep="/")); source.tdm.1(tdmPath, tdmParallel);
-    #sfSource(paste(tdmPath,"source.tdm.2.r",sep="/")); source.tdm.2(tdmPath, tdmParallel);
-    #sfSource(paste(tdmPath,"sourceSPOT.R",sep="/")); sourceSPOT(theSpotPath);
   }
     
   collectGarbage()

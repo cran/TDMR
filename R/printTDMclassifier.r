@@ -79,7 +79,8 @@ print.TDMclassifier <- function(x,...) {
     z <- switch(type
       , "overview"= {cat("Filename of task:",opts$filename);
               tdmClassifySummary(result,opts);
-              cat("\nUse > print(result,type=\"?\") or > result$lastRes   for more info on TDMclassifier object result."); 1;
+              cat("\nUse > print(result,type=\"?\") and > result$lastRes   for more info on TDMclassifier object result."); 
+              1;  # a value for z
               }
       , "cm.train"= show.cm.train(result)
       , "cm.test"= show.cm.test(result)
@@ -89,7 +90,7 @@ print.TDMclassifier <- function(x,...) {
                ,"\"cm.test\" : confusion matrix on test data\n"
                ,"\"?\" : display this help message"
                ,"\nThe commands > result or > print(result) invoke the default print(result,type=\"overview\") for TDMclassifier object result"
-               ); 1;}
+               ); 1;}     # a value for z
       , "invalid type"
       );
     if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.test, ?.");
@@ -110,11 +111,15 @@ show.cm.train <- function(result) {
   z <- switch(cls
     , "TDMclassifier"= {show.cm.train(result$lastRes); 1; }
     , "tdmClass"={
-        opts = result$lastRes$opts;
+        # note that in here the object 'result' is of class ***tdmClass*** !
+        opts = result$opts;            
         opts$VERBOSE = 2;
         cm.train <- result$lastCmTrain;
-        cat1(opts,"Training cases (",nrow(result$d_train),"):\n")
-        if (opts$VERBOSE>=1) print(cm.train$mat)                     # confusion matrix on training set
+        cat1(opts,"Training cases (",nrow(result$d_train)
+            ,ifelse(opts$TST.kind=="cv",", last fold )",")")
+            ,sprintf("on last response variable '%s' :", tail(row.names(result$allEVAL),1))
+            ,"\n");
+        print1(opts,cm.train$mat)                     # confusion matrix on training set
         print1(opts,cm.train$gain.vector)
         cat1(opts,sprintf("total gain: %7.1f (is %7.3f%% of max. gain = %7.1f)\n",
                           cm.train$gain,cm.train$gain/cm.train$gainmax*100,cm.train$gainmax));
@@ -133,12 +138,16 @@ show.cm.test <- function(result) {
   z <- switch(cls
     , "TDMclassifier"= {show.cm.test(result$lastRes); 1; }
     , "tdmClass"={
-        opts = result$lastRes$opts;
+        # note that in here the object 'result' is of class ***tdmClass*** !
+        opts = result$opts;
         opts$VERBOSE = 2;
         cm.test <- result$lastCmTest;
         n.test <- nrow(result$d_test);
         if (n.test>0) {
-          cat1(opts,"Test cases (",n.test,"):\n")
+          cat1(opts,"Test cases (",n.test
+              ,ifelse(opts$TST.kind=="cv",", last fold )",")")
+              ,sprintf("on last response variable '%s' :", tail(row.names(result$allEVAL),1))
+              ,"\n");
           print1(opts,cm.test$mat)                      # confusion matrix on test set
           print1(opts,cm.test$gain.vector)
           cat1(opts,sprintf("total gain : %7.1f (is %7.3f%% of max. gain = %7.1f)\n",

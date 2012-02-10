@@ -1,12 +1,12 @@
 \name{tdmModSortedRFimport}
 \alias{tdmModSortedRFimport}
-\title{Return the list of input variables sorted decreasingly by their RF-importance...}
+\title{Sort the input variables decreasingly by their RF-importance.}
 \usage{tdmModSortedRFimport(d_train, response.variable, input.variables, opts)
 }
-\description{Return the list of input variables sorted decreasingly by their RF-importance
-(use na.roughfix for missing value replacement)
+\description{Sort the input variables decreasingly by their RF-importance.
+Use na.roughfix for missing value replacement.
 Decide which input variables to keep and return them in SRF$input.variables}
-\value{SRF    a list with the following elements:
+\value{\code{SRF},    a list with the following elements:
 \item{input.variables}{   the vector of input variables which remain after importance
 processing. These are sorted by decreasing importance.}
 \item{s_input}{all input.variables sorted by decreasing (**NEW**) importance}
@@ -32,12 +32,12 @@ important variables (if SRF.kind=="xperc")
 \item SRF.calc:    [TRUE] =TRUE: calculate importance & save on SRF.file, =F: load from SRF.file
 (SRF.file = Output/<filename>.SRF.<response.variable>.Rdata)
 \item SRF.ntree:   [50] number of RF trees
-\item SRF.samp    sampsize for RF
-\item SRF.verbose [2]
-\item SRF.maxS    [40] how many variables to show in plot
-\item SRF.minlsi  [1] a lower bound for the length of SRF$input.variables
-\item GD.DEVICE   if !="non", then make a bar plot on current graphic device
-\item CLS.CLASSWT class weight vector to use in random forest training
+\item SRF.samp:    sampsize for RF
+\item SRF.verbose: [2]
+\item SRF.maxS:    [40] how many variables to show in plot
+\item SRF.minlsi:  [1] a lower bound for the length of SRF$input.variables
+\item GD.DEVICE:   if !="non", then make a bar plot on current graphic device
+\item CLS.CLASSWT: class weight vector to use in random forest training
 }}
 }
 

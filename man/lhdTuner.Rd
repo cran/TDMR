@@ -1,7 +1,7 @@
 \name{lhdTuner}
 \alias{lhdTuner}
 \title{Perform LHD tuning.}
-\usage{lhdTuner(confFile, spotStep, theSpotPath, tdm, envT)
+\usage{lhdTuner(confFile, spotStep, theSpotPath, tdm, envT, dataObj)
 }
 \description{Perform LHD tuning. Perform a parameter tuning using a Latin hypercube design (LHD) 
 for obtaining best design points.}
@@ -12,5 +12,6 @@ for obtaining best design points.}
 \item{theSpotPath}{needed for spot}
 \item{tdm}{the TDMR object}
 \item{envT}{the environment variable}
+\item{dataObj}{the object with the data set (train/vali part and test part)}
 }
 

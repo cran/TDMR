@@ -6,21 +6,23 @@
 #' @param theSpotPath needed for spot
 #' @param tdm the TDMR object
 #' @param envT the environment variable
+#' @param dataObj the object with the data set (train/vali part and test part)
 #'
 #' @return the result of SPOT tuning, i.e. the list \code{spotConfig}
 #' @export
 ######################################################################################
-spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT)
+spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 {
     sC <- envT$spotConfig;
     #sC$alg.func <- "tdmStartSpot";
     #sC$spot.fileMode = TRUE; 
     sC$tdm <- tdm;              # needed for tdm$mainFile, tdm$mainCommand, tdm$fileMode
     sC$alg.currentResult <- NULL;
+    sC$dataObj <- dataObj;
 
     sC <- spot(confFile,spotStep,theSpotPath,sC);
     # spot calls tdmStartSpot. 
-    # tdmStartSpot reads opts from sC$opts and writes sC$alg.currentResult
+    # tdmStartSpot reads opts from sC$opts, dataObj from sC$dataObj, and writes sC$alg.currentResult
 
     envT$res <- sC$alg.currentResult;
     envT$bst <- sC$alg.currentBest;	
@@ -38,11 +40,12 @@ spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT)
 #' @param theSpotPath needed for spot
 #' @param tdm the TDMR object
 #' @param envT the environment variable
+#' @param dataObj the object with the data set (train/vali part and test part)
 #'
 #' @return the result of LHD sampling, i.e. the list \code{spotConfig}
 #' @export
 ######################################################################################
-lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT)
+lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 {
     sC <- envT$spotConfig;
     sC$tdm <- tdm;              # needed for tdm$mainFile, tdm$mainCommand, tdm$fileMode
@@ -57,10 +60,11 @@ lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT)
     sC$auto.loop.steps = 0;
     sC$init.design.size = round(new.nevals/sC$seq.design.maxRepeats);
     sC$init.design.repeats = sC$seq.design.maxRepeats;
+    sC$dataObj <- dataObj;
 
     sC <- spot(confFile,spotStep,theSpotPath,sC);
     # spot calls tdmStartSpot. 
-    # tdmStartSpot reads opts from sC$opts and writes sC$alg.currentResult
+    # tdmStartSpot reads opts from sC$opts, dataObj from sC$dataObj, and writes sC$alg.currentResult
 
     envT$res <- sC$alg.currentResult;
     envT$bst <- sC$alg.currentBest;	
@@ -75,11 +79,12 @@ lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT)
 #' @param confFile task configuration for tuning algorithm
 #' @param tdm the TDMR object
 #' @param envT the environment variable
+#' @param dataObj the object with the data set (train/vali part and test part)
 #'
 #' @return result of CMA-ES algorithm
 #' @export
 ######################################################################################
-cmaesTuner <- function(confFile,tdm,envT)
+cmaesTuner <- function(confFile,tdm,envT,dataObj)
 {
     require(cmaes)
     sC <- envT$spotConfig;
@@ -94,7 +99,7 @@ cmaesTuner <- function(confFile,tdm,envT)
       if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
     }
     
-    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT) else
+    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
       tdmStartOther = tdm$startOtherFunc;
 
 
@@ -125,9 +130,6 @@ cmaesTuner <- function(confFile,tdm,envT)
     
     cat(sprintf("Function calls to tdmStartOther: %d\n",tunerVal$count[1]));
 
-    # OLD: 
-    ##envT$bst <- read.table(sC$io.bstFileName, sep=" ", header = TRUE);	
- 
     tunerVal;
 }
 
@@ -139,11 +141,12 @@ cmaesTuner <- function(confFile,tdm,envT)
 #' @param confFile task configuration for tuning algorithm
 #' @param tdm the TDMR object
 #' @param envT the environment variable
+#' @param dataObj the object with the data set (train/vali part and test part)
 #'
 #' @return result of CMA-ES algorithm
 #' @export
 ######################################################################################
-cma_jTuner <- function(confFile,tdm,envT)
+cma_jTuner <- function(confFile,tdm,envT,dataObj)
 {
     sC <- envT$spotConfig;
     roi <- sC$alg.roi;
@@ -157,7 +160,7 @@ cma_jTuner <- function(confFile,tdm,envT)
       if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
     }
     
-    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT) else
+    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
       tdmStartOther = tdm$startOtherFunc;
 
     fncall1 = sC$auto.loop.nevals;
@@ -237,11 +240,12 @@ cma_jTuner <- function(confFile,tdm,envT)
 #' @param confFile task configuration for tuning algorithm
 #' @param tdm the TDMR object
 #' @param envT the environment variable
+#' @param dataObj the object with the data set (train/vali part and test part)
 #'
 #' @return result of Powell's algorithm
 #' @export
 ######################################################################################
-powellTuner <- function(confFile,tdm,envT){
+powellTuner <- function(confFile,tdm,envT,dataObj){
     require(powell)
     #require(SPOT)
   
@@ -264,19 +268,9 @@ powellTuner <- function(confFile,tdm,envT){
       if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
     }
   
-    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT) else
+    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
       tdmStartOther = tdm$startOtherFunc;
 
-    #dset <- read.table("appAcid_32.exp", sep=" ", header=TRUE)
-    #param <- as.numeric(dset[1,3:14])
-  
-    #if(param==NULL){
-    #  param <- runif(length(roi$low), min=roi$low, max=roi$high) # create start vector generating uniformly randomized vector
-    #}
-  
-    #cat(">>>>> ")
-    #cat(param)
-    #cat("\n")
     param <- (roi$low+roi$high)/2;    # start configuration
   
     #--- obsolete this is now all done in tdmCompleteEval and saved in sC$opts, before the parallel branches ---
@@ -291,14 +285,7 @@ powellTuner <- function(confFile,tdm,envT){
     tunerVal <- powell(param, fn=tdmStartOther, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
     # powell calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
 
-    # OLD: 
-    #tunerVal <- powell(param, fn=tdmStartPowell, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts, tdm=tdm);
-    
-    # OLD: 
-    ##envT$bst <- read.table(sC$io.bstFileName, sep=" ", header = TRUE);	
-    
-    tunerVal;
-  
+    tunerVal;  
 }
 
 
@@ -310,30 +297,17 @@ powellTuner <- function(confFile,tdm,envT){
 
 #' @param tdm the TDMR object
 #' @param envT the environment variable
+#' @param dataObj the object with the data set (train/vali part and test part)
 #'
 #' @return result of BFGS algorithm
 #' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@fh-koeln.de}
 #' @export
 ######################################################################################
-bfgsTuner <- function(confFile,tdm,envT){
+bfgsTuner <- function(confFile,tdm,envT,dataObj){
     #require("optimx")
-    #browser()
     sC <- envT$spotConfig;
     roi <- sC$alg.roi;                 
     param <- runif(length(roi$low), min=roi$low, max=roi$high) # create start vector generating uniformly randomized vector
-    #dset <- read.table("appAcid_32.bst", sep=" ", header=TRUE) # for finetuning run on previous results
-    #param <- as.numeric(dset[14,2:13])
-  
-    #cat("PARAM INITIAL:")
-    #print(param)
-    #param <- (roi$low+roi$high)/2;    # start configuration
-  
-    #--- obsolete this is now all done in tdmCompleteEval and saved in sC$opts, before the parallel branches ---
-    #pdFile <- sC$io.apdFileName;   
-  	#writeLines(paste("Loading apd file data from:", pdFile), con=stderr());
-  	#** read default problem design  (here: set default values for all elements of list opts)
-  	#source(pdFile,local=TRUE)           # contains *no longer* the definition of tdm$mainFile & tdm$mainCommand
-    #source(tdm$mainFile)
      
     if (tdm$fileMode) {
       tdm$resFile <-  sC$io.resFileName;   
@@ -342,7 +316,7 @@ bfgsTuner <- function(confFile,tdm,envT){
       if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
     }
   
-    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT) else
+    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
       tdmStartOther = tdm$startOtherFunc;
 
     tdm$roi <- roi;
@@ -352,17 +326,10 @@ bfgsTuner <- function(confFile,tdm,envT){
     tunerVal <- optim(par=param, fn=tdmStartOther, gr=NULL, method="L-BFGS-B", lower=roi$low, upper=roi$high, control=list(maxit=maxEvaluations), opts=sC$opts)
     # optim calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
   
-    # OLD: 
-    #tunerVal <- optim(par=param, fn=tdmStartBFGS, gr=NULL, method="L-BFGS-B", lower=roi$low, upper=roi$high, control=list(maxit=maxEvaluations), opts=sC$opts, tdm=tdm)
-    
     cat(">>>>>> RESULT:\n")
     print(tunerVal)
   
-    # OLD: 
-    #envT$bst <- read.table(sC$io.bstFileName, sep=" ", header = TRUE);	
-  
     tunerVal;
-
 }
 
 
@@ -376,30 +343,31 @@ bfgsTuner <- function(confFile,tdm,envT){
 #' @param spotStep which step to execute for \link{SPOT} . Values "rep" and "auto" are supported by TDMR.
 #' @param tdm the TDMR object
 #' @param envT the environment variable
+#' @param dataObj the object with the data set (train/vali part and test part)
 #'
 #' @return the result of the tuning algorithm.
 #' @seealso   \code{\link{tdmCompleteEval}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
 #' @export
 ###########################################################################################
-tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT)
+tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
 {
     theSpotPath=tdm$theSpotPath
     
     if (spotStep=="auto") {
-      if (is.null(tdm$mainFile)) stop("Element tdm$mainFile is missing, but this is required for spotStep='auto'");
+      #if (is.null(tdm$mainFile)) stop("Element tdm$mainFile is missing, but this is required for spotStep='auto'");
       if (is.null(tdm$mainCommand)) stop("Element tdm$mainCommand is missing, but this is required for spotStep='auto'");
     }
     
     tunerVal = switch(spotStep
       ,"rep" = spot(confFile,spotStep,theSpotPath)
       ,"auto" = switch(tuneMethod
-                ,"spot" = spotTuner(confFile,spotStep,theSpotPath,tdm,envT)
-                ,"lhd" = lhdTuner(confFile,spotStep,theSpotPath,tdm,envT) 
-                ,"cmaes" = cmaesTuner(confFile,tdm,envT) 
-                ,"cma_j" = cma_jTuner(confFile,tdm,envT) 
-                ,"bfgs" = bfgsTuner(confFile,tdm,envT) 
-                ,"powell" = powellTuner(confFile,tdm,envT) 
+                ,"spot" = spotTuner(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
+                ,"lhd" = lhdTuner(confFile,spotStep,theSpotPath,tdm,envT,dataObj) 
+                ,"cmaes" = cmaesTuner(confFile,tdm,envT,dataObj) 
+                ,"cma_j" = cma_jTuner(confFile,tdm,envT,dataObj) 
+                ,"bfgs" = bfgsTuner(confFile,tdm,envT,dataObj) 
+                ,"powell" = powellTuner(confFile,tdm,envT,dataObj) 
                 ,"INVALID1"
                 )
       ,"INVALID2"

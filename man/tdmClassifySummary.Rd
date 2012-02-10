@@ -5,9 +5,9 @@
 }
 \description{Print summary output for \code{result} from \code{tdmClassifiyLoop} and add \code{result$y}.}
 \details{\code{result$y} is "minus OOB rgain" on training set for methods RF or MC.RF.
-\code{result$y} is "minus rgain" on test set (=validation set) for all other methods. 
+\code{result$y} is "minus rgain" on test set (=validation set) for all other methods.
 \code{result$y} is the quantity which the tuner seeks to minimize.}
-\value{\code{result},  an object of class \code{TDMclassifier}, with \code{result$y}, \code{result$sd.y} 
+\value{\code{result},  an object of class \code{TDMclassifier}, with \code{result$y}, \code{result$sd.y}
 (and optionally also \code{result$dset}) added}
 \seealso{\code{\link{tdmClassify}}, \code{\link{tdmClassifyLoop}}, \code{\link{print.TDMclassifier}}, \code{\link{tdmRegressSummary}}}
 \author{Wolfgang Konen, FHK, Sep'2010 - Oct'2011}

@@ -6,7 +6,7 @@
 #
 # Author: Wolfgang Konen, FHK, Oct'2009 - Apr'2010
 #
-main_cpu <- function(opts=NULL) {           
+main_cpu <- function(opts=NULL,dset=NULL) {           
     #tdmPath <- "../tdm";
     #source(paste(tdmPath,"start.tdm.r",sep="/"),local=T);  
 
@@ -33,7 +33,7 @@ main_cpu <- function(opts=NULL) {
       opts$SVM.gamma=0.00541;
       opts$SVM.epsilon=0.00527;
       opts$SVM.tolerance=0.00886;
-      opts$TST.FRAC = 0.20     # set this fraction of data aside for testing (only for DO.CV=F)
+      opts$TST.valiFrac = 0.20     # set this fraction of data aside for validation (only for DO.CV=F)
       opts$TST.SEED = NULL    # [NULL] a seed for the random test set selection
       opts$OUTTRAFO = "" 	# "mean.shift"
       opts$fct.postproc <- function(x,opts) { 
@@ -50,7 +50,7 @@ main_cpu <- function(opts=NULL) {
     opts <- tdmOptsDefaultsFill(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     filename = opts$filename; 
     
-    tdmGraAndLogInitialize(opts);     # init graphics and log file
+    gdObj <- tdmGraAndLogInitialize(opts);     # init graphics and log file
         
     #===============================================
     # PART 1: READ DATA
@@ -98,7 +98,7 @@ main_cpu <- function(opts=NULL) {
     # print summary output and attach certain columns (here: y,sd.y,dset) to list result:
     result <- tdmRegressSummary(result,opts,dset);
     
-    tdmGraAndLogFinalize(opts);      # close graphics and log file
+    tdmGraAndLogFinalize(opts,gdObj);      # close graphics and log file
     
     result;
     

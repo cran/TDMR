@@ -1,7 +1,7 @@
 \name{tdmDispatchTuner}
 \alias{tdmDispatchTuner}
 \title{Helper function for \link{tdmCompleteEval}.}
-\usage{tdmDispatchTuner(tuneMethod, confFile, spotStep, tdm, envT)
+\usage{tdmDispatchTuner(tuneMethod, confFile, spotStep, tdm, envT, dataObj)
 }
 \description{Helper function for \code{\link{tdmCompleteEval}}.
 tdmDispatchTuner selects and starts the tuner specified by tuneMethod.}
@@ -13,5 +13,6 @@ tdmDispatchTuner selects and starts the tuner specified by tuneMethod.}
 \item{spotStep}{which step to execute for \link{SPOT} . Values "rep" and "auto" are supported by TDMR.}
 \item{tdm}{the TDMR object}
 \item{envT}{the environment variable}
+\item{dataObj}{the object with the data set (train/vali part and test part)}
 }
 

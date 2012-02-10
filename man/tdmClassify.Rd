@@ -16,7 +16,7 @@ If this function is used for tuning, the test set \code{d_test} plays the role o
 \item{\code{allEVAL}}{ data frame with evaluation measures, one row for each response variable }
 \item{\code{lastCmTrain}}{ a list with evaluation info for training set (confusion matrix, gain, class errors, ...)  }
 \item{\code{lastCmTest}}{  a list with evaluation info for test set (confusion matrix, gain, class errors, ...) }
-\item{\code{lastModel}}{       the last model built (e.g. the last Random Forest in the case of MOD.method=="RF") }
+\item{\code{lastModel}}{       the last model built (i.e. for the last response variable) }
 \item{\code{lastProbs}}{    a list with three probability matrices (row: records, col: classes) v_train, v_test, v_dis, if the model provides probabilities; NULL else. }
 \item{\code{lastPred}}{     name of the colum where the prediction of the last model is appended to the datasets d_train, d_test and d_dis }
 \item{\code{opts}}{ parameter list from input, some default values might have been added }

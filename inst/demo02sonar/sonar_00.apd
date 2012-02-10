@@ -14,7 +14,7 @@
       opts$TST.kind <- "rand" # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
       opts$TST.COL <- NULL;   # column with train/test/disregard-flag or NULL
       opts$TST.NFOLD =   2    # number of CV-folds (only for TST.kind=="cv")
-      opts$TST.FRAC = 0.10    # set this fraction of data aside for testing (only for TST.kind=="rand")
+      opts$TST.valiFrac = 0.10    # set this fraction of data aside for validation (only for TST.kind=="rand")
       opts$TST.SEED = NULL    # [NULL] a seed for the random test set selection
       opts$SRF.kind = "none"
       opts$SRF.ndrop = 10     # 0..n: how many variables (those with lowest importance) to drop

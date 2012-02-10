@@ -70,12 +70,13 @@ print.TDMregressor <- function(x,...) {
     opts$VERBOSE = 2;
     z <- switch(type
       , "overview"= { tdmRegressSummary(result,opts);
-              cat("\nUse print(result,type=\"?\") for more info on TDMregressor object result."); 1;
+              cat("\nUse > print(result,type=\"?\") and > result$lastRes   for more info on TDMregressor object result."); 
+              1;  # a value for z
               }
       , "?"={cat("Help for print(<TDMregressor>,type=t). Possible values for 't' are:\n"
                ,"\"overview\": see tdmRegressSummary\n"
                ,"\"?\" : display this help message\n"
-               ); 1;}
+               ); 1;}   # a value for z
       , "invalid type"
       );
     if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, ?.");

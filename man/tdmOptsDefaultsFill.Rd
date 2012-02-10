@@ -23,6 +23,7 @@ All files and directories in the above settings are relative to dir  \code{opts$
 \seealso{\code{\link{tdmOptsDefaultsSet}}}
 \author{Wolfgang Konen, FHK, Mar'2011 - Dec'2011}
 \arguments{\item{opts}{the options}
-\item{suffix}{the suffix of \code{opts$filename}. If NULL, take opts$filesuffix (which, if also NUL, is inferred beforehand from opts$filename)}
+\item{suffix}{the suffix of \code{opts$filename}. If NULL, take opts$filesuffix (which, if also NULL, is  
+inferred from opts$filename)}
 }
 

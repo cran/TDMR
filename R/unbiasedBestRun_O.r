@@ -37,22 +37,43 @@
 #
 ######################################################################################
 unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F,tdm=tdm){
+    tdm <- tdmDefaultsFill(tdm);
     if (is.null(envT$spotConfig)) envT$spotConfig <- spotGetOptions(srcPath=tdm$theSpotPath,confFile);
     if (is.null(envT$theTuner)) envT$theTuner <- "lhd";
-    if (is.null(envT$spotConfig$opts)) stop("List envT$spotConfig does not have the required variable 'opts'");
+    if (is.null(envT$nExp)) envT$nExp <- 1;
+    if (is.null(envT$map)) tdmMapDesLoad(envT,tdm); 
+    if (is.null(envT$spotConfig$opts)) {
+      pdFile = envT$spotConfig$io.apdFileName;
+      warning(paste("List envT$spotConfig does not have the required variable 'opts'."
+                   ,"We try to construct it from",pdFile,"(might not work in parallel mode!)")); 
+      source(pdFile,local=TRUE);
+      opts=tdmOptsDefaultsFill(opts);
+      envT$spotConfig$opts <- opts;
+    }
+    envT$tdm <- tdm;    # just as information to the caller of this function
  	
     writeLines(paste("start unbiased run for",basename(tdm$mainCommand),"..."), con=stderr());
 # --- this is now in tdmCompleteEval.r (before parallel execution branch) ---
 #   pdFile = envT$spotConfig$io.apdFileName;
 #  	source(pdFile,local=T)            # read problem design  (here: all elements of list opts)   
+#   if (!is.null(tdm$mainFile)) source(tdm$mainFile)
 
     opts <- envT$spotConfig$opts;
+
+    # set certain elements of opts which control selection of training & test data 
+    # (depending on switch umode, see tdmMapDesign.r)
+  	opts <- tdmMapOpts(umode,opts,tdm);           # sets opts$NRUN = tdm$nrun
 
     bst <- tdmGetObj(envT$bst,envT$spotConfig$io.bstFileName,envT$theTuner,tdm);
     res <- tdmGetObj(envT$res,envT$spotConfig$io.resFileName,envT$theTuner,tdm);
 
     k <- nrow(bst);       # last line has the best solution
+    bst <- tdmMapCutoff(bst,k,envT$spotConfig);  # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
+  	opts <- tdmMapDesApply(bst,opts,k,envT,tdm);
   	cat("Best solution:\n"); print(bst[k,]);
+  	#
+  	# now opts has the best solution obtained in a prior tuning, and it has 
+  	# training and test set configured according to the current setting of umode
 
 		conf <- bst$CONFIG[k]
 		cat(sprintf("Best Config: %5d\n",conf))
@@ -80,22 +101,22 @@ unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F
       if (!is.null(tdm$fileProps)) {
     		# write fileProps (from bst):
     		paramNames = setdiff(names(bst),c("Y","COUNT","CONFIG"));
-    		write.table(t(bst[k,paramNames]), file=paste(dirname(tdm$mainFile),tdm$fileProps,sep="/")
+    		tdmMainDir = ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
+    		write.table(t(bst[k,paramNames]), file=paste(tdmMainDir,tdm$fileProps,sep="/")
                     , quote=F, sep="=", dec=".", row.names=T, col.names=F);
-  			write.table(t(opts), file=paste(dirname(tdm$mainFile),tdm$fileProps,sep="/")
+  			write.table(t(opts), file=paste(tdmMainDir,tdm$fileProps,sep="/")
                     , quote=F, sep="=", dec=".", row.names=T, col.names=F, append=T)
         tdm$mainCommand <- sub("fileProps",tdm$fileProps,tdm$mainCommand);
       }
       # solve problem anew, tdm$nrun times:                  
   		y_u = NULL;
   		for (n in 1:tdm$nrun) {
-    		oldwd = getwd(); setwd(dirname(tdm$mainFile));              # save & change working dir
-  			callString = tdm$mainCommand;
-  			#print(callString);
- 			
-  			sres <- system(callString, intern= TRUE);
+    		oldwd = getwd(); 
+        if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));    # save & change working dir
+  			#print(tdm$mainCommand); 			
+  			sres <- system(tdm$mainCommand, intern= TRUE);
     		print(sres);
-    		setwd(oldwd);                                     # restore working dir
+    		setwd(oldwd);                                                # restore working dir
     		y_u = c(y_u,as.numeric(sres[length(sres)]));      # the last element of sres is the value to be minimized
   		}
   

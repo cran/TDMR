@@ -19,12 +19,14 @@
 #'     \item{\code{theTuner}}{ ["spot"] string}
 #'     \item{\code{spotConfig}}{ [NULL] a list with SPOT settings. If NULL, try to read spotConfig from confFile.} 
 #'     }
+#'   @param dataObj     [NULL] contains the pre-fetched data from which we use here the test-set part
 #'   @param finals      [NULL] a one-row data frame to which new columns with final results are added
-#'   @param umode       [ "RSUB" (default) | "CV" | "TST" ], how to divide in training and test data for the unbiased runs:
+#'   @param umode       [ "RSUB" (default) | "CV" | "TST" | "SP_T" ], how to divide in training and test data for the unbiased runs:
 #'     \describe{
 #'     \item{\code{"RSUB"}}{ random subsampling into 80\% training and 20\% test data}
 #'     \item{\code{"CV"}}{ cross validation (CV) with tdm$nrun folds}
 #'     \item{\code{"TST"}}{ all data in opts$filename are used for training, all data in opts$filetest for testing}
+#'     \item{\code{"SP_T"}}{ 'split_test': the data set is split by random subsampling into test and training data}
 #'     }
 #'   @param withParams  [FALSE] if =TRUE, add columns with best parameters to data frame finals
 #'                      (should be FALSE, if different runs have different parameters)
@@ -53,8 +55,8 @@
 #'    # The best results are read from demo02sonar/spot/sonar_04.bst relative to the TDMR package directory.
 #'    setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
 #'    envT <- new.env();
-#'    tdm <- list(mainFile="main_sonar.r", mainCommand="result <- main_sonar(opts)", tuneMethod="spot");
-#'    source(tdm$mainFile);
+#'    tdm <- list(mainFile="main_sonar.r", mainFunction="main_sonar", tuneMethod="spot");
+#'    if (!is.null(tdm$mainFile)) source(tdm$mainFile);
 #'    finals <- unbiasedRun("sonar_04.conf",envT,tdm=tdm)
 #'    print(finals);
 #'    setwd(oldwd);
@@ -64,7 +66,7 @@
 #' @export
 #
 ######################################################################################
-unbiasedRun <- function(confFile,envT,finals=NULL,umode="RSUB",withParams=F,tdm=NULL){
+unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",withParams=F,tdm=NULL){
     tdm <- tdmDefaultsFill(tdm);
     if (is.null(envT$spotConfig)) envT$spotConfig <- spotGetOptions(srcPath=tdm$theSpotPath,confFile);
     if (is.null(envT$theTuner)) envT$theTuner <- "spot";
@@ -84,14 +86,22 @@ unbiasedRun <- function(confFile,envT,finals=NULL,umode="RSUB",withParams=F,tdm=
 # --- this is now in tdmCompleteEval.r (before optional parallel execution) ---
 #   pdFile = envT$spotConfig$io.apdFileName;
 #  	source(pdFile,local=TRUE)         # read problem design  (here: all elements of list opts)   
-#   source(tdm$mainFile)
+#   if (!is.null(tdm$mainFile)) source(tdm$mainFile)
 
     opts <- envT$spotConfig$opts;
-
+  	opts$ALG.SEED <- envT$spotConfig$alg.seed;
+	
+  	if (opts$READ.INI) {
+      tdm$tstCol=dataObj$TST.COL;  # needed for tdmMapOpts
+      dset <- dataObj$dset;    
+    } else {
+      dset <- NULL;
+    }
     # set certain elements of opts which control selection of training & test data 
-    # (depending on switch umode, see tdmMapDesign.r)
+    # (depending on switch tdm$umode, see tdmMapDesign.r)
   	opts <- tdmMapOpts(umode,opts,tdm);           # sets opts$NRUN = tdm$nrun
-
+  	
+    
     bst <- tdmGetObj(envT$bst,envT$spotConfig$io.bstFileName,envT$theTuner,tdm);
     res <- tdmGetObj(envT$res,envT$spotConfig$io.resFileName,envT$theTuner,tdm);
 
@@ -109,12 +119,13 @@ unbiasedRun <- function(confFile,envT,finals=NULL,umode="RSUB",withParams=F,tdm=
     #
     # run new model trainings for the configuration stored in opts (tdm$nrun trainings & evaluations):
     #
-		oldwd = getwd(); setwd(dirname(tdm$mainFile));      # save & change working dir
+		oldwd = getwd();                                               #
+    if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));      # save & change working dir
 		result = NULL;         
     eval(parse(text=tdm$mainCommand));                  # execute the command given in text string tdm$mainCommand
     if (!exists("result")) stop("tdm$mainCommand did not return a list 'result'");
     if (!is.list(result)) stop("tdm$mainCommand did not return a list 'result'");
-		setwd(oldwd);                                       # restore working dir
+		setwd(oldwd);                                                  # restore working dir
     envT$result <- result;
 
     if (is.null(finals)) {

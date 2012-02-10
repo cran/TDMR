@@ -5,8 +5,8 @@ tdm <- list(tdmPath=NULL # from where to load TDMR: if NULL, load package TDMR, 
             , unbiasedFunc="unbiasedRun"
             , umode=c("RSUB")     # ,"CV"
             , mainFile="main_cpu.r"
-            , mainCommand="result <- main_cpu(opts)"
-            , tuneMethod=c("spot")   #   "spot",,"lhd",    "cmaes"   "bfgs"
+            , mainFunction="main_cpu"
+            , tuneMethod=c("spot")   #   "spot","lhd",    "cmaes"   "bfgs"
             , finalFile="cpu.fin"
             , experFile=NULL # "cpu.exp"
             , nrun=2, nfold=2          # repeats and CV-folds for the unbiased runs

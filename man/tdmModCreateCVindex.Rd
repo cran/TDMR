@@ -1,9 +1,9 @@
 \name{tdmModCreateCVindex}
 \alias{tdmModCreateCVindex}
-\title{Create and return a training-test-set index vector...}
+\title{Create and return a training-test-set index vector.}
 \usage{tdmModCreateCVindex(dset, response.variables, opts, stratified=FALSE)
 }
-\description{Create and return a training-test-set index vector}
+\description{Create and return a training-test-set index vector.}
 \details{Depending on the value of TST.kind, the returned index cvi is
 \enumerate{
 \item TST.kind="cv": a random cross validation index P([111...222...333...]) - or -
@@ -12,7 +12,7 @@
 (and all records with a value <0 in column TST.COL are disregarded).
 }
 Here P(.) denotes random permutation of the sequence.
-Special case TST.kind="cv" and TST.NFOLD=1: make *every* record a training record, i.e. index [000...]
+Special case TST.kind="cv" and TST.NFOLD=1: make *every* record a training record, i.e. index [000...]. \cr
 In case TST.kind="rand" and stratified=TRUE a \emph{stratified} sample is drawn, where the strata in the 
 training case reflect the rel. frequency of each level of the **1st** response variable
 and are ensured to be at least of size 1.}
@@ -31,7 +31,7 @@ response variable for determining strata size.}
 \item TST.NFOLD: number of CV folds (only relevant in case TST.kind=="cv")
 \item TST.COL:   column of dset containing the (0/1/<0) index (only relevant in case TST.kind=="col")
 or NULL if no such column exists
-\item TST.FRAC:  fraction of records to set aside for testing (only relevant in case TST.kind=="rand")
+\item TST.valiFrac:  fraction of records to set aside for validation (only relevant in case TST.kind=="rand")
 }}
 \item{stratified}{[F] do stratified sampling for TST.kind="rand" with at least one training 
 record for each response variable level (classification)}

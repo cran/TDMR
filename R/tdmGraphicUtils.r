@@ -9,6 +9,8 @@
 #' The log file is opened in \code{opts$dir.output/opts$LOGFILE}.
 #'
 #' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
+#' @return \code{gdObj}, an object of class TDMgdev. Pass this object on when calling tdmGraAndLogFinalize(opts,gdObj)
+#'         (if not, a warning is issued before the sink-closing-error occurs)
 #' @export
 tdmGraAndLogInitialize <- function(opts) {
 
@@ -19,15 +21,22 @@ tdmGraAndLogInitialize <- function(opts) {
       tdmGraphicInit(opts);                        
     }  
     sink(paste(dir.output,opts$LOGFILE,sep="/"),split=T,append=F);	  
+    
+    gdObj = list();
+    class(gdObj) <- c("TDMgdev","TDM");
+    gdObj;
 }
 
 #' Finalize graphics and log file
 #'
 #' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
+#' @param gdObj object of class TDMgdev, the return value from tdmGraAndLogInitialize, to ensure that tdmGraAndLogInitialize was called before 
+#'              (and the sink on opts$LOGFILE can be closed)
 #' @export
-tdmGraAndLogFinalize <- function(opts) {
+tdmGraAndLogFinalize <- function(opts,gdObj=NULL) {
     if (opts$GD.CLOSE & opts$GD.DEVICE!="win") tdmGraphicCloseDev(opts);
     cat1(opts,sprintf("\n%s: All done.\n\n",opts$filename));
+    if (is.null(gdObj)) warning("Deprecated: No gdObj (return value from tdmGraAndLogInitialize) passed"); 
     sink();       # close the LOGFILE
 }
 ######################################################################################
@@ -75,13 +84,14 @@ tdmGraphicNewWin <- function(opts,...) {
   switch (opts$GD.DEVICE
     , "pdf" = {}
     , "png" = png.newFile(opts,...)
-    , "win" = ifelse(.Platform$OS.type=="windows", windows(...), X11(...))
+    , "win" = dev.new(...)   # former:   ifelse(.Platform$OS.type=="windows", {windows(...);1}, {X11(...);1})
     , "non" = {}
     , "invalid switch"
     );    
-    # note: X11(), which worked fine up to R2.12 leads now to strange warnings on my Win-XP machine
+    # note for switch "win": X11(), which worked fine up to R2.12 leads now to strange warnings on my Win-XP machine
     # when plotting anything on this device. 
-    # Therefore we now use windows() on all Windows platforms, X11() for other OS (e.g. Unix, Linux)
+    # Therefore we now use windows(...) on all Windows platforms, X11(...) for other OS (e.g. Unix, Linux).
+    # Or, simpler, we use dev.new(...), which works allways
 }
 #
 #' Close active file ("png").

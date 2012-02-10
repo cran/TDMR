@@ -9,7 +9,7 @@
 #
 ######################################################################################
 # tdmModCreateCVindex:
-#'   Create and return a training-test-set index vector 
+#'   Create and return a training-test-set index vector. 
 #' 
 #'   Depending on the value of TST.kind, the returned index cvi is
 #'   \enumerate{
@@ -19,7 +19,7 @@
 #'         (and all records with a value <0 in column TST.COL are disregarded).
 #'   }
 #'   Here P(.) denotes random permutation of the sequence.
-#'   Special case TST.kind="cv" and TST.NFOLD=1: make *every* record a training record, i.e. index [000...]
+#'   Special case TST.kind="cv" and TST.NFOLD=1: make *every* record a training record, i.e. index [000...]. \cr
 #'   In case TST.kind="rand" and stratified=TRUE a \emph{stratified} sample is drawn, where the strata in the 
 #'   training case reflect the rel. frequency of each level of the **1st** response variable
 #'   and are ensured to be at least of size 1.
@@ -33,7 +33,7 @@
 #'      \item TST.NFOLD: number of CV folds (only relevant in case TST.kind=="cv")
 #'      \item TST.COL:   column of dset containing the (0/1/<0) index (only relevant in case TST.kind=="col")
 #'                       or NULL if no such column exists
-#'      \item TST.FRAC:  fraction of records to set aside for testing (only relevant in case TST.kind=="rand")
+#'      \item TST.valiFrac:  fraction of records to set aside for validation (only relevant in case TST.kind=="rand")
 #'    }
 #'  @param stratified [F] do stratified sampling for TST.kind="rand" with at least one training 
 #'         record for each response variable level (classification)
@@ -67,25 +67,29 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
             cvi = sample(cvi)               # permute CVI randomly
             if (opts$TST.NFOLD == 1)
               cvi = 0*cvi;                  # special case: if NFOLD==1 make every record a training record
+              
+            # TODO: check that each training set combination (n-1 folds) has at least one record per class level. 
+            # Can be done by checking that each fold has less records of a certain level than the overall number of records for this level.
+            # If not, permute anew
         } else {
             #=============================================
             # DIVIDE INTO TRAINING SET / TEST SET
             #=============================================
             if (opts$TST.kind=="rand") {   # make a (random) division
-              if (is.null(opts$TST.FRAC))
-                stop(sprintf("tdmModCreateCVindex: opts$TST.FRAC is not defined"));
-              if (opts$TST.FRAC >= 1)
-                stop(sprintf("tdmModCreateCVindex: opts$TST.FRAC must be < 1. Current value is opts$TST.FRAC = %f", opts$TST.FRAC));
+              if (is.null(opts$TST.valiFrac))
+                stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac is not defined"));
+              if (opts$TST.valiFrac >= 1)
+                stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac must be < 1. Current value is opts$TST.valiFrac = %f", opts$TST.valiFrac));
               if (stratified) {
                 # ** NEW 06/2011 ** the division is done by ***stratified*** random sampling (recommended for classification):
-                cat1(opts,opts$filename,": Stratified random training-test-index with opts$TST.FRAC = ",opts$TST.FRAC*100,"%\n");
+                cat1(opts,opts$filename,": Stratified random training-test-index with opts$TST.valiFrac = ",opts$TST.valiFrac*100,"%\n");
                 rv <- dset[,response.variables[1]];
                 lrv = length(response.variables);
                 if (lrv>1) warning(sprintf("Stratified sampling is only done w.r.t. 1st response variable. It is not guaranteed to work for all %d response variables",lrv))  
                 # calculate tfr, the number of training set records for each level of the response variable            
-                tfr <- sapply(unique(rv),function(x) { round((1-opts$TST.FRAC)*length(which(rv==x))) })
-                # (this seems complicated, but the simpler command: tfr <- round((1-opts$TST.FRAC)*table(rv));
-                # does not work, because 'table' orders the levels alphabetically but 'strata' below require them in the 
+                tfr <- sapply(unique(rv),function(x) { round((1-opts$TST.valiFrac)*length(which(rv==x))) })
+                # (this seems complicated, but the simpler command: tfr <- round((1-opts$TST.valiFrac)*table(rv));
+                # does not work, because 'table' orders the levels alphabetically but 'strata' below requires them in the 
                 # order they appear in column rv. 'unique' sorts the levels also in the order of appearance.) 
                 #
                 tfr[tfr<1] <- 1;      # ensure that there is at least one record for each class 
@@ -102,11 +106,11 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
               } else {  # i.e. stratified=FALSE
                 # simple random sampling (recommended for regression):
                 p <- sample(L)                  # random permutation of indices 1:L  
-                # calculate tfr, the record where the test set starts (TST.FRAC)
-                tfr <- (1-opts$TST.FRAC)*L
-                cat1(opts,opts$filename,": Random training-test-index with opts$TST.FRAC = ",opts$TST.FRAC*100,"%\n")
+                # calculate tfr, the record where the test set starts (opts$TST.valiFrac)
+                tfr <- (1-opts$TST.valiFrac)*L
+                cat1(opts,opts$filename,": Random training-test-index with opts$TST.valiFrac = ",opts$TST.valiFrac*100,"%\n")
                 cvi <- rep(0,L);
-                cvi[p[(tfr+1):L]] <- 1;         # test set index ( TST.FRAC  percent of the data)
+                cvi[p[(tfr+1):L]] <- 1;         # test set index ( opts$TST.valiFrac  percent of the data)
               }
             }
             else           # i.e. opts$TST.kind=="col"
@@ -173,8 +177,8 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
 ######################################################################################
 # tdmModSortedRFimport:
 #
-#'       Return the list of input variables sorted decreasingly by their RF-importance
-#'       (use na.roughfix for missing value replacement)
+#'       Sort the input variables decreasingly by their RF-importance.
+#'       Use na.roughfix for missing value replacement.
 #'       Decide which input variables to keep and return them in SRF$input.variables
 #'
 #'   @param d_train   training set
@@ -193,14 +197,14 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
 #'     \item SRF.calc:    [TRUE] =TRUE: calculate importance & save on SRF.file, =F: load from SRF.file
 #'                   (SRF.file = Output/<filename>.SRF.<response.variable>.Rdata)
 #'     \item SRF.ntree:   [50] number of RF trees
-#'     \item SRF.samp    sampsize for RF
-#'     \item SRF.verbose [2]
-#'     \item SRF.maxS    [40] how many variables to show in plot
-#'     \item SRF.minlsi  [1] a lower bound for the length of SRF$input.variables
-#'     \item GD.DEVICE   if !="non", then make a bar plot on current graphic device
-#'     \item CLS.CLASSWT class weight vector to use in random forest training
+#'     \item SRF.samp:    sampsize for RF
+#'     \item SRF.verbose: [2]
+#'     \item SRF.maxS:    [40] how many variables to show in plot
+#'     \item SRF.minlsi:  [1] a lower bound for the length of SRF$input.variables
+#'     \item GD.DEVICE:   if !="non", then make a bar plot on current graphic device
+#'     \item CLS.CLASSWT: class weight vector to use in random forest training
 #'    }
-#' @return SRF    a list with the following elements:
+#' @return \code{SRF},    a list with the following elements:
 #'     \item{input.variables}{   the vector of input variables which remain after importance
 #'                    processing. These are sorted by decreasing importance.}
 #'     \item{s_input}{all input.variables sorted by decreasing (**NEW**) importance}
@@ -225,9 +229,11 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
     
 
     if (opts$SRF.calc==TRUE) {
-      if (opts$k>1) {
-        load(file=SRF.file);  # load accum_imp1 as stored from previous CV-fold
-      }
+# --- CAUTION: this load may lead to problems with variable input.variables. 
+# --- Is only needed for the experimental variable accum_imp1, so we comment it out (see also below)
+#      if (opts$k>1) {
+#        load(file=SRF.file);  # load accum_imp1 as stored from previous CV-fold
+#      }
       
       formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
       to.model <- d_train[,c(response.variable,input.variables)]
@@ -278,20 +284,22 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       if (is.null(res.SRF)) stop(sprintf("FS method %s did not return a suitable result 'res.SRF'",opts$SRF.method));
       
       imp1 <- res.SRF$imp1;
-      # the following calculation and saving of accum_imp1 is just a test to check whether accumulated
-      # importance in case of CV (the accumulation is done over all CV-folds) has a stabilizing effect
-      # on the most important variables. To test it, run accSRF-test.r (2 runs with different seeds)
-      # --- Currently accum_imp1 has no influence whatsoever on the TDMR-workflow ---
-      if (opts$k==1) {
-        accum_imp1 = imp1;
-      } else { 
-        accum_imp1 = accum_imp1 + imp1;
-      }
+      
+# --- also commented out because of the load()-problems mentioned above
+#      # the following calculation and saving of accum_imp1 is just a test to check whether accumulated
+#      # importance in case of CV (the accumulation is done over all CV-folds) has a stabilizing effect
+#      # on the most important variables. To test it, run accSRF-test.r (2 runs with different seeds)
+#      # --- Currently accum_imp1 has no influence whatsoever on the TDMR-workflow ---
+#      if (opts$k==1) {
+#        accum_imp1 = imp1;
+#      } else { 
+#        accum_imp1 = accum_imp1 + imp1;
+#      }
       
       s_input <- input.variables[order(imp1,decreasing=TRUE)]  # input.variables sorted by increasing importance
       s_imp1 <- imp1[order(imp1,decreasing=TRUE)]
       cat1(opts,filename,": Saving sorted RF importance to file", SRF.file, "...\n")
-      save(file=SRF.file,s_input,s_imp1,input.variables,accum_imp1);
+      save(file=SRF.file,s_input,s_imp1,input.variables); #,accum_imp1);
     } 
     else {
       cat1(opts,filename,": Loading sorted RF importance from file", SRF.file, "...\n")

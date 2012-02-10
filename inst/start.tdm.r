@@ -14,6 +14,7 @@
 #if (is.na(match("USE.SPOT.PACKAGE",ls()))) USE.SPOT.PACKAGE <<- TRUE;   # note "<<-" ! USE.SPOT.PACKAGE needs to be def'd in .GlobalEnv
 if (is.na(match("tdm",ls()))) tdm <- list();
 if (is.null(tdm$theSpotPath)) tdm$theSpotPath <- NA;
+if (is.null(tdm$theRsfaPath)) tdm$theRsfaPath <- NA;
 if (is.null(tdm$parallelCPUs)) tdm$parallelCPUs=1;
 if (tdm$parallelCPUs>1) {
   require(snow)
@@ -33,7 +34,7 @@ if (is.null(tdm$tdmPath)) {
 } else {
     cat("Sourcing TDMR from R files in",tdm$tdmPath,"\n");
     source(paste(tdm$tdmPath,"source.tdm.r",sep="/"),local=TRUE);
-    source.tdm(tdm$tdmPath,tdmParallelCPUs=tdm$parallelCPUs,theSpotPath=tdm$theSpotPath);
+    source.tdm(tdm$tdmPath,tdmParallelCPUs=tdm$parallelCPUs,theSpotPath=tdm$theSpotPath,theRsfaPath=tdm$theRsfaPath);
 }
 #tdmRandomSeed <- makeTdmRandomSeed();      # this is now in makeTdmRandomSeed.r
 if (tdm$parallelCPUs>1) sfExport(list=c("tdmRandomSeed"));

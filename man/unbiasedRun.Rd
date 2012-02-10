@@ -1,7 +1,7 @@
 \name{unbiasedRun}
 \alias{unbiasedRun}
 \title{Perform unbiased runs with best-solution parameters.}
-\usage{unbiasedRun(confFile, envT, finals, umode="RSUB", withParams=F, tdm)
+\usage{unbiasedRun(confFile, envT, dataObj, finals, umode="RSUB", withParams=F, tdm)
 }
 \description{Perform unbiased runs with best-solution parameters.
 Read the best solution of a parameter-tuning run (either from envT$bst or from file), 
@@ -27,12 +27,14 @@ If \code{spotConfig$opts} (list with all parameter settings for the DM task) is 
 \item{\code{theTuner}}{ ["spot"] string}
 \item{\code{spotConfig}}{ [NULL] a list with SPOT settings. If NULL, try to read spotConfig from confFile.} 
 }}
+\item{dataObj}{[NULL] contains the pre-fetched data from which we use here the test-set part}
 \item{finals}{[NULL] a one-row data frame to which new columns with final results are added}
-\item{umode}{[ "RSUB" (default) | "CV" | "TST" ], how to divide in training and test data for the unbiased runs:
+\item{umode}{[ "RSUB" (default) | "CV" | "TST" | "SP_T" ], how to divide in training and test data for the unbiased runs:
 \describe{
 \item{\code{"RSUB"}}{ random subsampling into 80\% training and 20\% test data}
 \item{\code{"CV"}}{ cross validation (CV) with tdm$nrun folds}
 \item{\code{"TST"}}{ all data in opts$filename are used for training, all data in opts$filetest for testing}
+\item{\code{"SP_T"}}{ 'split_test': the data set is split by random subsampling into test and training data}
 }}
 \item{withParams}{[FALSE] if =TRUE, add columns with best parameters to data frame finals
 (should be FALSE, if different runs have different parameters)}
@@ -53,8 +55,8 @@ oldwd <- getwd();
 # The best results are read from demo02sonar/spot/sonar_04.bst relative to the TDMR package directory.
 setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
 envT <- new.env();
-tdm <- list(mainFile="main_sonar.r", mainCommand="result <- main_sonar(opts)", tuneMethod="spot");
-source(tdm$mainFile);
+tdm <- list(mainFile="main_sonar.r", mainFunction="main_sonar", tuneMethod="spot");
+if (!is.null(tdm$mainFile)) source(tdm$mainFile);
 finals <- unbiasedRun("sonar_04.conf",envT,tdm=tdm)
 print(finals);
 setwd(oldwd);}
