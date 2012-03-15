@@ -1,9 +1,9 @@
 \name{tdmPreAddMonomials}
 \alias{tdmPreAddMonomials}
-\title{Add monomials of degree 2 to a data frame...}
+\title{Add monomials of degree 2 to a data frame.}
 \usage{tdmPreAddMonomials(dset, rx, PRE.npc, opts, degree=2, prefix="R")
 }
-\description{Add monomials of degree 2 to a data frame}
+\description{Add monomials of degree 2 to a data frame.}
 \details{Given the data frame \code{dset} and a data frame \code{rx} with the same number of rows,
 add monomials of degree 2 to dset for all quadratic combinations of the first PRE.npc
 columns of \code{rx}. The naming of these new columns is "R1x2" for the combination of cols

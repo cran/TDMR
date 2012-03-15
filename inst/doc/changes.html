@@ -1,264 +1,929 @@
-<html>
+<html xmlns:v="urn:schemas-microsoft-com:vml"
+xmlns:o="urn:schemas-microsoft-com:office:office"
+xmlns:w="urn:schemas-microsoft-com:office:word"
+xmlns:m="http://schemas.microsoft.com/office/2004/12/omml"
+xmlns="http://www.w3.org/TR/REC-html40">
 
 <head>
 <meta http-equiv=Content-Type content="text/html; charset=windows-1252">
-<meta name=Generator content="Microsoft Word 14 (filtered)">
+<meta name=ProgId content=Word.Document>
+<meta name=Generator content="Microsoft Word 14">
+<meta name=Originator content="Microsoft Word 14">
+<link rel=File-List href="changes-Dateien/filelist.xml">
 <title>Changes TDMR package</title>
+<!--[if gte mso 9]><xml>
+ <o:DocumentProperties>
+  <o:Author>Wolfgang Konen</o:Author>
+  <o:LastAuthor>Wolfgang Konen</o:LastAuthor>
+  <o:Revision>6</o:Revision>
+  <o:Created>2012-03-15T07:43:00Z</o:Created>
+  <o:LastSaved>2012-03-15T08:50:00Z</o:LastSaved>
+  <o:Pages>1</o:Pages>
+  <o:Words>410</o:Words>
+  <o:Characters>2589</o:Characters>
+  <o:Lines>21</o:Lines>
+  <o:Paragraphs>5</o:Paragraphs>
+  <o:CharactersWithSpaces>2994</o:CharactersWithSpaces>
+  <o:Version>14.00</o:Version>
+ </o:DocumentProperties>
+</xml><![endif]-->
+<link rel=themeData href="changes-Dateien/themedata.thmx">
+<link rel=colorSchemeMapping href="changes-Dateien/colorschememapping.xml">
+<!--[if gte mso 9]><xml>
+ <w:WordDocument>
+  <w:SpellingState>Clean</w:SpellingState>
+  <w:GrammarState>Clean</w:GrammarState>
+  <w:TrackMoves>false</w:TrackMoves>
+  <w:TrackFormatting/>
+  <w:HyphenationZone>21</w:HyphenationZone>
+  <w:ValidateAgainstSchemas/>
+  <w:SaveIfXMLInvalid>false</w:SaveIfXMLInvalid>
+  <w:IgnoreMixedContent>false</w:IgnoreMixedContent>
+  <w:AlwaysShowPlaceholderText>false</w:AlwaysShowPlaceholderText>
+  <w:DoNotPromoteQF/>
+  <w:LidThemeOther>DE</w:LidThemeOther>
+  <w:LidThemeAsian>X-NONE</w:LidThemeAsian>
+  <w:LidThemeComplexScript>X-NONE</w:LidThemeComplexScript>
+  <w:Compatibility>
+   <w:BreakWrappedTables/>
+   <w:SplitPgBreakAndParaMark/>
+  </w:Compatibility>
+  <w:BrowserLevel>MicrosoftInternetExplorer4</w:BrowserLevel>
+  <m:mathPr>
+   <m:mathFont m:val="Cambria Math"/>
+   <m:brkBin m:val="before"/>
+   <m:brkBinSub m:val="&#45;-"/>
+   <m:smallFrac m:val="off"/>
+   <m:dispDef/>
+   <m:lMargin m:val="0"/>
+   <m:rMargin m:val="0"/>
+   <m:defJc m:val="centerGroup"/>
+   <m:wrapIndent m:val="1440"/>
+   <m:intLim m:val="subSup"/>
+   <m:naryLim m:val="undOvr"/>
+  </m:mathPr></w:WordDocument>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <w:LatentStyles DefLockedState="false" DefUnhideWhenUsed="true"
+  DefSemiHidden="true" DefQFormat="false" DefPriority="99"
+  LatentStyleCount="267">
+  <w:LsdException Locked="false" Priority="0" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Normal"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="heading 1"/>
+  <w:LsdException Locked="false" Priority="9" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="heading 2"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 3"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 4"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 5"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 6"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 7"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 8"/>
+  <w:LsdException Locked="false" Priority="9" QFormat="true" Name="heading 9"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 1"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 2"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 3"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 4"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 5"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 6"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 7"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 8"/>
+  <w:LsdException Locked="false" Priority="39" Name="toc 9"/>
+  <w:LsdException Locked="false" Priority="35" QFormat="true" Name="caption"/>
+  <w:LsdException Locked="false" Priority="10" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Title"/>
+  <w:LsdException Locked="false" Priority="1" Name="Default Paragraph Font"/>
+  <w:LsdException Locked="false" Priority="11" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtitle"/>
+  <w:LsdException Locked="false" Priority="22" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Strong"/>
+  <w:LsdException Locked="false" Priority="20" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Emphasis"/>
+  <w:LsdException Locked="false" Priority="59" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Table Grid"/>
+  <w:LsdException Locked="false" UnhideWhenUsed="false" Name="Placeholder Text"/>
+  <w:LsdException Locked="false" Priority="1" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="No Spacing"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 1"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 1"/>
+  <w:LsdException Locked="false" UnhideWhenUsed="false" Name="Revision"/>
+  <w:LsdException Locked="false" Priority="34" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="List Paragraph"/>
+  <w:LsdException Locked="false" Priority="29" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Quote"/>
+  <w:LsdException Locked="false" Priority="30" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Quote"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 1"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 1"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 1"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 1"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 1"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 1"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 1"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 2"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 2"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 2"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 2"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 2"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 2"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 2"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 2"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 3"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 3"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 3"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 3"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 3"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 3"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 3"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 3"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 4"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 4"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 4"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 4"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 4"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 4"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 4"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 4"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 5"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 5"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 5"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 5"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 5"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 5"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 5"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 5"/>
+  <w:LsdException Locked="false" Priority="60" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="61" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light List Accent 6"/>
+  <w:LsdException Locked="false" Priority="62" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Light Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="63" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="64" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Shading 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="65" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="66" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium List 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="67" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 1 Accent 6"/>
+  <w:LsdException Locked="false" Priority="68" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 2 Accent 6"/>
+  <w:LsdException Locked="false" Priority="69" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Medium Grid 3 Accent 6"/>
+  <w:LsdException Locked="false" Priority="70" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Dark List Accent 6"/>
+  <w:LsdException Locked="false" Priority="71" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Shading Accent 6"/>
+  <w:LsdException Locked="false" Priority="72" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful List Accent 6"/>
+  <w:LsdException Locked="false" Priority="73" SemiHidden="false"
+   UnhideWhenUsed="false" Name="Colorful Grid Accent 6"/>
+  <w:LsdException Locked="false" Priority="19" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtle Emphasis"/>
+  <w:LsdException Locked="false" Priority="21" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Emphasis"/>
+  <w:LsdException Locked="false" Priority="31" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Subtle Reference"/>
+  <w:LsdException Locked="false" Priority="32" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Intense Reference"/>
+  <w:LsdException Locked="false" Priority="33" SemiHidden="false"
+   UnhideWhenUsed="false" QFormat="true" Name="Book Title"/>
+  <w:LsdException Locked="false" Priority="37" Name="Bibliography"/>
+  <w:LsdException Locked="false" Priority="39" QFormat="true" Name="TOC Heading"/>
+ </w:LatentStyles>
+</xml><![endif]-->
 <style>
 <!--
  /* Font Definitions */
  @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
 	{font-family:Cambria;
-	panose-1:2 4 5 3 5 4 6 3 2 4;}
+	panose-1:2 4 5 3 5 4 6 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:roman;
+	mso-font-pitch:variable;
+	mso-font-signature:-536870145 1073743103 0 0 415 0;}
 @font-face
 	{font-family:Calibri;
-	panose-1:2 15 5 2 2 2 4 3 2 4;}
+	panose-1:2 15 5 2 2 2 4 3 2 4;
+	mso-font-charset:0;
+	mso-generic-font-family:swiss;
+	mso-font-pitch:variable;
+	mso-font-signature:-520092929 1073786111 9 0 415 0;}
  /* Style Definitions */
  p.MsoNormal, li.MsoNormal, div.MsoNormal
-	{margin-top:0cm;
+	{mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-parent:"";
+	margin-top:0cm;
 	margin-right:0cm;
 	margin-bottom:10.0pt;
 	margin-left:0cm;
 	line-height:115%;
+	mso-pagination:widow-orphan;
 	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
+	font-family:"Calibri","sans-serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
 h1
-	{mso-style-link:"Überschrift 1 Zchn";
+	{mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Überschrift 1 Zchn";
 	margin-top:24.0pt;
 	margin-right:0cm;
 	margin-bottom:0cm;
 	margin-left:0cm;
 	margin-bottom:.0001pt;
 	line-height:115%;
+	mso-pagination:widow-orphan;
 	page-break-after:avoid;
+	mso-outline-level:1;
 	font-size:14.0pt;
 	font-family:"Cambria","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
 	color:#365F91;}
 h2
-	{mso-style-link:"Überschrift 2 Zchn";
+	{mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	mso-style-link:"Überschrift 2 Zchn";
 	margin-top:10.0pt;
 	margin-right:0cm;
 	margin-bottom:0cm;
 	margin-left:0cm;
 	margin-bottom:.0001pt;
 	line-height:115%;
+	mso-pagination:widow-orphan;
 	page-break-after:avoid;
+	mso-outline-level:2;
 	font-size:13.0pt;
 	font-family:"Cambria","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;
 	color:#4F81BD;}
 a:link, span.MsoHyperlink
-	{color:blue;
-	text-decoration:underline;}
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	color:blue;
+	text-decoration:underline;
+	text-underline:single;}
 a:visited, span.MsoHyperlinkFollowed
-	{color:purple;
-	text-decoration:underline;}
+	{mso-style-noshow:yes;
+	mso-style-priority:99;
+	color:purple;
+	text-decoration:underline;
+	text-underline:single;}
 p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
-	{margin-top:0cm;
+	{mso-style-priority:34;
+	mso-style-unhide:no;
+	mso-style-qformat:yes;
+	margin-top:0cm;
 	margin-right:0cm;
 	margin-bottom:10.0pt;
 	margin-left:36.0pt;
 	line-height:115%;
+	mso-pagination:widow-orphan;
 	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
+	font-family:"Calibri","sans-serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
 span.berschrift1Zchn
 	{mso-style-name:"Überschrift 1 Zchn";
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
 	mso-style-link:"Überschrift 1";
 	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-hansi-font-family:Cambria;
 	color:#365F91;
 	font-weight:bold;}
 span.berschrift2Zchn
 	{mso-style-name:"Überschrift 2 Zchn";
+	mso-style-noshow:yes;
+	mso-style-priority:9;
+	mso-style-unhide:no;
+	mso-style-locked:yes;
 	mso-style-link:"Überschrift 2";
 	font-family:"Cambria","serif";
+	mso-ascii-font-family:Cambria;
+	mso-hansi-font-family:Cambria;
 	color:#4F81BD;
 	font-weight:bold;}
 p.msolistparagraphcxspfirst, li.msolistparagraphcxspfirst, div.msolistparagraphcxspfirst
 	{mso-style-name:msolistparagraphcxspfirst;
+	mso-style-unhide:no;
 	margin-top:0cm;
 	margin-right:0cm;
 	margin-bottom:0cm;
 	margin-left:36.0pt;
 	margin-bottom:.0001pt;
 	line-height:115%;
+	mso-pagination:widow-orphan;
 	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
+	font-family:"Calibri","sans-serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
 p.msolistparagraphcxspmiddle, li.msolistparagraphcxspmiddle, div.msolistparagraphcxspmiddle
 	{mso-style-name:msolistparagraphcxspmiddle;
+	mso-style-unhide:no;
 	margin-top:0cm;
 	margin-right:0cm;
 	margin-bottom:0cm;
 	margin-left:36.0pt;
 	margin-bottom:.0001pt;
 	line-height:115%;
+	mso-pagination:widow-orphan;
 	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
+	font-family:"Calibri","sans-serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
 p.msolistparagraphcxsplast, li.msolistparagraphcxsplast, div.msolistparagraphcxsplast
 	{mso-style-name:msolistparagraphcxsplast;
+	mso-style-unhide:no;
 	margin-top:0cm;
 	margin-right:0cm;
 	margin-bottom:10.0pt;
 	margin-left:36.0pt;
 	line-height:115%;
+	mso-pagination:widow-orphan;
 	font-size:11.0pt;
-	font-family:"Calibri","sans-serif";}
+	font-family:"Calibri","sans-serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
 p.msopapdefault, li.msopapdefault, div.msopapdefault
 	{mso-style-name:msopapdefault;
+	mso-style-unhide:no;
+	mso-margin-top-alt:auto;
 	margin-right:0cm;
 	margin-bottom:10.0pt;
 	margin-left:0cm;
 	line-height:115%;
+	mso-pagination:widow-orphan;
 	font-size:12.0pt;
-	font-family:"Times New Roman","serif";}
+	font-family:"Times New Roman","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
 p.msochpdefault, li.msochpdefault, div.msochpdefault
 	{mso-style-name:msochpdefault;
+	mso-style-unhide:no;
+	mso-margin-top-alt:auto;
 	margin-right:0cm;
+	mso-margin-bottom-alt:auto;
 	margin-left:0cm;
+	mso-pagination:widow-orphan;
 	font-size:10.0pt;
-	font-family:"Times New Roman","serif";}
+	font-family:"Times New Roman","serif";
+	mso-fareast-font-family:"Times New Roman";
+	mso-fareast-theme-font:minor-fareast;}
+span.SpellE
+	{mso-style-name:"";
+	mso-spl-e:yes;}
+span.GramE
+	{mso-style-name:"";
+	mso-gram-e:yes;}
 .MsoChpDefault
-	{font-size:10.0pt;}
+	{mso-style-type:export-only;
+	mso-default-props:yes;
+	font-size:10.0pt;
+	mso-ansi-font-size:10.0pt;
+	mso-bidi-font-size:10.0pt;}
 @page WordSection1
 	{size:595.3pt 841.9pt;
-	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;
+	mso-header-margin:35.4pt;
+	mso-footer-margin:35.4pt;
+	mso-paper-source:0;}
 div.WordSection1
 	{page:WordSection1;}
+ /* List Definitions */
+ @list l0
+	{mso-list-id:1083646933;
+	mso-list-type:hybrid;
+	mso-list-template-ids:-234696400 67567619 67567619 67567621 67567617 67567619 67567621 67567617 67567619 67567621;}
+@list l0:level1
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l0:level2
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l0:level3
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l0:level4
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l0:level5
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l0:level6
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+@list l0:level7
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0B7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Symbol;}
+@list l0:level8
+	{mso-level-number-format:bullet;
+	mso-level-text:o;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:"Courier New";}
+@list l0:level9
+	{mso-level-number-format:bullet;
+	mso-level-text:\F0A7;
+	mso-level-tab-stop:none;
+	mso-level-number-position:left;
+	text-indent:-18.0pt;
+	font-family:Wingdings;}
+ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
 -->
 </style>
-
+<!--[if gte mso 10]>
+<style>
+ /* Style Definitions */
+ table.MsoNormalTable
+	{mso-style-name:"Normale Tabelle";
+	mso-tstyle-rowband-size:0;
+	mso-tstyle-colband-size:0;
+	mso-style-noshow:yes;
+	mso-style-priority:99;
+	mso-style-parent:"";
+	mso-padding-alt:0cm 5.4pt 0cm 5.4pt;
+	mso-para-margin:0cm;
+	mso-para-margin-bottom:.0001pt;
+	mso-pagination:widow-orphan;
+	font-size:10.0pt;
+	font-family:"Times New Roman","serif";}
+</style>
+<![endif]--><!--[if gte mso 9]><xml>
+ <o:shapedefaults v:ext="edit" spidmax="1026"/>
+</xml><![endif]--><!--[if gte mso 9]><xml>
+ <o:shapelayout v:ext="edit">
+  <o:idmap v:ext="edit" data="1"/>
+ </o:shapelayout></xml><![endif]-->
 </head>
 
-<body lang=DE link=blue vlink=purple>
+<body lang=DE link=blue vlink=purple style='tab-interval:35.4pt'>
 
 <div class=WordSection1>
 
-<h1><span lang=EN-US>Changes TDMR package</span></h1>
+<h1><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";
+mso-ansi-language:EN-US'>Changes TDMR package<o:p></o:p></span></h1>
 
-<h2><span lang=EN-US>V 0.2.0 – 06.02.2012</span></h2>
+<h2><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";
+mso-ansi-language:EN-US'>V 0.2.1 – 15.03.2012<o:p></o:p></span></h2>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>integration of SFA (slow feature analysis, see package <b>rSFA</b>
-on CRAN) as a feature generation method for classification</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>New
+<b style='mso-bidi-font-weight:normal'>3D graphics</b> for tuning results and
+their <span class=SpellE>metamodels</span>, using a <span class=SpellE>twiddler</span>-interface
+on environment <span class=SpellE>envT</span>: see <span class=GramE>help(</span><span
+class=SpellE>tdmPlotResMeta</span>).<o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>moved PCA feature generation from main_* into
-tdmClassifyLoop, it uses now only the training data for establishing the PCA
-rotation (same for SFA)</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Print()
+for TDMdata object “dataObj”<o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>new training / validation / test set capabilities, see
-Section “TDM<a name="TDMR_train_vali_test"></a>R Data Reading and Data Split …”
-in <a href="TDM-docu.pdf">TDM-docu.pdf</a> and tdmSplitTestData, tdmReadData.</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Fixed
+the bug in <span class=SpellE>tdmClassify</span> (wrong <span class=SpellE>ifelse</span>
+in <span class=SpellE>applySVM</span>).<o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>modified TDMR’s seed concept, new option opts$*.seed =
-“algSeed” (get the seed from spotConfig$alg.seed)</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Fixed
+some minor bugs to reactivate parallel mode:<span style='mso-spacerun:yes'> 
+</span>some <span class=SpellE>sfExports</span> were missing.<o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>new parameter tdm$mainFunc, simpler and more general
-usage (as compared to tdm$mainFile and tdm$mainCommand)</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Fixed
+the <span class=SpellE>saveEnvT</span>-bug (“[9:9]”) in <span class=SpellE>tdmCompleteEval</span>.
+New option <span class=SpellE>tdm$filenameEnvT</span>.<o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;</span><span
-lang=EN-US>powell, cmaes, rSFA now in the “Depends” list of DESCRIPTION</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Fixed
+the <span class=SpellE>tdmMapDesign</span> bug (Design variables missing in
+tdmMapDesign.csv and userMapDesign.csv would not be mapped to <span
+class=GramE>opts</span>. Now missing variables are detected and an error is
+thrown.)<o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;</span><span
-lang=EN-US>added a TDMR-package description (file tdmGeneralUtils.r)</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Added
+<span class=SpellE>opts$SPLIT.SEED</span> variable: a variable to decide if <span
+class=SpellE>tdmSplitTestData</span> runs deterministic<span
+style='mso-spacerun:yes'>  </span><o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US>&nbsp;</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Added
+<span class=SpellE>opts$TST.trnFrac</span>: now <span class=SpellE>trnFrac</span>
+can be smaller than 1-opts$TST.valiFrac.<o:p></o:p></span></p>
 
-<h2><span lang=EN-US>V 0.1.3 – 04.01.2012</span></h2>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Added
+SAVESEED-part in <span class=SpellE>tdmSplitTestData</span>, <span
+class=SpellE>tdmClassifyLoop</span>, <span class=SpellE>tdmRegressLoop</span><o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>extended documentation (e.g. full docu for
-tdmOptsDefaultsSet and&nbsp; many small other documentation extensions) </span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Added
+<span class=SpellE>tdm$stratified</span> with new meaning: if not NULL, make
+stratified sampling w.r.t. the column of <span class=SpellE>dset</span> named
+in tdm$stratified.<o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>new section opts$CLS.* for classification-related
-settings</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>Some
+minor fixes concerning data reading<o:p></o:p></span></p>
 
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>bug fixes in demo01cpu (seed variation) and demo02sonar
-(GD.DEVICE)</span></p>
-
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>merged former functions unbiasedBestRun_C and
-unbiasedBestRun_R into only one function unbiasedRun</span></p>
-
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>extended functions for information on class objects:
-print.TDMclassifier, print.tdmClass, print.TDMregressor, print.tdmRegre
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></p>
-
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>removed the dependencies on packages matlab and mlbench</span></p>
-
-<h2><span lang=EN-US>V 0.1.2 – 05.12.2011</span></h2>
-
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>new function tdmParaBootstrap.r: add parametric
-bootstrap patterns, if opts$ncopies&gt;0</span></p>
-
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>new version of TDM-docu.pdf: see documentation index –
-directory</span></p>
-
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>new demo: demo00sonar (with some graphics)</span></p>
-
-<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>fix in print.TDMclassifier, print.TDMregressor:
-optional argument ‘type’</span></p>
+<p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
+5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal;mso-list:l0 level1 lfo2'><![if !supportLists]><span
+lang=EN-US style='font-family:"Courier New";mso-fareast-font-family:"Courier New";
+mso-ansi-language:EN-US'><span style='mso-list:Ignore'>o<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;
+</span></span></span><![endif]><span lang=EN-US style='mso-ansi-language:EN-US'>TDM
+<span class=SpellE>docu</span> now available in PDF <i style='mso-bidi-font-style:
+normal'><u>and</u></i> HTML format (<a href="TDM-docu.htm">TDM-docu.htm</a>)<o:p></o:p></span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>doc/index.html added</span></p>
+lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;<o:p></o:p></span></p>
+
+<h2><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";
+mso-ansi-language:EN-US'>V 0.2.0 – 06.02.2012<o:p></o:p></span></h2>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>doc/changes.html added (this file)</span></p>
-
-<h2><span lang=EN-US>V 0.1&nbsp; – 10.11.2011</span></h2>
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>integration of SFA (slow feature
+analysis, see package <span class=SpellE><b>rSFA</b></span> on CRAN) as a
+feature generation method for classification<o:p></o:p></span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
-style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>initial version</span></p>
+lang=EN-US style='font-family:"Courier New";mso-ansi-language:EN-US'>o</span><span
+class=GramE><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp;</span><span
+lang=EN-US style='mso-ansi-language:EN-US'>bug</span></span><span lang=EN-US
+style='mso-ansi-language:EN-US'> fix concerning <span class=SpellE>tdmMapDesign</span>;
+extension of tdmMapDesign.csv<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>moved PCA feature generation from
+main_* into <span class=SpellE>tdmClassifyLoop</span>, it uses now only the
+training data for establishing the PCA rotation (same for SFA)<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>new training / validation / test set
+capabilities, see Section “TDM<a name="TDMR_train_vali_test"></a>R Data Reading
+and Data Split …” in <a href="TDM-docu.pdf">TDM-docu.pdf</a> and <span
+class=SpellE>tdmSplitTestData</span>, <span class=SpellE>tdmReadData</span>.<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>modified TDMR’s seed concept, new
+option opts$*.seed = “<span class=SpellE>algSeed</span>” (get the seed from <span
+class=SpellE>spotConfig$alg.seed</span>)<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>new parameter <span class=SpellE>tdm$mainFunc</span>,
+simpler and more general usage (as compared to <span class=SpellE>tdm$mainFile</span>
+and <span class=SpellE>tdm$mainCommand</span>)<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+lang=EN-US style='font-family:"Courier New";mso-ansi-language:EN-US'>o</span><span
+class=GramE><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp;</span><span
+class=SpellE><span lang=EN-US style='mso-ansi-language:EN-US'>powell</span></span></span><span
+lang=EN-US style='mso-ansi-language:EN-US'>, <span class=SpellE>cmaes</span>, <span
+class=SpellE>rSFA</span> now in the “Depends” list of DESCRIPTION<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+lang=EN-US style='font-family:"Courier New";mso-ansi-language:EN-US'>o</span><span
+class=GramE><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp;</span><span
+lang=EN-US style='mso-ansi-language:EN-US'>added</span></span><span lang=EN-US
+style='mso-ansi-language:EN-US'> a TDMR-package description (file <span
+class=SpellE>tdmGeneralUtils.r</span>)<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+lang=EN-US style='mso-ansi-language:EN-US'>&nbsp;<o:p></o:p></span></p>
+
+<h2><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";
+mso-ansi-language:EN-US'>V 0.1.3 – 04.01.2012<o:p></o:p></span></h2>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>extended documentation (e.g. full <span
+class=SpellE>docu</span> for <span class=SpellE>tdmOptsDefaultsSet</span>
+and&nbsp; many small other documentation extensions) <o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>new section opts$CLS.* for
+classification-related settings<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>bug fixes in demo01cpu (seed
+variation) and demo02sonar (GD.DEVICE)<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>merged former functions <span
+class=SpellE>unbiasedBestRun_C</span> and <span class=SpellE>unbiasedBestRun_R</span>
+into only one function <span class=SpellE>unbiasedRun</span><o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>extended functions for information on
+class objects: <span class=SpellE>print.TDMclassifier</span>, <span
+class=SpellE>print.tdmClass</span>, <span class=SpellE>print.TDMregressor</span>,
+<span class=SpellE>print.tdmRegre</span>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>removed the dependencies on packages
+<span class=SpellE>matlab</span> and <span class=SpellE>mlbench</span><o:p></o:p></span></p>
+
+<h2><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";
+mso-ansi-language:EN-US'>V 0.1.2 – 05.12.2011<o:p></o:p></span></h2>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>new function <span class=SpellE>tdmParaBootstrap.r</span>:
+add parametric bootstrap patterns, if <span class=SpellE>opts$ncopies</span>&gt;0<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>new version of TDM-docu.pdf: see
+documentation index – directory<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>new demo: demo00sonar (with some
+graphics)<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>fix in <span class=SpellE>print.TDMclassifier</span>,
+<span class=SpellE>print.TDMregressor</span>: optional argument ‘type’<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>doc/index.html added<o:p></o:p></span></p>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>doc/changes.html added (this file)<o:p></o:p></span></p>
+
+<h2><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";
+mso-ansi-language:EN-US'>V 0.1<span class=GramE>&nbsp; –</span> 10.11.2011</span><span
+style='mso-fareast-font-family:"Times New Roman"'><o:p></o:p></span></h2>
+
+<p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
+class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
+EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
+font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
+lang=EN-US style='mso-ansi-language:EN-US'>initial version</span></p>
 
 </div>
 

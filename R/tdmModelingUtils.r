@@ -9,13 +9,13 @@
 #
 ######################################################################################
 # tdmModCreateCVindex:
-#'   Create and return a training-test-set index vector. 
+#'   Create and return a training-validation-set index vector. 
 #' 
 #'   Depending on the value of TST.kind, the returned index cvi is
 #'   \enumerate{
 #'   \item TST.kind="cv": a random cross validation index P([111...222...333...]) - or -
-#'   \item TST.kind="rand": a random index with P([000...111...]) for training (0) and test (1) cases - or -
-#'   \item TST.kind="col": the column dset[,opts$TST.COL] contains the training (0) and test (1) set division
+#'   \item TST.kind="rand": a random index with P([000...111...]) for training (0) and validation (1) cases - or -
+#'   \item TST.kind="col": the column dset[,opts$TST.COL] contains the training (0) and validation (1) set division
 #'         (and all records with a value <0 in column TST.COL are disregarded).
 #'   }
 #'   Here P(.) denotes random permutation of the sequence.
@@ -34,15 +34,16 @@
 #'      \item TST.COL:   column of dset containing the (0/1/<0) index (only relevant in case TST.kind=="col")
 #'                       or NULL if no such column exists
 #'      \item TST.valiFrac:  fraction of records to set aside for validation (only relevant in case TST.kind=="rand")
+#'      \item TST.trnFrac:  [1-opts$TST.valiFrac] fraction of records to set aside for validation (only relevant in case TST.kind=="rand")
 #'    }
 #'  @param stratified [F] do stratified sampling for TST.kind="rand" with at least one training 
 #'         record for each response variable level (classification)
 #'
-#'  @return cvi  training-test-set (0/>0) index vector
+#'  @return cvi  training-validation-set (0/>0) index vector
 #'               (all records with cvi<0, e.g. from column TST.COL, are disregarded)
 #'
 #' @note Currently stratified sampling in case TST.KIND='rand' does only work correctly for \emph{one} response variable.  
-#'    If there are more than one, the right fraction of test records is taken, but the strata are drawn w.r.t. the 
+#'    If there are more than one, the right fraction of validation records is taken, but the strata are drawn w.r.t. the 
 #'    first response variable. (For multiple response variables we would have to return a list of cvi's or to
 #'    call tdmModCreateCVindex for each response variable anew.)
 #
@@ -73,27 +74,31 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
             # If not, permute anew
         } else {
             #=============================================
-            # DIVIDE INTO TRAINING SET / TEST SET
+            # DIVIDE INTO TRAINING SET / VALIDATION SET
             #=============================================
             if (opts$TST.kind=="rand") {   # make a (random) division
               if (is.null(opts$TST.valiFrac))
                 stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac is not defined"));
               if (opts$TST.valiFrac >= 1)
                 stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac must be < 1. Current value is opts$TST.valiFrac = %f", opts$TST.valiFrac));
+              if (is.null(opts$TST.trnFrac)) opts$TST.trnFrac = 1-opts$TST.valiFrac;
+              if (opts$TST.valiFrac+opts$TST.trnFrac>1)
+                stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac+opts$TST.trnFrac > 1. Current value is opts$TST.valiFrac = %f"
+                            , opts$TST.valiFrac,", opts$TST.trnFrac = %f", opts$TST.trnFrac ));
               if (stratified) {
                 # ** NEW 06/2011 ** the division is done by ***stratified*** random sampling (recommended for classification):
-                cat1(opts,opts$filename,": Stratified random training-test-index with opts$TST.valiFrac = ",opts$TST.valiFrac*100,"%\n");
+                cat1(opts,opts$filename,": Stratified random training-validation-index with opts$TST.valiFrac = ",opts$TST.valiFrac*100,"%\n");
                 rv <- dset[,response.variables[1]];
                 lrv = length(response.variables);
                 if (lrv>1) warning(sprintf("Stratified sampling is only done w.r.t. 1st response variable. It is not guaranteed to work for all %d response variables",lrv))  
                 # calculate tfr, the number of training set records for each level of the response variable            
-                tfr <- sapply(unique(rv),function(x) { round((1-opts$TST.valiFrac)*length(which(rv==x))) })
+                tfr <- sapply(unique(rv),function(x) { round(opts$TST.trnFrac*length(which(rv==x))) });
                 # (this seems complicated, but the simpler command: tfr <- round((1-opts$TST.valiFrac)*table(rv));
                 # does not work, because 'table' orders the levels alphabetically but 'strata' below requires them in the 
                 # order they appear in column rv. 'unique' sorts the levels also in the order of appearance.) 
                 #
                 tfr[tfr<1] <- 1;      # ensure that there is at least one record for each class 
-                cvi <- rep(1,L);
+                cvi <- rep(-1,L);
                 urv <- unique(rv);
                 for (i in 1:length(urv))  cvi[ sample(which(rv==urv[i]), tfr[i]) ] <- 0;
                 #
@@ -102,24 +107,33 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
                 # but it is prohibitively slow when dset gets larger(50000 rows and more)
                 #require(sampling);
                 #s2=strata(dset,c(response.variables[1]),size=tfr, method="srswor");
-                #cvi[s2$ID_unit] <- 0;         # set the training records   
+                #cvi[s2$ID_unit] <- 0;          # set the training records   
+                
+                # select opts$TST.valiFrac of the non-training data as validation data:
+                idxCviMinus <- which(cvi==-1);
+                p <- sample(length(idxCviMinus));
+                vfr <- opts$TST.valiFrac*L;     # index where the validation data ends
+                cvi[idxCviMinus[p[1:vfr]]] <- 1;
+                
               } else {  # i.e. stratified=FALSE
                 # simple random sampling (recommended for regression):
                 p <- sample(L)                  # random permutation of indices 1:L  
-                # calculate tfr, the record where the test set starts (opts$TST.valiFrac)
-                tfr <- (1-opts$TST.valiFrac)*L
-                cat1(opts,opts$filename,": Random training-test-index with opts$TST.valiFrac = ",opts$TST.valiFrac*100,"%\n")
-                cvi <- rep(0,L);
-                cvi[p[(tfr+1):L]] <- 1;         # test set index ( opts$TST.valiFrac  percent of the data)
+                # calculate tfr, the record where the validation set starts (opts$TST.valiFrac)
+                tfr <- opts$TST.trnFrac*L;      # index where the training data ends
+                vfr <- (1-opts$TST.valiFrac)*L; # index where the validation data starts
+                cat1(opts,opts$filename,": Random training-validation-index with opts$TST.valiFrac = ",opts$TST.valiFrac*100,"%\n")
+                cvi <- rep(-1,L);
+                cvi[p[1:tfr]] <- 0;             # training set index ( opts$TST.trnFrac  percent of the data) 
+                cvi[p[(vfr+1):L]] <- 1;         # validation set index ( opts$TST.valiFrac  percent of the data)
               }
-            }
+            } # opts$TST.kind=="rand"
             else           # i.e. opts$TST.kind=="col"
-            {              # take the test-training-division as delivered in dset[,opts$TST.COL]
+            {              # take the validation-training-division as delivered in dset[,opts$TST.COL]
               if (is.null(opts$TST.COL))
                 stop(sprintf("tdmModCreateCVindex: opts$TST.COL is NULL, but opts$TST.kind=='col'"));
               if (!(opts$TST.COL %in% names(dset)))
                 stop(sprintf("tdmModCreateCVindex: Data frame dset does not contain a column opts$TST.COL named '%s'", opts$TST.COL));
-              cat1(opts,opts$filename,": Using training-test-index from column",opts$TST.COL,"\n")
+              cat1(opts,opts$filename,": Using training-validation-index from column",opts$TST.COL,"\n")
               cvi <- dset[,opts$TST.COL];
             }
         }
@@ -255,11 +269,13 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
         if (!is.null(opts$SRF.mtry)) rf.options = paste(rf.options,"mtry=opts$RF.mtry",sep=",")
         if (!is.null(opts$SRF.cutoff)) rf.options = paste(rf.options,"cutoff=opts$SRF.cutoff",sep=",")
         #dbg_chase_cutoff_bug(formul,to.model,d_train,response.variable,rf.options,opts);
+#print(.Random.seed[1:6]);
         flush.console();
         res.SRF <- NULL;
         eval(parse(text=paste("res.SRF <- randomForest( formul, data=to.model,",rf.options,")")));
         res.SRF$imp1 <- importance(res.SRF, type=1);      # select MeanDecreaseAccuracy-importance (NEW, with switch 'importance=TRUE' above)
-        
+#print(.Random.seed[1:6]);
+#browser()        
         res.SRF;
       }
 #      fsLasso <- function(opts) {
@@ -432,37 +448,38 @@ tdmModVote2Target <- function(vote0,pred,target) {
 ######################################################################################
 # tdmModConfmat
 #
-#'     Calculate confusion matrix and gain (used by \code{\link{tdmClassify}})
+#'     Calculate confusion matrix and gain. 
 #'
 #'  @param  d 		      data frame
 #'  @param  colreal     name of column in d which contains the real class
 #'  @param  colpred 		name of column in d which contains the predicted class
-#'  @param  opts, a list from which we use the elements: \itemize{
-#'     \item gainmat   the gain matrix for each possible outcome, same size as cm$mat (see below);
-#'               gainmat[R1,P2]: the gain associated with a record of real class R1 which we
+#'  @param  opts        a list from which we use the elements: \itemize{
+#'     \item \code{gainmat}:   the gain matrix for each possible outcome, same size as \code{cm$mat} (see below). \cr
+#'               \code{gainmat[R1,P2]} is the gain associated with a record of real class R1 which we
 #'               predict as class P2. (gain matrix = - cost matrix)
-#'     \item rgain.type  {"rgain" | "meanCA" | "minCA" } see below, affects output cm$mat and cm$rgain
+#'     \item \code{rgain.type}: one out of \{"rgain" | "meanCA" | "minCA" \} see below, affects output \code{cm$mat} and \code{cm$rgain}
 #'    }
-#'  @return cm   a list containing: 
-#'     \item{mat}{ matrix with real class levels as rows, predicted class levels columns.
-#'               mat[R1,P2]: number of records with real class R1
+#'  @return \code{cm}, a list containing: 
+#'     \item{mat}{ matrix with real class levels as rows, predicted class levels columns.  \cr
+#'               \code{mat[R1,P2]} is the number of records with real class R1
 #'               predicted as class P2, if opts$rgain.type=="rgain".
 #'               If opts$rgain.type=="meanCA" or "minCA", then show this number as percentage
 #'               of "records with real class R1" (percentage of each row).
 #'               CAUTION: If colpred contains NA's, those cases are missing in mat (!)
 #'               (but the class errors are correct as long as there are no NA's in colreal)}
-#'     \item{cerr}{ class error rates, vector of size nlevels(colreal)+1.
-#'               cerr[X] is the misclassification rate for real class X.
-#'               cerr["Total"] is the total classification error rate.}
+#'     \item{cerr}{ class error rates, vector of size nlevels(colreal)+1.  \cr
+#'               \code{cerr[X]} is the misclassification rate for real class X. \cr
+#'               \code{cerr["Total"]} is the total classification error rate.}
 #'     \item{gain}{ the total gain (sum of pointwise product gainmat*cm$mat)}
 #'     \item{gain.vector}{ gain.vector[X] is the gain attributed to real class label X.
 #'               gain.vector["Total"] is again the total gain.}
 #'     \item{gainmax}{    the maximum achievable gain, assuming perfect prediction}
-#'     \item{rgain}{      ratio gain/gainmax in percent, if opts$rgain.type=="rgain";
-#'               mean class accuracy percentage (i.e. mean(diag(mat)), if opts$rgain.type=="meanCA";
+#'     \item{rgain}{      ratio gain/gainmax in percent, if opts$rgain.type=="rgain";  \cr
+#'               mean class accuracy percentage (i.e. mean(diag(mat)), if opts$rgain.type=="meanCA"; \cr
 #'               min class accuracy percentage (i.e. min(diag(mat)), if opts$rgain.type=="minCA";}
 #' 
-#' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@fh-koeln.de}
+#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch 
+#' @seealso  \code{\link{tdmClassify}}
 #' @export
 ######################################################################################
 tdmModConfmat <- function(d,colreal,colpred,opts)

@@ -65,6 +65,8 @@
 #' 			\item{PRE.SFA.doPB}{[T] =T/F: do / don't do parametric bootstrap for SFA in case of marginal training data } 
 #' 			\item{PRE.SFA.fctPB}{[sfaPBootstrap] the function to call in case of parametric bootstrap, see \code{\link{sfaPBootstrap}} 
 #'                      in package \code{\link{rSFA}} for its interface description } 
+#' 			\item{PRE.Xpgroup}{[0.99] bind the fraction 1-PRE.Xpgroup in column OTHER (see \code{\link{tdmPreGroupLevels}})  } 
+#' 			\item{PRE.MaxLevel}{[32] bind the N-32+1 least frequent cases in column OTHER (see \code{\link{tdmPreGroupLevels}})  } 
 #' 			\item{SRF.kind}{["xperc" (default) |"ndrop" |"nkeep" |"none" ] the method used for feature selection, see \code{\link{tdmModSortedRFimport}}  } 
 #'      \item{SRF.ndrop}{   [0] how many variables to drop (if SRF.kind=="ndrop")  }
 #'      \item{SRF.XPerc}{  [0.95] if >=0, keep that importance percentage, starting with the most important variables (if SRF.kind=="xperc")  }
@@ -166,7 +168,9 @@ tdmOptsDefaultsSet <- function() {
       opts$PRE.SFA.ODIM=5;
       opts$PRE.SFA.doPB=TRUE;
       opts$PRE.SFA.fctPB=sfaPBootstrap;
-
+      opts$PRE.Xpgroup=0.99;
+      opts$PRE.MaxLevel=32;
+    
       opts$SRF.kind = "xperc" # ["xperc"|"ndrop"|"nkeep"|"none"] see tdmModSortedRFimport in tdmModelingUtils.r
       opts$SRF.ndrop = 10;    # 0..n: how many variables (those with lowest importance) to drop (only for SRF.kind=="ndrop")
       opts$SRF.ntree=50;      #

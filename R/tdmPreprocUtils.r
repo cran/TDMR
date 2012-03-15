@@ -30,39 +30,39 @@ tdmPreFindConstVar <- function(dset)
 ######################################################################################
 #tdmPreGroupLevels
 #
-#' Group the levels of factor variable in \code{dset[,colname]}
+#' Group the levels of factor variable in \code{dset[,colname]}.
 #'
 #' This function reduces the number of levels for factor variables with too many levels.
 #' It counts the cases in each level and orders them decreasingly. It binds the least
 #' frequent levels together in a new level "OTHER" such that the remaining untouched
-#' levels have more than opts$Xpgroup percent of all cases. OR it binds the levels with 
+#' levels have more than opts$PRE.Xpgroup percent of all cases. OR it binds the levels with 
 #' least cases together in "OTHER" such that the total number of new levels
-#' is opts$MaxLevel. From these two choices for "OTHER" take the one which binds more 
+#' is opts$PRE.MaxLevel. From these two choices for "OTHER" take the one which binds more 
 #' variables in column "OTHER".
 #' 
 #' @param  dset      data frame
 #' @param  colname   name of column to be re-grouped
 #' @param  opts      list, here we need \itemize{
-#'      \item  Xpgroup   [0.99]
-#'      \item  MaxLevel  [32]  (32 is the maximum number of levels allowed for \code{\link{randomForest}})
+#'      \item  PRE.Xpgroup   [0.99]
+#'      \item  PRE.MaxLevel  [32]  (32 is the maximum number of levels allowed for \code{\link{randomForest}})
 #'      }
-#' @return dset      data frame dset with dset[,colname] re-grouped
+#' @return \code{dset}, a data frame with \code{dset[,colname]} re-grouped
 #'     
 #' @export
 ######################################################################################
 tdmPreGroupLevels <- function(dset,colname,opts)
 {
-    if (is.null(opts$Xpgroup)) opts$Xpgroup=0.99;
-    if (is.null(opts$MaxLevel)) opts$MaxLevel=32;
+    if (is.null(opts$PRE.Xpgroup)) opts$PRE.Xpgroup=0.99;
+    if (is.null(opts$PRE.MaxLevel)) opts$PRE.MaxLevel=32;
 
     thisCol =  dset[,colname];
     z <- split(thisCol,thisCol);       # be aware that empty values ("") are dropped
     bz <- sapply(z,length);
     bz <- bz[order(bz,decreasing=T)];
     perc <- cumsum(bz)/sum(bz);        # cumulative percentage
-    w1 <- which(perc>opts$Xpgroup);
+    w1 <- which(perc>opts$PRE.Xpgroup);
     L <- length(bz); w2 <- NULL;
-    if(L>opts$MaxLevel) w2 <- (opts$MaxLevel:L);
+    if(L>opts$PRE.MaxLevel) w2 <- (opts$PRE.MaxLevel:L);
     if(length(w1)>length(w2)) {
       othernames <- names(perc)[w1];
     } else {
@@ -498,7 +498,7 @@ tdmAdjustDSet <- function(dset,numeric.variables,rx,prefix,PRE.REPLACE) {
 ######################################################################################
 # tdmPreAddMonomials
 #
-#' Add monomials of degree 2 to a data frame
+#' Add monomials of degree 2 to a data frame.
 #'
 #' Given the data frame \code{dset} and a data frame \code{rx} with the same number of rows,
 #' add monomials of degree 2 to dset for all quadratic combinations of the first PRE.npc

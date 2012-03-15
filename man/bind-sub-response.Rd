@@ -1,13 +1,13 @@
 \name{bind_response}
 \alias{bind_response}
-\title{Bind the column with name response...}
+\title{Bind a column to a data frame.}
 \usage{bind_response(d, response.predict, vec)
 }
-\description{Bind the column with name \code{response.predict} and contents \code{vec} as last column
-to data frame d}
-\value{dataframe d with column}
-\arguments{\item{d}{dataframe}
-\item{response.predict}{name of column \code{vec}}
-\item{vec}{the last column bound to data frame d}
+\description{Bind a column to a data frame. Bind the column with name \code{response.predict} and 
+contents \code{vec} as last column to data frame \code{d}}
+\value{data frame \code{d} with column added}
+\arguments{\item{d}{data frame}
+\item{response.predict}{name of new column}
+\item{vec}{the contents for the last column bound to data frame \code{d}}
 }
 

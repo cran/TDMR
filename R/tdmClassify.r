@@ -358,15 +358,15 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
      			    app$train.predict <- lev.resp[app$train.predict];
 
             }
-  
+
       			if (nrow(to.test)>0) {
-         			app$test.prob <- ifelse(nrow(to.test)==0,NULL,attr(predict(res.rf, newdata=to.test, probability=TRUE),"probabilities"));
+              app$test.prob <- attr(predict(res.rf, newdata=to.test, probability=TRUE),"probabilities");
               if (is.null(opts$CLS.cutoff)) {
-              app$test.predict <- predict(res.rf, newdata=to.test)
+                app$test.predict <- predict(res.rf, newdata=to.test)
               } else {
-        			# Apply new weighting scheme for test set            
-     			    app$test.predict <- apply(app$test.prob/(matrix(1,nrow(to.test),1) %*% opts$CLS.cutoff),1,which.max)
-     			    app$test.predict <- lev.resp[app$test.predict];
+          			# Apply new weighting scheme for test set            
+       			    app$test.predict <- apply(app$test.prob/(matrix(1,nrow(to.test),1) %*% opts$CLS.cutoff),1,which.max)
+     	  		    app$test.predict <- lev.resp[app$test.predict];
     			    }
   			    }
   			    
@@ -380,7 +380,6 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
        			    app$dis.predict <- lev.resp[app$dis.predict];
     			    }
   			    }
-            
             app;
         }
         apply.CMB <- function(to.model,to.test,to.dis,opts) {
@@ -531,7 +530,7 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
                           cm.train$gain,cm.train$gain/cm.train$gainmax*100,cm.train$gainmax));
 
         if (nrow(d_test)>0) {
-          cat1(opts,"\nTest cases (",length(test.predict),"):\n")
+          cat1(opts,"\nValidation cases (",length(test.predict),"):\n")
           cm.test <- tdmModConfmat(d_test,response.variable,name.of.prediction,opts);
           print1(opts,cm.test$mat)                      # confusion matrix on test set
           print1(opts,cm.test$gain.vector)

@@ -88,10 +88,10 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
 {
     require(cmaes)
     sC <- envT$spotConfig;
-    roi <- sC$alg.roi;
+    roiLower <- sC$alg.roi[,1];
+    roiUpper <- sC$alg.roi[,2];
     set.seed(sC$spot.seed);
-    param <- runif(length(roi$low),roi$low,roi$high);#/2;    # start configuration
-
+    param <- runif(length(roiLower),roiLower,roiUpper);#/2;    # start configuration
     if (tdm$fileMode) {
       tdm$resFile <-  sC$io.resFileName;   
       tdm$bstFile <-  sC$io.bstFileName;   
@@ -123,7 +123,7 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
     control$diag.sigma=TRUE;
     control$diag.eigen=TRUE;
     #browser()
-    tunerVal <- cma_es(param,tdmStartOther,sC$opts,lower=roi$low,upper=roi$high,control=control);
+    tunerVal <- cma_es(param,tdmStartOther,sC$opts,lower=roiLower,upper=roiUpper,control=control);
     # cma_es calls tdmStartOther and tdmStartOther appends to data frames envT$res and envT$bst.
     # If tdm$fileMode==TRUE, then tdmStartOther will write envT$res to envT$spotConfig$io.resFileName
     # and envT$bst to envT$spotConfig$io.bstFileName 
@@ -149,9 +149,10 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
 cma_jTuner <- function(confFile,tdm,envT,dataObj)
 {
     sC <- envT$spotConfig;
-    roi <- sC$alg.roi;
+    roiLower <- sC$alg.roi[,1];
+    roiUpper <- sC$alg.roi[,2];
     set.seed(sC$spot.seed);
-    param <- runif(length(roi$low),roi$low,roi$high);#/2;    # start configuration
+    param <- runif(length(roiLower),roiLower,roiUpper);#/2;    # start configuration
 
     if (tdm$fileMode) {
       tdm$resFile <-  sC$io.resFileName;   
@@ -186,15 +187,15 @@ cma_jTuner <- function(confFile,tdm,envT,dataObj)
     save.image(file="cma_j1.rda")                      # all function objects def'd in .GlobalEnv 
     save(list=ls(all.names=TRUE),file="cma_j2.rda")    # envT, tdm, tdmStartOther and other local variables
    
-		write.table(t(c("dimension",length(roi$low))), file="CMAprops.txt"
+		write.table(t(c("dimension",length(roiLower))), file="CMAprops.txt"
                 , quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE);
     s="initialX ="; for (i in 1:length(param)) s=paste(s,param[i]);                
 		write.table(s, file="CMAprops.txt", quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
-    s="initialStandardDeviations ="; for (i in 1:length(roi$hig)) s=paste(s,(roi$hig[i]-roi$low[i])/2);
+    s="initialStandardDeviations ="; for (i in 1:length(roiUpper)) s=paste(s,(roiUpper[i]-roiLower[i])/2);
 		write.table(s, file="CMAprops.txt", quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
-    s="lowerBounds ="; for (i in 1:length(roi$low)) s=paste(s,roi$low[i]);
+    s="lowerBounds ="; for (i in 1:length(roiLower)) s=paste(s,roiLower[i]);
 		write.table(s, file="CMAprops.txt", quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
-    s="upperBounds ="; for (i in 1:length(roi$hig)) s=paste(s,roi$hig[i]);
+    s="upperBounds ="; for (i in 1:length(roiUpper)) s=paste(s,roiUpper[i]);
 		write.table(s, file="CMAprops.txt", quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
 		write.table(t(c("stopMaxFunEvals",min(fncall1,fncall2)/sC$seq.design.maxRepeats)), file="CMAprops.txt"
                 , quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
@@ -259,7 +260,8 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
     }
      
     sC <- envT$spotConfig;
-    roi <- sC$alg.roi;
+    roiLower <- sC$alg.roi[,1];
+    roiUpper <- sC$alg.roi[,2];
   
     if (tdm$fileMode) {
       tdm$resFile <-  sC$io.resFileName;   
@@ -271,7 +273,7 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
     if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
       tdmStartOther = tdm$startOtherFunc;
 
-    param <- (roi$low+roi$high)/2;    # start configuration
+    param <- (roiLower+roiUpper)/2;    # start configuration
   
     #--- obsolete this is now all done in tdmCompleteEval and saved in sC$opts, before the parallel branches ---
     #pdFile <- sC$io.apdFileName;   
@@ -306,8 +308,9 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
 bfgsTuner <- function(confFile,tdm,envT,dataObj){
     #require("optimx")
     sC <- envT$spotConfig;
-    roi <- sC$alg.roi;                 
-    param <- runif(length(roi$low), min=roi$low, max=roi$high) # create start vector generating uniformly randomized vector
+    roiLower <- sC$alg.roi[,1];
+    roiUpper <- sC$alg.roi[,2];
+    param <- runif(length(roiLower), min=roiLower, max=roiUpper) # create start vector generating uniformly randomized vector
      
     if (tdm$fileMode) {
       tdm$resFile <-  sC$io.resFileName;   
@@ -319,11 +322,11 @@ bfgsTuner <- function(confFile,tdm,envT,dataObj){
     if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
       tdmStartOther = tdm$startOtherFunc;
 
-    tdm$roi <- roi;
+    tdm$roi <- sC$alg.roi;
   
     maxEvaluations = sC$auto.loop.nevals/sC$seq.design.maxRepeats;
   
-    tunerVal <- optim(par=param, fn=tdmStartOther, gr=NULL, method="L-BFGS-B", lower=roi$low, upper=roi$high, control=list(maxit=maxEvaluations), opts=sC$opts)
+    tunerVal <- optim(par=param, fn=tdmStartOther, gr=NULL, method="L-BFGS-B", lower=roiLower, upper=roiUpper, control=list(maxit=maxEvaluations), opts=sC$opts)
     # optim calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
   
     cat(">>>>>> RESULT:\n")
@@ -380,6 +383,7 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
       stop(sprintf("*** Invalid spotStep=%s ***\n",spotStep));
     }
     envT$tunerVal = tunerVal;
+    envT$tunerVal$dataObj = NULL;     # delete this potential voluminous element
     
     tunerVal;
 }

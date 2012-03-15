@@ -32,6 +32,10 @@ If \code{tdm$fileMode==TRUE}, several files are written in the directory of the 
 More precisely: If we make tuning with \code{tuneMethod="lhd"} and perform the 3rd experiment for \code{.conf} file
 \code{cpu_01.conf}, then the \code{.res} file is written to \code{lhd/cpu_01_lhd_03.res} relative to the directory 
 of \code{.conf} file. Analoguously for \code{.bst} file.
+Irrespective of the value  \code{tdm$fileMode}, the following is saved relative to  the directory of the \code{.conf} file:
+\itemize{
+\item \code{envT } is saved to file \code{tdm$filenameEnvT} (default: \code{<runList[1]>.RData}) 
+}
 
 An example usage of function tdmCompleteEval is shown in demo/demo01cpu.r, accessible via \code{demo(demo01cpu)}}
 \seealso{\code{\link{tdmDispatchTuner}}, \code{\link{unbiasedRun}}}
@@ -43,7 +47,7 @@ If \code{NULL}, then \code{spotList=runList}.}
 cyclically recycled if \code{spotStep} is shorter than \code{runList}.}
 \item{tdm}{a list from which we need here the elements
 \describe{
-\item{\code{mainFunc}}{ ths function to be called for tuning and for unbiased evaluations. 
+\item{\code{mainFunc}}{ the function to be called for tuning and for unbiased evaluations. 
 See \code{\link{tdmDefaultsFill}} how a default is found, if it is missing}
 \item{\code{mainCommand}}{ [\code{result <- tdm$mainFunc(opts)}] the command to be called for tuning and unbiased evaluations}
 \item{\code{mainFile}}{ if not NULL, source this file and change to the directory of mainFile before starting mainCommand}
@@ -52,8 +56,12 @@ See \code{\link{tdmDefaultsFill}} how a default is found, if it is missing}
 \item{\code{umode}}{a vector of strings containing the unbiased resampling strategies
 to execute \code{"RSUB", "TST", "CV", "SP_T"}, see \code{\link{unbiasedRun}} }
 \item{\code{finalFile}}{filename where to save \code{envT$theFinals}}
-\item{\code{withParams}}{\code{[NULL]} If \code{=TRUE}: include best parameters as columns in output \code{envT$theFinals}.  
+\item{\code{withParams}}{[length(runList)==1] Boolean, if \code{=TRUE}: include best parameters as columns in output \code{envT$theFinals}.  
 If \code{=FALSE}: don't (this is appropriate if \code{runList} combines several .conf files which differ in their parameters)}
+\item{\code{timeMode}}{ [1] see \code{\link{tdmDefaultsFill}}   }
+\item{\code{SPLIT.SEED}}{[NULL] see \code{\link{tdmSplitTestData}}   }
+\item{\code{TST.trnFrac}}{[NULL] if not NULL, copy it to opts$TST.trnFrac  }
+\item{\code{filenameEnvT}}{[\code{<runList[1]>.RData}] the \code{.RData} file where environment \code{envT} is saved.  }
 }}
 }
 

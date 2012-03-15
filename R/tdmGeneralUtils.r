@@ -14,7 +14,7 @@
 #'
 #' TDMR is a package for tuned data mining (predictive analytics, i.e. \bold{classification} and \bold{regression}). Its main features are: \cr
 #' 1) A variety of tuners, with special emphasis on \link{SPOT} (another well-known R package for parameter tuning), but also CMA-ES and other tuning algorithms. \cr
-#' 2) Tuning of preprocessing (feature generation) model building parameters simultaneously.  \cr
+#' 2) Tuning of preprocessing (feature generation) parameters and model building parameters simultaneously.  \cr
 #' 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr
 #' 4) Easy parallelization of those experiments with the help of R package \link{snowfall}.
 #' 
@@ -43,12 +43,12 @@ NA #NULL, ends description without hiding first function
 ######################################################################################
 
 ######################################################################################
-#' Bind the column with name \code{response.predict} and contents \code{vec} as last column
-#'     to data frame d
-#' @param d dataframe
-#' @param response.predict name of column \code{vec}
-#' @param vec the last column bound to data frame d
-#' @return dataframe d with column
+#' Bind a column to a data frame. Bind the column with name \code{response.predict} and 
+#' contents \code{vec} as last column to data frame \code{d}
+#' @param d data frame
+#' @param response.predict name of new column 
+#' @param vec the contents for the last column bound to data frame \code{d}
+#' @return data frame \code{d} with column added
 #' @export
 ######################################################################################
 bind_response <- function(d,response.predict,vec)
@@ -80,7 +80,7 @@ bind_response_OLD <- function(d,response.predict,vec)
 ######################################################################################
 # printout functions for different verbosity levels
 ######################################################################################
-#' Output the objects to \code{cat} if \code{opts$VERBOSE>=1}.
+#' Output objects to \code{cat} if \code{opts$VERBOSE>=1}.
 #'
 #' @param opts from which we need the element VERBOSE
 #' @param ...  objects
@@ -89,7 +89,7 @@ bind_response_OLD <- function(d,response.predict,vec)
 #' @export
 cat1 <- function(opts, ...) {  if (opts$VERBOSE>=1) cat(...); }
 ######################################################################################
-#' Output the objects to \code{cat} if \code{opts$VERBOSE>=2}.
+#' Output objects to \code{cat} if \code{opts$VERBOSE>=2}.
 #'
 #' @param opts from which we need the element VERBOSE
 #' @param ...  objects
@@ -98,7 +98,7 @@ cat1 <- function(opts, ...) {  if (opts$VERBOSE>=1) cat(...); }
 #' @export
 cat2 <- function(opts, ...) {  if (opts$VERBOSE>=2) cat(...); }
 ######################################################################################
-#' Prints the objects using \code{print} if \code{opts$VERBOSE>=1}.
+#' Print objects using \code{print} if \code{opts$VERBOSE>=1}.
 #'
 #' @param opts from which we need the element VERBOSE
 #' @param ...  objects
@@ -107,7 +107,7 @@ cat2 <- function(opts, ...) {  if (opts$VERBOSE>=2) cat(...); }
 #' @export
 print1 <- function(opts, ...) {  if (opts$VERBOSE>=1) print(...); }
 ######################################################################################
-#' Prints the objects using \code{print} if \code{opts$VERBOSE>=2}.
+#' Print objects using \code{print} if \code{opts$VERBOSE>=2}.
 #'
 #' @param opts from which we need the element VERBOSE
 #' @param ...  objects

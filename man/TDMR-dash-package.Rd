@@ -14,7 +14,7 @@ LazyLoad: \tab yes\cr
 
 TDMR is a package for tuned data mining (predictive analytics, i.e. \bold{classification} and \bold{regression}). Its main features are: \cr
 1) A variety of tuners, with special emphasis on \link{SPOT} (another well-known R package for parameter tuning), but also CMA-ES and other tuning algorithms. \cr
-2) Tuning of preprocessing (feature generation) model building parameters simultaneously.  \cr
+2) Tuning of preprocessing (feature generation) parameters and model building parameters simultaneously.  \cr
 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr
 4) Easy parallelization of those experiments with the help of R package \link{snowfall}.
 

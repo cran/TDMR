@@ -40,6 +40,8 @@
 #' @export
 ######################################################################################
 tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
+  	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
+#print(.Random.seed[1:6])
     if (is.null(opts$PRE.PCA.numericV)) opts$PRE.PCA.numericV <- input.variables;
 
     C_train <- C_test <- C_test2 <- G_train <- G_test <- NULL # reserve names (dynamic extension of
@@ -67,10 +69,13 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
           newseed=opts$TST.SEED+(opts$i-1)+opts$NRUN*(opts$rep-1);
           set.seed(newseed);  # if you want reproducably the same training/test sets,
         }                     # but different for each run i and each repeat (opts$rep)
+#print(.Random.seed[1:6])
 
-        cvi <- tdmModCreateCVindex(dset,response.variables,opts,stratified=TRUE);
+        cvi <- tdmModCreateCVindex(dset,response.variables,opts,stratified=TRUE);    
         nfold = max(cvi);
 
+#print(cvi[1:20])
+#browser();
         #=============================================
         # PART 4: MODELING, EVALUATION, VISUALIZATION
         #=============================================
@@ -87,7 +92,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
             d_dis   <- bind_response(d_dis  , "IND.dset", which(cvi!=k & cvi==-1));
             #if (nrow(d_train)+nrow(d_test)+nrow(d_dis) != nrow(dset))
             #  stop("Something wrong, the union of d_train, d_test and d_dis does not cover dset");
-
+ 
             if (opts$PRE.PCA.npc>0 | opts$PRE.PCA!="none") {
               # a) do PCA on the numeric variables of d_train, if opts$PRE.PCA!="none"
               # b) add monomials of degree 2 for the first opts$PRE.PCA.npc numeric variables
@@ -190,6 +195,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
                                                   # NOT to print out the whole list (might be very long!!)
                                                   # but to call instead the function  print.TDMclassifier
                                                   # (which in turn calls tdmClassifySummary)
+   	if (exists("SAVESEED")) assign(".Random.seed", SAVESEED, envir=globalenv()); 		#load the saved RNG status
     result;
 } # tdmClassifyLoop
 
@@ -246,6 +252,7 @@ tdmClassifySummary <- function(result,opts,dset=NULL)
       result$y=-ytr;           # the score (to be minimized by SPOT) is "minus OOB score"
       result$sd.y=sd(result$R_train);
     } else {
+      cat1(opts,"\n");
       result$y=-y;             # the score (to be minimized by SPOT) is "minus test score"
       result$sd.y=sd(result$R_test);
     }

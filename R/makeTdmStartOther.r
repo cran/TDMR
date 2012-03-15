@@ -14,13 +14,13 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
   if (!is.environment(envT)) stop("envT must be an environment!");
   
   function(x,opts=NULL) {
-  	SAVESEED<-.Random.seed	#save the Random Number Generator RNG status
+  	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
     if (is.null(opts)) opts <- envT$spotConfig$opts;
     if (!is.null(tdm$constraintFnc)) x <- tdm$constraintFnc(x,tdm);
-    dset <- ifelse(is.null(dataObj),NULL, dsetTrnVa(dataObj));
+    dset <- NULL;
+    if(!is.null(dataObj)) dset<-dsetTrnVa(dataObj);
     # If dset is not NULL, this has an effect on tdm$mainCommand which contains "...,dset=dset".
-	# If dset is NULL, the reading of the data is deferred to main_TASK.
-
+    # If dset is NULL, the reading of the data is deferred to main_TASK.
   
     # put parameter vector x in a one-row data frame and attach param names from .roi file:
     des <- as.data.frame(t(x));
@@ -54,7 +54,7 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
 
       oldwd = getwd();                                             # save working dir
   		if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));    # optional change working dir 
-  		result = NULL; 
+  		result = NULL; 	
       eval(parse(text=tdm$mainCommand));                # execute the command given in text string tdm$mainCommand, which has to return result$y
       if (is.null(result$y)) stop("tdm$mainCommand did not return a list 'result' containing an element 'y'");
   		setwd(oldwd);                                                # restore working dir 
@@ -92,13 +92,14 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
       # a line to .bst file and plot it (the same way as in SPOT):
     	mergedData <- spotPrepareData(envT$spotConfig)
       envT$spotConfig <- spotWriteBest(mergedData, envT$spotConfig);	# appends the best solution to envT$spotConfig$alg.currentBest
+      envT$spotConfig$alg.currentResult <- res       # needed by spotPlotBst for column STEP
   		spotPlotBst(envT$spotConfig);  
   		envT$bst <- envT$spotConfig$alg.currentBest;  
   		#browser()
     }
     #print(mean(yres));
     
-   	assign(".Random.seed", SAVESEED, envir=globalenv()); 		#load the saved RNG status
+   	if (exists("SAVESEED")) assign(".Random.seed", SAVESEED, envir=globalenv()); 		#load the saved RNG status
     
     mean(yres);     # mean over all repeats
     

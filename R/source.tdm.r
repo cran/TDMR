@@ -97,13 +97,11 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
     source(createSourcePath("phase2/tdmDispatchTuner.r"))
     source(createSourcePath("phase2/tdmGetObj.r"))
     source(createSourcePath("phase2/tdmDefaultsFill.r"))
+    source(createSourcePath("phase2/tdmPlotResMeta.r"))
     source(createSourcePath("phase2/tdmSplitTestData.r"))
     source(createSourcePath("phase2/unbiasedRun.r"))
     source(createSourcePath("phase2/unbiasedBestRun_O.r"))
     
-    #source(paste(tdmPath,"source.tdm.1.r",sep="/")); source.tdm.1(tdmPath, tdmParallel);
-    #source(paste(tdmPath,"source.tdm.2.r",sep="/")); source.tdm.2(tdmPath, tdmParallel);
-    #source(paste(tdmPath,"sourceSPOT.R",sep="/")); sourceSPOT(theSpotPath);
   }
   else   # i.e. if (tdmParallel)
   {
@@ -114,7 +112,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
         sfLibrary("SPOT",character.only=TRUE);     # load SPOT from the installed library (package version)
     } else {
         oldwd=getwd(); setwd(theSpotPath);
-        for (f in dir())   sfSource(f);
+        for (f in dir()) sfSource(f);
         setwd(oldwd);
     }
     if (is.na(theRsfaPath)) {
@@ -147,6 +145,8 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
     sfSource(createSourcePath("phase2/tdmCompleteEval.r"))
     sfSource(createSourcePath("phase2/tdmDispatchTuner.r"))
     sfSource(createSourcePath("phase2/tdmGetObj.r"))
+    sfSource(createSourcePath("phase2/tdmDefaultsFill.r"))
+    sfSource(createSourcePath("phase2/tdmPlotResMeta.r"))
     sfSource(createSourcePath("phase2/tdmSplitTestData.r"))
     sfSource(createSourcePath("phase2/unbiasedRun.r"))
     sfSource(createSourcePath("phase2/unbiasedBestRun_O.r"))

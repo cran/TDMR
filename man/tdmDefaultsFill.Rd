@@ -22,6 +22,7 @@ If tdm$mainFunc is missing, but tdm$mainFile exists, then tdmDefaultsFill will s
 \item{theSpotPath}{[NA] use SPOT's package version}
 \item{parallelCPUs}{[1] 1: sequential, >1: parallel with snowFall and this many cpus}
 \item{startDir}{[getwd()]}
+\item{stratified}{[NULL] see \code{\link{tdmSplitTestData}}  }
 \item{test2.string}{["default cutoff"] }
 \item{optsVerbosity}{[0] the verbosity for the unbiased runs}
 \item{nrun}{[5] number of runs for unbiased runs}

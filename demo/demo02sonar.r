@@ -1,7 +1,7 @@
 require("TDMR");
 oldwd <- getwd();
 setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
-#   setwd(paste("../inst", "demo01sonar",sep="/"));
+#   setwd(paste("../inst", "demo02sonar",sep="/"));
 source("main_sonar.r");    # in working dir
 tdm <- list( mainFunction="main_sonar
             , umode=c("CV")           # ["CV" | "RSUB" | "TST"]

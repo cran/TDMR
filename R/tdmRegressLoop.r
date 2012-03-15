@@ -36,6 +36,7 @@
 #' @export
 ######################################################################################
 tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
+  	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
     if (is.null(opts$NRUN)) opts$NRUN=1;
     if (is.null(opts$GD.RESTART)) opts$GD.RESTART=TRUE;
 
@@ -145,6 +146,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
                                                   # NOT to print out the whole list (might be very long!!)
                                                   # but to call instead the function  print.TDMregressor
                                                   # (which in turn calls tdmRegressSummary)
+   	if (exists("SAVESEED")) assign(".Random.seed", SAVESEED, envir=globalenv()); 		#load the saved RNG status
     result;
 } # tdmRegressLoop
 

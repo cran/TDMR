@@ -1,9 +1,9 @@
 ######################################################################################
 # tdmStartSpot
 #
-#' Start a tuning evaluation of a DM task for \link{SPOT} tuner
+#' Function called by \code{\link{spot}} to evaluate a DM task during a \code{\link{SPOT}} tuning run.
 #'
-#' This function is called by \code{\link{spot}} for tuning evaluations. It accumulates in 
+#' This function is called by \code{\link{spot}} for evaluations during a tuning run. It accumulates in 
 #' \code{spotConfig$alg.currentResult} the RES data frame of all evaluations and in 
 #' \code{spotConfig$alg.currentBest} the BST data frame of the so far best solution.
 #'
@@ -13,7 +13,6 @@
 #' @param spotConfig    the list of configurations for \link{SPOT}. Besides the usual \link{SPOT} settings,
 #'    this list has to contain an element \code{tdm} with the mandatory elements \itemize{
 #'      \item tdm$mainFunc:     the function name of the DM task to execute (e.g. "main_sonar")
-#'      \item tdm$mainFile:     the R file of the DM task to source
 #'      \item tdm$mainCommand:  the R command to execute, usually \code{result <- <mainFunc>(opts,dset=dset)} where <mainFunc> is the string in tdm$mainFunc. 
 #'          (It is expected that \code{mainCommand} returns \code{result} and that the element 
 #'          \code{result$y} contains the quantity to be minimized by \link{SPOT}.)
@@ -29,7 +28,7 @@
 #' @export
 ######################################################################################
 tdmStartSpot <- function(spotConfig) {
-	SAVESEED<-.Random.seed	#save the Random Number Generator RNG status
+  	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
     if (!is.list(spotConfig)) stop("Error: spotConfig is not a list");
     if (is.null(spotConfig$opts)) stop("Error: spotConfig does not contain an element 'opts'");
     if (is.null(spotConfig$tdm)) stop("Error: spotConfig does not contain an element 'tdm'");
@@ -90,7 +89,7 @@ tdmStartSpot <- function(spotConfig) {
   			
   			oldwd = getwd(); 
         if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));    # save & change working dir 		         			
-    		result = NULL;     		
+    		result = NULL;     	
         eval(parse(text=tdm$mainCommand));                # execute the command given in string tdm$mainCommand
         if (is.null(result$y)) stop("tdm$mainCommand did not return a list 'result' containing an element 'y'");
   			setwd(oldwd);                                     # restore working dir 
@@ -107,7 +106,9 @@ tdmStartSpot <- function(spotConfig) {
                     );
 			  spotConfig$alg.currentResult=rbind(spotConfig$alg.currentResult,res);			
         # (alg.currentResult is initially set to NULL in spotTuner and lhdTuner, see tdmDispatchTuner.r)				
-        
+
+#fff <- function() {  browser() }; fff();  # this is just to halt here without the complete spotConfig printout (contains dataObj)
+
         if (tdm$fileMode) {                  
           resFileName <- spotConfig$io.resFileName;
     			colNames = ifelse(file.exists(resFileName),FALSE,TRUE);			
@@ -122,7 +123,7 @@ tdmStartSpot <- function(spotConfig) {
   			}
   		}	# for (r)			
   	}	# for (k)	
- 	assign(".Random.seed", SAVESEED, envir=globalenv()); 		#load the saved RNG status
+   	if (exists("SAVESEED")) assign(".Random.seed", SAVESEED, envir=globalenv()); 		#load the saved RNG status
   	return(spotConfig);            # new, *necessary* !!
 }
 

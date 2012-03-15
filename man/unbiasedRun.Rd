@@ -31,10 +31,11 @@ If \code{spotConfig$opts} (list with all parameter settings for the DM task) is 
 \item{finals}{[NULL] a one-row data frame to which new columns with final results are added}
 \item{umode}{[ "RSUB" (default) | "CV" | "TST" | "SP_T" ], how to divide in training and test data for the unbiased runs:
 \describe{
-\item{\code{"RSUB"}}{ random subsampling into 80\% training and 20\% test data}
+\item{\code{"RSUB"}}{ random subsampling into (1-tdm$tstFrac)\% training and tdm$tstFrac\% test data}
 \item{\code{"CV"}}{ cross validation (CV) with tdm$nrun folds}
 \item{\code{"TST"}}{ all data in opts$filename are used for training, all data in opts$filetest for testing}
-\item{\code{"SP_T"}}{ 'split_test': the data set is split by random subsampling into test and training data}
+\item{\code{"SP_T"}}{ 'split_test': prior to tuning, the data set was split by random subsampling into test and training-vali data. 
+Tuning was done on training-vali data, now we use column "tdmSplit" to select the test data for unbiased evaluation.}
 }}
 \item{withParams}{[FALSE] if =TRUE, add columns with best parameters to data frame finals
 (should be FALSE, if different runs have different parameters)}

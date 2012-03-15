@@ -53,7 +53,7 @@ tdmMapDesApply <- function(des,opts,k,envT,tdm) {
     }
     
     # check whether each parameter in des can be found in map or mapUser (thus whether it can be mapped to a variable in opts):
-    dn=setdiff(names(des[-1]),c("COUNT","CONFIG"));
+    dn=setdiff(names(des[-1]),c("COUNT","CONFIG","REPEATS","STEP","SEED","repeatsLastConfig"));
     for (d in dn) {
       if (length(which(envT$map$roiValue==d))+length(which(envT$mapUser$roiValue==d))==0)
         stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
@@ -115,7 +115,7 @@ makeTdmMapDesSpot <- function() {
       }
       
       # check whether each param column in des can be mapped to a variable in opts:
-      dn=setdiff(names(des[-1]),c("COUNT","CONFIG"));
+      dn=setdiff(names(des),c("COUNT","CONFIG","REPEATS","STEP","SEED","repeatsLastConfig"));
       for (d in dn) {
         if (length(which(map$roiValue==d))+length(which(mapUser$roiValue==d))==0)
           stop(sprintf("tdmMapDesSpot: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
@@ -253,8 +253,8 @@ tdmMapCutoff <- function(des,k,spotConfig) {
     # then the dependent parameter opts$CLS.cutoff[2] = 1-opts$CLS.cutoff[1] is set in tdmModAdjustCutoff
     #
   	if (!is.null(des$CUTOFF2)) {        # enforce parameter constraint if CUTOFF1,2,3,4 appears in .des-file:
-      hig=spotConfig$alg.roi["CUTOFF1","high"];
-      low=spotConfig$alg.roi["CUTOFF1","low"];    
+      hig=spotConfig$alg.roi["CUTOFF1","upper"];
+      low=spotConfig$alg.roi["CUTOFF1","lower"];    
       OLD.VER=F;	 # if OLD.VER==T: restore the previous version which had the low/high ROI constraint
 			             # violation bug (but gave better results on appAcid)	 
       constr=ifelse(OLD.VER,0,1);
