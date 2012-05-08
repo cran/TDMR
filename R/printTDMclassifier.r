@@ -1,29 +1,70 @@
 ######################################################################################
-# print.tdmClass
+# print.TDMclassifier  and print.tdmClass
 #
-#'   Print an overview for a \code{tdmClass} object.
+#'  Print an overview for a \code{\link{TDMclassifier}} or \code{tdmClass} object.
 #'
-#'   @method print tdmClass
-#'   @param x  return value from a prior call to \code{\link{tdmClassify}}, an object of class \code{tdmClass}.
+#'   @method print TDMclassifier
+#'   @param x  an object of class \code{tdmClass}, as returned from a prior call to \code{\link{tdmClassify}}, \cr
+#'          or  an object of class \code{\link{TDMclassifier}}, as returned from a prior call to \code{\link{tdmClassifyLoop}}.
 #'   @param ... e.g. 'type'    which information to print:
 #'      \describe{
-#'      \item{\code{"overview"}}{ (def.) relative gain on training/test set, number of records, see \code{\link{tdmClassifySummary}}}
+#'      \item{\code{"overview"}}{ (default) relative gain on training/test set, number of records, see \code{\link{tdmClassifySummary}}}
 #'      \item{\code{"cm.train"}}{ confusion matrix on train set}
 #'      \item{\code{"cm.test"}}{ confusion matrix on test set}
 #'      \item{\code{"?"}}{ help on this method}
 #'      }
 #'
-#' @seealso   \code{\link{tdmClassify}}, \code{\link{print.TDMclassifier}}
+#' @seealso   \code{\link{tdmClassify}}, \code{\link{TDMclassifier}}
 #' @author Wolfgang Konen, FHK, Oct'2011 - Dec'2011
 #' @export
+print.TDMclassifier <- function(x,...) {
+  internalPrintC <- function(result,type) {
+    opts = result$lastRes$opts;
+    opts$VERBOSE = 2;
+    z <- switch(type
+      , "overview"= {cat("Filename of task:",opts$filename);
+              tdmClassifySummary(result,opts);
+              cat("\nUse > print(result,type=\"?\") and > result$lastRes   for more info on TDMclassifier object result."); 
+              cat("\nUse > names(result) and > result[]   to see all names and all contents (may be long) of object result."); 
+              1;  # a value for z
+              }
+      , "cm.train"= show.cm.train(result)
+      , "cm.test"= show.cm.test(result)
+      , "?"={cat("Help for print(<TDMclassifier>,type=t). Possible values for 't' are:\n"
+               ,"\"overview\": [def.] see help(tdmClassifySummary)\n"
+               ,"\"cm.train\": confusion matrix on training data\n"
+               ,"\"cm.test\" : confusion matrix on test data\n"
+               ,"\"?\" : display this help message"
+               ,"\nThe commands > result or > print(result) invoke the default print(result,type=\"overview\") for TDMclassifier object result"
+               ); 1;}     # a value for z
+      , "invalid type"
+      );
+    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.test, ?.");
+    cat("\n");
+  }
+
+  vaarg <- list(...)
+  #alternatively:
+  # vavalues <- c(...)
+
+  if (is.null(vaarg$type)) vaarg$type="overview";
+  internalPrintC(x,vaarg$type);
+}
 ######################################################################################
+# print.tdmClass
+# Print an overview for a \code{tdmClass} object.
+#'
+#' @rdname print.TDMclassifier
+#' @method print tdmClass
+#' @export
 print.tdmClass <- function(x,...) {
   internalPrintC <- function(res,type) {
     opts = res$opts;
     opts$VERBOSE = 2;
     z <- switch(type
       , "overview"= {show.tdmClass(res);
-              cat("\nUse > print(res,type=\"?\") for more info on tdmClass object res.\n");
+              cat("\nUse > print(res,type=\"?\")   for more info on tdmClass object res.");
+              cat("\nUse > names(res) and > res[]   to see all names and all contents (may be long) of object res.\n"); 
               1;    # a value for z
               }
       , "cm.train"= show.cm.train(res)
@@ -50,60 +91,12 @@ show.tdmClass <- function(res) {
     opts = res$opts;
     cat("Model (for last response variable) of tdmClass object:")
     print(res$lastModel);
+    cat("\nConfusion matrix on validation set\n");
+    print(res$lastCmTest$mat);
     cat(sprintf("\nDatasets (# rows) of tdmClass object:\n  d_train (%d), d_test (%d), d_dis (%d)\n",
                       nrow(res$d_train),nrow(res$d_test),nrow(res$d_dis)));
 }
 
-
-######################################################################################
-# print.TDMclassifier
-#
-#'   Print an overview for a \code{TDMclassifier} object.
-#'
-#'   @method print TDMclassifier
-#'   @param x  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{TDMclassifier}.
-#'   @param ... e.g. 'type'    which information to print:
-#'      \describe{
-#'      \item{\code{"overview"}}{ (def.) relative gain on training/test set, number of records, see \code{\link{tdmClassifySummary}}}
-#'      \item{\code{"cm.train"}}{ confusion matrix on train set}
-#'      \item{\code{"cm.test"}}{ confusion matrix on test set}
-#'      \item{\code{"?"}}{ help on this method}
-#'      }
-#' @seealso   \code{\link{tdmClassifyLoop}}, \code{\link{print.tdmClass}}
-#' @export
-######################################################################################
-print.TDMclassifier <- function(x,...) {
-  internalPrintC <- function(result,type) {
-    opts = result$lastRes$opts;
-    opts$VERBOSE = 2;
-    z <- switch(type
-      , "overview"= {cat("Filename of task:",opts$filename);
-              tdmClassifySummary(result,opts);
-              cat("\nUse > print(result,type=\"?\") and > result$lastRes   for more info on TDMclassifier object result."); 
-              1;  # a value for z
-              }
-      , "cm.train"= show.cm.train(result)
-      , "cm.test"= show.cm.test(result)
-      , "?"={cat("Help for print(<TDMclassifier>,type=t). Possible values for 't' are:\n"
-               ,"\"overview\": [def.] see help(tdmClassifySummary)\n"
-               ,"\"cm.train\": confusion matrix on training data\n"
-               ,"\"cm.test\" : confusion matrix on test data\n"
-               ,"\"?\" : display this help message"
-               ,"\nThe commands > result or > print(result) invoke the default print(result,type=\"overview\") for TDMclassifier object result"
-               ); 1;}     # a value for z
-      , "invalid type"
-      );
-    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.test, ?.");
-    cat("\n");
-  }
-
-  vaarg <- list(...)
-  #alternatively:
-  # vavalues <- c(...)
-
-  if (is.null(vaarg$type)) vaarg$type="overview";
-  internalPrintC(x,vaarg$type);
-}
 
 # this helper fct works for both classes tdmClass and TDMClassifier in object result:
 show.cm.train <- function(result) {
@@ -139,7 +132,7 @@ show.cm.test <- function(result) {
     , "TDMclassifier"= {show.cm.test(result$lastRes); 1; }
     , "tdmClass"={
         # note that in here the object 'result' is of class ***tdmClass*** !
-        opts = result$opts;
+        opts = Opts(result);
         opts$VERBOSE = 2;
         cm.test <- result$lastCmTest;
         n.test <- nrow(result$d_test);

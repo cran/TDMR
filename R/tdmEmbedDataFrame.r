@@ -1,7 +1,7 @@
 ######################################################################################
-##' Embed columns in a data frame
+##' Embed columns in a data frame.
 ##'
-##' Embeds the columns named \code{cols} in the data frame \code{x} into a space of dimension ##' \code{dimension}.
+##' Embeds the columns named \code{cols} in the data frame \code{x} into a space of dimension \code{dimension}.
 ##'
 ##' @param x The data frame containing the columns to embed.
 ##' @param cols [NULL] A vector with a list of names of the columns to embed. If NULL, embed all columns of x.

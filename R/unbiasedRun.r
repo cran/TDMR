@@ -2,8 +2,9 @@
 # unbiasedRun
 #
 #'     Perform unbiased runs with best-solution parameters.
+#'
 #'     Read the best solution of a parameter-tuning run (either from envT$bst or from file), 
-#'     run with these best parameters the command \code{tdm$mainCommand} (usually a classification or 
+#'     execute with these best parameters the function \code{tdm$mainFunc} (usually a classification or 
 #'     regression machine learning task), to see 
 #'     whether the result quality is reproducible on independent test data or on independently trained models.
 #'
@@ -33,8 +34,8 @@
 #'                      (should be FALSE, if different runs have different parameters)
 #'   @param tdm         a list with TDM settings from which we use here the elements
 #'     \describe{
-#'     \item{mainCommand}{ the command to be called for unbiased evaluations}
-#'     \item{mainFile}{ change to the directory of mainFile before starting mainCommand}
+#'     \item{mainFunction}{ the function to be called for unbiased evaluations}
+#'     \item{mainFile}{ change to the directory of mainFile before starting mainFunc}
 #'     \item{nrun}{ [5] how often to call the unbiased evaluation}
 #'     \item{nfold}{ [10] how many folds in CV (only relevant for umode="CV") }
 #'     \item{tstFrac}{ [0.2] test set fraction (only relevant for umode="RSUB") }
@@ -43,24 +44,37 @@
 #'   @return \code{finals}     a one-row data frame with final results
 #'
 #' @note Side Effects:
-#'    The list \code{result} returned from \code{tdm$mainCommand} is written onto \code{envT$result}. \cr
+#'    The list \code{result} returned from \code{tdm$mainFunc} is written onto \code{envT$result}. \cr
 #'    If  \code{envT$spotConfig} is NULL, it is constructed from confFile. \cr
 #'    If \code{spotConfig$opts} (list with all parameter settings for the DM task) is NULL, we try to read it from  
 #'    \code{spotConfig$io.apdFileName}. This will issue a warning '... might not work in parallel mode', but is perfectly fine for non-parallel mode. 
 #'
 #' @examples
-#'    # Load the best results obtained in a prior tuning for the configuration "sonar_04.conf" with tuning method "spot".
-#'    # Run task main_sonar again with these best parameters, using umode="RSUB" and from tdmDefaultsFill 
-#'    # the default settings tdm$nrun=5, tdm$tstFrac=0.2.
+#'    ## Load the best results obtained in a prior tuning for the configuration "sonar_04.conf" with tuning method "spot".
+#'    ## The result envT from a prior run of tdmCompleteEval with this .conf is read from demo02sonar/demoSonar.RData.
+#'    ## Run task main_sonar again with these best parameters, using the default settings from tdmDefaultsFill 
+#'    ## umode="RSUB", tdm$nrun=5  and tdm$tstFrac=0.2.
 #'    oldwd <- getwd();          
-#'    # The best results are read from demo02sonar/spot/sonar_04.bst relative to the TDMR package directory.
+#'    ## The best results are read from demo02sonar/demoSonar.RData relative to the TDMR package directory.
 #'    setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
-#'    envT <- new.env();
-#'    tdm <- list(mainFile="main_sonar.r", mainFunction="main_sonar", tuneMethod="spot");
-#'    if (!is.null(tdm$mainFile)) source(tdm$mainFile);
-#'    finals <- unbiasedRun("sonar_04.conf",envT,tdm=tdm)
+#'    load("demoSonar.RData");
+#'    source("main_sonar.r");
+#'    finals <- unbiasedRun("sonar_04.conf",envT,tdm=envT$tdm);
 #'    print(finals);
 #'    setwd(oldwd);
+#'    
+#'    \dontrun{
+#'    ## If you do not have 'envT' but only a .bst file from a prior tuning run:
+#'    ## The best results are read from demo02sonar/spot/sonar_04.bst relative to the TDMR package directory.
+#'    ## (This example is not run automatically, because sonar_04.bst is not in the package distribution) 
+#'    setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+#'    envT <- new.env();
+#'    tdm <- list(mainFunction="main_sonar", tuneMethod="spot");
+#'    source("main_sonar.r");
+#'    finals <- unbiasedRun("sonar_04.conf",envT,tdm=tdm);
+#'    print(finals);
+#'    setwd(oldwd);
+#'    }
 #'
 #' @seealso   \code{\link{tdmCompleteEval}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Dec'2011
@@ -74,23 +88,28 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     if (is.null(envT$nExp)) envT$nExp <- 1;
     if (is.null(envT$map)) tdmMapDesLoad(envT,tdm); 
     if (is.null(envT$spotConfig$opts)) {
-      pdFile = envT$spotConfig$io.apdFileName;
-      warning(paste("List envT$spotConfig does not have the required variable 'opts'."
-                   ,"We try to construct it from",pdFile,"(might not work in parallel mode!)")); 
-      source(pdFile,local=TRUE);
-      opts=tdmOptsDefaultsFill(opts);
-      envT$spotConfig$opts <- opts;
+      if (is.null(envT$sCList[[1]]$opts)) {
+        pdFile = envT$spotConfig$io.apdFileName;
+        warning(paste("List envT$spotConfig does not have the required variable 'opts'."
+                     ,"We try to construct it from",pdFile,"(might not work in parallel mode!)")); 
+        source(pdFile,local=TRUE);
+        opts=tdmOptsDefaultsSet(opts);
+      } else {
+        opts <- envT$sCList[[1]]$opts;
+      }
+    } else {
+      opts <- envT$spotConfig$opts;
     }
+  	opts$ALG.SEED <- envT$spotConfig$alg.seed;
+  	
     envT$tdm <- tdm;    # just as information to the caller of this function
 
-    writeLines(paste("start unbiased run for command \"", tdm$mainCommand,"\" ...",sep=""), con=stderr());
+    writeLines(paste("start unbiased run for function \"", tdm$mainFunc,"\" ...",sep=""), con=stderr());
 # --- this is now in tdmCompleteEval.r (before optional parallel execution) ---
 #   pdFile = envT$spotConfig$io.apdFileName;
 #  	source(pdFile,local=TRUE)         # read problem design  (here: all elements of list opts)   
 #   if (!is.null(tdm$mainFile)) source(tdm$mainFile)
 
-    opts <- envT$spotConfig$opts;
-  	opts$ALG.SEED <- envT$spotConfig$alg.seed;
 	
   	if (opts$READ.INI) {
       tdm$tstCol=dataObj$TST.COL;  # needed for tdmMapOpts
@@ -102,7 +121,6 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     # (depending on switch tdm$umode, see tdmMapDesign.r)
   	opts <- tdmMapOpts(umode,opts,tdm);           # sets opts$NRUN = tdm$nrun
   	
-    
     bst <- tdmGetObj(envT$bst,envT$spotConfig$io.bstFileName,envT$theTuner,tdm);
     res <- tdmGetObj(envT$res,envT$spotConfig$io.resFileName,envT$theTuner,tdm);
 
@@ -123,9 +141,10 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
 		oldwd = getwd();                                               #
     if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));      # save & change working dir
 		result = NULL;         
-    eval(parse(text=tdm$mainCommand));                  # execute the command given in text string tdm$mainCommand
-    if (!exists("result")) stop("tdm$mainCommand did not return a list 'result'");
-    if (!is.list(result)) stop("tdm$mainCommand did not return a list 'result'");
+  	mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
+    eval(parse(text=mainCommand));                  # execute the command given in text string mainCommand
+    #if (!exists("result")) stop("tdm$mainFunc did not return a list 'result'");
+    if (!is.list(result)) stop("tdm$mainFunc did not return a list 'result'");
 		setwd(oldwd);                                                  # restore working dir
     envT$result <- result;
 

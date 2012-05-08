@@ -191,7 +191,9 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
 ######################################################################################
 # tdmModSortedRFimport:
 #
-#'       Sort the input variables decreasingly by their RF-importance.
+#'   Sort the input variables decreasingly by their RF-importance.
+#'
+#'       Build a Random Forest using \code{importance=TRUE}. Usually the RF is smaller (50 trees), to speed up computation.
 #'       Use na.roughfix for missing value replacement.
 #'       Decide which input variables to keep and return them in SRF$input.variables
 #'
@@ -233,7 +235,7 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
 ######################################################################################
 tdmModSortedRFimport <- function(d_train, response.variable, input.variables, opts)
 {
-    opts <- tdmOptsDefaultsFill(opts);
+    opts <- tdmOptsDefaultsSet(opts);
 
     ptm <- proc.time();
     filename <- opts$filename;
@@ -402,11 +404,11 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
 ######################################################################################
 # tdmModVote2Target
 #
-#'     Analyze how the vote fraction corresponds to reliability of prediction
-#'     (for RF-prediction in case of binary (0/1) classification)
+#'     Analyze how the vote fraction corresponds to reliability of prediction.
 #' 
 #' This function analyzes whether in different vote bins the trained RF makes
-#' predictions with different reliability. Expected result: The larger the fraction
+#' predictions with different reliability. Only for RF-prediction in case of 
+#' binary (0/1) classification. \cr\cr Expected result: The larger the fraction
 #' of trees voting for class 0 is, the smaller is the percentage of true class-1-
 #' cases in this vote bin.
 #' This function is somewhat specialized for the DMC2010-task.
@@ -448,7 +450,7 @@ tdmModVote2Target <- function(vote0,pred,target) {
 ######################################################################################
 # tdmModConfmat
 #
-#'     Calculate confusion matrix and gain. 
+#'     Calculate confusion matrix, gain and RGain measure. 
 #'
 #'  @param  d 		      data frame
 #'  @param  colreal     name of column in d which contains the real class
@@ -457,8 +459,12 @@ tdmModVote2Target <- function(vote0,pred,target) {
 #'     \item \code{gainmat}:   the gain matrix for each possible outcome, same size as \code{cm$mat} (see below). \cr
 #'               \code{gainmat[R1,P2]} is the gain associated with a record of real class R1 which we
 #'               predict as class P2. (gain matrix = - cost matrix)
-#'     \item \code{rgain.type}: one out of \{"rgain" | "meanCA" | "minCA" \} see below, affects output \code{cm$mat} and \code{cm$rgain}
+#'     \item \code{rgain.type}: one out of \{"rgain" | "meanCA" | "minCA" | "arROC" | "arLIFT" | "arPRE" \},
+#'               affects output \code{cm$mat} and \code{cm$rgain}, see below.
 #'    }
+#'  @param  predProb    if not NULL, a data frame with as many rows as data frame \code{d}, containing columns 
+#'               (index, true label, predicted label, prediction score). Is only needed for \code{opts$rgain.type=="ar*"}.
+#'
 #'  @return \code{cm}, a list containing: 
 #'     \item{mat}{ matrix with real class levels as rows, predicted class levels columns.  \cr
 #'               \code{mat[R1,P2]} is the number of records with real class R1
@@ -470,21 +476,30 @@ tdmModVote2Target <- function(vote0,pred,target) {
 #'     \item{cerr}{ class error rates, vector of size nlevels(colreal)+1.  \cr
 #'               \code{cerr[X]} is the misclassification rate for real class X. \cr
 #'               \code{cerr["Total"]} is the total classification error rate.}
-#'     \item{gain}{ the total gain (sum of pointwise product gainmat*cm$mat)}
+#'     \item{gain}{ the total gain (sum of pointwise product \code{opts$gainmat*cm$mat})  }
 #'     \item{gain.vector}{ gain.vector[X] is the gain attributed to real class label X.
 #'               gain.vector["Total"] is again the total gain.}
 #'     \item{gainmax}{    the maximum achievable gain, assuming perfect prediction}
-#'     \item{rgain}{      ratio gain/gainmax in percent, if opts$rgain.type=="rgain";  \cr
-#'               mean class accuracy percentage (i.e. mean(diag(mat)), if opts$rgain.type=="meanCA"; \cr
-#'               min class accuracy percentage (i.e. min(diag(mat)), if opts$rgain.type=="minCA";}
+#'     \item{rgain}{      ratio gain/gainmax in percent, if \code{opts$rgain.type=="rgain"};  \cr
+#'               mean class accuracy percentage (i.e. mean(diag(cm$mat)), if \code{opts$rgain.type=="meanCA"}; \cr
+#'               min class accuracy percentage (i.e. min(diag(cm$mat)), if \code{opts$rgain.type=="minCA"}; \cr
+#'               area under ROC curve (a number in [0,1]), if \code{opts$rgain.type=="arROC"}; \cr
+#'               area between lift curve and horizontal line 1.0, if \code{opts$rgain.type=="arLIFT"}; \cr
+#'               area under precision-recall curve (a number in [0,1]), if \code{opts$rgain.type=="arPRE"}; \cr
+#'               } 
 #' 
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch 
-#' @seealso  \code{\link{tdmClassify}}
+#' @seealso  \code{\link{tdmClassify}}    \code{\link{tdmROCRbase}}
 #' @export
 ######################################################################################
-tdmModConfmat <- function(d,colreal,colpred,opts)
+tdmModConfmat <- function(d,colreal,colpred,opts,predProb=NULL)
 {
     if (is.null(opts$rgain.type)) opts$rgain.type="rgain";
+    if (!(opts$rgain.type %in% c("rgain","meanCA","minCA","arROC","arLIFT","arPRE")))
+      stop(sprintf("Invalid option opts$rgain.type=\"%s\"\n  Allowed values are \"rgain\",\"meanCA\",\"minCA\",\"arROC\",\"arLIFT\",\"arPRE\"",opts$rgain.type));
+    AREA = opts$rgain.type %in% c("arROC","arLIFT","arPRE");
+    if (AREA & is.null(predProb))
+      stop(sprintf("Can not calculate the measure rgain for opts$rgain.type==%s, if argument predProb is NULL",opts$rgain.type));
 
     gainmat = opts$CLS.gainmat;
     col.real <- factor(d[,colreal],levels=colnames(gainmat));
@@ -542,6 +557,17 @@ tdmModConfmat <- function(d,colreal,colpred,opts)
       rgain=switch(opts$rgain.type
             , "meanCA" = mean(diag(cmat))
             , "minCA" = min(diag(cmat))
+            );
+    }
+    if (AREA) {
+      perf=switch(opts$rgain.type
+            , "arROC" = tdmROCR_calc(predProb,"tpr","fpr")
+            , "arLIFT" = tdmROCR_calc(predProb,"lift","rpp")
+            , "arPRE" = tdmROCR_calc(predProb,"prec","rec")
+            );
+      rgain=switch(opts$rgain.type
+            , "arROC" =, "arPRE" = tdmROCR_area(perf,"ROC")
+            , "arLIFT" = tdmROCR_area(perf,"lift")
             );
     }
 

@@ -1,0 +1,47 @@
+\name{tdmPrePCA.apply}
+\alias{tdmPrePCA.apply}
+\title{Apply PCA (Principal Component Analysis) to new data.}
+\usage{
+  tdmPrePCA.apply(dset, pcaList, opts, dtrain = NULL)
+}
+\arguments{
+  \item{dset}{the data frame with the new data}
+
+  \item{pcaList}{a value returned from a prior call to
+  \code{\link{tdmPrePCA.train}}}
+
+  \item{opts}{a list from which we need here the following
+  entries: \itemize{ \item PRE.knum: if >0 and if
+  PRE.PCA="kernel", take only a subset of PRE.knum records
+  from dset \item PRE.PCA.npc: if >0, then add for the
+  first PRE.PCA.npc PCs the monomials of degree 2 (see
+  tdmPreAddMonomials) \item PRE.PCA.numericV vector with
+  all column names in dset for which PCA is performed.
+  These columns may contain *numeric* values only.  }}
+
+  \item{dtrain}{[NULL] optional, only needed in case that
+  dset is a 0-row-data frame: then we 'borrow' the columns
+  from dtrain, the data set returned from
+  \code{\link{tdmPrePCA.train}} in \code{pca$dset}.}
+}
+\value{
+  \code{pca}, a list with entries: \item{dset}{ the input
+  data frame dset with columns numeric.variables replaced
+  by the PCs with names PC1, PC2, ... (in case
+  PRE.PCA=="linear") or with names KP1, KP2, ... (in case
+  PRE.PCA=="kernel") and optional with monomial columns
+  added, if PRE.PCA.npc>0 } \item{numeric.variables}{ the
+  new column names for PCs and for the monomials }
+}
+\description{
+  The PCA rotation is taken from \code{pcaList}, a value
+  returned from a prior call to
+  \code{\link{tdmPrePCA.train}}.
+}
+\author{
+  Wolfgang Konen, FHK, Mar'2011 - Jan'2012
+}
+\seealso{
+  \code{\link{tdmPrePCA.train}}
+}
+

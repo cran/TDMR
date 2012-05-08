@@ -12,10 +12,10 @@
 #'
 #' @param spotConfig    the list of configurations for \link{SPOT}. Besides the usual \link{SPOT} settings,
 #'    this list has to contain an element \code{tdm} with the mandatory elements \itemize{
-#'      \item tdm$mainFunc:     the function name of the DM task to execute (e.g. "main_sonar")
-#'      \item tdm$mainCommand:  the R command to execute, usually \code{result <- <mainFunc>(opts,dset=dset)} where <mainFunc> is the string in tdm$mainFunc. 
-#'          (It is expected that \code{mainCommand} returns \code{result} and that the element 
-#'          \code{result$y} contains the quantity to be minimized by \link{SPOT}.)
+#'      \item tdm$mainFunc:     the function name of the DM task to execute (e.g. "main_sonar") \cr
+#'          It is expected that \code{mainFunc} returns a list \code{result} with the element 
+#'          \code{result$y}, the quantity to be minimized by \link{SPOT} or other tuners.
+#       -- deprecated -- \item tdm$mainCommand:  the R command to execute, usually \code{result <- <mainFunc>(opts,dset=dset)} where <mainFunc> is the string in tdm$mainFunc. 
 #'      }
 #'    Optionally, \code{tdm} may define  \itemize{
 #'      \item tdm$mainFile:     e.g. "myDir/main_sonar.r", the R file of the DM task to source and \code{dirname(tdm$mainFile)} is the directory where tdm$mainFunc is executed.
@@ -34,21 +34,14 @@ tdmStartSpot <- function(spotConfig) {
     if (is.null(spotConfig$tdm)) stop("Error: spotConfig does not contain an element 'tdm'");
     if (is.null(spotConfig$tdm$fileMode)) spotConfig$tdm$fileMode <- TRUE;
         # This default setting is useful to allow a simpler TDM-Phase-2 call (with tdm$fileMode not def'd).
-        # However, tdm has to specify the mandatory setting: either tdm$mainFunc or  tdm$mainFile + tdm$mainCommand
+        # However, tdm has to specify the mandatory setting tdm$mainFunc (optionally: tdm$mainFile)
     tdm <- spotConfig$tdm;
     opts <- spotConfig$opts;
     dset <- switch(as.character(is.null(spotConfig$dataObj)),"TRUE"=NULL,"FALSE"=dsetTrnVa(spotConfig$dataObj));    
-    # If dset is not NULL, this has an effect on tdm$mainCommand which contains "...,dset=dset".
+    # If dset is not NULL, this has an effect on mainCommand which contains "...,dset=dset".
     # If dset is NULL, the data reading is deferred to main_TASK.
 
   	writeLines("tdmStartSpot run...", con=stderr());   
-# --- this is now for phase 3 in tdmCompleteEval.r (or for phase 2 in appropriate phase2-script) ---
-#   pdFile <- spotConfig$io.apdFileName;
-#  	print(pdFile);
-#  	## read default problem design  (here: set default values for all elements of list opts)
-#  	source(pdFile);                  # contains *no longer* the definition of tdm$mainFile & tdm$mainCommand
-#
-#   if (!is.null(tdm$mainFile")  source(tdm$mainFile);          
 
   	## read doe/dace etc settings:
   	if (spotConfig$spot.fileMode) {
@@ -90,8 +83,9 @@ tdmStartSpot <- function(spotConfig) {
   			oldwd = getwd(); 
         if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));    # save & change working dir 		         			
     		result = NULL;     	
-        eval(parse(text=tdm$mainCommand));                # execute the command given in string tdm$mainCommand
-        if (is.null(result$y)) stop("tdm$mainCommand did not return a list 'result' containing an element 'y'");
+    		mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
+        eval(parse(text=mainCommand));                # execute the command given in string mainCommand
+        if (is.null(result$y)) stop("tdm$mainFunc did not return a list 'result' containing an element 'y'");
   			setwd(oldwd);                                     # restore working dir 
 
         # append a line with results to result data frame spotConfig$alg.currentResult:

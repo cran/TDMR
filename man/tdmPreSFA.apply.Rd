@@ -1,0 +1,50 @@
+\name{tdmPreSFA.apply}
+\alias{tdmPreSFA.apply}
+\title{Apply SFA (Slow Feature Analysis) to new data.}
+\usage{
+  tdmPreSFA.apply(dset, sfaList, opts, dtrain = NULL)
+}
+\arguments{
+  \item{dset}{the data frame with the new data}
+
+  \item{sfaList}{a value returned from a prior call to
+  \code{\link{tdmPreSFA.train}}}
+
+  \item{opts}{a list from which we need here the following
+  entries: \itemize{ \item PRE.SFA.REPLACE: [T] =T: replace
+  the original numerical columns with the SFA columns; =F:
+  add the SFA columns \item PRE.SFA.npc: if >0, then add
+  for the first PRE.SFA.npc PCs the monomials of degree 2
+  (see tdmPreAddMonomials) \item PRE.SFA.ODIM: [5] number
+  of SFA output dimensions (slowest signals) to return
+  \item PRE.SFA.numericV vector with all column names in
+  dset for which SFA is performed.  These columns may
+  contain *numeric* values only.  }}
+
+  \item{dtrain}{[NULL] optional, only needed in case that
+  dset is a 0-row-data frame: then we 'borrow' the columns
+  from dtrain, the data set returned from
+  \code{\link{tdmPreSFA.train}} in \code{sfa$dset}.}
+}
+\value{
+  \code{sfa}, a list with entries: \item{dset}{ the input
+  data frame dset with columns numeric.variables replaced
+  by the PCs with names PC1, PC2, ... (in case
+  PRE.SFA=="linear") or with names KP1, KP2, ... (in case
+  PRE.SFA=="kernel") and optional with monomial columns
+  added, if PRE.SFA.npc>0 } \item{numeric.variables}{ the
+  new column names for PCs and for the monomials }
+}
+\description{
+  The SFA projection is taken from \code{sfaList}, a value
+  returned from a prior call to
+  \code{\link{tdmPreSFA.train}}.
+}
+\author{
+  Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 -
+  Feb'2012
+}
+\seealso{
+  \code{\link{tdmPreSFA.train}}
+}
+

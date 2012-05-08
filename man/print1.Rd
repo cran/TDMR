@@ -1,12 +1,23 @@
 \name{print1}
 \alias{print1}
-\title{Print objects using print if opts$VERBOSE>=1.}
-\usage{print1(opts, ...)
+\title{Print objects using \code{print} if \code{opts$VERBOSE>=1}.}
+\usage{
+  print1(opts, ...)
 }
-\description{Print objects using \code{print} if \code{opts$VERBOSE>=1}.}
-\value{None}
-\seealso{\code{\link{print}}}
-\arguments{\item{opts}{from which we need the element VERBOSE}
-\item{...}{objects}
+\arguments{
+  \item{opts}{from which we need the element VERBOSE}
+
+  \item{...}{objects}
 }
+\value{
+  None
+}
+\description{
+  Print objects using \code{print} if
+  \code{opts$VERBOSE>=1}.
+}
+\seealso{
+  \code{\link{print}}
+}
+\keyword{internal}
 

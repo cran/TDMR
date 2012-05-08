@@ -1,4 +1,4 @@
-tdm <- list(tdmPath= "../../../tdm" # NULL  #  source R-files for TDMR from this dir. If NULL, load instead the library TDMR 
+tdm <- list(tdmPath= "../../../TDMR" # NULL  #  source R-files for TDMR from this dir. If NULL, load instead the library TDMR 
             , unbiasedFunc="unbiasedRun"
             , umode=c("CV")     # ,"RSUB"
             , mainFile="main_sonar.r"

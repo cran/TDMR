@@ -9,7 +9,8 @@
 #'   When opts$READ.TST==T, the following things happen in \code{\link{tdmReadData}}: 
 #'   Data are read from opts$filename and from opts$filetest. Both data sets are bound together, with a new 
 #'   column opts$TST.COL having '0' for the data from opts$filename and having '1' for the data from opts$filetest.
-#'   The option using opts$TST.COL is invoked with umode="TST" in \code{\link{unbiasedRun}} or with opts$TST.kind="col".
+#'   The branch using opts$TST.COL is invoked either with umode="TST" in \code{\link{unbiasedRun}} or with 
+#'   opts$TST.kind="col" in \code{\link{tdmModCreateCVindex}}.
 #'
 #' @param opts  list of options, we need here
 #'  \itemize{
@@ -19,7 +20,7 @@
 #'    \item \code{READ.CMD}:   ["read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW)"] 
 #'                             string with a file-read-command with placeholder 'filename' 
 #'    \item \code{READ.TST}:   if =T: read also test data from \code{filetest} 
-#'    \item \code{TST.COL}:    create a column named TST.COL in \code{dset} which has 0 for training and 1 for test data 
+#'    \item \code{TST.COL}:    string, create a column with the name of this string in \code{dset}, which has 0 for training and 1 for test data 
 #'    \item \code{READ.NROW}:  [-1] read only that many rows from opts$filename. -1 for 'read all rows'.
 #'  }
 #' @return \code{dset},  a data frame with all data read
@@ -28,22 +29,30 @@
 tdmReadData <- function(opts) {
     if (is.null(opts$READ.CMD))
         opts$READ.CMD = "read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW)";   # includes header=T, sep="," and dec="."
-    filename <- opts$filename;
+    if (is.null(opts$filesuffix))
+        stop("Cannot continue with opts$filesuffix==NULL. Please use 'opts=tdmOptsDefaultsSet()' to construct opts correctly.");
     suffix = opts$filesuffix;
+    filename <- opts$filename;
     
     if (opts$READ.TXT) {
       cat1(opts,filename,": Read data from",filename,"...\n")
       cmd <- paste("dset <-",opts$READ.CMD);
       eval(parse(text=paste("dset <-",opts$READ.CMD)));
       #dset <- read.csv2(file=paste(opts$dir.txt, filename, sep=""), dec=".", sep=";", nrow=opts$READ.NROW,header=T)
-      save(dset, file=paste(opts$dir.data,sub(suffix,".Rdata",opts$filename),sep=""))
+      filenameRdata =  sub(suffix,".Rdata",filename);
+      if (filenameRdata==filename)        # this should normally not happen. Just for safety, to avoid overwriting of filename
+          stop(sprintf("filenameRdata=%s has to differ from filename=%s. Please check opts$filesuffix.",filenameRdata,filename)); 
+      save(dset, file=paste(opts$dir.data,filenameRdata,sep=""))
       if (opts$READ.TST) {
         cat1(opts,filename,": Read test data from",opts$filetest, "...\n");
         filename=opts$filetest;
         cmd <- paste("tset <-",opts$READ.CMD);
         eval(parse(text=paste("tset <-",opts$READ.CMD)));
         #tset <- read.csv2(file=paste(opts$dir.txt, opts$filetest, sep=""), dec=".", sep=";",header=T)  # read the test data
-        save(tset, file=paste(opts$dir.data,sub(suffix,".Rdata",opts$filetest),sep=""))
+        filenameRdata =  sub(suffix,".Rdata",opts$filetest);
+        if (filenameRdata==filename)      # this should normally not happen. Just for safety, to avoid overwriting of opts$filetest
+            stop(sprintf("filenameRdata=%s has to differ from filetest=%s. Please check opts$filesuffix.",filenameRdata,opts$filetest)); 
+        save(tset, file=paste(opts$dir.data,filenameRdata,sep=""))
       }
     } else {
       cat1(opts,filename,": Load data from .Rdata ...\n")

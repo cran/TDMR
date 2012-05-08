@@ -1,29 +1,58 @@
 \name{tdmOptsDefaultsFill}
 \alias{tdmOptsDefaultsFill}
-\title{Fill the current opts.}
-\usage{tdmOptsDefaultsFill(opts, suffix)
+\title{Fill the current \code{opts}.}
+\usage{
+  tdmOptsDefaultsFill(opts)
 }
-\description{Fill the current \code{opts}. Fill the current \code{opts} with further default 
-parameters if they are not yet defined. The defaults may depend on previously 
-defined elements of \code{opts} (e.g. \code{opts$filename}).}
-\value{\code{opts},  the extended options, where additional elements, if they are not yet def'd,  are set as: 
-\item{filesuffix}{the suffix of \code{opts$filename}, e.g. \code{".csv"} } 
-\item{TST.COL}{["TST.COL"] } 
-\item{PDFFILE}{["*_pic.pdf"] file for multipage graphics in case \code{opts$GD.DEVICE}="pdf" } 
-\item{GD.PNGDIR}{["PNG*"] directory for .png files in case \code{opts$GD.DEVICE}="png" } 
-\item{LOGFILE}{["*.log"] where to log the output } 
-\item{EVALFILE}{["*_eval.csv"] file with evaluation results allEVAL } 
-\item{SRF.samp}{sample size for SRF, derived from \code{RF.samp} } 
-\item{SRF.cutoff}{[CLS.cutoff] } 
-\item{rgain.string}{ one out of c("RGain","MeanCA","MinCA","RMAE","RMSE"), depending on \code{opts$rgain.type} }
-
-Here * is the stripped part of \code{opts$filename} (w/o suffix).
-
-All files and directories in the above settings are relative to dir  \code{opts$dir.output}.}
-\seealso{\code{\link{tdmOptsDefaultsSet}}}
-\author{Wolfgang Konen, FHK, Mar'2011 - Dec'2011}
-\arguments{\item{opts}{the options}
-\item{suffix}{the suffix of \code{opts$filename}. If NULL, take opts$filesuffix (which, if also NULL, is  
-inferred from opts$filename)}
+\arguments{
+  \item{opts}{the options}
 }
+\value{
+  \code{opts}, the extended options, where additional
+  elements, if they are not yet def'd, are set as:
+  \item{filesuffix}{the suffix of \code{opts$filename},
+  e.g. \code{".csv"} } \item{TST.COL}{["TST.COL"] }
+  \item{PDFFILE}{["*_pic.pdf"] file for multipage graphics
+  in case \code{opts$GD.DEVICE}="pdf" }
+  \item{GD.PNGDIR}{["PNG*"] directory for .png files in
+  case \code{opts$GD.DEVICE}="png" }
+  \item{LOGFILE}{["*.log"] where to log the output }
+  \item{EVALFILE}{["*_eval.csv"] file with evaluation
+  results allEVAL } \item{SRF.samp}{sample size for SRF,
+  derived from \code{RF.samp} }
+  \item{SRF.cutoff}{[CLS.cutoff] } \item{rgain.string}{ one
+  out of c("RGain","MeanCA","MinCA","RMAE","RMSE"),
+  depending on \code{opts$rgain.type} }
+
+  Here * is the stripped part of \code{opts$filename} (w/o
+  suffix).
+
+  All files and directories in the above settings are
+  relative to dir \code{opts$dir.output}.
+}
+\description{
+  This function is deprecated, use tdmOptsDefaultsSet(opts)
+  instead. \cr Fill the current \code{opts} with further
+  default parameters if they are not yet defined. The
+  defaults may depend on previously defined elements of
+  \code{opts} (e.g. \code{opts$filename}).
+}
+\details{
+  What is the difference between
+  \code{\link{tdmOptsDefaultsSet}} and
+  \code{\link{tdmOptsDefaultsFill}}?
+  \code{tdmOptsDefaultsSet} is for all parameters that do
+  NOT depend on previously def'd elements of \code{opts}.
+  \code{tdmOptsDefaultsFill} is used to fill in further
+  \code{opts} elements, if not yet defined, depending on
+  previous settings (e. g. opts$LOGFILE is derived from
+  opts$filename).
+}
+\author{
+  Wolfgang Konen, FHK, Mar'2011 - May'2012
+}
+\seealso{
+  \code{\link{tdmOptsDefaultsSet}}
+}
+\keyword{internal}
 

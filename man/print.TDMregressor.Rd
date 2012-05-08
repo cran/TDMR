@@ -1,0 +1,30 @@
+\name{print.TDMregressor}
+\alias{print.tdmRegre}
+\alias{print.TDMregressor}
+\title{Print an overview for a \code{\link{TDMregressor}} or \code{tdmRegre} object.}
+\usage{
+  \method{print}{TDMregressor} (x, ...)
+
+  \method{print}{tdmRegre} (x, ...)
+}
+\arguments{
+  \item{x}{an object of class \code{tdmRegre}, as returned
+  from a prior call to \code{\link{tdmRegress}}, \cr or an
+  object of class \code{\link{TDMregressor}}, as returned
+  from a prior call to \code{\link{tdmRegressLoop}}.}
+
+  \item{...}{e.g. 'type' which information to print:
+  \describe{ \item{\code{"overview"}}{ (def.) RMAE on
+  training/test set, number of records, see
+  \code{\link{tdmRegressSummary}}} \item{\code{"..."}}{ ...
+  other choices, TODO ...} \item{\code{"?"}}{ help on this
+  method} }}
+}
+\description{
+  Print an overview for a \code{\link{TDMregressor}} or
+  \code{tdmRegre} object.
+}
+\seealso{
+  \code{\link{tdmRegress}}, \code{\link{TDMregressor}}
+}
+

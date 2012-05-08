@@ -1,7 +1,11 @@
 ######################################################################################
 # tdmRegress
 #
-#'       Core regression function of TDMR. It is called by \code{\link{tdmRegressLoop}}.
+#'       Core regression function of TDMR. 
+#'
+#'  tdmRegress is called by \code{\link{tdmRegressLoop}} and returns an object of class \code{tdmRegre}. \cr
+#'  It trains a model on training set \code{d_train} and evaluates it on test set \code{d_test}.
+#'  If this function is used for tuning, the test set \code{d_test} plays the role of a validation set.
 #'
 #'   @param d_train     training set
 #'   @param d_test      test set, same columns as training set
@@ -22,8 +26,8 @@
 #'                   =any value: set the random number seed to this value (+i) to get reproducible random
 #'                   numbers. In this way, the model training part (RF, NNET, ...) gets always a fixed seed.
 #'                   (see also TST.SEED in tdmRegressLoop) }
-#'     \item{\code{OUTTRAFO}}{ string, apply a transformation to the output variable}
-#'     \item{\code{fct.postproc}}{ user-def'd function for postprocessing of predicted output  }
+#'     \item{\code{OUTTRAFO}}{ [NULL] string, apply a transformation to the output variable}
+#'     \item{\code{fct.postproc}}{ [NULL] name of a user-def'd function for postprocessing of predicted output  }
 #'     \item{\code{gr.log}}{ =FALSE (def): make scatter plot as-is, 
 #'                           =TRUE: transform output x with log(x+1) (x should be nonnegative) }
 #'     \item{\code{GRAPHDEV}}{ if !="non", then make a pairs-plot of the 5 most important variables
@@ -31,8 +35,7 @@
 #'     \item{\code{VERBOSE}}{ [2] =2: most printed output, =1: less, =0: no output }
 #'     }
 #'         
-#'   @return  a list \code{res} with results, containing
-#---     \describe{
+#'   @return  \code{res}, an object of class \code{tdmRegre}, this is a list containing
 #'       \item{\code{d_train}}{ training set + predicted class column(s) }
 #'       \item{\code{d_test}}{ test set + predicted target output }
 #'       \item{\code{rmse}}{ root mean square error (on test + train set) + Theil's U (on test + train set) }
@@ -45,8 +48,8 @@
 #'
 #'    The item \code{lastModel} is 
 #'    specific for the *last* model (the one built for the last response variable in the last run and last fold) 
-
 #'
+#' @seealso  \code{\link{print.tdmRegre}} \code{\link{tdmRegressLoop}} \code{\link{tdmClassifyLoop}}
 #' @author Wolfgang Konen, FHK, Sep'2009 - Oct'2011
 #'
 #' @export
@@ -73,16 +76,18 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
     for (response.variable in response.variables) {    
         input.variables <- input.variables_0;
         
-        if (opts$OUTTRAFO=="log") {
-            cat1(opts,filename,": Applying log-transform to response.variable ...\n")
-            d_train[,response.variable] <- log(d_train[,response.variable]+1)
-            d_test[,response.variable] <- log(d_test[,response.variable]+1)
-        }
-        if (opts$OUTTRAFO=="mean.shift") {
-            cat1(opts,filename,": Applying mean.shift-transform to response.variable ...\n")
-            response.mean = mean(d_train[,response.variable])
-            d_train[,response.variable] <- d_train[,response.variable]-response.mean
-            d_test[,response.variable] <- d_test[,response.variable]-response.mean
+        if (!is.null(opts$OUTTRAFO)) {
+          if (opts$OUTTRAFO=="log") {
+              cat1(opts,filename,": Applying log-transform to response.variable ...\n")
+              d_train[,response.variable] <- log(d_train[,response.variable]+1)
+              d_test[,response.variable] <- log(d_test[,response.variable]+1)
+          }
+          if (opts$OUTTRAFO=="mean.shift") {
+              cat1(opts,filename,": Applying mean.shift-transform to response.variable ...\n")
+              response.mean = mean(d_train[,response.variable])
+              d_train[,response.variable] <- d_train[,response.variable]-response.mean
+              d_test[,response.variable] <- d_test[,response.variable]-response.mean
+          }
         }
         #=============================================
         # PART 4.1: SUMMARY OF DATA
@@ -243,24 +248,26 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         #=============================================
         # PART 4.5: POSTPROCESSING
         #=============================================
-        if (opts$OUTTRAFO=="log") {        
-            cat1(opts,filename,": Inverting log-transform to response.variable ...\n")
-            d_train[,response.variable] <- exp(d_train[,response.variable])-1
-            d_test[,response.variable] <- exp(d_test[,response.variable])-1
-            train.predict <- exp(train.predict)-1
-            test.predict <- exp(test.predict)-1
-        }
-        if (opts$OUTTRAFO=="mean.shift") {        
-            cat1(opts,filename,": Inverting mean.shift-transform to response.variable ...\n")
-            d_train[,response.variable] <- d_train[,response.variable]+response.mean
-            d_test[,response.variable] <- d_test[,response.variable]+response.mean
-            train.predict <- train.predict+response.mean
-            test.predict <- test.predict+response.mean
+        if (!is.null(opts$OUTTRAFO)) {
+          if (opts$OUTTRAFO=="log") {        
+              cat1(opts,filename,": Inverting log-transform to response.variable ...\n")
+              d_train[,response.variable] <- exp(d_train[,response.variable])-1
+              d_test[,response.variable] <- exp(d_test[,response.variable])-1
+              train.predict <- exp(train.predict)-1
+              test.predict <- exp(test.predict)-1
+          }
+          if (opts$OUTTRAFO=="mean.shift") {        
+              cat1(opts,filename,": Inverting mean.shift-transform to response.variable ...\n")
+              d_train[,response.variable] <- d_train[,response.variable]+response.mean
+              d_test[,response.variable] <- d_test[,response.variable]+response.mean
+              train.predict <- train.predict+response.mean
+              test.predict <- test.predict+response.mean
+          }
         }
       	if (!is.null(opts$fct.postproc)) {
       		cat1(opts,filename,": User-defined postprocessing: Applying opts$fct.postproc ...\n")
-      		train.predict <- opts$fct.postproc(train.predict,opts)
-      		test.predict <- opts$fct.postproc(test.predict,opts)
+      		train.predict <- eval(parse(text=paste(opts$fct.postproc,"(train.predict,opts)",sep="")));
+      		test.predict <- eval(parse(text=paste(opts$fct.postproc,"(test.predict,opts)",sep="")));
       	}
         # bind the predicted class pred_... as last column to the data frames
         name.of.prediction <- paste("pred_", response.variable, sep="")

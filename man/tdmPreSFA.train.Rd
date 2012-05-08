@@ -1,0 +1,56 @@
+\name{tdmPreSFA.train}
+\alias{tdmPreSFA.train}
+\title{SFA (Slow Feature Analysis) for numeric columns in a data frame.}
+\usage{
+  tdmPreSFA.train(dset, response.var, opts)
+}
+\arguments{
+  \item{dset}{the data frame with training (and test)
+  data.}
+
+  \item{response.var}{the response variable for
+  classification.}
+
+  \item{opts}{a list from which we need here the following
+  entries: \itemize{ \item PRE.SFA: [ "linear" | "2nd" |
+  "none" ] which stands for [ 1st | 2nd degree monomial SFA
+  | no SFA ] \item PRE.SFA.REPLACE: [T] =T: replace the
+  original numerical columns with the SFA columns; =F: add
+  the SFA columns \item PRE.SFA.npc: if >0, then add for
+  the first PRE.SFA.npc PCs the monomials of degree 2 (see
+  tdmPreAddMonomials) \item PRE.SFA.PPRANGE: [11] number of
+  inputs after preprocessing, they enter into expansion
+  \item PRE.SFA.ODIM: [5] number of SFA output dimensions
+  (slowest signals) to return \item PRE.SFA.numericV vector
+  with all column names in dset which are input for SFA.
+  These columns may contain *numeric* values only.  }}
+}
+\value{
+  \code{sfa}, a list with entries: \item{dset}{ the input
+  data frame dset with columns numeric.variables replaced
+  or extended (depending on \code{opts$PRE.SFA.REPLACE}) by
+  the SFA components with names SF1, SF2, ...  and with
+  optional monomial columns added, if PRE.SFA.npc>0 }
+  \item{numeric.variables}{ the new numeric column names of
+  \code{dset}, i.e. SFA components, monomials (and
+  optionally PRE.SFA.numericV, if
+  \code{opts$PRE.SFA.REPLACE==F}) } \item{sfaList}{ a list
+  with the items \code{opts (sfaOpts)}, matrices DSF and SF
+  and many others, as returned from \code{\link{sfaStep}} }
+}
+\description{
+  tdmPreSFA.train uses package \link{rSFA}. It is assumed
+  that classification for the variable contained in column
+  \code{response.var} is done. SFA seeks features in an
+  expanded function space for which the intra-class
+  variation w.r.t.  \code{response.var} is as low as
+  possible.
+}
+\author{
+  Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 -
+  Feb'2012
+}
+\seealso{
+  \code{\link{tdmPreSFA.apply}}
+}
+

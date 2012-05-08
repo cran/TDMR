@@ -1,12 +1,14 @@
 # tdmMapDesLoad
 #
-#'    Load the mapping files. Load the map files \code{"tdmMapDesign.csv"} and optionally 
-#'    also \code{"userMapDesign.csv"} and store them in \code{envT$map} and \code{envT$mapUser},
-#'    resp. These maps are used by \code{\link{tdmMapDesApply}}.
+#'    Load the mapping files. 
 #'
+#'    Load the map files \code{"tdmMapDesign.csv"} and optionally 
+#'    also \code{"userMapDesign.csv"} and store them in \code{envT$map} and \code{envT$mapUser},
+#'    resp. These maps are used by \code{\link{tdmMapDesApply}}.   \cr
 #'    \code{"tdmMapDesign.csv"} is searched in the TDMR library path \code{.find.package("TDMR")}.
 #'    (For the developer version: \code{<tdm$tdmPath>/inst}). \cr
 #'    \code{"userMapDesign.csv"} is searched in the path \code{dirname(tdm$mainFile)} (or in the current dir, if tdm$mainFile==NULL).
+#'
 #' @param envT  environment
 #' @param tdm   list, needed for \code{tdm$tdmPath} 
 #' @seealso  \code{\link{tdmMapDesApply}}
@@ -28,6 +30,7 @@ tdmMapDesLoad <- function(envT,tdm=list()) {
 # tdmMapDesApply
 #
 #'    Apply the mapping from \code{des} to \code{opts}.     
+#'
 #'    For each variable which appears in .roi (and thus in .des file and design point data frame \code{des}): 
 #'    set its counterpart in list \code{opts} to the values of the \code{k}-th row in \code{des}.
 #'    For each variable not appearing: leave its counterpart in \code{opts} at its default value from .apd file.
@@ -112,7 +115,7 @@ makeTdmMapDesSpot <- function() {
       	cmd = paste("if(!is.null(des$",map$roiValue[n],")) ",map$optsValue[n],"=cRound(n,map,des$",map$roiValue[n],"[k])",sep="");
       	eval(parse(text=cmd));
       	opts;
-      }
+      }         #
       
       # check whether each param column in des can be mapped to a variable in opts:
       dn=setdiff(names(des),c("COUNT","CONFIG","REPEATS","STEP","SEED","repeatsLastConfig"));
@@ -139,7 +142,13 @@ makeTdmMapDesSpot <- function() {
 ######################################################################################
 # tdmMapDesSpot:
 #'   Helper fct for \code{\link{tdmStartSpot}}.
+#'
 #'   Map the parameters from \code{des} to \code{opts} for the \code{k}th line of \code{des}.
+#'   The object tdmMapDesSpot has two function elements: \cr
+#'      \code{load(tdm)}   \cr
+#'      \code{apply(des,opts,k,tdm)}
+#' @keywords internal
+#' @export
 #
 tdmMapDesSpot <- makeTdmMapDesSpot();
 

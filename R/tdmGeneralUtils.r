@@ -6,9 +6,9 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.2.0\cr
-#' Date: \tab 10.02.2012\cr
-#' License: \tab GPL (>= 3)\cr
+#' Version: \tab 0.3.0\cr
+#' Date: \tab 08.05.2012\cr
+#' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
 #' }
 #'
@@ -16,7 +16,7 @@
 #' 1) A variety of tuners, with special emphasis on \link{SPOT} (another well-known R package for parameter tuning), but also CMA-ES and other tuning algorithms. \cr
 #' 2) Tuning of preprocessing (feature generation) parameters and model building parameters simultaneously.  \cr
 #' 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr
-#' 4) Easy parallelization of those experiments with the help of R package \link{snowfall}.
+#' 4) Easy parallelization of those experiments with the help of R package \code{\link{snowfall}}.
 #' 
 #' The main entry point functions are \code{\link{tdmClassifyLoop}}, \code{\link{tdmRegressLoop}} and \code{\link{tdmCompleteEval}}. 
 #' See \code{\link{tdmOptsDefaultsSet}} and \code{\link{tdmDefaultsFill}} for an overview of adjustable TDMR-parameters.
@@ -25,7 +25,7 @@
 #' @aliases TDMR
 #' @docType package
 #' @title Tuned Data Mining in R
-#' @author Wolfgang Konen, Patrick Koch
+#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
 #' @references \url{http://gociop.de/research-projects/tuned-data-mining/}
 #' @keywords package tuning data mining machine learning
 #End of Package Description
@@ -43,13 +43,16 @@ NA #NULL, ends description without hiding first function
 ######################################################################################
 
 ######################################################################################
-#' Bind a column to a data frame. Bind the column with name \code{response.predict} and 
+#' Bind a column to a data frame. 
+#'
+#' Bind the column with name \code{response.predict} and 
 #' contents \code{vec} as last column to data frame \code{d}
 #' @param d data frame
 #' @param response.predict name of new column 
 #' @param vec the contents for the last column bound to data frame \code{d}
 #' @return data frame \code{d} with column added
 #' @export
+#' @keywords internal
 ######################################################################################
 bind_response <- function(d,response.predict,vec)
 {
@@ -87,6 +90,7 @@ bind_response_OLD <- function(d,response.predict,vec)
 #' @return None
 #' @seealso   \code{\link{cat}}
 #' @export
+#' @keywords internal
 cat1 <- function(opts, ...) {  if (opts$VERBOSE>=1) cat(...); }
 ######################################################################################
 #' Output objects to \code{cat} if \code{opts$VERBOSE>=2}.
@@ -96,7 +100,9 @@ cat1 <- function(opts, ...) {  if (opts$VERBOSE>=1) cat(...); }
 #' @return None
 #' @seealso   \code{\link{cat}}
 #' @export
+#' @keywords internal
 cat2 <- function(opts, ...) {  if (opts$VERBOSE>=2) cat(...); }
+
 ######################################################################################
 #' Print objects using \code{print} if \code{opts$VERBOSE>=1}.
 #'
@@ -105,7 +111,9 @@ cat2 <- function(opts, ...) {  if (opts$VERBOSE>=2) cat(...); }
 #' @return None
 #' @seealso   \code{\link{print}}
 #' @export
+#' @keywords internal
 print1 <- function(opts, ...) {  if (opts$VERBOSE>=1) print(...); }
+
 ######################################################################################
 #' Print objects using \code{print} if \code{opts$VERBOSE>=2}.
 #'
@@ -114,6 +122,7 @@ print1 <- function(opts, ...) {  if (opts$VERBOSE>=1) print(...); }
 #' @return None
 #' @seealso   \code{\link{print}}
 #' @export
+#' @keywords internal
 print2 <- function(opts, ...) {  if (opts$VERBOSE>=2) print(...); }
 
 
@@ -155,9 +164,40 @@ SRF <- function(result) {
   result$lastRes$SRF;
 }
 
+######################################################################################
+#' Return the list 'opts'.
+#'
+#' Returns the list \code{opts} from objects of class \code{\link{TDMclassifier}}, 
+#'                  \code{\link{TDMregressor}}, \code{\link[=tdmClassify]{tdmClass}} or \code{\link[=tdmRegress]{tdmRegre}}.
+#'   @param x  an object of class \code{\link{TDMclassifier}}, \code{\link[=tdmClassify]{tdmClass}}, 
+#'                                \code{\link{TDMregressor}} or \code{\link[=tdmRegress]{tdmRegre}}.
+#'   @param ... -- currently not used -- 
+#' @export
 Opts <- function(x, ...)  UseMethod("Opts");
 
-Opts.default <- function(x, ...)  cat("This is Opts.default\n");
-
+######################################################################################
+#' @rdname Opts
+#' @method Opts TDMclassifier
+#' @export
+# @keywords internal
 Opts.TDMclassifier  <- function(x, ...) x$lastRes$opts;
+#' @rdname Opts
+#' @method Opts TDMregressor
+#' @export
+# @keywords internal
 Opts.TDMregressor  <- function(x, ...) x$lastRes$opts;
+#' @rdname Opts
+#' @method Opts tdmClass
+#' @export
+# @keywords internal
+Opts.tdmClass <- function(x,...) x$opts;
+#' @rdname Opts
+#' @method Opts tdmRegre
+#' @export
+# @keywords internal
+Opts.tdmRegre <- function(x,...) x$opts;
+#' @rdname Opts
+#' @method Opts default
+#' @export
+# @keywords internal
+Opts.default <- function(x, ...)  cat("This is Opts.default\n");

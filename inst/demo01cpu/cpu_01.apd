@@ -15,10 +15,7 @@
       opts$MOD.method="RF";       # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in theClassifyLoop
       opts$RF.ntree = 50
       opts$RF.samp = 1000
-      opts$fct.postproc <- function(x,opts) { 
-        x[x<0] <- 0; 		# clip all negative predictions to value 0	
-        x;
-      }
+      opts$fct.postproc <- "cpu.postproc"
       opts$rgain.type = "rmae"# ["rmae" (default) |"rmse" ] for regression (tdmRegress). Here the goal is to minimize result$R_*.
 
       opts$gr.log=TRUE        # if =T: log(x+1)-transform for graphics "true vs. predicted"   

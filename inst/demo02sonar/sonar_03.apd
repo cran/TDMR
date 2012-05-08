@@ -1,7 +1,17 @@
-# 
-      source("sonar_01.apd", local=T)
-      
-      opts$MOD.method="MC.RF";    # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in theClassifyLoop
 
-      opts$VERBOSE=2;      
+      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
+                                      # for the list of those elements and many explanatory comments                                                                                                         
+      opts$filename = "sonar.txt"
+      opts$READ.CMD = "read.csv2(file=paste(opts$dir.txt, filename, sep=\"\"), dec=\".\", sep=\",\", nrow=opts$READ.NROW,header=F)"
+      opts$data.title <- "Sonar Data"
+      opts$RF.mtry = 4
+      opts$TST.SEED = 124;
+      opts$MOD.SEED = 124;
+      opts$NRUN =  1          # how many runs with different train & test samples  - or - 
+                              # how many CV-runs, if TST.kind="cv"
+      opts$GD.DEVICE="non"    # ["pdf"|"win"|"non"]: all graphics to 
+                              # [one multi-page PDF | (several) windows (X11) | dev.null]
+      opts$GD.RESTART=F;       
+      opts$VERBOSE=0;      
       opts$SRF.verbose = opts$VERBOSE; #
+

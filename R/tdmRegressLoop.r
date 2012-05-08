@@ -1,10 +1,12 @@
 ######################################################################################
 # tdmRegressLoop
 #
-#'    Core regression double loop of TDMR. It contains a doublee loop (opts$NRUN and CV-folds)
-#'    and calls \code{\link{tdmRegress}}. It is called  by all R-functions main_*
+#'    Core regression double loop of TDMR returning a \code{\link{TDMregressor}} object. 
 #'
-#' INPUT
+#'    tdmRegressLoop contains a double loop (opts$NRUN and CV-folds)
+#'    and calls \code{\link{tdmRegress}}. It is called  by all R-functions main_*. \cr
+#'    It returns an object of class \code{\link{TDMregressor}}.
+#'
 #'   @param dset    the data frame for which cvi is needed
 #'   @param response.variables   name of column which carries the target variable - or -
 #'                   vector of names specifying multiple target columns
@@ -21,7 +23,7 @@
 #'       \item{\code{GRAPHDEV}}{ ["non"| other ]}
 #'     }
 #'
-#'   @return \code{result},  an object of class TDMregressor, this is a list with results, containing
+#'   @return \code{result},  an object of class \code{\link{TDMregressor}}, this is a list with results, containing
 #     \describe{
 #'       \item{opts}{ the res$opts from \code{\link{tdmRegress}}}
 #'       \item{lastRes}{ last run, last fold: result from \code{\link{tdmRegress}}}
@@ -33,6 +35,8 @@
 #'
 #' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmClassifyLoop}}, \code{\link{tdmClassify}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
+#' @aliases TDMregressor 
+#' @example demo/demo01cpu.r
 #' @export
 ######################################################################################
 tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {

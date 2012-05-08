@@ -2,6 +2,7 @@
 # unbiasedBestRun_O:
 #
 #'     Perform unbiased runs with best-solution parameters (optimization).
+#'
 #'     Read the best solution of a optimization tuner run (either from envT$bst or from file), 
 #'     perform a re-run  with these best parameters, to see whether the result quality is reproducible on 
 #'     independent test data or on independently trained models.
@@ -26,14 +27,15 @@
 #'                      (should be FALSE, if different runs have different parameters)
 #'   @param tdm         a list with TDM settings from which we need here the elements
 #'     \describe{
-#'     \item{mainCommand}{ the command to be called for unbiased evaluations}
-#'     \item{mainFile}{ change to the directory of mainFile before starting mainCommand}
+#'     \item{mainFunc}{ the function to be called for unbiased evaluations}
+#'     \item{mainFile}{ change to the directory of mainFile before starting mainFunc}
 #'     \item{nrun}{ how often to call the unbiased evaluation}
 #'     }
 #'   @return finals     a one-row data frame with final results
 #'
 #' @author Wolfgang Konen, FHK, Sep'2010 - May'2011
 #' @export
+#' @keywords internal
 #
 ######################################################################################
 unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F,tdm=tdm){
@@ -47,12 +49,12 @@ unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F
       warning(paste("List envT$spotConfig does not have the required variable 'opts'."
                    ,"We try to construct it from",pdFile,"(might not work in parallel mode!)")); 
       source(pdFile,local=TRUE);
-      opts=tdmOptsDefaultsFill(opts);
+      opts=tdmOptsDefaultsSet(opts);
       envT$spotConfig$opts <- opts;
     }
     envT$tdm <- tdm;    # just as information to the caller of this function
  	
-    writeLines(paste("start unbiased run for",basename(tdm$mainCommand),"..."), con=stderr());
+    writeLines(paste("start unbiased run for",basename(tdm$mainFunc),"..."), con=stderr());
 # --- this is now in tdmCompleteEval.r (before parallel execution branch) ---
 #   pdFile = envT$spotConfig$io.apdFileName;
 #  	source(pdFile,local=T)            # read problem design  (here: all elements of list opts)   
@@ -98,6 +100,7 @@ unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F
     # (This makes of course only sense, if the optimization outcome is not deterministic, but 
     # contains some stochastic component)  
     if (tdm$nrun>0) {
+		  mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
       if (!is.null(tdm$fileProps)) {
     		# write fileProps (from bst):
     		paramNames = setdiff(names(bst),c("Y","COUNT","CONFIG"));
@@ -106,15 +109,15 @@ unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F
                     , quote=F, sep="=", dec=".", row.names=T, col.names=F);
   			write.table(t(opts), file=paste(tdmMainDir,tdm$fileProps,sep="/")
                     , quote=F, sep="=", dec=".", row.names=T, col.names=F, append=T)
-        tdm$mainCommand <- sub("fileProps",tdm$fileProps,tdm$mainCommand);
+        mainCommand <- sub("fileProps",tdm$fileProps,mainCommand);
       }
       # solve problem anew, tdm$nrun times:                  
   		y_u = NULL;
   		for (n in 1:tdm$nrun) {
     		oldwd = getwd(); 
         if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));    # save & change working dir
-  			#print(tdm$mainCommand); 			
-  			sres <- system(tdm$mainCommand, intern= TRUE);
+  			#print(mainCommand); 			
+  			sres <- system(mainCommand, intern= TRUE);
     		print(sres);
     		setwd(oldwd);                                                # restore working dir
     		y_u = c(y_u,as.numeric(sres[length(sres)]));      # the last element of sres is the value to be minimized

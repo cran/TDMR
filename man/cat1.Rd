@@ -1,12 +1,22 @@
 \name{cat1}
 \alias{cat1}
-\title{Output objects to cat if opts$VERBOSE>=1.}
-\usage{cat1(opts, ...)
+\title{Output objects to \code{cat} if \code{opts$VERBOSE>=1}.}
+\usage{
+  cat1(opts, ...)
 }
-\description{Output objects to \code{cat} if \code{opts$VERBOSE>=1}.}
-\value{None}
-\seealso{\code{\link{cat}}}
-\arguments{\item{opts}{from which we need the element VERBOSE}
-\item{...}{objects}
+\arguments{
+  \item{opts}{from which we need the element VERBOSE}
+
+  \item{...}{objects}
 }
+\value{
+  None
+}
+\description{
+  Output objects to \code{cat} if \code{opts$VERBOSE>=1}.
+}
+\seealso{
+  \code{\link{cat}}
+}
+\keyword{internal}
 

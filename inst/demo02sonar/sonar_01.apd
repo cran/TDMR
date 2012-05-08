@@ -1,4 +1,4 @@
-#--- this does not work any longer, mainFile & mainCommand are now def'd in script_all.R ---
+#--- this does not work any longer, mainFile & mainFunc are now def'd in script_all.R ---
 #      if (is.na(match("tdm",ls()))) tdm <- list(); 
 #      tdm$mainFile <- "../../ClassifyTemplate/main_sonar.r";
 #      tdm$mainCommand <- "result <- main_sonar(opts)";

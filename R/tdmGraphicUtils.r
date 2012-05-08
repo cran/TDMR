@@ -65,7 +65,9 @@ tdmGraphicInit <- function(opts,...) {
     );
 }
 #
-#' Initialize a new window. Initialize a new window ("win")/ a new file ("png") for current graphic device.
+#' Initialize a new window. 
+#' 
+#' Initialize a new window ("win") / a new file ("png") for current graphic device.
 #'
 #' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
 #' @param ...   optional arguments to hand over to \code{\link{png}} or \code{windows} or \code{X11} in 
@@ -92,6 +94,19 @@ tdmGraphicNewWin <- function(opts,...) {
     # when plotting anything on this device. 
     # Therefore we now use windows(...) on all Windows platforms, X11(...) for other OS (e.g. Unix, Linux).
     # Or, simpler, we use dev.new(...), which works allways
+}
+#
+#
+#
+tdmGraphicToTop <- function(opts,...) {
+  if (is.null(opts$GD.DEVICE)) opts$GD.DEVICE="win";
+  switch (opts$GD.DEVICE
+    , "pdf" = {}
+    , "png" = {}
+    , "win" = {bringToTop();}
+    , "non" = {}
+    , "invalid switch"
+    );
 }
 #
 #' Close active file ("png").

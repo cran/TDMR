@@ -1,8 +1,11 @@
 ######################################################################################
 # tdmClassifyLoop:
 #
-#'    Core classification double loop of TDMR. It contains a doublee loop (opts$NRUN and CV-folds)
-#'    and calls \code{\link{tdmClassify}}. It is called  by all R-functions main_*.
+#'    Core classification double loop of TDMR returning a \code{\link{TDMclassifier}} object. 
+#'    
+#'    tdmClassifyLoop contains a double loop (opts$NRUN and CV-folds)
+#'    and calls \code{\link{tdmClassify}}. It is called  by all R-functions main_*. \cr
+#'    It returns an object of class \code{\link{TDMclassifier}}.
 #'
 #'
 #'   @param dset    the data frame for which cvi is needed
@@ -21,8 +24,7 @@
 #'       \item{\code{GD.DEVICE}}{ ["non"|"win"|"pdf"|"png"]}
 #'     }
 #'
-#'   @return \code{result},  an object of class TDMclassifier, this is a list with results, containing
-#'       \item{opts}{ the res$opts from \code{\link{tdmClassify}}}
+#'   @return \code{result},  an object of class \code{\link{TDMclassifier}}, this is a list with results, containing
 #'       \item{lastRes}{ last run, last fold: result from \code{\link{tdmClassify}}}
 #'       \item{C_train}{ classification error on training set}
 #'       \item{G_train}{ gain on training set}
@@ -36,7 +38,9 @@
 #'    In the case of cross validation, for each performance measure an additional averaging over all folds is done.
 #'
 #' @seealso   \code{\link{print.TDMclassifier}}, \code{\link{tdmClassify}}, \code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}
-#' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
+#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Sep'2010 - Apr'2012
+#' @aliases TDMclassifier 
+#' @example demo/demo00sonar.r
 #' @export
 ######################################################################################
 tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
@@ -50,6 +54,9 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
     if (opts$READ.TST==TRUE & opts$TST.kind!="col")
       warning(sprintf("Are you sure you want opts$READ.TST=TRUE, but opts$TST.kind!='col'? Actual value is opts$TST.kind='%s'.",opts$TST.kind));
 
+    predProbList=list();
+    #predProbList=list();
+    
     for (i in 1:opts$NRUN) {
         opts$i = i;
 
@@ -80,6 +87,8 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
         # PART 4: MODELING, EVALUATION, VISUALIZATION
         #=============================================
         allerr = NULL;
+        predProb=list();
+        
         for (k in 1:nfold) {
             opts$k=k;
             opts$the.nfold = nfold;
@@ -114,6 +123,11 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
 
             res <- tdmClassify(d_train,d_test,d_dis,response.variables,input.variables,opts)
 
+            # predProb$Val: bind the different folds of CV (cross validation) together. If no CV, then nfold=1 ->> only results from one vali set.
+            predProb$Val = rbind(predProb$Val,res$predProb$Val);
+            # predProb$Trn: take only the results from the first fold
+            if (k==1) predProb$Trn = res$predProb$Trn;
+            
             allerr = rbind(allerr,as.data.frame(list(cerr.trn=mean(res$allEVAL$cerr.trn)
                                                     ,gain.trn=mean(res$allEVAL$gain.trn)
                                                     ,rgain.trn=mean(res$allEVAL$rgain.trn)
@@ -135,8 +149,12 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
 #                                                    ,gain.tst2=res$sumEVAL$gain.tst2
 #                                                    ,rgain.tst2=res$sumEVAL$rgain.tst2
 #                                                    )));
-        }  # for (k)
+        }  # for (k in 1:nfold)
+
         Err = colSums(allerr)/nfold     # assumes that each fold has the same (or nearly the same) size
+        predProbList[[i]] <- list()
+        predProbList[[i]]$Val <- predProb$Val;
+        predProbList[[i]]$Trn <- predProb$Trn;
 
         cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV",""),"Relative gain on training set   ",Err["rgain.trn"],"%\n")
         cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV",""),"Relative gain on     test set   ",Err["rgain.tst"],"%\n\n")
@@ -159,7 +177,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
           # execute the graphics command given in text string opts$gr.fctcall
           eval(parse(text=opts$gr.fctcall));
         }
-    } # for (i)
+    } # for (i in 1:opts$NRUN)
 
     #write.table(d_test, file=paste(opts$dir.output, sub(".csv", "", filename), "_predictions.csv", sep=""), quote=FALSE, sep=";", dec=".", row.names=FALSE, col.names=TRUE)
 
@@ -187,6 +205,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
                 	, C_test2 = C_test2
                 	, G_test2 = G_test2
                 	, R_test2 = R_test2
+                	, predProbList = predProbList
                 	);
     if (!is.null(opts$TST.COL))         # needed when result is input for coTraining  (see ssl_methods.r)
       if (opts$TST.COL %in% names(dset))  result$TST = dset[,opts$TST.COL]

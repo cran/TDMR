@@ -1,8 +1,11 @@
 ######################################################################################
 #tdmOptsDefaultsSet:
 #
-#'   Default values for list \code{opts}. Set up and return a list \code{opts} with default settings. 
+#'   Default values for list \code{opts}.  
 #' 
+#'   Set up and return a list \code{opts} with default settings. The list \code{opts} 
+#'   contains all DM-related settings which are needed by main_<TASK>.     
+#'   \cr\cr
 #'   For better readability, the elements of  \code{opts} are arranged in groups:
 #'     \tabular{ll}{
 #'      \code{dir.*} \tab  path-related settings  \cr
@@ -17,12 +20,11 @@
 #'      \code{GD.*} \tab  settings for the graphic devices  \cr
 #'     }
 #'
-#'   What is the difference between \code{\link{tdmOptsDefaultsSet}} and \code{\link{tdmOptsDefaultsFill}}? 
-#'   \code{tdmOptsDefaultsSet} is for all parameters that do NOT depend on previously def'd elements of \code{opts}.
-#'   \code{tdmOptsDefaultsFill} is used to fill in further \code{opts} elements, if not yet defined, depending on 
-#'   previous settings (e. g. opts$LOGFILE is derived from opts$filename).
+#'   The path-related settings are relative to \code{dir(tdm$mainFile)}, if it is def'd, else relative to the current dir. \cr
+#'   Finally, the function \code{\link{tdmOptsDefaultsFill}(opts)} is called to fill in further details, depending on the current 
+#'   settings of \code{opts}.
 #'
-#'   The path-related settings are relative to \code{dir(tdm$mainFile)}, if it is def'd, else relative to the current dir.
+#' @param opts    (optional) the options already set
 #'
 #' @return a list \code{opts}, with defaults set for all options relevant for a DM task, 
 #'    containing the following elements
@@ -42,7 +44,7 @@
 #' 			\item{READ.INI}{[TRUE] read the task data initially, i.e. prior to tuning, using \code{\link{tdmReadData}} .  
 #'                      If =FALSE, the data are read anew in each pass through main_TASK, i.e. in each tuning step (deprecated). } 
 #' 			\item{TST.kind}{["rand"] one of the choices from \{"cv","rand","col"\}, see \code{\link{tdmModCreateCVindex}} for details  } 
-#' 			\item{TST.COL}{[NULL] name of column with train/test/disregard-flag or NULL} 
+#' 			\item{TST.COL}{["TST.COL"] name of column with train/test/disregard-flag} 
 #' 			\item{TST.NFOLD}{[3] number of CV-folds (only for TST.kind=="cv")} 
 #' 			\item{TST.valiFrac}{[0.1] set this fraction of data aside for validation (only for TST.kind=="rand")} 
 #' 			\item{TST.testFrac}{[0.1] set prior to tuning this fraction of data aside for testing (if tdm$umode=="SP_T" and opts$READ.INI==TRUE)
@@ -77,6 +79,7 @@
 #'      \item{SRF.verbose}{ [2] }
 #'      \item{SRF.maxS}{    [40] how many variables to show in plot }
 #'      \item{SRF.minlsi}{  [1] a lower bound for the length of SRF$input.variables  }
+#'      \item{SRF.method}{ ["RFimp"] }
 #' 			\item{MOD.SEED}{[NULL] a seed for the random model initialization (if model is non-deterministic). If NULL, use \code{\link{tdmRandomSeed}}. } 
 #' 			\item{MOD.method}{["RF" (default) |"MC.RF" |"SVM" |"NB" ]: use [RF | MetaCost-RF | SVM | Naive Bayes ] in \code{\link{tdmClassify}}  \cr
 #'                      ["RF" (default) |"SVM" |"LM" ]: use [RF | SVM | linear model ] in \code{\link{tdmRegress}}  } 
@@ -84,11 +87,12 @@
 #' 			\item{RF.samp}{[1000] } 
 #' 			\item{RF.mtry}{[NULL] } 
 #' 			\item{RF.nodesize}{[1] } 
-#' 			\item{RF.OOB}{[T] if =T, return OOB-training set error as tuning measure; if =F, return validation set error } 
-#' 			\item{SVM.gamma}{[0.005] } 
-#' 			\item{SVM.epsilon}{[0.005] needed only for regression} 
+#' 			\item{RF.OOB}{[TRUE] if =T, return OOB-training set error as tuning measure; if =F, return validation set error } 
+#' 			\item{RF.p.all}{[FALSE]  } 
 #' 			\item{SVM.cost}{[1.0] } 
 #' 			\item{SVM.C}{[1] needed only for regression} 
+#' 			\item{SVM.epsilon}{[0.005] needed only for regression} 
+#' 			\item{SVM.gamma}{[0.005] } 
 #' 			\item{SVM.tolerance}{[0.008] } 
 #'      \item{CLS.cutoff}{ [NULL] vote fractions for the n.class classes. The class i with maximum ratio (% votes)/RF.cutoff[i] wins. 
 #'                      If NULL, then each class gets the cutoff 1/n.class (i.e. majority vote wins).   }
@@ -97,15 +101,17 @@
 #'                      (the higher, the more costly is a misclassification of that real class). NULL for no weights.  }
 #'      \item{CLS.gainmat}{ [NULL]  if [NULL], opts$CLS.gainmat will be set to unit matrix in \code{\link{tdmClassify}}   }
 #' 			\item{rgain.type}{["rgain" (default) |"meanCA" |"minCA" ] in case of \code{\link{tdmClassify}}: For classification, the measure 
-#'                      returned from \code{\link{tdmClassifyLoop}} in \code{result$R_*} is
-#'                      [relative gain (i.e. gain/gainmax) | mean class accuracy | minimum class accuracy ]. The goal is to maximize  \code{Rgain}. \cr
+#'                      \code{Rgain} returned from \code{\link{tdmClassifyLoop}} in \code{result$R_*} is
+#'                      [relative gain (i.e. gain/gainmax) | mean class accuracy | minimum class accuracy ]. 
+#'                      The goal is to maximize  \code{Rgain}. \cr 
+#'                      For binary classification there are the additional measures [ "arROC" | "arLIFT" | "arPRE" ], see 
+#'                      \code{\link{tdmModConfmat}}. \cr
 #'                      For regression, the goal is to minimize \code{result$R_*} returned from \code{\link{tdmRegress}}. In this case, possible values are 
 #'                      \code{rgain.type} = ["rmae" (default) |"rmse" ] which stands for [ relative mean absolute error | root mean squared error ].  } 
 #' 			\item{ncopies}{[0] if >0, activate \code{\link{tdmParaBootstrap}} in \code{\link{tdmClassify}}  } 
-#' 			\item{DO.POSTPROC}{[F] =T: call the user-defined postprocessing fct opts$fct.postproc after model building and its application to the test set.} 
-#'      \item{fct.postproc}{[NULL] a function with signature \code{(pred, dframe, opts)} where \code{pred} is the prediction of the model on the 
+#'      \item{fct.postproc}{[NULL] name of a function with signature \code{(pred, dframe, opts)} where \code{pred} is the prediction of the model on the 
 #'                      data frame \code{dframe} and \code{opts} is this list. This function may do some postprocessing on \code{pred}  and
-#'                      it returns a (potentially modified) \code{pred}. This function will be called in \code{\link{tdmClassify}} if \code{DO.POSTPROC=T}.  }
+#'                      it returns a (potentially modified) \code{pred}. This function will be called in \code{\link{tdmClassify}} if it is not \code{NULL}.  }
 #' 			\item{GD.DEVICE}{["win"] ="win": all graphics to (several) windows (\code{windows} or \code{X11} in package \code{grDevices}) \cr
 #'                      ="pdf": all graphics to one multi-page PDF \cr
 #'                      ="png": all graphics in separate PNG files in \code{opts$GD.PNGDIR} \cr
@@ -117,6 +123,7 @@
 #' 			\item{GD.CLOSE}{[T] =T: close graphics device "png", "pdf" at the end of main_*.r (suitable for main_*.r solo) or \cr
 #'                      =F: do not close (suitable for call from tdmStartSpot, where all windows should remain open)  } 
 #' 			\item{NRUN}{[2] how many runs with different train & test samples  - or - how many CV-runs, if \code{opts$TST.kind}="cv"  } 
+#' 			\item{APPLY_TIME}{[FALSE]   } 
 #' 			\item{VERBOSE}{[2] =2: print much output, =1: less, =0: none} 
 #'
 #' @note  The variables opts$PRE.PCA.numericV and opts$PRE.SFA.numericV (string vectors of numeric input columns to be used for PCA or SFA) 
@@ -125,11 +132,12 @@
 #'      If PCA is done, its output \code{pca$numeric.variables} will overwrite \code{opts$PRE.SFA.numericV} (because the numeric variables 
 #'      after PCA become the input for SFA).
 #'
-#' @seealso  \code{\link{tdmOptsDefaultsFill}}
-#' @author Wolfgang Konen, FHK, Mar'2011 - Feb'2012
+#' @seealso  \code{\link{tdmOptsDefaultsFill}} \code{\link{tdmDefaultsFill}}
+#' @author Wolfgang Konen, FHK, Mar'2011 - Apr'2012
 #' @export
 ######################################################################################
-tdmOptsDefaultsSet <- function() {
+tdmOptsDefaultsSet <- function(opts=NULL) {
+  if (is.null(opts)) {
       opts = list()
 
       directory <- "./"  #""
@@ -148,7 +156,7 @@ tdmOptsDefaultsSet <- function() {
       opts$READ.CMD = "read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW)";   # includes header=T, sep="," and dec="."
       opts$READ.INI = TRUE;   # read in the task data initially, i.e. prior to tuning
       opts$TST.kind <- "rand" # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$TST.COL <- NULL;   # column with train/test/disregard-flag or NULL
+      opts$TST.COL ="TST.COL";# column with train/test/disregard-flag
       opts$TST.NFOLD =  3     # number of CV-folds (only for TST.kind=="cv")
       opts$TST.valiFrac = 0.10    # set this fraction of data aside for validation (only for TST.kind=="rand")
       opts$TST.testFrac = 0.10    # set prior to tuning this fraction of data aside for testing (if tdm$umode=="SP_T" and opts$READ.INI==TRUE)
@@ -190,10 +198,10 @@ tdmOptsDefaultsSet <- function() {
       opts$RF.nodesize = 1
       opts$RF.OOB = TRUE;     # if =T, return OOB-training set error as tuning measure; if =F, return test set error
       opts$RF.p.all=FALSE;
-      opts$SVM.gamma=0.005;
-      opts$SVM.epsilon=0.005;     # needed only for regression
       opts$SVM.cost=1.0;
-      opts$SVM.C=1;                 # needed only for regression
+      opts$SVM.C=1;           # needed only for regression
+      opts$SVM.epsilon=0.005; # needed only for regression
+      opts$SVM.gamma=0.005;
       opts$SVM.tolerance=0.008;   
       opts$CLS.cutoff = NULL  # [NULL] vote fractions for the n.class classes. The class i with
                               # maximum ratio (% votes)/RF.cutoff[i] wins. If NULL, then each
@@ -208,7 +216,7 @@ tdmOptsDefaultsSet <- function() {
                               # ["rmae" (default) |"rmse" ] for regression (tdmRegress). Here the goal is to minimize result$R_*.
       opts$ncopies = 0;       # if >0, activate tdmParaBootstrap in tdmClassify                       
 
-      opts$DO.POSTPROC = FALSE;
+      opts$DO.POSTPROC = FALSE; # --- deprecated, use opts$fct.postproc=NULL ---
       opts$fct.postproc=NULL;
       opts$DO.GRAPHICS=T      # --- deprecated, use opts$GD.DEVICE="non" ---
       opts$GD.DEVICE="win"    # ="pdf": all graphics to one multi-page PDF
@@ -229,20 +237,29 @@ tdmOptsDefaultsSet <- function() {
       opts$APPLY_TIME=FALSE;                              
       opts$test2.string <- "default cutoff";
       opts$VERBOSE=2;
-
-      opts;
+  }
+  
+  tdmOptsDefaultsFill(opts);
 }
 
 ######################################################################################
 # tdmOptsDefaultsFill:
 #
-#'   Fill the current \code{opts}. Fill the current \code{opts} with further default 
+#' Fill the current \code{opts}. 
+#'
+#'   This function is deprecated, use tdmOptsDefaultsSet(opts) instead. \cr
+#'   Fill the current \code{opts} with further default 
 #'   parameters if they are not yet defined. The defaults may depend on previously 
 #'   defined elements of \code{opts} (e.g. \code{opts$filename}). 
 #'
+#'   What is the difference between \code{\link{tdmOptsDefaultsSet}} and \code{\link{tdmOptsDefaultsFill}}? 
+#'   \code{tdmOptsDefaultsSet} is for all parameters that do NOT depend on previously def'd elements of \code{opts}.
+#'   \code{tdmOptsDefaultsFill} is used to fill in further \code{opts} elements, if not yet defined, depending on 
+#'   previous settings (e. g. opts$LOGFILE is derived from opts$filename).
+#'
 #' @param opts    the options 
-#' @param suffix  the suffix of \code{opts$filename}. If NULL, take opts$filesuffix (which, if also NULL, is  
-#'                inferred from opts$filename)
+#  -- deprecated -- @param suffix  the suffix of \code{opts$filename}. If NULL, take opts$filesuffix (which, if also NULL, is  
+#  --            --            inferred from opts$filename)
 #' @return \code{opts},  the extended options, where additional elements, if they are not yet def'd,  are set as: 
 #' 			\item{filesuffix}{the suffix of \code{opts$filename}, e.g. \code{".csv"} } 
 #' 			\item{TST.COL}{["TST.COL"] } 
@@ -259,21 +276,22 @@ tdmOptsDefaultsSet <- function() {
 #' All files and directories in the above settings are relative to dir  \code{opts$dir.output}.
 #'
 #' @seealso  \code{\link{tdmOptsDefaultsSet}}
-#' @author Wolfgang Konen, FHK, Mar'2011 - Dec'2011
+#' @author Wolfgang Konen, FHK, Mar'2011 - May'2012
+#' @keywords internal
 #' @export
 ######################################################################################
-tdmOptsDefaultsFill <- function(opts,suffix=NULL) {
+tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
     if (is.null(opts)) opts = tdmOptsDefaultsSet();
     
     filename = opts$filename; 
-
     if (is.null(opts$filesuffix)) {
       opts$filesuffix = tail(unlist(strsplit(opts$filename,".",fixed=T)),1);
       opts$filesuffix = paste(".",opts$filesuffix,sep="");
     }
-    if (is.null(suffix)) suffix = opts$filesuffix;
-    if (length(grep(suffix,filename))==0)
-      stop("filename and suffix do not fit to each other: ",filename," ",suffix)
+    #if (is.null(suffix)) 
+    suffix = opts$filesuffix;
+    #if (length(grep(suffix,filename))==0)
+    #  stop("filename and suffix do not fit to each other: ",filename," ",suffix)
 
     if (is.null(opts$TST.COL)) opts$TST.COL="TST.COL";
     if (is.null(opts$PDFFILE)) opts$PDFFILE=sub(suffix,"_pic.pdf",filename)
@@ -282,10 +300,10 @@ tdmOptsDefaultsFill <- function(opts,suffix=NULL) {
     if (is.null(opts$EVALFILE)) opts$EVALFILE=sub(suffix,"_eval.csv",filename)      # contains evaluation results allEVAL
     
     if (is.null(opts$SRF.samp)) opts$SRF.samp=min(opts$RF.samp,3000);  # new 06/2011
-    if (is.null(opts$SRF.cutoff)) opts$SRF.cutoff=opts$CLS.cutoff;     # new 01/2011! might change the default behaviour
+    if (is.null(opts$SRF.cutoff)) opts$SRF.cutoff=opts$CLS.cutoff;     # new 01/2011, might change the default behaviour
     if (is.null(opts$rgain.string)) {
-      rgainTypeVals = c("rgain","meanCA","minCA","rmae","rmse");
-      rgainStringVals=c("RGain","MeanCA","MinCA","RMAE","RMSE");
+      rgainTypeVals = c("rgain","meanCA","minCA","rmae","rmse","arROC","arLIFT","arPRE");
+      rgainStringVals=c("RGain","MeanCA","MinCA","RMAE","RMSE","AreaROC","AreaLift","AreaPrRe");
       opts$rgain.string = rgainStringVals[which(opts$rgain.type==rgainTypeVals)];
     }
 
@@ -299,11 +317,10 @@ tdmOptsDefaultsFill <- function(opts,suffix=NULL) {
     # (cleaner code, less places where opts-values are set)
     #
     if (is.null(opts$MOD.method)) opts$MOD.method="RF";
-    if (is.null(opts$SRF.kind)) opts$SRF.kind="xperc";
     if (is.null(opts$RF.p.all)) opts$RF.p.all=FALSE;
     if (is.null(opts$RF.OOB)) opts$RF.OOB=TRUE;
     if (is.null(opts$APPLY_TIME)) opts$APPLY_TIME=FALSE;
-    if (is.null(opts$DO.POSTPROC)) opts$DO.POSTPROC=FALSE;  
+    if (is.null(opts$DO.POSTPROC)) opts$DO.POSTPROC=FALSE;    # --- deprecated, use opts$fct.postproc=NULL ---
     if (is.null(opts$GD.RESTART)) opts$GD.RESTART=TRUE;  
     if (is.null(opts$VERBOSE)) opts$VERBOSE=2;
     if (is.null(opts$test2.string)) opts$test2.string <- "default cutoff";
@@ -311,6 +328,7 @@ tdmOptsDefaultsFill <- function(opts,suffix=NULL) {
     # code which was previously in tdmModSortedRFimport. Now we put it here and call tdmOptsDefaultsFill from tdmModSortedRFimport
     # (cleaner code, less places where opts-values are set)
     #
+    if (is.null(opts$SRF.kind)) opts$SRF.kind="xperc";
     if (is.null(opts$SRF.XPerc)) opts$SRF.XPerc=0.95;
     if (is.null(opts$SRF.calc)) opts$SRF.calc=TRUE;
     if (is.null(opts$SRF.ntree)) opts$SRF.ntree=50;

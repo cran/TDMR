@@ -1,7 +1,8 @@
 ######################################################################################
 # tdmSplitTestData
 #
-#'   Read and split the task data.
+#'   Read and split the task data and return a \code{\link{TDMdata}} object.
+#'
 #'   Read the task data using \code{\link{tdmReadData}} and split them into a test part and 
 #'   a training/validation-part.
 #'
@@ -25,6 +26,7 @@
 #'                      found in \code{dset[,tdm$stratified]} shall appear in the train-vali-set, recommended for classification)
 #'     }
 #'   @param nExp  [0] experiment counter, used to select a reproducible different seed, if tdm$SPLIT.SEED!=NULL
+#'
 #'   @return dataObj, either NULL (if opts$READ.INI==FALSE) or an object of class \code{TDMdata} containing
 #'      \item{dset}{ a data frame with the complete data set}
 #'      \item{TST.COL}{ string, the name of the column in \code{dset} which has a 1 for 
@@ -35,7 +37,8 @@
 #'    Known caller: \code{\link{tdmCompleteEval}}
 #'
 #' @seealso   \code{\link{dsetTrnVa.TDMdata}}, \code{\link{tdmReadData}}, \code{\link{tdmCompleteEval}}
-#' @author Wolfgang Konen, FHK, Mar'2012
+#' @author Wolfgang Konen, FHK, Apr'2012
+#' @aliases TDMdata 
 #' @export
 ######################################################################################
 tdmSplitTestData <- function(opts,tdm,nExp=0) {
@@ -44,9 +47,10 @@ tdmSplitTestData <- function(opts,tdm,nExp=0) {
 		oldwd = getwd();                                    #
     if (!is.null(tdm$mainFile)) {
         setwd(dirname(tdm$mainFile));                   # save & change working dir
-    } else {
-        cat("NOTE <tdmSplitTestData>: tdm$mainFile is not defined! Will use current directory to locate data with tdmReadData");
-    }
+    } 
+    #else {
+    #    cat("NOTE <tdmSplitTestData>: tdm$mainFile is not defined. Will use current directory when locating data with tdmReadData\n");
+    #}
 		dset <- tdmReadData(opts);
 		setwd(oldwd);                                       # restore working dir
 		
@@ -130,6 +134,7 @@ dsetTrnVa.default <- function(x)  stop("Method dsetTrnVa only allowed for object
 #' @seealso   \code{\link{tdmSplitTestData}}
 #' @author Wolfgang Konen, FHK, Feb'2012
 #' @export
+#' @keywords internal
 ######################################################################################
 dsetTrnVa.TDMdata <- function(x)  {
   x$dset[x$dset[,x$TST.COL]==0,];	# return the training-validation part of data frame dset
@@ -145,12 +150,12 @@ dsetTest.TDMdata <- function(x, ...)  {
 ######################################################################################
 # print.TDMdata
 #
-#'   Print an overview for a \code{TDMdata} object.
+#'   Print an overview for a \code{\link{TDMdata}} object.
 #'
-#'   Print number of rows and number of columns of the data frame \code{dset} contained in the \code{TDMdata} object.
+#'   Print number of rows and number of columns of the data frame \code{dset} contained in the \code{\link{TDMdata}} object.
 #'
 #'   @method print TDMdata
-#'   @param x  return value from a prior call to \code{\link{tdmSplitTestData}}, an object of class \code{TDMdata}.
+#'   @param x  return value from a prior call to \code{\link{tdmSplitTestData}}, an object of class \code{\link{TDMdata}}.
 #'   @param ... currently not used
 #'
 #' @seealso   \code{\link{tdmSplitTestData}}

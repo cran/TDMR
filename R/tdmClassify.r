@@ -2,12 +2,13 @@
 # tdmClassify
 # TODO: make code also applicable if d_test is a 0-row data frame.
 #
-#'      Core classification function of TDMR. It is called by \code{\link{tdmClassifyLoop}}.
-#'      Train a model on training set \code{d_train} and evaluate it on test set \code{d_test}.
+#' Core classification function of TDMR. 
+#'
+#'      tdmClassify is called by \code{\link{tdmClassifyLoop}} and returns an object of class \code{tdmClass}. \cr
+#'      It trains a model on training set \code{d_train} and evaluates it on test set \code{d_test}.
+#'      If this function is used for tuning, the test set \code{d_test} plays the role of a validation set.
 #'
 #' Currently  d_dis is allowed to be a 0-row data frame, but d_train and d_test must have at least one record. \cr
-#' 
-#' If this function is used for tuning, the test set \code{d_test} plays the role of a validation set.
 #'
 #'   @param d_train     training set
 #'   @param d_test      test set, same columns as training set
@@ -32,7 +33,7 @@
 #'                   (see also TST.SEED in \code{\link{tdmClassifyLoop}}) }
 #'     \item{\code{CLASSWT}}{ class weights (NULL, if all classes should have the same weight)
 #'                   (currently used only by methods RF, MC.RF and by \code{\link{tdmModSortedRFimport}})  }
-#'     \item{\code{fct.postproc}}{ user-def'd function for postprocessing of predicted output  }
+#'     \item{\code{fct.postproc}}{ [NULL] name of user-def'd function for postprocessing of predicted output  }
 #'     \item{\code{GD.DEVICE}}{ if !="non", then make a pairs-plot of the 5 most important variables
 #'                   and make a true-false bar plot }
 #'     \item{\code{VERBOSE}}{ [2] =2: most printed output, =1: less, =0: no output }
@@ -61,7 +62,7 @@
 #'    The five items \code{lastCmTrain}, \code{lastCmTest}, \code{lastModel}, \code{lastProbs}, \code{lastPred} are 
 #'    specific for the *last* model (the one built for the last response variable in the last run and last fold) 
 #'
-#' @seealso  \code{\link{print.tdmClass}}, \code{\link{tdmClassifyLoop}}
+#' @seealso  \code{\link{print.tdmClass}} \code{\link{tdmClassifyLoop}} \code{\link{tdmRegressLoop}}
 #' @author Wolfgang Konen, FHK, Sep'2009 - Dec'2011
 #'
 #' @export
@@ -73,7 +74,7 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
     saved.input.variables <- input.variables;      # save copy for response.variable loop
    
     # be sure that all necessary  defaults are set:
-    opts <- tdmOptsDefaultsFill(opts);
+    opts <- tdmOptsDefaultsSet(opts);
 
     if (is.null(opts$PRE.SFA.numericV)) opts$PRE.SFA.numericV <- input.variables;
     if (!is.null(opts$RF.mtry)) opts$RF.mtry=min(length(input.variables),opts$RF.mtry);
@@ -85,7 +86,9 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
         tdmGraphicInit(opts);
       }
     }   
-    
+    predProb <- list()
+    predProb$Trn <- data.frame(IND.dset=d_train$IND.dset);
+    predProb$Val <- data.frame(IND.dset=d_test$IND.dset);
     
     for (response.variable in response.variables) {   
         input.variables <- saved.input.variables;
@@ -250,7 +253,7 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
 #                        	       , cost=opts$SVM.cost
 #                         	       , type="spoc-svc"  ### type=spoc-svc   #type="C-svc"
 #            							       , class.weights=opts$CLS.CLASSWT 
-#            							       , na.action=na.roughfix)
+#            							       , na.action=na.omit)
 #            res.rf$HasVotes = FALSE;            
 #            res.rf$HasProbs = FALSE; 
 #	        res.rf;
@@ -268,7 +271,7 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
                  	        , cost=opts$SVM.cost
                           , type="C-classification"
             							, class.weights = opts$CLS.CLASSWT
-            							, na.action=na.roughfix
+            							, na.action=na.omit
             							, probability=TRUE)
             res.rf$HasVotes = FALSE;            
             res.rf$HasProbs = TRUE; 
@@ -494,25 +497,38 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
         #=============================================
         # PART 4.5: POSTPROCESSING
         #=============================================
-      	if (opts$DO.POSTPROC) {
+      	if (!is.null(opts$fct.postproc)) {
       		cat1(opts,filename,": User-defined postprocessing: Applying opts$fct.postproc ...\n")
-      		train.predict <- opts$fct.postproc(train.predict,d_train,opts)
-      		test.predict <- opts$fct.postproc(test.predict,d_test,opts)
-      		dis.predict <- opts$fct.postproc(dis.predict,d_dis,opts)
+      		train.predict <- eval(parse(text=paste(opts$fct.postproc,"(train.predict,opts)",sep="")));
+      		test.predict <- eval(parse(text=paste(opts$fct.postproc,"(test.predict,opts)",sep="")));
+      		dis.predict <- eval(parse(text=paste(opts$fct.postproc,"(dis.predict,opts)",sep="")));
       		if (res.rf$HasVotes) {
             opts2 <- opts; 
-            opts2$DO.POSTPROC=FALSE; # i.e. no postprocessing for test2
-            if (opts2$DO.POSTPROC)                                   
-          		 test2.predict <- opts$fct.postproc(test2.predict,d_test,opts2)
+            opts2$fct.postproc=NULL; # i.e. no postprocessing for test2
+            if (!is.null(opts2$fct.postproc))                                   
+          		 test2.predict <- eval(parse(text=paste(opts$fct.postproc,"(test2.predict,opts)",sep="")));
       		}
       	}
         # bind the predicted class pred_... as last column to the data frames
         name.of.prediction <- paste("pred_", response.variable, sep="")
         name2.of.prediction <- paste("pred2_", response.variable, sep="")
+        name.of.probability <- paste("prob_", response.variable, sep="")
         d_train <- bind_response(d_train, name.of.prediction, train.predict)
         d_test <- bind_response(d_test, name.of.prediction, test.predict)
         d_dis <- bind_response(d_dis, name.of.prediction, dis.predict)
         if (res.rf$HasVotes) d_test  <- bind_response(d_test, name2.of.prediction, test2.predict)
+        if (res.rf$HasProbs) {
+          predProb$Trn <- bind_response(predProb$Trn, response.variable, d_train[,response.variable]);
+          predProb$Trn <- bind_response(predProb$Trn, name.of.prediction, train.predict)
+          predProb$Trn <- bind_response(predProb$Trn, name.of.probability, as.vector(lastProbs$v_train[,1]))
+          predProb$Val <- bind_response(predProb$Val, response.variable, d_test[,response.variable]);
+          predProb$Val <- bind_response(predProb$Val, name.of.prediction, test.predict)
+          predProb$Val <- bind_response(predProb$Val, name.of.probability, as.vector(lastProbs$v_test[,1]))
+          #browser()
+        } else {
+          #predProbTrn = NULL;
+          #predProbVal = NULL;
+        } 
 
     
         #=============================================
@@ -521,7 +537,7 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
         cat1(opts,filename,": Calc confusion matrix + gain ...\n")
             
         cat1(opts,"\nTraining cases (",length(train.predict),"):\n")
-        cm.train <- tdmModConfmat(d_train,response.variable,name.of.prediction,opts);
+        cm.train <- tdmModConfmat(d_train,response.variable,name.of.prediction,opts,predProb$Trn);
         # the contents of cm.train$rgain depends on opts$rgain.type
         
         #cat1(opts,"   --- predicted ---\n")
@@ -531,14 +547,14 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
 
         if (nrow(d_test)>0) {
           cat1(opts,"\nValidation cases (",length(test.predict),"):\n")
-          cm.test <- tdmModConfmat(d_test,response.variable,name.of.prediction,opts);
+          cm.test <- tdmModConfmat(d_test,response.variable,name.of.prediction,opts,predProb$Val);
           print1(opts,cm.test$mat)                      # confusion matrix on test set
           print1(opts,cm.test$gain.vector)
           cat1(opts,sprintf("total gain : %7.1f (is %7.3f%% of max. gain = %7.1f)\n", 
                             cm.test$gain,cm.test$gain/cm.test$gainmax*100,cm.test$gainmax));
           if (res.rf$HasVotes) {                          
             cat1(opts,"\nTest2 cases [",opts$test2.string,"] (",length(test.predict),"):\n")
-            cm.test2 <- tdmModConfmat(d_test,response.variable,name2.of.prediction,opts);
+            cm.test2 <- tdmModConfmat(d_test,response.variable,name2.of.prediction,opts,predProb$Val);
             print1(opts,cm.test2$mat)                      # confusion matrix on test set, test2-prediction
             cat1(opts,sprintf("total gain2: %7.1f (is %7.3f%% of max. gain = %7.1f)\n", 
                               cm.test2$gain,cm.test2$gain/cm.test2$gainmax*100,cm.test2$gainmax));
@@ -570,6 +586,7 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
         EVALa$i = opts$i;
         EVALa$k = opts$k;         
 
+        #browser()
         if (first) {
             sumEVAL=lapply(EVAL,sum);
             allEVAL=as.data.frame(EVALa);
@@ -648,6 +665,8 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
                 ,lastModel = res.rf     #   "     "     "       "
                 ,lastPred = name.of.prediction #   "     "       "
                 ,lastProbs = lastProbs  # NULL or list with 3 probability matrices (row:records, col: classes) v_train, v_test, v_dis
+                ,predProb = predProb    # $Trn: data frame (IND.dset, rv1, pred_rv1, prob_rv1, rv2, ...) for training data
+                #,predProbVal = predProbVal # $Val: data frame (IND.dset, rv1, pred_rv1, prob_rv1, rv2, ...) for validation data
                 ,sumEVAL=sumEVAL
                 ,allEVAL=allEVAL
                 ,d_train=d_train

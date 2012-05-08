@@ -6,9 +6,8 @@
 # 
 # Known callers: cmaesTuner, powellTuner, bfgsTuner in tdmDispatchTuner.r
 #
-# Author: Wolfgang Konen, FHK, May'2011 - May'2011
+# Author: Wolfgang Konen, FHK, May'2011 - May'2012
 #
-######################################################################################
 makeTdmStartOther <- function(tdm,envT,dataObj) {
   if (!is.list(tdm)) stop("tdm must be a list!");
   if (!is.environment(envT)) stop("envT must be an environment!");
@@ -19,7 +18,7 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
     if (!is.null(tdm$constraintFnc)) x <- tdm$constraintFnc(x,tdm);
     dset <- NULL;
     if(!is.null(dataObj)) dset<-dsetTrnVa(dataObj);
-    # If dset is not NULL, this has an effect on tdm$mainCommand which contains "...,dset=dset".
+    # If dset is not NULL, this has an effect on mainCommand (see below) which contains "...,dset=dset".
     # If dset is NULL, the reading of the data is deferred to main_TASK.
   
     # put parameter vector x in a one-row data frame and attach param names from .roi file:
@@ -27,7 +26,7 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
     names(des) <- rownames(envT$spotConfig$alg.roi);
     # round INT columns of data frame des and print its summary (see tdmMapDesign.r):	
   	des <- tdmMapDesInt(des,printSummary=F,envT$spotConfig);     
-  
+    
     if (!is.null(envT$res)) {
       des$CONFIG = max(envT$res$CONFIG)+1;
     } else des$CONFIG=1;
@@ -55,8 +54,9 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
       oldwd = getwd();                                             # save working dir
   		if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));    # optional change working dir 
   		result = NULL; 	
-      eval(parse(text=tdm$mainCommand));                # execute the command given in text string tdm$mainCommand, which has to return result$y
-      if (is.null(result$y)) stop("tdm$mainCommand did not return a list 'result' containing an element 'y'");
+  		mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
+      eval(parse(text=mainCommand));                # execute the command given in text string mainCommand, which has to return result$y
+      if (is.null(result$y)) stop("tdm$Func did not return a list 'result' containing an element 'y'");
   		setwd(oldwd);                                                # restore working dir 
   		
       # write a line with results to the result file resFileName:
@@ -70,9 +70,11 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
         					,REP=r
                   );
       yres[r] = res$Y;
+ 
+		  envT$spotConfig$alg.currentResult=rbind(envT$spotConfig$alg.currentResult,res);			     # NEW!! 05/2012
+      # (alg.currentResult is initially set to NULL for each tuner, see tdmDispatchTuner.r)				
                         
       envT$res = rbind(envT$res,res);
-
       if (tdm$fileMode) {                  
     		colNames = ifelse(file.exists(tdm$resFile),FALSE,TRUE);			
     		write.table(res

@@ -1,10 +1,16 @@
 \name{tdmGraphicCloseWin}
 \alias{tdmGraphicCloseWin}
 \title{Close active file ("png").}
-\usage{tdmGraphicCloseWin(opts, ...)
+\usage{
+  tdmGraphicCloseWin(opts, ...)
 }
-\description{Close active file ("png").}
-\arguments{\item{opts}{with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
-\item{...}{optional arguments (currently not used)}
+\arguments{
+  \item{opts}{with \code{opts$GD.DEVICE} one out of
+  [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
+
+  \item{...}{optional arguments (currently not used)}
+}
+\description{
+  Close active file ("png").
 }
 

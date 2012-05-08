@@ -1,0 +1,23 @@
+\name{bind_response}
+\alias{bind_response}
+\title{Bind a column to a data frame.}
+\usage{
+  bind_response(d, response.predict, vec)
+}
+\arguments{
+  \item{d}{data frame}
+
+  \item{response.predict}{name of new column}
+
+  \item{vec}{the contents for the last column bound to data
+  frame \code{d}}
+}
+\value{
+  data frame \code{d} with column added
+}
+\description{
+  Bind the column with name \code{response.predict} and
+  contents \code{vec} as last column to data frame \code{d}
+}
+\keyword{internal}
+

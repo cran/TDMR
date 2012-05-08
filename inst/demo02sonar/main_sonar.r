@@ -10,7 +10,7 @@
 main_sonar <- function(opts=NULL,dset=NULL) {          
 
     if (is.null(opts)) {
-      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
+      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See ?tdmOptsDefaultsSet
                                       # for the list of those elements and many explanatory comments                                                                                                         
       opts$filename = "sonar.txt"
       opts$filesuffix = ".txt"
@@ -25,8 +25,9 @@ main_sonar <- function(opts=NULL,dset=NULL) {
       opts$TST.kind <- "cv"           # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
       opts$TST.NFOLD =  3             # number of CV-folds (only for TST.kind=="cv")
       opts$NRUN =  1                  # how many CV-runs, if opts$TST.kind <- "cv"
+      #opts$rgain.type="arROC"
     }
-    opts <- tdmOptsDefaultsFill(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
+    opts <- tdmOptsDefaultsSet(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     
     gdObj <- tdmGraAndLogInitialize(opts);     # init graphics and log file
 

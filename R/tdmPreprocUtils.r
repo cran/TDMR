@@ -1,18 +1,19 @@
-######################################################################################
-######################################################################################
+#-#####################################################################################
 #
 # PREPROCESSING FUNCTIONS
 #
-######################################################################################
-######################################################################################
+#-#####################################################################################
 
 ######################################################################################
-#' Find constant columns. Find all those columns in data frame \code{dset} which are completely constant or
+#
+#' Find constant columns. 
+#'
+#' Find all those columns in data frame \code{dset} which are completely constant or
 #' completely NA and return a vector with their names.
 #' @param dset  data frame
 #' @return name vector of constant columns
 #' @export
-######################################################################################
+#
 tdmPreFindConstVar <- function(dset)
 {
     const.variables = NULL
@@ -82,7 +83,9 @@ tdmPreGroupLevels <- function(dset,colname,opts)
 ######################################################################################
 # tdmPreLevel2Target
 #
-#' Relate levels of a column with a target (column). Print for each level of factor variable f which ratio 0 / 1 of the binary target
+#' Relate levels of a column with a target (column). 
+#'
+#' Print for each level of factor variable f which ratio 0 / 1 of the binary target
 #' variable it contains and how many cases are in each level
 #'
 #' @param  dset    data frame
@@ -96,7 +99,7 @@ tdmPreGroupLevels <- function(dset,colname,opts)
 #' @note SIDE EFFECTS:
 #'     some printed output
 #' @export
-######################################################################################
+#
 tdmPreLevel2Target <- function(dset,target,f,opts)
 {
   if (is.null(opts$thresh_pR))
@@ -146,7 +149,7 @@ tdmPreLevel2Target <- function(dset,target,f,opts)
 #' @seealso  \code{\link{tdmPrePCA.apply}}
 #' @author Wolfgang Konen, FHK, Mar'2011 - Jan'2012
 #' @export
-######################################################################################
+#
 tdmPrePCA.train <- function(dset,opts)  {
     if (is.null(opts$PRE.PCA.numericV))
       stop("Please define opts$PRE.PCA.numericV, the vector of numeric column names, in order to run PCA");
@@ -223,6 +226,7 @@ tdmPrePCA.train <- function(dset,opts)  {
 # tdmPrePCA.apply
 #
 #'     Apply PCA (Principal Component Analysis) to new data. 
+#'
 #'     The PCA rotation is taken from \code{pcaList}, a value returned from a prior call to  \code{\link{tdmPrePCA.train}}.
 #'
 #' @param   dset    the data frame with the new data
@@ -318,7 +322,7 @@ tdmPrePCA.apply <- function(dset,pcaList,opts,dtrain=NULL)  {
 #' @seealso  \code{\link{tdmPreSFA.apply}}
 #' @author Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 - Feb'2012
 #' @export
-######################################################################################
+#
 tdmPreSFA.train <- function(dset,response.var,opts)  {
     require(rSFA);
     
@@ -402,7 +406,8 @@ tdmPreSFA.train <- function(dset,response.var,opts)  {
 ######################################################################################
 # tdmPreSFA.apply
 #
-#'     Apply SFA (Slow Feature Analysis) to new data. 
+#' Apply SFA (Slow Feature Analysis) to new data. 
+#'
 #'     The SFA projection is taken from \code{sfaList}, a value returned from a prior call to  \code{\link{tdmPreSFA.train}}.
 #'
 #' @param   dset    the data frame with the new data
@@ -427,7 +432,7 @@ tdmPreSFA.train <- function(dset,response.var,opts)  {
 #' @seealso  \code{\link{tdmPreSFA.train}}
 #' @author Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 - Feb'2012
 #' @export
-######################################################################################
+#
 tdmPreSFA.apply <- function(dset,sfaList,opts,dtrain=NULL)  {
     numeric.variables = opts$PRE.SFA.numericV;
     fname <-  opts$filename;
@@ -469,7 +474,7 @@ tdmPreSFA.apply <- function(dset,sfaList,opts,dtrain=NULL)  {
     sfa <- list(dset=dset, numeric.variables=numeric.variables);
 }
 
-######################################################################################
+#-#####################################################################################
 # tdmAdjustDSet:
 #     helper function for tdmPrePCA.* and tdmPreSFA.*
 #     a) adjust the names of the columns in rx in case they are conflicting with names in dset
@@ -520,7 +525,7 @@ tdmAdjustDSet <- function(dset,numeric.variables,rx,prefix,PRE.REPLACE) {
 #' @note CAVEAT: The double for-loop costs some time (e.g. 2-4 sec for ncol(rx)=8 or 10)
 #' How to fix: make a version w/o for-loop and w/o frequent assigns to dset (**TODO**)
 #' @export
-#'#####################################################################################
+#
 tdmPreAddMonomials <- function(dset,rx,PRE.npc,opts,degree=2,prefix="R") {
     if (PRE.npc>0) {
       if (degree!=2) stop("other degrees than 2 not yet supported");

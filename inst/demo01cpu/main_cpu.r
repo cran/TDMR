@@ -36,18 +36,14 @@ main_cpu <- function(opts=NULL,dset=NULL) {
       opts$TST.valiFrac = 0.20     # set this fraction of data aside for validation (only for DO.CV=F)
       opts$TST.SEED = NULL    # [NULL] a seed for the random test set selection
       opts$OUTTRAFO = "" 	# "mean.shift"
-      opts$fct.postproc <- function(x,opts) { 
-        x[x<0] <- 0; 		# clip all negative predictions to value 0	
-        x;
-      }
+      opts$fct.postproc <- "cpu.postproc";
 
       opts$gr.log=T           # if =T: log(x+1)-transform for graphics "true vs. predicted"   
       opts$GD.DEVICE="win"     # ="pdf": all graphics to one multi-page PDF
                               # ="win": all graphics to (several) windows (X11)
       opts$VERBOSE=2;      
     }
-    
-    opts <- tdmOptsDefaultsFill(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
+    opts <- tdmOptsDefaultsSet(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     filename = opts$filename; 
     
     gdObj <- tdmGraAndLogInitialize(opts);     # init graphics and log file
@@ -103,5 +99,10 @@ main_cpu <- function(opts=NULL,dset=NULL) {
     result;
     
 }                                                   
+
+cpu.postproc <- function(x,opts) { 
+        x[x<0] <- 0; 		# clip all negative predictions to value 0	
+        x;
+}
 
 #result = main_cpu()                            

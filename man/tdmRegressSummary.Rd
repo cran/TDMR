@@ -1,24 +1,39 @@
 \name{tdmRegressSummary}
 \alias{tdmRegressSummary}
-\title{Print summary output for result from tdmRegressLoop and add result$y.}
-\usage{tdmRegressSummary(result, opts, dset)
+\title{Print summary output for \code{result} from \code{tdmRegressLoop} and add \code{result$y}.}
+\usage{
+  tdmRegressSummary(result, opts, dset = NULL)
 }
-\description{Print summary output for \code{result} from \code{tdmRegressLoop} and add \code{result$y}.}
-\details{\code{result$y} is "OOB RMAE" on training set for methods RF or MC.RF.
-\code{result$y} is "RMAE" on test set (=validation set) for all other methods.
-\code{result$y} is the quantity which the tuner seeks to minimize.}
-\value{\code{result},  an object of class \code{TDMregressor}, with \code{result$y}, \code{result$sd.y}
-(and optionally also \code{result$dset}) added}
-\seealso{\code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}, \code{\link{tdmClassifySummary}}}
-\author{Wolfgang Konen, FHK, Sep'2010 - Oct'2011}
-\arguments{\item{result}{return value from a prior call to \code{\link{tdmRegressLoop}}, an object of class \code{TDMregressor}.}
-\item{opts}{a list from which we need here the following entries
-\describe{
-\item{\code{NRUN}}{ number of runs (outer loop)}
-\item{\code{method}}{}
-\item{\code{VERBOSE}}{}
-\item{\code{dset}}{ [NULL] if !=NULL, attach it to result}
-}}
-\item{dset}{[NULL] if not NULL, add this data frame to the return value (may cost a lot of memory!)}
+\arguments{
+  \item{result}{return value from a prior call to
+  \code{\link{tdmRegressLoop}}, an object of class
+  \code{TDMregressor}.}
+
+  \item{opts}{a list from which we need here the following
+  entries \describe{ \item{\code{NRUN}}{ number of runs
+  (outer loop)} \item{\code{method}}{}
+  \item{\code{VERBOSE}}{} \item{\code{dset}}{ [NULL] if
+  !=NULL, attach it to result} }}
+
+  \item{dset}{[NULL] if not NULL, add this data frame to
+  the return value (may cost a lot of memory!)}
+}
+\value{
+  \code{result}, an object of class \code{TDMregressor},
+  with \code{result$y}, \code{result$sd.y} (and optionally
+  also \code{result$dset}) added
+}
+\description{
+  \code{result$y} is "OOB RMAE" on training set for methods
+  RF or MC.RF.  \code{result$y} is "RMAE" on test set
+  (=validation set) for all other methods.  \code{result$y}
+  is the quantity which the tuner seeks to minimize.
+}
+\author{
+  Wolfgang Konen, FHK, Sep'2010 - Oct'2011
+}
+\seealso{
+  \code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}},
+  \code{\link{tdmClassifySummary}}
 }
 

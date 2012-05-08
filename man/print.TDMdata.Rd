@@ -1,0 +1,25 @@
+\name{print.TDMdata}
+\alias{print.TDMdata}
+\title{Print an overview for a \code{\link{TDMdata}} object.}
+\usage{
+  \method{print}{TDMdata} (x, ...)
+}
+\arguments{
+  \item{x}{return value from a prior call to
+  \code{\link{tdmSplitTestData}}, an object of class
+  \code{\link{TDMdata}}.}
+
+  \item{...}{currently not used}
+}
+\description{
+  Print number of rows and number of columns of the data
+  frame \code{dset} contained in the \code{\link{TDMdata}}
+  object.
+}
+\author{
+  Wolfgang Konen, FHK
+}
+\seealso{
+  \code{\link{tdmSplitTestData}}
+}
+

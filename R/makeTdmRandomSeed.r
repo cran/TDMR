@@ -21,6 +21,7 @@
 #' @seealso \code{\link{tdmRandomSeed}}
 #' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@fh-koeln.de}
 #' @export
+#' @keywords internal
 makeTdmRandomSeed <- function() {
   # this provides private local storage for the function getSeed below, it remains 
   # there even after leaving getSeed. It stores the number of calls to getSeed.

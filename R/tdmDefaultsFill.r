@@ -4,17 +4,17 @@
 #'   Default values for list \code{tdm}.  This list controls the tuning and unbiased evaluation phase.
 #'
 #'   When called with \code{tdm = tdmDefaultsFill()}, a new list \code{tdm} is created and returned.
-#'   When called with \code{tdm = tdmDefaultsFill(mainFile="my.r",mainCommand="result<-my(opts)")}, a new list \code{tdm} is created
-#'   and returned, with the elements mainFile and mainCommand set to the specified values.
+#'   When called with \code{tdm = tdmDefaultsFill(mainFile="my.r"}, a new list \code{tdm} is created
+#'   and returned, with the element mainFile set to the specified value.
 #'   When called with \code{tdm = tdmDefaultsFill(tdm)}, an existing list \code{tdm} is filled with further default values.
 #'   If tdm$mainFunc is missing, but tdm$mainFile exists, then tdmDefaultsFill will set tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRUE).
 #'
 #'   @param tdm         (optional)
 #'   @param mainFile    (optional) if given, create or overwrite tdm$mainFile with this value
-#'   @param mainCommand (optional) if given, create or overwrite tdm$mainCommand with this value
+#   @param mainCommand (deprecated) if given, create or overwrite tdm$mainCommand with this value
 #'   @return \code{tdm}     the new / extended list,  where additional elements, if they are not yet def'd,  are set as: 
 #'      \item{mainFunc}{\code{sub(".r","",basename(tdm$mainFile),fixed=TRUE)}, if tdm$mainFile is set, else \code{"mainFunc"}}
-#'      \item{mainCommand}{\code{result <- tdm$mainFunc(opts)}}
+#      \item{mainCommand}{ deprecated, will be automatically set to \code{"result <- tdm$mainFunc(opts,dset=dset)}"}   }
 #'      \item{unbiasedFunc}{["unbiasedRun"] which function to call for unbiased evaluation}
 #'      \item{tuneMethod}{["spot"] other choices: "cmaes", "bfgs", ..., see \code{\link{tdmDispatchTuner}} }
 #'      \item{nExperim}{[1]}
@@ -36,17 +36,17 @@
 #' @author Wolfgang Konen, Patrick Koch, Oct'2011
 #' @export
 ######################################################################################
-tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL,mainCommand=NULL) {
+tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL) {
   if (is.null(tdm)) tdm <- list();
 
   if (!is.null(mainFile)) tdm$mainFile=mainFile;
-  if (!is.null(mainCommand)) tdm$mainCommand=mainCommand;
+  #if (!is.null(mainCommand)) tdm$mainCommand=mainCommand;
   
   if (is.null(tdm$mainFunc))  {
-    tdm$mainFunc <- ifelse(is.null(tdm$mainFile), "mainFunc", sub(".R","",sub(".r","",basename(tdm$mainFile),fixed=TRUE)));   
-    # e.g. tdm$mainFunc="main_sonar" if tdm$mainFile="C:/myDir/main_sonar.r"
+    tdm$mainFunc <- ifelse(is.null(tdm$mainFile), "main_sonar", sub(".R","",sub(".r","",basename(tdm$mainFile),fixed=TRUE)));   
+    # e.g. tdm$mainFunc="main_myTask" if tdm$mainFile="C:/myDir/main_myTask.r"
   }
-  if (is.null(tdm$mainCommand)) tdm$mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
+  #if (is.null(tdm$mainCommand)) tdm$mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
   if (is.null(tdm$unbiasedFunc)) tdm$unbiasedFunc <- "unbiasedRun";
   if (is.null(tdm$tuneMethod)) tdm$tuneMethod <- "spot";
   if (is.null(tdm$nExperim)) tdm$nExperim <- 1;

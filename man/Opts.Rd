@@ -1,0 +1,36 @@
+\name{Opts}
+\alias{Opts}
+\alias{Opts.default}
+\alias{Opts.tdmClass}
+\alias{Opts.TDMclassifier}
+\alias{Opts.tdmRegre}
+\alias{Opts.TDMregressor}
+\title{Return the list 'opts'.}
+\usage{
+  Opts(x, ...)
+
+  \method{Opts}{TDMclassifier} (x, ...)
+
+  \method{Opts}{TDMregressor} (x, ...)
+
+  \method{Opts}{tdmClass} (x, ...)
+
+  \method{Opts}{tdmRegre} (x, ...)
+
+  \method{Opts}{default} (x, ...)
+}
+\arguments{
+  \item{x}{an object of class \code{\link{TDMclassifier}},
+  \code{\link[=tdmClassify]{tdmClass}},
+  \code{\link{TDMregressor}} or
+  \code{\link[=tdmRegress]{tdmRegre}}.}
+
+  \item{...}{-- currently not used --}
+}
+\description{
+  Returns the list \code{opts} from objects of class
+  \code{\link{TDMclassifier}}, \code{\link{TDMregressor}},
+  \code{\link[=tdmClassify]{tdmClass}} or
+  \code{\link[=tdmRegress]{tdmRegre}}.
+}
+
