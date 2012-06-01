@@ -4,7 +4,7 @@ load("cma_j2.rda");
 
 x <- read.table("cma_j.des",header=FALSE);
 
-oldwd=getwd(); setwd(tdm$startDir);   #getwd();
+oldwd=getwd(); setwd(tdm$path);   #getwd();
 result <- tdmStartOther(x);
 setwd(oldwd);
 

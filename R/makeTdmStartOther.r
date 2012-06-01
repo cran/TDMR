@@ -4,7 +4,7 @@
 #   already exist. In this way, tdmStartOther can use these variables although
 #   they do not appear in the argument list of tdmStartOther
 # 
-# Known callers: cmaesTuner, powellTuner, bfgsTuner in tdmDispatchTuner.r
+# Known callers: cmaesTuner, cma_jTuner (via Java program), powellTuner, bfgsTuner in tdmDispatchTuner.r
 #
 # Author: Wolfgang Konen, FHK, May'2011 - May'2012
 #
@@ -13,6 +13,21 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
   if (!is.environment(envT)) stop("envT must be an environment!");
   
   function(x,opts=NULL) {
+    
+    #TODO PK
+    if (is.list(x)) {
+      # Transform list to vector (for MIES integration)
+# -- WK -- this has problems with cma_jTuner, which also puts in a list       
+#      for (i in length(x)){
+#        if (length(x[[i]])>1){
+#          stop("Error: Vector parameters are not yet supported in TDMR!")
+#        }
+#      }
+      x = as.vector(x)
+      #x = t(x)
+    } 
+    #browser()
+
   	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
     if (is.null(opts)) opts <- envT$spotConfig$opts;
     if (!is.null(tdm$constraintFnc)) x <- tdm$constraintFnc(x,tdm);
@@ -60,9 +75,9 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
   		setwd(oldwd);                                                # restore working dir 
   		
       # write a line with results to the result file resFileName:
-      res <- data.frame(list(Y=result$y
-                            ,des[k,setdiff(names(des),c("CONFIG","REPEATS","repeatsLastConfig","STEP","SEED"))]
-                            ));
+      pNames=row.names(envT$spotConfig$alg.roi);
+      res <- data.frame(list(result$y,des[k,pNames]));  # bug fix 05/12: this way it works for length(pNames)==1 and for >1
+      names(res)<-c("Y",pNames);                        #
       res <- cbind(res
         					,SEED=opts$ALG.SEED
        					  ,STEP=theStep

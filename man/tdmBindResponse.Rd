@@ -1,8 +1,8 @@
-\name{bind_response}
-\alias{bind_response}
+\name{tdmBindResponse}
+\alias{tdmBindResponse}
 \title{Bind a column to a data frame.}
 \usage{
-  bind_response(d, response.predict, vec)
+  tdmBindResponse(d, response.predict, vec)
 }
 \arguments{
   \item{d}{data frame}
@@ -19,5 +19,4 @@
   Bind the column with name \code{response.predict} and
   contents \code{vec} as last column to data frame \code{d}
 }
-\keyword{internal}
 

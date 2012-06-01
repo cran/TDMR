@@ -25,13 +25,15 @@
 #'   settings of \code{opts}.
 #'
 #' @param opts    (optional) the options already set
+#' @param path    ["./"] the path string to precede all settings \code{opts$dir.*}. 
+#'                If \code{path=="./"} then nothing is preceded to \code{opts$dir.*}.   
 #'
 #' @return a list \code{opts}, with defaults set for all options relevant for a DM task, 
 #'    containing the following elements
-#' 			\item{dir.txt}{[./data] where to find .txt/.csv files} 
-#' 			\item{dir.data}{[./data] where to find data files} 
-#' 			\item{dir.Rdata}{[./Rdata] where to find .Rdata files} 
-#' 			\item{dir.output}{[./Output] where to put output files} 
+#' 			\item{dir.txt}{[<path>/data] where to find .txt/.csv files} 
+#' 			\item{dir.data}{[<path>/data] where to find other data files, including .Rdata  } 
+#' 			\item{dir.Rdata}{[<path>/Rdata] -- deprecated, use opts$dir.data -- } 
+#' 			\item{dir.output}{[<path>/Output] where to put output files} 
 #' 			\item{filename}{["default.txt"] the task data} 
 #' 			\item{filetest}{[NULL] the test data, only relevant for READ.TST=T} 
 #' 			\item{data.title}{["Default Data"] title for plots} 
@@ -136,15 +138,14 @@
 #' @author Wolfgang Konen, FHK, Mar'2011 - Apr'2012
 #' @export
 ######################################################################################
-tdmOptsDefaultsSet <- function(opts=NULL) {
+tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
   if (is.null(opts)) {
       opts = list()
 
-      directory <- "./"  #""
-      opts$dir.data <- paste(directory, "data/", sep="")
-      opts$dir.txt  <- paste(directory, "data/", sep="")
-      opts$dir.Rdata <- paste(directory, "Rdata/", sep="")
-      opts$dir.output <- paste(directory, "Output/", sep="")
+      opts$dir.data <- paste("./", "data/", sep="")
+      opts$dir.txt  <- paste("./", "data/", sep="")
+      opts$dir.Rdata <- paste("./", "Rdata/", sep="")
+      opts$dir.output <- paste("./", "Output/", sep="")
       opts$filename = "default.txt"
       opts$data.title <- "Default Data"
 
@@ -237,6 +238,15 @@ tdmOptsDefaultsSet <- function(opts=NULL) {
       opts$APPLY_TIME=FALSE;                              
       opts$test2.string <- "default cutoff";
       opts$VERBOSE=2;
+  }  #if (is.null(opts))
+  
+  if (!(path=="./" | length(grep(path,opts$dir.data))==1)) {
+      #preceede the following strings with 'path' *only*, if path is not "./" and  
+      #if opts$dir.data not contains 'path' (first pass through tdmOptsDefaulsSet)
+      opts$dir.data <- paste(path,opts$dir.data,sep="")
+      opts$dir.txt  <- paste(path,opts$dir.txt,sep="")
+      opts$dir.Rdata <- paste(path,opts$dir.Rdata,sep="")
+      opts$dir.output <- paste(path,opts$dir.output,sep="")
   }
   
   tdmOptsDefaultsFill(opts);
@@ -247,8 +257,9 @@ tdmOptsDefaultsSet <- function(opts=NULL) {
 #
 #' Fill the current \code{opts}. 
 #'
-#'   This function is deprecated, use tdmOptsDefaultsSet(opts) instead. \cr
-#'   Fill the current \code{opts} with further default 
+#'   There is no need to call this function directly, use \code{\link{tdmOptsDefaultsSet}}(opts) 
+#'   instead, which calls tdmOptsDefaultsFill in the end. \cr
+#'   \code{tdmOptsDefaultsFill} fills the current \code{opts} with further default 
 #'   parameters if they are not yet defined. The defaults may depend on previously 
 #'   defined elements of \code{opts} (e.g. \code{opts$filename}). 
 #'
@@ -284,20 +295,19 @@ tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
     if (is.null(opts)) opts = tdmOptsDefaultsSet();
     
     filename = opts$filename; 
-    if (is.null(opts$filesuffix)) {
-      opts$filesuffix = tail(unlist(strsplit(opts$filename,".",fixed=T)),1);
+    #if (is.null(opts$filesuffix)) {              # WK/05/12: bug fix: set opts$filesuffix *always* as the suffix of opts$filename
+      opts$filesuffix = tail(unlist(strsplit(opts$filename,".",fixed=TRUE)),1);
       opts$filesuffix = paste(".",opts$filesuffix,sep="");
-    }
-    #if (is.null(suffix)) 
+    #}
     suffix = opts$filesuffix;
-    #if (length(grep(suffix,filename))==0)
-    #  stop("filename and suffix do not fit to each other: ",filename," ",suffix)
 
     if (is.null(opts$TST.COL)) opts$TST.COL="TST.COL";
-    if (is.null(opts$PDFFILE)) opts$PDFFILE=sub(suffix,"_pic.pdf",filename)
-    if (is.null(opts$GD.PNGDIR)) opts$GD.PNGDIR=paste("PNG",sub(suffix,"",filename),"/",sep="");
-    if (is.null(opts$LOGFILE)) opts$LOGFILE=sub(suffix,".log",filename)
-    if (is.null(opts$EVALFILE)) opts$EVALFILE=sub(suffix,"_eval.csv",filename)      # contains evaluation results allEVAL
+    # bug fix 05/12: removed the is.null-check from  opts$PDFFILE, $GD.PNGDIR, $LOGFILE, $EVALFILE
+    # (otherwise it might happen that opts$LOGFILE = "default.log"):
+    opts$PDFFILE=sub(suffix,"_pic.pdf",filename)
+    opts$GD.PNGDIR=paste("PNG",sub(suffix,"",filename),"/",sep="");
+    opts$LOGFILE=sub(suffix,".log",filename)
+    opts$EVALFILE=sub(suffix,"_eval.csv",filename)      # contains evaluation results allEVAL
     
     if (is.null(opts$SRF.samp)) opts$SRF.samp=min(opts$RF.samp,3000);  # new 06/2011
     if (is.null(opts$SRF.cutoff)) opts$SRF.cutoff=opts$CLS.cutoff;     # new 01/2011, might change the default behaviour

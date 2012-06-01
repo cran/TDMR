@@ -123,7 +123,7 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
         }
         lev.resp <- levels(d_train[,response.variable]);
         n.class <- length(lev.resp);
-        if (!is.null(opts$CLS.CLASSWT)) names(opts$CLS.CLASSWT) <- lev.resp;
+        if (!is.null(opts$CLS.CLASSWT)) names(opts$CLS.CLASSWT) <- lev.resp;    # RF needs a *named* vector for option 'classwt', otherwise it will change this vector (!)
         opts$CLS.cutoff <- tdmModAdjustCutoff(opts$CLS.cutoff,n.class);
         opts$SRF.cutoff <- tdmModAdjustCutoff(opts$SRF.cutoff,n.class);
   
@@ -434,9 +434,9 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
         # column "votes" is beneficial for opts$fct.postproc (e.g. in the case of DMC2010)
         if (res.rf$HasVotes) {  # column "votes" is the fraction of trees voting for the majority class
           name.of.votes <- "votes";
-          d_train <- bind_response(d_train, name.of.votes, res.rf$votes[,1])
-          d_test  <- bind_response(d_test, name.of.votes, app$test.votes[,1])
-          d_dis   <- bind_response(d_dis, name.of.votes, app$dis.votes[,1])
+          d_train <- tdmBindResponse(d_train, name.of.votes, res.rf$votes[,1])
+          d_test  <- tdmBindResponse(d_test, name.of.votes, app$test.votes[,1])
+          d_dis   <- tdmBindResponse(d_dis, name.of.votes, app$dis.votes[,1])
           if (opts$test2.string == "default cutoff") {
             #-- choice 1: test2 is the prediction with default cutoff -------------------------------
             cutoff <- rep(1/n.class, n.class);
@@ -513,17 +513,17 @@ tdmClassify <- function(d_train,d_test,d_dis,response.variables,input.variables,
         name.of.prediction <- paste("pred_", response.variable, sep="")
         name2.of.prediction <- paste("pred2_", response.variable, sep="")
         name.of.probability <- paste("prob_", response.variable, sep="")
-        d_train <- bind_response(d_train, name.of.prediction, train.predict)
-        d_test <- bind_response(d_test, name.of.prediction, test.predict)
-        d_dis <- bind_response(d_dis, name.of.prediction, dis.predict)
-        if (res.rf$HasVotes) d_test  <- bind_response(d_test, name2.of.prediction, test2.predict)
+        d_train <- tdmBindResponse(d_train, name.of.prediction, train.predict)
+        d_test <- tdmBindResponse(d_test, name.of.prediction, test.predict)
+        d_dis <- tdmBindResponse(d_dis, name.of.prediction, dis.predict)
+        if (res.rf$HasVotes) d_test  <- tdmBindResponse(d_test, name2.of.prediction, test2.predict)
         if (res.rf$HasProbs) {
-          predProb$Trn <- bind_response(predProb$Trn, response.variable, d_train[,response.variable]);
-          predProb$Trn <- bind_response(predProb$Trn, name.of.prediction, train.predict)
-          predProb$Trn <- bind_response(predProb$Trn, name.of.probability, as.vector(lastProbs$v_train[,1]))
-          predProb$Val <- bind_response(predProb$Val, response.variable, d_test[,response.variable]);
-          predProb$Val <- bind_response(predProb$Val, name.of.prediction, test.predict)
-          predProb$Val <- bind_response(predProb$Val, name.of.probability, as.vector(lastProbs$v_test[,1]))
+          predProb$Trn <- tdmBindResponse(predProb$Trn, response.variable, d_train[,response.variable]);
+          predProb$Trn <- tdmBindResponse(predProb$Trn, name.of.prediction, train.predict)
+          predProb$Trn <- tdmBindResponse(predProb$Trn, name.of.probability, as.vector(lastProbs$v_train[,1]))
+          predProb$Val <- tdmBindResponse(predProb$Val, response.variable, d_test[,response.variable]);
+          predProb$Val <- tdmBindResponse(predProb$Val, name.of.prediction, test.predict)
+          predProb$Val <- tdmBindResponse(predProb$Val, name.of.probability, as.vector(lastProbs$v_test[,1]))
           #browser()
         } else {
           #predProbTrn = NULL;

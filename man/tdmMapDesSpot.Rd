@@ -4,7 +4,7 @@
 \title{Helper fct for \code{\link{tdmStartSpot}}.}
 \format{List of 2
  $ load :function (tdm)  
- $ apply:function (des, opts, k, tdm)}
+ $ apply:function (des, opts, k, tdm, spotConfig)}
 \usage{
   tdmMapDesSpot
 }

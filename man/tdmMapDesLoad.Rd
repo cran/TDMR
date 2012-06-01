@@ -7,7 +7,8 @@
 \arguments{
   \item{envT}{environment}
 
-  \item{tdm}{list, needed for \code{tdm$tdmPath}}
+  \item{tdm}{list, needed for \code{tdm$tdmPath} and
+  \code{tdm$path}}
 }
 \description{
   Load the map files \code{"tdmMapDesign.csv"} and
@@ -17,9 +18,8 @@
   \code{"tdmMapDesign.csv"} is searched in the TDMR library
   path \code{.find.package("TDMR")}.  (For the developer
   version: \code{<tdm$tdmPath>/inst}). \cr
-  \code{"userMapDesign.csv"} is searched in the path
-  \code{dirname(tdm$mainFile)} (or in the current dir, if
-  tdm$mainFile==NULL).
+  \code{"userMapDesign.csv"} is searched in tdm$path (which
+  is getwd() if the user did not define tdm$path).
 }
 \seealso{
   \code{\link{tdmMapDesApply}}

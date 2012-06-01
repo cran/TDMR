@@ -83,10 +83,11 @@ unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F
     if (is.null(finals)) {
       # write a line with results to data frame :
       finals <- data.frame(list(CONF=sub(".conf","",confFile,fixed=TRUE),TUNER=envT$theTuner,NEXP=envT$nExp));
+      namFinals <- names(finals);
       if (withParams) {
-        finals <- cbind(finals
-                        ,tail(bst[,setdiff(names(bst[-1]),c("REPEATS","repeatsLastConfig","STEP","SEED","COUNT"))],1)
-                        );
+        pNames=row.names(envT$spotConfig$alg.roi);
+        finals <- cbind(finals,bst[k,pNames]);    # bug fix 05/12: this way it works for length(pNames)==1 and for >1    
+        names(finals) <- c(namFinals,pNames);     #
       } 
       finals <- cbind(finals
                      , NRUN=tdm$nrun

@@ -2,18 +2,24 @@
 \alias{tdmOptsDefaultsSet}
 \title{Default values for list \code{opts}.}
 \usage{
-  tdmOptsDefaultsSet(opts = NULL)
+  tdmOptsDefaultsSet(opts = NULL, path = "./")
 }
 \arguments{
   \item{opts}{(optional) the options already set}
+
+  \item{path}{["./"] the path string to precede all
+  settings \code{opts$dir.*}.  If \code{path=="./"} then
+  nothing is preceded to \code{opts$dir.*}.}
 }
 \value{
   a list \code{opts}, with defaults set for all options
   relevant for a DM task, containing the following elements
-  \item{dir.txt}{[./data] where to find .txt/.csv files}
-  \item{dir.data}{[./data] where to find data files}
-  \item{dir.Rdata}{[./Rdata] where to find .Rdata files}
-  \item{dir.output}{[./Output] where to put output files}
+  \item{dir.txt}{[<path>/data] where to find .txt/.csv
+  files} \item{dir.data}{[<path>/data] where to find other
+  data files, including .Rdata }
+  \item{dir.Rdata}{[<path>/Rdata] -- deprecated, use
+  opts$dir.data -- } \item{dir.output}{[<path>/Output]
+  where to put output files}
   \item{filename}{["default.txt"] the task data}
   \item{filetest}{[NULL] the test data, only relevant for
   READ.TST=T} \item{data.title}{["Default Data"] title for

@@ -28,6 +28,7 @@
 #' @export
 ######################################################################################
 tdmStartSpot <- function(spotConfig) {
+#f <- function() {browser()    }; f();   # make a browser stop w/o printing the whole spotConfig on console
   	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
     if (!is.list(spotConfig)) stop("Error: spotConfig is not a list");
     if (is.null(spotConfig$opts)) stop("Error: spotConfig does not contain an element 'opts'");
@@ -37,6 +38,9 @@ tdmStartSpot <- function(spotConfig) {
         # However, tdm has to specify the mandatory setting tdm$mainFunc (optionally: tdm$mainFile)
     tdm <- spotConfig$tdm;
     opts <- spotConfig$opts;
+
+#f <- function() {browser()    }; f();   # make a browser stop w/o printing the whole spotConfig on console
+
     dset <- switch(as.character(is.null(spotConfig$dataObj)),"TRUE"=NULL,"FALSE"=dsetTrnVa(spotConfig$dataObj));    
     # If dset is not NULL, this has an effect on mainCommand which contains "...,dset=dset".
     # If dset is NULL, the data reading is deferred to main_TASK.
@@ -73,7 +77,7 @@ tdmStartSpot <- function(spotConfig) {
       
   		for (r in 1:des$REPEATS[k]){
   	    opts$rep <- r;
-      	opts <- tdmMapDesSpot$apply(des,opts,k,tdm);
+      	opts <- tdmMapDesSpot$apply(des,opts,k,tdm,spotConfig);
    			
         if (!is.null(des$STEP))	theStep <- des$STEP[k];
   			opts$ALG.SEED <- des$SEED[k]+r;		# now used in tdmClassify, tdmClassifyLoop
@@ -89,19 +93,19 @@ tdmStartSpot <- function(spotConfig) {
   			setwd(oldwd);                                     # restore working dir 
 
         # append a line with results to result data frame spotConfig$alg.currentResult:
-        res <- data.frame(list(Y=result$y
-                              ,des[k,setdiff(names(des),c("CONFIG","REPEATS","repeatsLastConfig","STEP","SEED"))]
-                              ));
+        pNames=row.names(spotConfig$alg.roi);
+        res <- data.frame(list(result$y,des[k,pNames]));  # bug fix 05/12: this way it works for length(pNames)==1 and for >1
+        names(res) <- c("Y",pNames);                      #
         res <- cbind(res
           					,SEED=opts$ALG.SEED
          					  ,STEP=theStep
           					,CONFIG=des$CONFIG[k]                  
           					,REP=r
-                    );
+                    );                 
 			  spotConfig$alg.currentResult=rbind(spotConfig$alg.currentResult,res);			
         # (alg.currentResult is initially set to NULL in spotTuner and lhdTuner, see tdmDispatchTuner.r)				
 
-#fff <- function() {  browser() }; fff();  # this is just to halt here without the complete spotConfig printout (contains dataObj)
+#f <- function() {browser()    }; f();   # make a browser stop w/o printing the whole spotConfig on console
 
         if (tdm$fileMode) {                  
           resFileName <- spotConfig$io.resFileName;

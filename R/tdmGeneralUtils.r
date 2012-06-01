@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 0.3.0\cr
-#' Date: \tab 08.05.2012\cr
+#' Version: \tab 0.3.1\cr
+#' Date: \tab 01.06.2012\cr
 #' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
 #' }
@@ -52,9 +52,8 @@ NA #NULL, ends description without hiding first function
 #' @param vec the contents for the last column bound to data frame \code{d}
 #' @return data frame \code{d} with column added
 #' @export
-#' @keywords internal
 ######################################################################################
-bind_response <- function(d,response.predict,vec)
+tdmBindResponse <- function(d,response.predict,vec)
 {
     if (is.na(match(response.predict,names(d)))) {
       # bind column response.predict as last column to data frame d
@@ -69,7 +68,7 @@ bind_response <- function(d,response.predict,vec)
 #
 # this older version does the same, but requires three copy-replacements of
 # data frame d (instead of one):
-bind_response_OLD <- function(d,response.predict,vec)
+tdmBindResponse_OLD <- function(d,response.predict,vec)
 {
     # drop column response.predict if there, do nothing if not there
     d <- d[,setdiff(names(d),response.predict)]

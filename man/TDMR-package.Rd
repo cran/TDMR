@@ -8,7 +8,7 @@
 }
 \details{
   \tabular{ll}{ Package: \tab TDMR\cr Type: \tab Package\cr
-  Version: \tab 0.3.0\cr Date: \tab 08.05.2012\cr License:
+  Version: \tab 0.3.1\cr Date: \tab 01.06.2012\cr License:
   \tab GPL (>= 2)\cr LazyLoad: \tab yes\cr }
 
   TDMR is a package for tuned data mining (predictive

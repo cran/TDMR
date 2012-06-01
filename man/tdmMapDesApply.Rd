@@ -12,7 +12,8 @@
   \item{k}{apply mapping for the \code{k}-th design point}
 
   \item{envT}{environment, we needed here \code{envT$map}
-  and \code{envT$mapUser}, see \code{\link{tdmMapDesLoad}}}
+  and \code{envT$mapUser}, see \code{\link{tdmMapDesLoad}},
+  and in addition \code{envT$spotConfig$alg.roi}}
 
   \item{tdm}{list}
 }

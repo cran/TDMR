@@ -101,7 +101,11 @@ tdmSplitTestData <- function(opts,tdm,nExp=0) {
     		dset[,TST.COL] = cvi;			       # add a new column "tdmSplit" with 1 for test data, 0 else
     		
 		} else if (tdm$umode[1]=="TST") {
-    		TST.COL = opts$TST.COL;          # take the partition delivered by tdmReadData
+    		TST.COL = opts$TST.COL;          # take the partition delivered by tdmReadData     
+        if (!any(names(dset)==TST.COL)) {
+          stop(sprintf("Data frame dset does not contain a column opts$TST.COL=\"%s\". \n%s",
+                        opts$TST.COL,"Are you sure to have opts$READ.TST==T when using tdm$umode==\"TST\"?")); 
+        }
 		} else {  # i.e. if tdm$umode[1]=="RSUB" or =="CV"
 		    cvi = rep(0,nrow(dset));         # all data in dset used for training and validation
     		TST.COL = opts$TST.COL;          
@@ -137,6 +141,10 @@ dsetTrnVa.default <- function(x)  stop("Method dsetTrnVa only allowed for object
 #' @keywords internal
 ######################################################################################
 dsetTrnVa.TDMdata <- function(x)  {
+  if (!any(names(x$dset)==x$TST.COL)) {
+    stop(sprintf("Data frame dset does not contain a column x$TST.COL=\"%s\". \n%s",
+                 x$TST.COL,"Are you sure to have opts$READ.TST==T when using tdm$umode==\"TST\"?")); 
+  }
   x$dset[x$dset[,x$TST.COL]==0,];	# return the training-validation part of data frame dset
 }
 

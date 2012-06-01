@@ -15,7 +15,12 @@
   containing the data set (train/vali part and test part)}
 }
 \value{
-  result of CMA-ES algorithm
+  the result of CMA-ES tuning, i.e. the list
+  \code{envT$spotConfig}, extended by
+  \item{\code{cma$sres}}{ the return return string from the
+  system call "java cma.examples.cmaJava CMAprops.txt" }
+  \item{\code{cma$count}}{ the number of calls to
+  \code{tdmStartOther} }
 }
 \description{
   Perform a parameter tuning by CMA-ES, using the *Java*

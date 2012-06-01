@@ -15,7 +15,11 @@
   containing the data set (train/vali part and test part)}
 }
 \value{
-  result of BFGS algorithm
+  the result of BFGS tuning, i.e. the list
+  \code{envT$spotConfig}, extended by \item{\code{bfgs}}{
+  the return value from \code{optim(...,method="L-BFGS-B")}
+  } \item{\code{bfgs$count}}{ the number of calls to
+  \code{tdmStartOther} }
 }
 \description{
   Perform a parameter tuning by Broyden, Fletcher, Goldfarb
@@ -23,8 +27,8 @@
   box constraints is used.
 }
 \author{
-  Wolfgang Konen, Patrick Koch
-  \email{wolfgang.konen@fh-koeln.de}
+  Wolfgang Konen \email{wolfgang.konen@fh-koeln.de},
+  Patrick Koch
 }
 \keyword{internal}
 

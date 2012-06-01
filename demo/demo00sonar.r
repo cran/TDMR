@@ -5,7 +5,7 @@
 #*# with Random Forest as the prediction model. 
 
 ## load package and set working directory
-require("TDMR");
+#require("TDMR");
 path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();
@@ -18,6 +18,7 @@ opts = tdmOptsDefaultsSet();
 opts$filename = "sonar.txt"
 opts$READ.CMD = "read.csv2(file=paste(opts$dir.data, filename, sep=\"\"), dec=\".\", sep=\",\",header=FALSE)"
 opts$data.title <- "Sonar Data";
+opts$CLS.CLASSWT <- c(10,10);
       
 result=main_sonar(opts);
 

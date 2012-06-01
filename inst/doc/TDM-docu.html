@@ -113,28 +113,16 @@
 	{font-family:Tahoma;
 	panose-1:2 11 6 4 3 5 4 4 2 4;}
 @font-face
-	{font-family:Verdana;
-	panose-1:2 11 6 4 3 5 4 4 2 4;}
-@font-face
-	{font-family:CMBX10;
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:CMR10~20;
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:CMSS8;
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:CMTT10;
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:"Antique Olive";
+	{font-family:Times;
 	panose-1:0 0 0 0 0 0 0 0 0 0;}
 @font-face
 	{font-family:"Albertus Medium";
 	panose-1:0 0 0 0 0 0 0 0 0 0;}
 @font-face
 	{font-family:"Albertus Extra Bold";
+	panose-1:0 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:"Antique Olive";
 	panose-1:0 0 0 0 0 0 0 0 0 0;}
 @font-face
 	{font-family:"Clarendon Condensed";
@@ -179,9 +167,6 @@
 	{font-family:Palatino;
 	panose-1:0 0 0 0 0 0 0 0 0 0;}
 @font-face
-	{font-family:Times;
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
 	{font-family:"ITC Zapf Chancery";
 	panose-1:0 0 0 0 0 0 0 0 0 0;}
 @font-face
@@ -199,6 +184,9 @@
 @font-face
 	{font-family:"Lucida Sans Unicode";
 	panose-1:2 11 6 2 3 5 4 2 2 4;}
+@font-face
+	{font-family:Verdana;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
 @font-face
 	{font-family:"Arial Black";
 	panose-1:2 11 10 4 2 1 2 2 2 4;}
@@ -724,34 +712,7 @@
 	{font-family:"SM Formular New";
 	panose-1:2 7 3 9 2 2 5 2 4 4;}
 @font-face
-	{font-family:"Z\@R14EB\.tmp";
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:"Z\@R14EE\.tmp";
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:"Z\@R14F0\.tmp";
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:"Liberation Serif";}
-@font-face
-	{font-family:"Liberation Sans";}
-@font-face
-	{font-family:"WenQuanYi Micro Hei";}
-@font-face
-	{font-family:"Lohit Hindi";}
-@font-face
-	{font-family:"Myriad Pro";
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
-@font-face
-	{font-family:MyriadRegular;}
-@font-face
-	{font-family:"Nimbus Roman No9 L";}
-@font-face
-	{font-family:"DejaVu Sans";}
-@font-face
-	{font-family:"DejaVu Sans Mono";
-	panose-1:0 0 0 0 0 0 0 0 0 0;}
+	{font-family:Syntax;}
  /* Style Definitions */
  p.MsoNormal, li.MsoNormal, div.MsoNormal
 	{margin-top:0cm;
@@ -1102,6 +1063,8 @@ p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
 	margin-bottom:.0001pt;
 	font-size:8.0pt;
 	font-family:"Tahoma","sans-serif";}
+span.MsoPlaceholderText
+	{color:gray;}
 p.MsoNoSpacing, li.MsoNoSpacing, div.MsoNoSpacing
 	{margin:0cm;
 	margin-bottom:.0001pt;
@@ -1625,8 +1588,7 @@ Configuration files for a SPOT run</span></p>
   padding:0cm 5.4pt 0cm 5.4pt;height:13.75pt'>
   <p class=MsoNormal style='text-align:justify'><span lang=EN-US>SPOT
   configuration file, usually with alg.func = &quot;tdmStartSpot&quot;.
-  Furthermore,  io.apdFileName and io.roiFileName should specify the two files
-  above.</span></p>
+  Furthermore,  io.apdFileName and io.roiFileName should specify the two files above.</span></p>
   </td>
  </tr>
 </table>
@@ -1670,7 +1632,8 @@ it returns in</span></p>
 by SPOT.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>If spot.fileMode==T, SPOT will generate
-.des and .aroi files (needed by SPOT internally) and the output files .bst and .res.</span></p>
+.des and .aroi files (needed by SPOT internally) and the output files .bst and
+.res.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>If spot.fileMode==F, tdmStartSpot will read
 the design from spotConfig$alg.currentDesign and it writes the .res data frame
@@ -1692,8 +1655,8 @@ a list of tuners</span></i></a><span lang=EN-US>) and compare their best
 solutions with different modes of unbiased evaluations, e.g. on unseen test
 data (</span><a href="#tdm"><span lang=EN-US>tdm</span></a><span lang=EN-US>$umode
 = ”TST”) or by starting a new, independent CV (</span><a href="#tdm"><span
-lang=EN-US>tdm</span></a><span lang=EN-US>$umode = “CV”) or by starting a new, independent
-re-sampling (</span><a href="#tdm"><span lang=EN-US>tdm</span></a><span
+lang=EN-US>tdm</span></a><span lang=EN-US>$umode = “CV”) or by starting a new,
+independent re-sampling (</span><a href="#tdm"><span lang=EN-US>tdm</span></a><span
 lang=EN-US>$umode = “RSUB”). </span></p>
 
 <p class=MsoNormal><span lang=EN-US>To start the Big Loop, only one script file
@@ -1917,8 +1880,8 @@ of data frame </span><span lang=EN-US style='font-family:"Courier New"'>finals</
   <td width=359 valign=top style='width:269.3pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
   padding:0cm 5.4pt 0cm 5.4pt'>
-  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt'>all tuned
-  parameters appearing in .roi file</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt'>all tuned parameters
+  appearing in .roi file</span></p>
   </td>
   <td width=161 valign=top style='width:120.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
@@ -2122,8 +2085,8 @@ of data frame </span><span lang=EN-US style='font-family:"Courier New"'>finals</
   <td width=359 valign=top style='width:269.3pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
   padding:0cm 5.4pt 0cm 5.4pt'>
-  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt'>mean test RGain
-  (test set = separate data, user-provided)</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt'>mean test RGain (test
+  set = separate data, user-provided)</span></p>
   </td>
   <td width=161 valign=top style='width:120.5pt;border-top:none;border-left:
   none;border-bottom:solid windowtext 1.0pt;border-right:solid windowtext 1.0pt;
@@ -2928,7 +2891,7 @@ will inherit this default behaviour. </span></p>
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-size:10.0pt;font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><span lang=EN-US>tdmOptsDefaultsSet</span><span lang=EN-US
-style='font-size:10.0pt'>  calls finally the internal function </span><span
+style='font-size:10.0pt'>  calls finally the internal function </span><span
 lang=EN-US>tdmOptsDefaultsFill(opts)</span><span lang=EN-US style='font-size:
 10.0pt'> , and this fills in further defaults derived from actual settings of
 opts (e.g. opts$LOGFILE is an element which is derived from opts$filename as
@@ -3000,14 +2963,24 @@ things, depending on the value of opts$rgain.type:</span></p>
 text-indent:-18.0pt;text-autospace:none'><span lang=EN-US>-<span
 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><span lang=EN-US>“rmae” or NULL [def.]: the relative mean
-absolute error RMAE, i.e. the mean &lt;|y – y</span><span lang=EN-US
-style='font-size:7.0pt'>(pred)</span><span lang=EN-US>|&gt; divided by the mean
-&lt;|y|&gt;,</span></p>
+absolute error <br>
+               </span><span
+style='font-size:11.0pt;line-height:115%;font-family:"Calibri","sans-serif";
+position:relative;top:15.0pt'><img width=207 height=56
+src="TDM-docu-Dateien/image001.png"></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='margin-bottom:0cm;margin-bottom:
+.0001pt;text-autospace:none'><span lang=EN-US>where y<sub>i</sub> is the true
+value and p<sub>i</sub> the predicted value</span></p>
 
 <p class=MsoListParagraphCxSpLast style='margin-bottom:0cm;margin-bottom:.0001pt;
 text-indent:-18.0pt;text-autospace:none'><span lang=EN-US>-<span
 style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><span lang=EN-US>“rmse”: root mean square error.</span></p>
+</span></span><span lang=EN-US>“rmse”: root mean square error<br>
+</span><span lang=EN-US style='font-size:18.0pt'>         </span><span
+style='font-size:11.0pt;line-height:115%;font-family:"Calibri","sans-serif";
+position:relative;top:15.0pt'><img width=276 height=59
+src="TDM-docu-Dateien/image002.png"></span></p>
 
 <p class=MsoNormal><span lang=EN-US>In each regression case, TDMR seeks to minimize
 result$R_train.</span></p>
@@ -3447,9 +3420,9 @@ class=MsoFootnoteReference><span lang=EN-US style='font-size:10.0pt;font-family:
   </span></p>
   <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
   margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
-  10.0pt;font-family:"Arial Narrow","sans-serif"'>                                                  
-              # one response column &quot;Class&quot; with levels
-  [&quot;M&quot; (metal) | &quot;R&quot; (rock)] </span></p>
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>                                                               #
+  one response column &quot;Class&quot; with levels [&quot;M&quot; (metal) |
+  &quot;R&quot; (rock)] </span></p>
   <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
   margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
   10.0pt;font-family:"Arial Narrow","sans-serif"'>    <br>
@@ -3492,7 +3465,8 @@ class=MsoFootnoteReference><span lang=EN-US style='font-size:10.0pt;font-family:
   attach certain columns (here: y, sd.y, dset) to list result:</span></p>
   <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
   margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
-  10.0pt;font-family:"Arial Narrow","sans-serif"'>result &lt;- tdmClassifySummary(result,opts,dset);</span></p>
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>result &lt;-
+  tdmClassifySummary(result,opts,dset);</span></p>
   <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
   margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
   10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
@@ -3591,7 +3565,7 @@ lang=EN-US>Table 3</span></b><span lang=EN-US>.</span></p>
   <td width=307 valign=top style='width:230.3pt;border:solid windowtext 1.0pt;
   padding:0cm 5.4pt 0cm 5.4pt'>
   <p class=MsoNormal style='page-break-after:avoid'><img border=0 width=321
-  height=287 id="Grafik 1" src="TDM-docu-Dateien/image001.jpg"
+  height=287 id="Grafik 1" src="TDM-docu-Dateien/image003.jpg"
   alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\importance.png"></p>
   <p class=MsoCaption><a name="_Ref284364992"><span lang=EN-US>Figure </span></a><span lang=EN-US>1</span><span lang=EN-US>: RF-based variable importance for task <span
   style='text-transform:uppercase'>sonar</span>.</span></p>
@@ -3600,7 +3574,7 @@ lang=EN-US>Table 3</span></b><span lang=EN-US>.</span></p>
   border-left:none;padding:0cm 5.4pt 0cm 5.4pt'>
   <p class=MsoNormal style='page-break-after:avoid'><span lang=EN-US>&nbsp;</span></p>
   <p class=MsoNormal style='page-break-after:avoid'><img border=0 width=266
-  height=266 id="Grafik 2" src="TDM-docu-Dateien/image002.jpg"
+  height=266 id="Grafik 2" src="TDM-docu-Dateien/image004.jpg"
   alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\true-false.png"></p>
   <p class=MsoCaption><a name="_Ref284365033"><span lang=EN-US>Figure </span></a><span lang=EN-US>2</span><span lang=EN-US>: True/false classification for the two
   classes M and R of task <span style='text-transform:uppercase'>sonar</span>.</span></p>
@@ -3747,8 +3721,7 @@ margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
 
 <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
 margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
-10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$filename =
-&quot;sonar.txt&quot;</span></p>
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$filename = &quot;sonar.txt&quot;</span></p>
 
 <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
 margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
@@ -3860,7 +3833,7 @@ lang=EN-US>:</span></p>
  </tr>
 </table>
 
-<p class=MsoNormal><img width=313 height=313 src="TDM-docu-Dateien/image003.jpg"
+<p class=MsoNormal><img width=313 height=313 src="TDM-docu-Dateien/image005.jpg"
 align=left hspace=12
 alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\sonar_sensitivity.png"></p>
 
@@ -4158,10 +4131,10 @@ appropriate .RData file.The call <br>
 <p class=MsoNormal><span lang=EN-US>allows to visually inspect all RES data
 frames contained in envT.</span></p>
 
-<p class=MsoNormal><img width=313 height=143 src="TDM-docu-Dateien/image004.png"
+<p class=MsoNormal><img width=313 height=143 src="TDM-docu-Dateien/image006.png"
 align=left hspace=12
 alt="Figure 4: The user interface in tdmPlotResMeta. The user may select the tuner, the design variables to show on x- and y-axis, the display function (spotReport3d or spotReportContour) and the metamodel function (modelFit). Two optional sliders are nExper and nSkip (see text)."><img
-border=0 width=227 height=214 id="Grafik 8" src="TDM-docu-Dateien/image005.jpg"
+border=0 width=227 height=214 id="Grafik 8" src="TDM-docu-Dateien/image007.jpg"
 alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\image.d\twiddlePlotResMeta.png"></p>
 
 <p class=MsoNormal><span lang=EN-US>The user interface is shown and explained
@@ -4178,13 +4151,13 @@ element. An additional slider “nExper” appears only, if envT$tdm$nExperim&gt;1.
   <td width=307 valign=top style='width:230.3pt;border:solid gray 1.0pt;
   padding:0cm 5.4pt 0cm 5.4pt'>
   <p class=MsoNormal><img border=0 width=290 height=307 id="Grafik 11"
-  src="TDM-docu-Dateien/image006.jpg"
+  src="TDM-docu-Dateien/image008.jpg"
   alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\image.d\plotResMeta-GPr.jpg"></p>
   </td>
   <td width=307 valign=top style='width:230.3pt;border:solid gray 1.0pt;
   border-left:none;padding:0cm 5.4pt 0cm 5.4pt'>
   <p class=MsoNormal><img border=0 width=271 height=319 id="Grafik 14"
-  src="TDM-docu-Dateien/image007.jpg"
+  src="TDM-docu-Dateien/image009.jpg"
   alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\image.d\plotResMeta-RF.jpg"></p>
   </td>
  </tr>
@@ -4290,8 +4263,9 @@ can be selected and saved as PNG images with commands like</span></p>
 
 <p class=MsoNormal><span lang=EN-US>With the help of package ROCR [Sing05],
 several area performance measure can be used for binary classification. The
-file </span><a href="../../../../demo/demo06ROCR.r"><b><span lang=EN-US>demo/demo06ROCR.r</span></b></a><span
-lang=EN-US> shows an example:<br>
+file </span><a
+href="../../../../../../../../../../../Dokumente%20und%20Einstellungen/wolfgang/Anwendungsdaten/Microsoft/TDMR/demo/demo06ROCR.r"><b><span
+lang=EN-US>demo/demo06ROCR.r</span></b></a><span lang=EN-US> shows an example:<br>
 <br>
 </span></p>
 
@@ -4340,13 +4314,13 @@ lang=EN-US> shows an example:<br>
   <td width=307 valign=top style='width:230.3pt;border:solid #A6A6A6 1.0pt;
   padding:0cm 5.4pt 0cm 5.4pt'>
   <p class=MsoNormal><img border=0 width=294 height=294 id="Grafik 15"
-  src="TDM-docu-Dateien/image008.jpg"
+  src="TDM-docu-Dateien/image010.jpg"
   alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\image.d\ROCR-ROCchart.png"></p>
   </td>
   <td width=307 valign=top style='width:230.3pt;border:solid #A6A6A6 1.0pt;
   border-left:none;padding:0cm 5.4pt 0cm 5.4pt'>
   <p class=MsoNormal><img border=0 width=294 height=294 id="Grafik 16"
-  src="TDM-docu-Dateien/image009.jpg"
+  src="TDM-docu-Dateien/image011.jpg"
   alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\image.d\ROCR-liftChart.png"></p>
   </td>
  </tr>
@@ -4395,10 +4369,10 @@ different performance measure plots:</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<p class=MsoNormal><img width=313 height=143 src="TDM-docu-Dateien/image010.png"
+<p class=MsoNormal><img width=313 height=143 src="TDM-docu-Dateien/image012.png"
 align=left hspace=12
 alt="Figure 7: The user interface of tdmROCR. The user may select the dataset (training or validation), the type of plot (ROC, lift, or precision-recall) and the number of run (only if Opts(result)$NRUN&gt;1)."><img
-border=0 width=230 height=153 id="Grafik 13" src="TDM-docu-Dateien/image011.jpg"
+border=0 width=230 height=153 id="Grafik 13" src="TDM-docu-Dateien/image013.jpg"
 alt="Beschreibung: C:\WUTemp\FH-MassenDaten\fiwa_soma\trunk\src\R-DM-Template\Docu.d\image.d\ROCR-twiddle.png"></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
@@ -4413,8 +4387,8 @@ lang=EN-US>De<a name="details_phase2"></a>tails for </span><a
 href="#_Phase_2:_SPOT"><span lang=EN-US>Phase 2 Example</span></a><span
 lang=EN-US> </span></h3>
 
-<p class=MsoNormal><span lang=EN-US style='font-size:10.0pt'>When
-spot(“sonar_01.conf”,”auto”) is invoked, the following things happen:</span></p>
+<p class=MsoNormal><span lang=EN-US style='font-size:10.0pt'>When spot(“sonar_01.conf”,”auto”)
+is invoked, the following things happen:</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US style='font-size:10.0pt;font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4449,8 +4423,8 @@ lang=EN-US style='font-size:10.0pt'> </span></p>
 style='font-size:10.0pt;font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><span lang=EN-US style='font-size:10.0pt'>Now tdm$mainFunc is
 started and runs the data mining process. The DM template main_sonar is
-provided by the user. The only requirement of SPOT or other tuners for the function
-main_sonar is that it returns in <br>
+provided by the user. The only requirement of SPOT or other tuners for the
+function main_sonar is that it returns in <br>
                result$y<br>
 a suitable quantity to be <b>minimized</b> by SPOT.</span></p>
 
@@ -4486,14 +4460,13 @@ with its own set of files. </span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-size:10.0pt;font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><span lang=EN-US style='font-size:10.0pt'>If a new parameter
-appears in a .roi file which never appeared in any other .roi file before, a
-line has to be added to tdmMapDesign.csv, specifying the mapping of this
-parameter to the corresponding element of </span><a href="#opts"><span
-lang=EN-US style='font-size:10.0pt'>opts</span></a><span lang=EN-US
-style='font-size:10.0pt'>. (</span><a href="#_TDMR_Design_Mappping"><i><span
-lang=EN-US style='font-size:10.0pt'>more details here</span></i></a><span
-lang=EN-US style='font-size:10.0pt'>)</span></p>
+</span></span><span lang=EN-US style='font-size:10.0pt'>If a new parameter appears
+in a .roi file which never appeared in any other .roi file before, a line has
+to be added to tdmMapDesign.csv, specifying the mapping of this parameter to
+the corresponding element of </span><a href="#opts"><span lang=EN-US
+style='font-size:10.0pt'>opts</span></a><span lang=EN-US style='font-size:10.0pt'>.
+(</span><a href="#_TDMR_Design_Mappping"><i><span lang=EN-US style='font-size:
+10.0pt'>more details here</span></i></a><span lang=EN-US style='font-size:10.0pt'>)</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-size:10.0pt;font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -4538,7 +4511,8 @@ lang=EN-US style='font-size:10.0pt'>: </span></p>
 </ul>
 
 <h3><a name="_Toc323984265"></a><a name="_Details_for_Phase_1"></a><span
-lang=EN-US>Details for </span><a href="../../../../../Docu.d/The_2#_Phase_3:_"><span
+lang=EN-US>Details for </span><a
+href="../../../../../../../../../../../Dokumente%20und%20Einstellungen/wolfgang/Anwendungsdaten/Microsoft/Word/The_2#_Phase_3:_"><span
 lang=EN-US>Phase 3 Example</span></a><span lang=EN-US> </span></h3>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
@@ -5098,16 +5072,15 @@ of functions {tdmMapDesSpot$load, tdmMapDesSpot$apply} with exactly the same
 functionality. Why? – The second pair of functions is for use in tdmStartSpot(spotConfig)
 where we have no access to envT due to the calling syntax of spot(). Instead
 the object tdmMapDesSpot store the maps in local, permanent storage of this
-object’s environment. - The first pair of functions {tdmMapDesLoad,
-tdmMapDesApply} is for use in tdmStartOther, especially when called by a <i>separate</i>
-R process when using the tuner cma_j.  In this case the local, permanent
-storage mechanism does not work across different R sessions. Here we need the
+object’s environment. - The first pair of functions {tdmMapDesLoad, tdmMapDesApply}
+is for use in tdmStartOther, especially when called by a <i>separate</i> R
+process when using the tuner cma_j.  In this case the local, permanent storage
+mechanism does not work across different R sessions. Here we need the
 envT-based solution of the first pair, since the environment envT can be
 restored across R sessions easily via save &amp; load.</span></p>
 
 <h2><a name="_Toc323984274"></a><a name="_TDMR_parallel_computing"></a><span
-lang=EN-US>TDMR </span><span lang=EN-US style='font-family:"Courier New"'>seed</span><span
-lang=EN-US> Concept</span></h2>
+lang=EN-US>TDMR Seed Concept</span></h2>
 
 <p class=MsoNormal><span lang=EN-US>In a TDMR task there are usually several
 places where non-deterministic decisions are made and therefore certain
@@ -5149,9 +5122,9 @@ the TDMR software supports here three different cases of reproducability:</span>
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
 lang=EN-US>a)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><span lang=EN-US>Sometimes you want two TDMR runs to behave
-exactly the same (e.g. to see if a certain software change leaves the outcome unchanged).
-Then you may set opts$TST.SEED={any fixed number} and opts$MOD.SEED={any fixed
-number}.</span></p>
+exactly the same (e.g. to see if a certain software change leaves the outcome
+unchanged). Then you may set opts$TST.SEED={any fixed number} and
+opts$MOD.SEED={any fixed number}.</span></p>
 
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US>b)<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -5167,8 +5140,8 @@ style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span
 lang=EN-US>Sometimes you want both parts, test set selection and model
 training, to be non-deterministic. This is if you want to see the full
 variability of a certain solution approach, i.e. if you want to measure the
-degree of reproducability in a whole experiment. Then you may set opts$TST.SEED=
-NULL;  opts$MOD.SEED=NULL.</span></p>
+degree of reproducability in a whole experiment. Then you may set
+opts$TST.SEED= NULL;  opts$MOD.SEED=NULL.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>(The case {TST.SEED= NULL; MOD.SEED=any
 value} is a fourth possibility, but it has – as far as I can see – no practical
@@ -5213,12 +5186,12 @@ is however exactly reproducible. </span></p>
 
 <p class=MsoNormal><span style='position:absolute;z-index:251667456;margin-left:
 6px;margin-top:28px;width:299px;height:111px'><img width=299 height=111
-src="TDM-docu-Dateien/image012.png"
+src="TDM-docu-Dateien/image014.png"
 alt="main_TASK&#13;&#10;	for (opts$i = 1 : opts$NRUN)&#13;&#10;"></span><span
 style='position:absolute;z-index:251668480;margin-left:61px;margin-top:78px;
 width:235px;height:52px'><img width=235 height=52
-src="TDM-docu-Dateien/image013.png" alt=tdmClassifyLoop></span><img border=0
-width=310 height=145 src="TDM-docu-Dateien/image014.png"
+src="TDM-docu-Dateien/image015.png" alt=tdmClassifyLoop></span><img border=0
+width=310 height=145 src="TDM-docu-Dateien/image016.png"
 alt="for (opts$rep = 1 : des$REPEATS[k])"></p>
 
 <p class=MsoNormal><span lang=EN-US>Why is </span><span lang=EN-US
@@ -5277,8 +5250,9 @@ lang=EN-US style='font-size:10.0pt;font-family:Symbol'>·<span style='font:7.0pt 
 lang=EN-US>=</span><span lang=EN-US style='font-size:10.0pt'> NULL, the RNG
 seed will be set to (a different) number via </span><a href="#tdmRandomSeed"><span
 lang=EN-US style='font-size:10.0pt'>tdmRandomSeed()</span></a><span lang=EN-US>
-</span><span lang=EN-US style='font-size:10.0pt'>in each pass through the response.variable-loop
-of tdmClassify / tdmRegress (at start of step 4.3 “model training”).</span></p>
+</span><span lang=EN-US style='font-size:10.0pt'>in each pass through the
+response.variable-loop of tdmClassify / tdmRegress (at start of step 4.3 “model
+training”).</span></p>
 
 <p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
 style='font-size:10.0pt;font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
@@ -5570,9 +5544,10 @@ reproducability. For results on larger datasets the reader is referred to
 
 <h2><a name="_Toc323984278">References</a></h2>
 
-<p class=MsoNormal><span class=citation><span lang=EN-US>[Bart10e] T.
-Bartz-Beielstein. SPOT: An R package for automatic and interactive tuning of optimization
-algorithms by sequential parameter optimization. Technical Report </span></span><a
+<p class=MsoNormal><span class=citation>[Bart10e] T. Bartz-Beielstein. </span><span
+class=citation><span lang=EN-US>SPOT: An R package for automatic and
+interactive tuning of optimization algorithms by sequential parameter
+optimization. Technical Report </span></span><a
 href="http://arxiv.org/abs/1006.4645"><span lang=EN-US>http://arxiv.org/abs/1006.4645</span></a><span
 class=citation><span lang=EN-US> . CIOP Technical Report 05-10, FH Köln, June
 2010.  </span></span></p>
@@ -5597,15 +5572,15 @@ href="http://maanvs03.gm.fh-koeln.de/webpub/CIOPReports.d/Kone11b.d/tdm-cioprep.
 lang=EN-US>Tuned Data Mining: A Benchmark Study on Different Tuners</span></a><span
 lang=EN-US>, Proc. GECCO 2011, Dublin, July 2011<span class=citation>.  </span></span></p>
 
-<p class=MsoNormal><span class=citation><span lang=EN-US>[Knaus08] Jochen
-Knaus, </span></span><span lang=EN-US>Parallel computing in R with
-sfCluster/snowfall, TR IMBI Uni Freiburg, </span><a
-href="http://www.imbi.uni-freiburg.de/parallel/"><span lang=EN-US>http://www.imbi.uni-freiburg.de/parallel/</span></a><span
-class=citation><span lang=EN-US>.</span></span></p>
+<p class=MsoNormal><span class=citation>[Knaus08] Jochen Knaus, </span>Parallel
+computing in R with sfCluster/snowfall, TR IMBI Uni Freiburg, <a
+href="http://www.imbi.uni-freiburg.de/parallel/">http://www.imbi.uni-freiburg.de/parallel/</a><span
+class=citation>.</span></p>
 
-<p class=MsoNormal><span class=citation><span lang=EN-US>[Knaus09] Knaus, J.
-and Porzelius, C. and Binder, H. and Schwarzer, G., Easier parallel computing
-in R with snowfall and sfCluster. The R Journal, 1:5459, 2009.</span></span></p>
+<p class=MsoNormal><span class=citation>[Knaus09] Knaus, J. and Porzelius, C.
+and Binder, H. and Schwarzer, G., Easier parallel computing in R with snowfall
+and sfCluster. </span><span class=citation><span lang=EN-US>The R Journal,
+1:5459, 2009.</span></span></p>
 
 <p class=MsoNormal><span class=citation><span lang=EN-US>[McKay79] McKay, M.D.;
 Beckman, R.J.; Conover, W.J. (May 1979). </span></span><a

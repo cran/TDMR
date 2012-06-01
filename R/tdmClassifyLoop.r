@@ -96,9 +96,9 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts) {
             d_test  <- dset[cvi==k, ]            # test set
             d_train <- dset[cvi!=k & cvi>=0, ]   # training set (disregard records with cvi<0)
             d_dis   <- dset[cvi!=k & cvi==-1, ]  # disregard set (needed for active learning)
-            d_test  <- bind_response(d_test , "IND.dset", which(cvi==k));
-            d_train <- bind_response(d_train, "IND.dset", which(cvi!=k & cvi>=0));
-            d_dis   <- bind_response(d_dis  , "IND.dset", which(cvi!=k & cvi==-1));
+            d_test  <- tdmBindResponse(d_test , "IND.dset", which(cvi==k));
+            d_train <- tdmBindResponse(d_train, "IND.dset", which(cvi!=k & cvi>=0));
+            d_dis   <- tdmBindResponse(d_dis  , "IND.dset", which(cvi!=k & cvi==-1));
             #if (nrow(d_train)+nrow(d_test)+nrow(d_dis) != nrow(dset))
             #  stop("Something wrong, the union of d_train, d_test and d_dis does not cover dset");
  

@@ -132,7 +132,7 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
   	# now opts has the best solution obtained in a prior tuning, and it has 
   	# training and test set configured according to the current setting of umode
 
-		conf <- bst$CONFIG[k]
+		conf <- as.numeric(bst$CONFIG[k])
 		cat(sprintf("Best Config: %5d\n\n",conf))
 
     #
@@ -151,16 +151,17 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     if (is.null(finals)) {
       # create a data frame with one line of results:
       finals <- data.frame(list(CONF=sub(".conf","",confFile,fixed=TRUE),TUNER=envT$theTuner,NEXP=envT$nExp));
+      namFinals <- names(finals);
       if (withParams) {
-        finals <- cbind(finals
-                        ,bst[k,setdiff(names(bst[-1]),c("CONFIG","REPEATS","repeatsLastConfig","STEP","SEED","COUNT"))]
-                        );
+        pNames=row.names(envT$spotConfig$alg.roi);
+        finals <- cbind(finals,bst[k,pNames]);    # bug fix 05/12: this way it works for length(pNames)==1 and for >1    
+        names(finals) <- c(namFinals,pNames);     #
       } 
       finals <- cbind(finals
                      , NRUN=opts$NRUN
                      , NEVAL=nrow(res)
                       );
-      add.finals        <- data.frame(-bst[k,1],-mean(res$Y));
+      add.finals        <- data.frame(-as.numeric(bst[k,1]),-mean(res$Y));
       names(add.finals) <- paste(opts$rgain.string,c(".bst",".avg"),sep="");
       finals <- cbind(finals,add.finals);
       #

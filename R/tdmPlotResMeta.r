@@ -49,7 +49,7 @@ tdmPlotResMeta <- function(envT) {
     if (nExp<1 | nExp>envT$tdm$nExperim) stop(paste("nExp is not in range {1,...,",envT$tdm$nExperim,"}",sep=""));
     ind = indTuner + nTuner*((nExp-1) + envT$tdm$nExperim*(nConf-1));
   }
-  showMeta <- function(theTuner,nExp,confFile,reportFunc,modelFit,nSkip,xAxis,yAxis) {
+  showMeta <- function(theTuner,nExp,confFile,reportFunc,modelFit,nSkip,y_10Exp,xAxis,yAxis) {
         res = envT$resGrid[[getInd(confFile,nExp,theTuner)]];        
     
         # TODO: add function to skip incomplete CONFIGs
@@ -82,6 +82,7 @@ tdmPlotResMeta <- function(envT) {
         # then SPOT will open a 2nd twiddle-interface to select two of the design variables
 
         spotConfFile="NULL";  # "NULL" means: don't read any file, take all values from envT$spotConfig
+        sC$alg.currentResult[1] = sC$alg.currentResult[1]*10^y_10Exp;
         sC <- spot(spotConfFile,"rep",NA,sC);
         return(sC);
   }
@@ -96,7 +97,7 @@ tdmPlotResMeta <- function(envT) {
     if (tne==1)   twiddleCmd <- paste(twiddleCmd,"=1",sep="");
     twiddleCmd <- paste(twiddleCmd,",confFile",sep="");
     if (tce==1)   twiddleCmd <- paste(twiddleCmd,"=envT$runList[1]",sep="");
-    twiddleCmd <- paste(twiddleCmd,",reportFunc,modelFit,nSkip,xAxis",sep="");
+    twiddleCmd <- paste(twiddleCmd,",reportFunc,modelFit,nSkip,y_10Exp,xAxis",sep="");
     if (tve==2)   twiddleCmd <- paste(twiddleCmd,"=vars[1]",sep="");
     twiddleCmd <- paste(twiddleCmd,",yAxis",sep="");
     if (tve==2)   twiddleCmd <- paste(twiddleCmd,"=vars[2]",sep="");
@@ -145,9 +146,10 @@ tdmPlotResMeta <- function(envT) {
     twiddleCmd <- paste(twiddleCmd,", reportFunc = combo(\"spotReport3d\",\"spotReportContour\",label=\"reportFunc\")",sep="");
     twiddleCmd <- paste(twiddleCmd,", modelFit = combo(\"spotPredictGausspr\",\"spotPredictRandomForest\",\"spotPredictMlegp\",label=\"modelFit\")",sep="");
     twiddleCmd <- paste(twiddleCmd,", nSkip=knob(c(0,",min(10,nrow(res)),"), res=1, label=\"nSkip\")",sep="");
+    twiddleCmd <- paste(twiddleCmd,", y_10Exp=knob(c(0,3), res=1, label=\"y_10Exp\")",sep="");
     twiddleCmd <- paste(twiddleCmd,", chkSkip=toggle(default=FALSE,label=\"Skip incomplete CONFIGs\")",sep="");
     twiddleCmd <- paste(twiddleCmd,")",sep="");
-    #browser()
+    browser()
     eval(parse(text=twiddleCmd));
   }
   buildTwidCmd(envT);

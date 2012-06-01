@@ -81,29 +81,34 @@
 #'          as called in the last unbiased evaluation using the best parameters found during tuning. 
 #'          Use \code{\link[=print.TDMclassifier]{print}(envT$result)} to get more info on such an object of class TDMclassifier. \cr
 #'          See \code{\link{tdmClassifyLoop}} or \code{\link{tdmRegressLoop}} for further info on TDMclassifier or TDMregressor, resp. }
-#'      \item{tunerVal}{ an object with the specification of the last tuning process. In case of SPOT or LHD it is an object of class
-#'          \code{spotConfig}, containing the SPOT settings plus the TDMR settings in elements \code{opts} and \code{tdm}. In case of 
-#'          other tuning methods it is the return value of the tuning method (see \code{\link{tdmDispatchTuner}}). }
-#'   Environment \code{envT} contains other elements which are only relevant for the operation of \code{tdmCompleteEval} and its subfunctions.
+#'      \item{tunerVal}{ an object with the return value from the last tuning process. For every tuner, this is the list 
+#'          \code{spotConfig}, containing the SPOT settings plus the TDMR settings in elements \code{opts} and \code{tdm}. Every tuner 
+#'          estends this list by \code{tunerVal$alg.currentResult} and \code{tunerVal$alg.currentBest}, see \code{\link{tdmDispatchTuner}}.
+#'          In addition, each tuning method might add specific elements to the list, see the description of each tuner. }
+#'   Environment \code{envT} contains further elements, but they are only relevant for the internal operation of 
+#'   \code{tdmCompleteEval} and its subfunctions.
 #'
-#' @note Side Effects:
-#'   Irrespective of the value  \code{tdm$fileMode}, the following is saved relative to  the directory of the \code{.conf} file:
+#' @note Side effects:
+#'   Irrespective of the value of \code{tdm$fileMode}, 
 #'     \itemize{
-#'         \item \code{envT } is saved to file \code{tdm$filenameEnvT} (default: \code{<runList[1]>.RData}) 
-#'      }
+#'         \item a compressed version of \code{envT } is saved to file \code{tdm$filenameEnvT} (default: \code{<runList[1]>.RData}), 
+#'               relative to  the directory of the \code{.conf} file. 
+#'     }
 #' 
-#'   If \code{tdm$fileMode==TRUE}, several files are written in the directory of the \code{.conf} file:
+#'   If \code{tdm$fileMode==TRUE}, more files are written relative to  the directory of the \code{.conf} file:
 #'     \itemize{
 #'         \item \code{envT$theFinals } is written to file \code{tdm$finalFile} and appended to \code{tdm$experFile}
-#'         \item \code{envT$res } is written to \code{.res} file in directory \code{<tuneMethod>}
-#'         \item \code{envT$bst } is written to \code{.bst} file in directory \code{<tuneMethod>}
+#'         \item \code{envT$res } is written to a \code{.res} file in directory \code{<tuneMethod>}
+#'         \item \code{envT$bst } is written to a \code{.bst} file in directory \code{<tuneMethod>}
 #'      }
-#'   More precisely: If we tune with \code{tuneMethod="lhd"} and perform the 3rd experiment for \code{.conf} file
-#'   \code{cpu_01.conf}, then the \code{.res} file is written to \code{lhd/cpu_01_lhd_03.res} relative to the directory 
+#'   More precisely: If \code{tdm$fileMode==TRUE} and we tune with \code{tuneMethod="lhd"} while performing  the 3rd experiment 
+#'   for \code{.conf} file \code{cpu_01.conf}, then the \code{.res} file \code{lhd/cpu_01_lhd_03.res} is written relative to the directory 
 #'   of \code{.conf} file. Analoguously for \code{.bst} file.  \cr
 #'
-#' Two example usages of function tdmCompleteEval are shown in demo/demo03sonar.r and demo/demo04cpu.r, accessible via 
-#' \code{demo(demo03sonar)} and \code{demo(demo04cpu)} 
+#' Example usages of function tdmCompleteEval are shown in demo/demo03sonar.r, demo/demo03sonar_B.r and demo/demo04cpu.r, accessible via \cr
+#' \code{   demo(demo03sonar)},\cr 
+#' \code{   demo(demo03sonar_B)} and \cr
+#' \code{   demo(demo04cpu)} 
 #'
 #' @example      demo/demo03sonar.r
 #'
@@ -158,13 +163,15 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
   k=0;
   for (confFile in runList) {
     k=k+1;
-    if (!file.exists(confFile)) stop(sprintf("Could not find confFile=%s in current dir=%s",confFile,getwd()));
-    envT$sCList[[k]] <- spotGetOptions(srcPath=tdm$theSpotPath,confFile);
+    pathConfFile = paste(tdm$path,confFile,sep="");
+    if (!file.exists(pathConfFile)) stop(sprintf("Could not find confFile=%s (current dir=%s)",pathConfFile,getwd()));
+    envT$sCList[[k]] <- spotGetOptions(srcPath=tdm$theSpotPath,pathConfFile);
     sC <- envT$sCList[[k]]; print(sC$spot.seed); 
     tdm$wP <- checkRoiParams(tdm$wP,confFile,sC,envT);
     pdFile = sC$io.apdFileName;
-  	print(pdFile);	  
-    if (!file.exists(pdFile)) stop(sprintf("Could not find apdFile=%s in current dir=%s",pdFile,getwd()));
+  	print(pdFile);	
+    pdFile = paste(tdm$path,pdFile,sep="");
+    if (!file.exists(pdFile)) stop(sprintf("Could not find pdFile=%s (current dir=%s)",pdFile,getwd()));
     opts <- NULL;     # just to make 'R CMD check' happy  (and in case that after sourcing pdFile 'opts' is not there as expected)
   	source(pdFile,local=TRUE);        # read problem design  (here: all elements of list opts)   
 		if (is.null(opts))
@@ -174,7 +181,8 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
 #      envT$sCList[[k]]$spot.fileMode=FALSE;
 #    }
     if (!is.null(tdm$TST.trnFrac)) opts$TST.trnFrac=tdm$TST.trnFrac;
-    opts=tdmOptsDefaultsSet(opts);
+
+    opts=tdmOptsDefaultsSet(opts,path=tdm$path);
  	  envT$sCList[[k]]$opts=opts;
   }
   rm("roiNames1",envir=envT);    # delete this helper var (was needed only temporarily by checkRoiParams above)
@@ -182,10 +190,13 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
   tdmMapDesLoad(envT,tdm); 
   tdmMapDesSpot$load(tdm); 
   #envT$wP <- wP;
-  if (!is.null(tdm$mainFile)) source(tdm$mainFile);
-  if (tdm$parallelCPUs>1) sfExport(list=c(".Random.seed","tdmMapDesSpot",tdm$mainFunc));
+  if (!is.null(tdm$mainFile)) source(tdm$mainFile);           # deprecated (sourcing main_TASK should be done in caller of tdmCompleteEval)
+
+  if (tdm$parallelCPUs>1) {
+    if (!exists(".Random.seed")) set.seed(42);
+    sfExport(list=c(".Random.seed","tdmMapDesSpot",tdm$mainFunc));
+  }
   
-  		
 	#
 	# depending on tdm$parallelCPUs, the following lines execute the code either in parallel 
 	# or sequential: For each value of indVec the function completeEvalConfNexpTuner is 
@@ -197,6 +208,10 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
 	tuneVec <- rep(tdm$tuneMethod,tdm$nExperim*nRunList);
 	expeVec <- rep(sort(rep(1:tdm$nExperim,nTuner)),nRunList);
 	confVec <- sort(rep(runList,tdm$nExperim*nTuner));
+	if (length(indVec)==1 & tdm$parallelCPUs>1) {
+	  warning("There is only one job (length(indVec)==1) --> snowfall would not run, so we set tdm$ParallelCPUs=1");
+	  tdm$parallelCPUs=1;
+  }
   if (tdm$parallelCPUs>1) {
     sappResult <- sfSapply(indVec, fun=completeEvalConfNexpTuner, tuneVec,expeVec,confVec,spotList,spotStep,envT,tdm);
   } else {  		
@@ -246,9 +261,9 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
           if (file.exists(tFinalFile) & theTuner==tuneVec[1] & confFile==envT$runList[1]) file.remove(tFinalFile);
         } 
        
-        # make temporary files so that parallel runs will not interfere: 
-        appendix <- sprintf("%s_%02d",theTuner,nExp);
         if (tdm$fileMode) { 
+          # make temporary files so that parallel runs will not interfere: 
+          appendix <- sprintf("%s_%02d",theTuner,nExp);
           tConfFile <- copyToTmpfile(confFile,confFile,".conf",appendix);
           tRoiFile <- copyToTmpfile(confFile,sC$io.roiFileName,".roi",appendix);                                        
           #tApdFile <- copyToTmpfile(confFile,sC$io.apdFileName,".apd",appendix);                                        
@@ -265,7 +280,7 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
 
         dataObj <- tdmSplitTestData(sC$opts,tdm,nExp);
         if (!is.null(dataObj)) envT$spotConfig$opts$TST.COL = dataObj$TST.COL;    # this column has to be subtracted in main_* from the input variables
-        
+
         ptm <- proc.time();
         if (tdm$fileMode) {  
           # If .bst and .res files in tuner subdirs exist: copy them into current dir 
@@ -381,8 +396,8 @@ populateEnvT <- function(sappResult,envT,tdm) {
       rownames(envT$theFinals) <- (1:nrow(envT$theFinals));
       envT$bst <- as.data.frame(sappResult["bst",ncol(sappResult)][[1]]);
       envT$res <- as.data.frame(sappResult["res",ncol(sappResult)][[1]]);
-      envT$tunerVal <- sappResult["tunerVal",ncol(sappResult)][[1]];     # last tuning result
-      envT$result <- sappResult["result",ncol(sappResult)][[1]];     # last tuning result
+      envT$tunerVal <- sappResult["tunerVal",ncol(sappResult)][[1]];    # last tuning result
+      envT$result <- sappResult["result",ncol(sappResult)][[1]];        # last tuning result
 }
 
 ######################################################################################

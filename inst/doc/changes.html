@@ -15,7 +15,6 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <link rel=colorSchemeMapping href="changes-Dateien/colorschememapping.xml">
 <!--[if gte mso 9]><xml>
  <w:WordDocument>
-  <w:Zoom>130</w:Zoom>
   <w:SpellingState>Clean</w:SpellingState>
   <w:GrammarState>Clean</w:GrammarState>
   <w:TrackMoves>false</w:TrackMoves>
@@ -309,6 +308,20 @@ xmlns="http://www.w3.org/TR/REC-html40">
 <!--
  /* Font Definitions */
  @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;
+	mso-font-charset:2;
+	mso-generic-font-family:auto;
+	mso-font-pitch:variable;
+	mso-font-signature:0 268435456 0 0 -2147483648 0;}
+@font-face
 	{font-family:Cambria;
 	panose-1:2 4 5 3 5 4 6 3 2 4;
 	mso-font-charset:0;
@@ -545,6 +558,85 @@ div.WordSection1
 mso-ansi-language:EN-US'>Changes TDMR package<o:p></o:p></span></h1>
 
 <h2><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";
+mso-ansi-language:EN-US'>V 0.3.1 – 01.06.2012<o:p></o:p></span></h2>
+
+<p class=MsoNormal><span class=SpellE><span class=GramE><span lang=EN-US
+style='mso-ansi-language:EN-US'>tdmSortedRFImport</span></span></span><span
+lang=EN-US style='mso-ansi-language:EN-US'>: negative importance values are now
+clipped to 0 (no longer additive shift of importance values).<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>If <span
+class=SpellE>tdm$parallelCPUs</span>&gt;1: snowfall would fail, if there is
+only one pass through <span class=SpellE>sfSapply</span>, i.e. <span
+class=GramE>if<span style='mso-spacerun:yes'>  </span>length</span>(<span
+class=SpellE>indVec</span>)=1. Fix: Check in <span class=SpellE>tdmCompleteEval</span>
+whether <span class=GramE>length(</span><span class=SpellE>indVec</span>)==1,
+issue a warning and set <span class=SpellE>tdm$parallelCPUs</span> to 1.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Renamed <span
+class=SpellE>bind_response</span> to <span class=SpellE>tdmBindResponse</span>
+(<span class=SpellE>tdmGeneralUtils.r</span>)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Bug fix
+‘path </span><span lang=EN-US style='font-family:Wingdings;mso-ascii-font-family:
+Calibri;mso-hansi-font-family:Calibri;mso-ansi-language:EN-US;mso-char-type:
+symbol;mso-symbol-font-family:Wingdings'><span style='mso-char-type:symbol;
+mso-symbol-font-family:Wingdings'>à</span></span><span lang=EN-US
+style='mso-ansi-language:EN-US'> <span class=SpellE>tdm$path</span>’ in <span
+class=SpellE>tdmMapDesLoad</span> (<span class=SpellE>tdmMapDesign.r</span>)<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Bug fix for
+<span class=SpellE>cma_es</span> (package <span class=SpellE>cmaes</span>):
+When running demo/demo04cpu.r with tuner <span class=SpellE>cmaes</span>, we
+got “Error in <span class=GramE>eigen.log[</span><span class=SpellE>iter</span>,
+] &lt;- rev(sort(<span class=SpellE>e$values</span>)): subscript out of
+bounds&quot;. Solution: <span class=SpellE>control$maxit</span> = <span
+class=GramE>round(</span><span class=SpellE>control$maxit</span>), because this
+error only occurs if <span class=SpellE>control$maxit</span> is NOT an integer.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Fixed a bug
+concerning <span class=SpellE>opts$filesuffix</span> (<span class=SpellE>tdmOptsDefaultsFill</span>)
+which could lead to an unwanted stop.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Bug fix:
+regression tuning made strange things (names in data frame) if you tuned only 1
+variable (<span class=SpellE><span class=GramE>cpu</span></span>, <span
+class=SpellE>roi</span> with only XPERC). <span class=GramE>Now fixed.</span><o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Bug fix: <span
+class=SpellE>cma_es</span> (and other <span class=SpellE>tdmStartOther</span>-tuners)
+had usually in the BST data frame not the inclusion of the last design points
+(which usually are formed after the last time where “<span class=SpellE>des$CONFIG</span>
+%% <span class=SpellE>tdm$spotConfig$seq.design.new.size</span>==0” was TRUE). <span
+class=GramE>Now fixed.</span> <o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Bug fix in <span
+class=SpellE>tdmDispatchTuner</span>: <span class=SpellE>cma_jTuner</span> did
+not yet return a list of type <span class=SpellE>spotConfig</span> in <span
+class=SpellE>tunerVal</span>. Consequence: the above “Append” would not work. <span
+class=GramE>Now fixed.</span> <o:p></o:p></span></p>
+
+<p class=MsoNormal><span class=SpellE><span lang=EN-US style='mso-ansi-language:
+EN-US'>tdmDispatchTuner.r</span></span><span lang=EN-US style='mso-ansi-language:
+EN-US'>: Made <b style='mso-bidi-font-weight:normal'>all</b> tuners return a
+list of type <span class=SpellE>spotConfig</span> with the proper settings in <span
+class=SpellE>tunerVal$alg.currentResult</span> and <span class=SpellE>tunerVal$alg.currentBest</span>.
+<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Bug fix in <span
+class=SpellE>tdmMapDesApply</span>: the “[-1]” in “<span class=SpellE>dn</span>=<span
+class=SpellE><span class=GramE>setdiff</span></span><span class=GramE>(</span>names(des[-1]),
+c(&quot;COUNT&quot;,&quot;CONFIG&quot;,...))” was wrong.<o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'>Extended <span
+class=SpellE>tdmPlotResMeta</span> by a slider y_10Exp, which allows to
+multiply the y-values by 10<sup>0</sup>, 10<sup>1</sup>,…<span class=GramE>,10<sup>3</sup></span>
+on the fly in the <span class=SpellE>twiddler</span> interface. This usually
+gives a better color scheme for the 3D-plot in spotReport3d. <o:p></o:p></span></p>
+
+<p class=MsoNormal><span lang=EN-US style='mso-ansi-language:EN-US'><o:p>&nbsp;</o:p></span></p>
+
+<h2><span lang=EN-US style='mso-fareast-font-family:"Times New Roman";
 mso-ansi-language:EN-US'>V 0.3.0 – 08.05.2012<o:p></o:p></span></h2>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
@@ -562,8 +654,8 @@ EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;font-family:"Times
 mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span lang=EN-US style='mso-ansi-language:
 EN-US'>New measures for <span class=SpellE>opts$rgain.type</span>= “<span
 class=SpellE>arROC</span>”, “<span class=SpellE>arLIFT</span>”, “<span
-class=SpellE>arPRE</span>” for area under ROC, lift or precision-recall chart, based
-on package <b style='mso-bidi-font-weight:normal'>ROCR</b>.<o:p></o:p></span></p>
+class=SpellE>arPRE</span>” for area under ROC, lift or precision-recall chart,
+based on package <b style='mso-bidi-font-weight:normal'>ROCR</b>.<o:p></o:p></span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal'><span
@@ -890,8 +982,8 @@ add parametric bootstrap patterns, if <span class=SpellE>opts$ncopies</span>&gt;
 class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:
 EN-US'>o</span></span><span lang=EN-US style='font-size:7.0pt;line-height:115%;
 font-family:"Times New Roman","serif";mso-ansi-language:EN-US'>&nbsp;&nbsp; </span><span
-lang=EN-US style='mso-ansi-language:EN-US'>new version of TDM-docu.pdf: see
-documentation index – directory<o:p></o:p></span></p>
+lang=EN-US style='mso-ansi-language:EN-US'>new version of TDM-docu.pdf: see documentation
+index – directory<o:p></o:p></span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 class=GramE><span lang=EN-US style='font-family:"Courier New";mso-ansi-language:

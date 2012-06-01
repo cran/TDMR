@@ -6,17 +6,20 @@
 #*# The tuner used here is SPOT (the default in \code{\link{tdmDefaultsFill}}.
 
 ## load package and set working directory
-library(TDMR);
-path <- paste(.find.package("TDMR"), "demo01cpu",sep="/");
-#path <- paste("../inst", "demo01cpu",sep="/");
-oldwd <- getwd();
-setwd(path);
-source("main_cpu.r");   # in working dir 
+#library(TDMR);
+path <- paste(.find.package("TDMR"), "demo01cpu/",sep="/");
+#path <- paste("../inst", "demo01cpu/",sep="/");
+oldwd <- getwd();  setwd(path);
+#path=paste(getwd(),"/",sep="");  setwd(oldwd);      # not yet ready
+#
+source(paste(path,"main_cpu.r",sep=""));   
 
 ## preliminary settings for TDMR
-tdm <- list( mainFunction="main_cpu"
+tdm <- list(    mainFunction="main_cpu"
+#              , path=path
               , umode=c("RSUB","CV")    # ["CV" | "RSUB" | "TST"]
-              , filenameEnvT="demoCpu.RData"   # file to save environment envT (in working dir)
+              , tuneMethod=c("spot","lhd")
+              , filenameEnvT="demo04cpu.RData"   # file to save environment envT (in working dir)
               , finalFile="cpu.fin"     # where to write final results (best solution & unbiased eval for each tuner/.conf-combination)
               , withParams=TRUE         # list the columns with tuned parameter in final results 
               , optsVerbosity=0         # the verbosity for the unbiased runs
@@ -39,7 +42,7 @@ runList = c("cpu_01.conf");
 envT <- tdmCompleteEval("cpu_01.conf",NULL,"auto",tdm);
 
 ## restore old working directory
-setwd(oldwd);
+#setwd(oldwd);
 
 ## the resulting tuning surface (the metamodel) can be inspected interactively with
 ##      load(paste(path,tdm$filenameEnvT,sep="/");     

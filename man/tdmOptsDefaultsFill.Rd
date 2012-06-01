@@ -31,11 +31,13 @@
   relative to dir \code{opts$dir.output}.
 }
 \description{
-  This function is deprecated, use tdmOptsDefaultsSet(opts)
-  instead. \cr Fill the current \code{opts} with further
-  default parameters if they are not yet defined. The
-  defaults may depend on previously defined elements of
-  \code{opts} (e.g. \code{opts$filename}).
+  There is no need to call this function directly, use
+  \code{\link{tdmOptsDefaultsSet}}(opts) instead, which
+  calls tdmOptsDefaultsFill in the end. \cr
+  \code{tdmOptsDefaultsFill} fills the current \code{opts}
+  with further default parameters if they are not yet
+  defined. The defaults may depend on previously defined
+  elements of \code{opts} (e.g. \code{opts$filename}).
 }
 \details{
   What is the difference between

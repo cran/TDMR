@@ -23,13 +23,24 @@
   containing the data set (train/vali part and test part)}
 }
 \value{
-  the result of the tuning algorithm.
+  The result \code{tunerVal} of the tuning algorithm, this
+  is the list envT$spotConfig, extended by
+  \item{\code{alg.currentResult}}{ the RES data frame }
+  \item{\code{alg.currentBest}}{ the BST data frame }
+  \item{...}{[optional] further results from the tuning
+  algorithm \code{tuneMethod} }
 }
 \description{
   tdmDispatchTuner selects and starts the tuner specified
   by tuneMethod. \cr See the 'Details' section of
   \code{\link{tdmCompleteEval}} for a list of available
   tuners
+}
+\note{
+  Side effects: Environment \code{envT} is extended by
+  \itemize{ \item \code{envT$tunerVal = tunerVal} \item
+  \code{envT$res } the RES data frame \item \code{envT$bst
+  } the BST data frame }
 }
 \author{
   Wolfgang Konen, FHK, Sep'2010 - Oct'2011

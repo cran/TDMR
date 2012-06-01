@@ -24,8 +24,9 @@
 #'      \item{experFile}{[NULL] where to append final results  }
 #'      \item{theSpotPath}{[NA] use SPOT's package version}
 #'      \item{parallelCPUs}{[1] 1: sequential, >1: parallel with snowFall and this many cpus}
-#'      \item{startDir}{[getwd()]}
+#'      \item{path}{[getwd()] where to search .conf and .apd file}
 #'      \item{stratified}{[NULL] see \code{\link{tdmSplitTestData}}  }
+#'      \item{tdmPath}{[NULL] from where to source the R sources}
 #'      \item{test2.string}{["default cutoff"] }
 #'      \item{optsVerbosity}{[0] the verbosity for the unbiased runs}
 #'      \item{nrun}{[5] number of runs for unbiased runs}
@@ -56,7 +57,7 @@ tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL) {
   if (is.null(tdm$optsVerbosity)) tdm$optsVerbosity <- 0;   # the verbosity for the unbiased runs
   if (is.null(tdm$theSpotPath)) tdm$theSpotPath <- NA;
   if (is.null(tdm$parallelCPUs)) tdm$parallelCPUs <- 1;
-  if (is.null(tdm$startDir)) tdm$startDir <- getwd();
+  if (is.null(tdm$path)) tdm$path <- paste(getwd(),"/",sep="");
   
   # code which was previously in unbiasedRun. Now we put it here and call tdmDefaultsFill from unbiasedRun
   # (cleaner code, less places where tdm values are set)

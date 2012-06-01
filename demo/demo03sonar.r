@@ -4,12 +4,12 @@
 #*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify
 #*# with Random Forest as the prediction model. 
 #*# The three parameter to be tuned are CUTOFF1, CLASSWT2 and XPERC, as specified in file sonar_04.roi.
-#*# The tuners used here are SPOT and LHD.  
+#*# The tuner used here is LHD.  
 #*# Tuning runs are rather short, to make the example run quickly. Do not expect good numeric results. 
-#*# See demo/demo03sonar_B.r for a somewhat longer tuning run.
+#*# See demo/demo03sonar_B.r for a somewhat longer tuning run, with two tuners SPOT and LHD.
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
-library(TDMR);
+#library(TDMR);
 path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();
@@ -19,7 +19,7 @@ source("main_sonar.r");    # in working dir
 ## preliminary settings for TDMR
 tdm <- list( mainFunction="main_sonar"
             , umode=c("RSUB")           # ["CV" | "RSUB" | "TST"]
-            , tuneMethod = "spot"       # c("spot","lhd")
+            , tuneMethod = c("lhd")    # c("spot","lhd")
             , filenameEnvT="demo03.RData"   # file to save environment envT (in working dir)
             , finalFile="sonar.fin"
             , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs

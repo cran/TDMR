@@ -2,6 +2,9 @@
 #*# This demo shows for tuner cma_j (CMA-ES, Java version) a complete tuned data mining process (phase 3 of TDMR). 
 #*# Other settings are the same as in demo03sonar.r, except that we use sonar_03.conf as configuration file.
 #*# 
+#*# Note that tuner cma_j operates silently for about 1-2 minutes. During this time, log files 
+#*#     cma_j.log, cma_j.err,  outcmaesdisp.dat
+#*# will be written to <TDMR>/javabin where <TDMR> = .find.package("TDMR").
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
 #library(TDMR);

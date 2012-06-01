@@ -256,8 +256,11 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       cat1(opts,filename,": Train RF (importance, sampsize=", opts$RF.sampsize,") ...\n")
       if (!is.null(opts$CLS.CLASSWT)) {
         cat1(opts,"Class weights: ", opts$CLS.CLASSWT,"\n")
-        cwt = opts$CLS.CLASSWT*1;     # strange, but necessary: if we omit '*1' then cwt seems to be a copy-by-reference of
+        cwt = opts$CLS.CLASSWT*1; # strange, but necessary: if we omit '*1' then cwt seems to be a copy-by-reference of
                                   # opts$CLS.CLASSWT. After randomForest call  cwt is changed and also opts$CLS.CLASSWT would be changed (!)
+                                  # (Another way to hinder RF to change the parameter 'classwt' on output is to make this vector a *named*
+                                  # vector. This is actually the case, because in tdmClassify we decorate opts$CLS.CLASSWT with the 
+                                  # level names of response.variable)
       } else { cwt=NULL; }
       if (!is.null(opts$SRF.cutoff)) cat1(opts,"Cutoff: ", opts$SRF.cutoff,"\n")
 
@@ -268,16 +271,19 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
                                                               # otherwise we get only MeanDecreaseGini (faster, but sometimes unreliable)
         rf.options = paste(rf.options,"sampsize=opts$RF.sampsize",sep=",")
         rf.options = paste(rf.options,"classwt=cwt","na.action=na.roughfix","proximity=F",sep=",")
-        if (!is.null(opts$SRF.mtry)) rf.options = paste(rf.options,"mtry=opts$RF.mtry",sep=",")
+        if (!is.null(opts$SRF.mtry)) rf.options = paste(rf.options,"mtry=opts$SRF.mtry",sep=",")
         if (!is.null(opts$SRF.cutoff)) rf.options = paste(rf.options,"cutoff=opts$SRF.cutoff",sep=",")
         #dbg_chase_cutoff_bug(formul,to.model,d_train,response.variable,rf.options,opts);
 #print(.Random.seed[1:6]);
         flush.console();
-        res.SRF <- NULL;
+        res.SRF <- NULL;        
         eval(parse(text=paste("res.SRF <- randomForest( formul, data=to.model,",rf.options,")")));
         res.SRF$imp1 <- importance(res.SRF, type=1);      # select MeanDecreaseAccuracy-importance (NEW, with switch 'importance=TRUE' above)
 #print(.Random.seed[1:6]);
-#browser()        
+        
+        # only for debug or in-depth-analysis:
+        #analyzeImportance(res.SRF,input.variables,opts);
+        
         res.SRF;
       }
 #      fsLasso <- function(opts) {
@@ -324,9 +330,14 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       load(file=SRF.file);
     } # if (opts$SRF.calc)
     
-    s_imp2 <- s_imp1 - min(0,min(s_imp1)-0.001);
-    # s_imp2 is a copy of s_imp1, shifted by -min(s_imp1)-0.001 if s_imp1 contains negative values
+    # OLD AND WRONG: s_imp2 was a copy of s_imp1, shifted by -min(s_imp1)-0.001 if s_imp1 contains negative values
     # which is not allowed for cumsum (MeanDecreaseAccuracy can be negative)
+    #s_imp2 <- s_imp1 - min(0,min(s_imp1)-0.001);
+    #
+    # NEW (May 2012): negative values in s_imp1 are artefacts of a slightly negative res.SRF$importance (is compatible with 0)
+    # and a division with a small res.SRF$importanceSD --> we clip them to 0: 
+    s_imp2 <- s_imp1;
+    s_imp2[s_imp1<0] <- 0;
 
     if (opts$SRF.kind=="ndrop") {
         # remove the SRF.ndrop input variables which have the lowest importance
@@ -355,8 +366,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
     # what percentage of total importance is in the dropped variables:
     perc <- (1-sum(s_imp2[1:(length(s_imp2)-lsd)])/sum(s_imp2))*100;
     if (opts$SRF.kind=="xperc" & (perc/100>1-opts$SRF.XPerc | perc<0)) {
-        cat("Something wrong with perc:",perc,"\n");
-        browser();
+        stop(sprintf("Something wrong with perc:",perc,"\n"));
     }
 
     if (opts$SRF.verbose>=2) {
@@ -399,6 +409,64 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       	      , perc=perc             # the percentage of total importance which is in the dropped variables
       	      , opts=opts             # some defaults might have been added
               );
+}
+
+# helper for fsRfImportance in tdmModSortedRFimport
+# (only for debug or in-depth-analysis of the importance)
+analyzeImportance <- function(res.SRF,input.variables,opts)  {
+    #
+    # 1st finding: variables which appear never as split variable have necessarily importance=0
+    #
+    splitVar=NULL;              # the union of all variables which appear ever as a split in a tree of the forest 
+    splitLst=NULL;              # the list of all split variables (variables may appear more than once)
+    rn=rownames(res.SRF$imp1);
+    for (k in 1:res.SRF$ntree) splitVar=union(splitVar,getTree(res.SRF,k=k,labelVar=T)$"split var")
+    splitVar = sort(splitVar); # remove the <NA>
+    noSplitVar = sort(setdiff(input.variables,splitVar))
+    for (k in 1:res.SRF$ntree) splitLst=c(splitLst,as.character(getTree(res.SRF,k=k,labelVar=T)$"split var"))
+    splitLst=sort(splitLst);
+    impZeroVar = sort(rn[res.SRF$imp1==0])
+    cat(sprintf("%d variables have importance exactly zero\n",length(impZeroVar)));
+    cat(sprintf("%d variables never appear in a split\n",length(noSplitVar)));
+    if (length(setdiff(noSplitVar,impZeroVar))==0) cat("All variables never appearing in a split have importance exactly zero\n")
+    cat(sprintf("setdiff(impZeroVar,noSplitVar) is: ")); print(setdiff(impZeroVar,noSplitVar))
+    
+    #
+    # 2nd finding: variables with negative importance have a sligthly smaller split count than those with positive importance
+    #         Most variables with negative importance have a very small raw importance (%IncMSE), it is the division by 
+    #         importanceSD which makes the negative value big.
+    #
+    impNegVar = sort(rn[res.SRF$imp1<0]);
+    impPosVar = setdiff(splitVar,impNegVar);
+    cat("Split count for variables with negative importance (we show first 6 only):\n")
+    for (v in impNegVar[1:min(length(impNegVar),6)]) cat(sprintf("%s: %d  %e\n", v,length(which(splitLst==v)),res.SRF$imp1[rownames(res.SRF$imp1)==v]))
+    avg=0;  for (v in impNegVar) avg = avg + length(which(splitLst==v)); 
+    cat("Avg. count:", avg/length(impNegVar),"\n");
+    cat("Split count for variables with positive importance (we show first 6 only):\n")
+    for (v in impPosVar[1:min(length(impPosVar),6)])  cat(sprintf("%s: %d  %f\n", v,length(which(splitLst==v)),res.SRF$imp1[rownames(res.SRF$imp1)==v]))
+    avg=0;  for (v in impPosVar) avg = avg + length(which(splitLst==v)); 
+    cat("Avg. count:", avg/length(impPosVar),"\n");
+    #
+    par(mfcol=c(1,2))
+    ind1 = order(res.SRF$imp1)
+    plot(res.SRF$imp1[ind1],ylim=c(-2,3))
+    points(res.SRF$importance[ind1,1]*15,col="green")
+    ind2 = order(res.SRF$importance[,1])
+    plot(res.SRF$importance[ind2,1]*10,col="green",col.lab="green",ylim=c(-2,3))
+    points(res.SRF$imp1[ind2])
+    par(mfcol=c(1,1))
+    
+    #
+    # 3rd finding: variables with |importance|=1.01... (exactly the same value) have mostly a split count of exactly 1.
+    #         The quotient  %IncMSE/importanceSD   can be shown to be exactly +-sqrt(N/(N-1)) in this case.
+    #
+    N=opts$SRF.ntree;
+    impOneVar =  sort(rn[abs(res.SRF$imp1)==sqrt(N/(N-1))]);     # all variables with |importance| = 1.010153 in case N=50
+    cat(sprintf("Split count for variables with |importance| =%9.6f (we show first 6 only):\n",sqrt(N/(N-1)) ));
+    for (v in impOneVar[1:min(length(impOneVar),6)])  cat(sprintf("%s: %d  %f\n", v,length(which(splitLst==v)),res.SRF$imp1[rownames(res.SRF$imp1)==v]))
+    avg=0;  for (v in impOneVar) avg = avg + length(which(splitLst==v)); 
+    cat("Avg. count:", avg/length(impOneVar),"\n");
+browser()        
 }
 
 ######################################################################################

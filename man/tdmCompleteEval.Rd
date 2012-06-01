@@ -96,15 +96,19 @@
   \cr See \code{\link{tdmClassifyLoop}} or
   \code{\link{tdmRegressLoop}} for further info on
   TDMclassifier or TDMregressor, resp. } \item{tunerVal}{
-  an object with the specification of the last tuning
-  process. In case of SPOT or LHD it is an object of class
+  an object with the return value from the last tuning
+  process. For every tuner, this is the list
   \code{spotConfig}, containing the SPOT settings plus the
-  TDMR settings in elements \code{opts} and \code{tdm}. In
-  case of other tuning methods it is the return value of
-  the tuning method (see \code{\link{tdmDispatchTuner}}). }
-  Environment \code{envT} contains other elements which are
-  only relevant for the operation of \code{tdmCompleteEval}
-  and its subfunctions.
+  TDMR settings in elements \code{opts} and \code{tdm}.
+  Every tuner estends this list by
+  \code{tunerVal$alg.currentResult} and
+  \code{tunerVal$alg.currentBest}, see
+  \code{\link{tdmDispatchTuner}}.  In addition, each tuning
+  method might add specific elements to the list, see the
+  description of each tuner. } Environment \code{envT}
+  contains further elements, but they are only relevant for
+  the internal operation of \code{tdmCompleteEval} and its
+  subfunctions.
 }
 \description{
   For each \code{.conf} file in \code{runList} call all
@@ -143,30 +147,32 @@
   \code{powell}.  } }
 }
 \note{
-  Side Effects: Irrespective of the value
-  \code{tdm$fileMode}, the following is saved relative to
-  the directory of the \code{.conf} file: \itemize{ \item
-  \code{envT } is saved to file \code{tdm$filenameEnvT}
-  (default: \code{<runList[1]>.RData}) }
+  Side effects: Irrespective of the value of
+  \code{tdm$fileMode}, \itemize{ \item a compressed version
+  of \code{envT } is saved to file \code{tdm$filenameEnvT}
+  (default: \code{<runList[1]>.RData}), relative to the
+  directory of the \code{.conf} file.  }
 
-  If \code{tdm$fileMode==TRUE}, several files are written
-  in the directory of the \code{.conf} file: \itemize{
-  \item \code{envT$theFinals } is written to file
+  If \code{tdm$fileMode==TRUE}, more files are written
+  relative to the directory of the \code{.conf} file:
+  \itemize{ \item \code{envT$theFinals } is written to file
   \code{tdm$finalFile} and appended to \code{tdm$experFile}
-  \item \code{envT$res } is written to \code{.res} file in
-  directory \code{<tuneMethod>} \item \code{envT$bst } is
-  written to \code{.bst} file in directory
-  \code{<tuneMethod>} } More precisely: If we tune with
-  \code{tuneMethod="lhd"} and perform the 3rd experiment
-  for \code{.conf} file \code{cpu_01.conf}, then the
-  \code{.res} file is written to
-  \code{lhd/cpu_01_lhd_03.res} relative to the directory of
-  \code{.conf} file. Analoguously for \code{.bst} file.
-  \cr
+  \item \code{envT$res } is written to a \code{.res} file
+  in directory \code{<tuneMethod>} \item \code{envT$bst }
+  is written to a \code{.bst} file in directory
+  \code{<tuneMethod>} } More precisely: If
+  \code{tdm$fileMode==TRUE} and we tune with
+  \code{tuneMethod="lhd"} while performing the 3rd
+  experiment for \code{.conf} file \code{cpu_01.conf}, then
+  the \code{.res} file \code{lhd/cpu_01_lhd_03.res} is
+  written relative to the directory of \code{.conf} file.
+  Analoguously for \code{.bst} file.  \cr
 
-  Two example usages of function tdmCompleteEval are shown
-  in demo/demo03sonar.r and demo/demo04cpu.r, accessible
-  via \code{demo(demo03sonar)} and \code{demo(demo04cpu)}
+  Example usages of function tdmCompleteEval are shown in
+  demo/demo03sonar.r, demo/demo03sonar_B.r and
+  demo/demo04cpu.r, accessible via \cr \code{
+  demo(demo03sonar)},\cr \code{ demo(demo03sonar_B)} and
+  \cr \code{ demo(demo04cpu)}
 }
 \examples{
 #*# --------- demo/demo03sonar.r ---------
@@ -175,12 +181,12 @@
 #*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify
 #*# with Random Forest as the prediction model. 
 #*# The three parameter to be tuned are CUTOFF1, CLASSWT2 and XPERC, as specified in file sonar_04.roi.
-#*# The tuners used here are SPOT and LHD.  
+#*# The tuner used here is LHD.  
 #*# Tuning runs are rather short, to make the example run quickly. Do not expect good numeric results. 
-#*# See demo/demo03sonar_B.r for a somewhat longer tuning run.
+#*# See demo/demo03sonar_B.r for a somewhat longer tuning run, with two tuners SPOT and LHD.
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
-library(TDMR);
+#library(TDMR);
 path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();
@@ -190,7 +196,7 @@ source("main_sonar.r");    # in working dir
 ## preliminary settings for TDMR
 tdm <- list( mainFunction="main_sonar"
             , umode=c("RSUB")           # ["CV" | "RSUB" | "TST"]
-            , tuneMethod = "spot"       # c("spot","lhd")
+            , tuneMethod = c("lhd")    # c("spot","lhd")
             , filenameEnvT="demo03.RData"   # file to save environment envT (in working dir)
             , finalFile="sonar.fin"
             , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs

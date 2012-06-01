@@ -15,7 +15,11 @@
   containing the data set (train/vali part and test part)}
 }
 \value{
-  result of CMA-ES algorithm
+  the result of CMA-ES tuning, i.e. the list
+  \code{envT$spotConfig}, extended by \item{\code{cma}}{
+  the return value from \code{\link{cma_es}} }
+  \item{\code{cma$count}}{ the number of calls to
+  \code{tdmStartOther} }
 }
 \description{
   Perform a parameter tuning by CMA-ES, using the

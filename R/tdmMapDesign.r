@@ -7,10 +7,10 @@
 #'    resp. These maps are used by \code{\link{tdmMapDesApply}}.   \cr
 #'    \code{"tdmMapDesign.csv"} is searched in the TDMR library path \code{.find.package("TDMR")}.
 #'    (For the developer version: \code{<tdm$tdmPath>/inst}). \cr
-#'    \code{"userMapDesign.csv"} is searched in the path \code{dirname(tdm$mainFile)} (or in the current dir, if tdm$mainFile==NULL).
+#'    \code{"userMapDesign.csv"} is searched in tdm$path (which is getwd() if the user did not define tdm$path).
 #'
 #' @param envT  environment
-#' @param tdm   list, needed for \code{tdm$tdmPath} 
+#' @param tdm   list, needed for \code{tdm$tdmPath} and \code{tdm$path}
 #' @seealso  \code{\link{tdmMapDesApply}}
 #' @export
 tdmMapDesLoad <- function(envT,tdm=list()) {
@@ -22,8 +22,8 @@ tdmMapDesLoad <- function(envT,tdm=list()) {
       tdmMapFile=paste(mapPath,"tdmMapDesign.csv",sep="/")
       if (!file.exists(tdmMapFile)) stop(sprintf("Could not find map file %s",tdmMapFile));
       envT$map <- read.table(tdmMapFile,sep=";",header=T)
-      userMapDir=ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
-      userMapFile=paste(userMapDir,"userMapDesign.csv",sep="/");
+      #userMapDir=ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
+      userMapFile=paste(tdm$path,"userMapDesign.csv",sep="");
       if (file.exists(userMapFile)) envT$mapUser <- read.table(userMapFile,sep=";",header=T)
 }    
 
@@ -38,7 +38,8 @@ tdmMapDesLoad <- function(envT,tdm=list()) {
 #' @param des   design points data frame
 #' @param opts  list of options
 #' @param k     apply mapping for the \code{k}-th design point
-#' @param envT  environment, we needed here \code{envT$map} and \code{envT$mapUser}, see \code{\link{tdmMapDesLoad}}
+#' @param envT  environment, we needed here \code{envT$map} and \code{envT$mapUser}, see \code{\link{tdmMapDesLoad}},
+#'              and in addition \code{envT$spotConfig$alg.roi} 
 #' @param tdm   list
 #' @return \code{opts}, the modified list of options
 #' @seealso  \code{\link{tdmMapDesLoad}}
@@ -55,9 +56,9 @@ tdmMapDesApply <- function(des,opts,k,envT,tdm) {
     	opts;
     }
     
-    # check whether each parameter in des can be found in map or mapUser (thus whether it can be mapped to a variable in opts):
-    dn=setdiff(names(des[-1]),c("COUNT","CONFIG","REPEATS","STEP","SEED","repeatsLastConfig"));
-    for (d in dn) {
+    # check whether each parameter column in des can be found in map or mapUser (thus whether it can be mapped to a variable in opts):
+    pNames=row.names(envT$spotConfig$alg.roi);
+    for (d in pNames) {
       if (length(which(envT$map$roiValue==d))+length(which(envT$mapUser$roiValue==d))==0)
         stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
     }
@@ -100,13 +101,13 @@ makeTdmMapDesSpot <- function() {
       tdmMapFile=paste(mapPath,"tdmMapDesign.csv",sep="/")
       if (!file.exists(tdmMapFile)) stop(sprintf("Could not find map file %s",tdmMapFile));
       map <<- read.table(tdmMapFile,sep=";",header=T)
-      userMapDir=ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
-      userMapFile=paste(userMapDir,"userMapDesign.csv",sep="/");
+      #userMapDir=ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
+      userMapFile=paste(tdm$path,"userMapDesign.csv",sep="");
       mapUser <<- NULL;
       if (file.exists(userMapFile)) mapUser <<- read.table(userMapFile,sep=";",header=T)
     }    
     
-    applyFunc <- function(des,opts,k,tdm) {
+    applyFunc <- function(des,opts,k,tdm,spotConfig) {
       cRound <- function(n,map,x) {
         x <- ifelse(map$isInt[n]==1,round(x),x);
         x; 
@@ -117,9 +118,9 @@ makeTdmMapDesSpot <- function() {
       	opts;
       }         #
       
-      # check whether each param column in des can be mapped to a variable in opts:
-      dn=setdiff(names(des),c("COUNT","CONFIG","REPEATS","STEP","SEED","repeatsLastConfig"));
-      for (d in dn) {
+      # check whether each param column in des can be found in map or mapUser (thus whether it can be mapped to a variable in opts):
+      pNames=row.names(spotConfig$alg.roi);
+      for (d in pNames) {
         if (length(which(map$roiValue==d))+length(which(mapUser$roiValue==d))==0)
           stop(sprintf("tdmMapDesSpot: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
       }

@@ -15,14 +15,25 @@
 #' @param envT the environment variable
 #' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
 #'
-#' @return the result of the tuning algorithm.
+#' @return The result \code{tunerVal} of the tuning algorithm, this is the list envT$spotConfig, extended by
+#'      \item{\code{alg.currentResult}}{ the RES data frame  }
+#'      \item{\code{alg.currentBest}}{ the BST data frame  }
+#'      \item{...}{[optional] further results from the tuning algorithm \code{tuneMethod}  }
+#'
+#' @note Side effects: Environment \code{envT} is extended by
+#'     \itemize{
+#'         \item \code{envT$tunerVal = tunerVal} 
+#'         \item \code{envT$res  } the RES data frame
+#'         \item \code{envT$bst  } the BST data frame
+#'      }
 #' @seealso   \code{\link{tdmCompleteEval}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
 #' @export
 #' @keywords internal
 ###########################################################################################
 tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
-{   theSpotPath=tdm$theSpotPath
+{
+    theSpotPath=tdm$theSpotPath
     if (spotStep=="auto") {
       #if (is.null(tdm$mainFile)) stop("Element tdm$mainFile is missing, but this is required for spotStep='auto'");
       if (is.null(tdm$mainFunc)) stop("Element tdm$mainFunc is missing, but this is required for spotStep='auto'");
@@ -49,9 +60,20 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
     if (tunerVal[1]=="INVALID2") {
       stop(sprintf("*** Invalid spotStep=%s ***\n",spotStep));
     }
+    tunerVal$dataObj = NULL;     # delete this potential voluminous element
+
+    if (!(tuneMethod %in% c("spot","lhd"))) {
+      # Bug fix 05/12:        
+      # When tuning via tdmStartOther terminates, there might have been last calls to tdmStartOther which have not
+      # yet been processed for the BST data frame (or this data frame may not have been constructed yet).
+      # So we compute again, based on tunerVal$alg.currentResult, the so far best solution (merge repeats), 
+      # and write a line to the BST data frame tunerVal$alg.currentBest.
+    	mergedData <- spotPrepareData(tunerVal)
+      tunerVal <- spotWriteBest(mergedData, tunerVal);	# appends the best solution to tunerVal$alg.currentBest
+  		envT$bst <- tunerVal$alg.currentBest;  
+    }
+
     envT$tunerVal = tunerVal;
-    envT$tunerVal$dataObj = NULL;     # delete this potential voluminous element
-    
     tunerVal;
 }
 
@@ -154,7 +176,9 @@ lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 #' @param envT the environment variable
 #' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
 #'
-#' @return result of CMA-ES algorithm
+#' @return the result of CMA-ES tuning, i.e. the list \code{envT$spotConfig}, extended by
+#'    \item{\code{cma}}{ the return value from \code{\link{cma_es}}   }
+#'    \item{\code{cma$count}}{ the number of calls to \code{tdmStartOther}  }
 #' @export
 #' @keywords internal
 ######################################################################################
@@ -187,18 +211,20 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
     # Be aware, that control$lambda (# of offsprings) controls the # of fct calls, 
     # NOT control$mu. The number of calls to tdmStartOther will be N=ceiling(control$maxit)*control$lambda, 
     # the number of calls to the DM training fct main_TASK will be N*sC$seq.design.maxRepeats.
+    control$maxit=round(control$maxit);     # BUG FIX 05/12: if control$maxit were NOT an integer, we would get 
+            # from cma_es: "Error in eigen.log[iter, ] <- rev(sort(e$values)): subscript out of bounds"
     control$diag.pop=FALSE;
     control$diag.sigma=TRUE;
     control$diag.eigen=TRUE;
-    
-    cmaVal <- cma_es(param,tdmStartOther,sC$opts,lower=roiLower,upper=roiUpper,control=control);
-    # cma_es calls tdmStartOther and tdmStartOther appends to data frames envT$res and envT$bst.
+
+    cma <- cma_es(param,tdmStartOther,sC$opts,lower=roiLower,upper=roiUpper,control=control);
+    # cma_es calls tdmStartOther and tdmStartOther appends to data frames envT$res and envT$bst
+    # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
     # If tdm$fileMode==TRUE, then tdmStartOther will write envT$res to envT$spotConfig$io.resFileName
     # and envT$bst to envT$spotConfig$io.bstFileName 
     
-    tunerVal = sC;
-    tunerVal$cma = cmaVal;
-    #tunerVal$cma$sres <- sres; 
+    tunerVal = envT$spotConfig;
+    tunerVal$cma = cma;
     tunerVal$cma$count=nrow(envT$res);
     
     cat(sprintf("Function calls to tdmStartOther: %d\n",tunerVal$cma$count[1]));
@@ -220,7 +246,9 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
 #' @param envT the environment variable
 #' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
 #'
-#' @return result of CMA-ES algorithm
+#' @return the result of CMA-ES tuning, i.e. the list \code{envT$spotConfig}, extended by
+#'    \item{\code{cma$sres}}{ the return return string from the system call "java cma.examples.cmaJava CMAprops.txt"   }
+#'    \item{\code{cma$count}}{ the number of calls to \code{tdmStartOther}  }
 #' @export
 #' @keywords internal
 ######################################################################################
@@ -292,28 +320,24 @@ cma_jTuner <- function(confFile,tdm,envT,dataObj)
     }
     # cmaJava calls repeatedly "R cma_j.r" which reloads cma_j1.rda, cma_j2.rda and then executes tdmStartOther.
     # (Be aware that on Windows the path to R.exe must be in the system variable Path.)
-    # tdmStartOther appends to data frames envT$res and envT$bst.
-    # Deprecated: If tdm$fileMode==TRUE, then tdmStartOther will write envT$res to envT$spotConfig$io.resFileName
-    # and envT$bst to envT$spotConfig$io.bstFileName.
+    # tdmStartOther appends to data frames envT$res and envT$bst
+    # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
     # Finally cma_j.r will save cma_j3.rda (the modified elements res,bst,spotConfig of envT, but not envT itself) 
+    cat(sprintf("Function calls to tdmStartOther: %d\n",tunerVal$cma$count[1]));
     
     res <- bst <- spotConfig <- NULL;     # just to make 'R CMD check' happy  (and in case that cma_j3.rda has not the content as expected)
 		load("cma_j3.rda");         # load the things modified in envT    (spotConfig, res, bst, as saved by javabin/cma_j.r)
 		if (is.null(res) | is.null(bst) | is.null(spotConfig))
 		  warning(sprintf("%s/cma_j3.rda does not contain all the required objects: res, bst, spotConfig.",javadir));
-		envT$res = res;
-		envT$bst = bst;
-		envT$spotConfig = spotConfig;
+    tunerVal = spotConfig;                               # 
+		tunerVal$alg.currentResult <- envT$res <- res;       # bug fix WK /05/12
+		tunerVal$alg.currentBest <- envT$bst <- bst;         # 
 		
 		setwd(oldWD);
 		
-    tunerVal = sC;
     tunerVal$cma = list()
     tunerVal$cma$sres <- sres; 
     tunerVal$cma$count=nrow(envT$res);
-    
-    cat(sprintf("Function calls to tdmStartOther: %d\n",tunerVal$cma$count[1]));
-
     tunerVal;
 }
 
@@ -330,7 +354,9 @@ cma_jTuner <- function(confFile,tdm,envT,dataObj)
 #' @param envT the environment variable
 #' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
 #'
-#' @return result of Powell's algorithm
+#' @return the result of Powell tuning, i.e. the list \code{envT$spotConfig}, extended by
+#'    \item{\code{powell}}{ the return value from \code{\link{powell}}   }
+#'    \item{\code{powell$count}}{ the number of calls to \code{tdmStartOther}  }
 #' @export
 #' @keywords internal
 ######################################################################################
@@ -366,10 +392,16 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
     param <- (roiLower+roiUpper)/2;    # start configuration
   
     maxEvaluations = sC$auto.loop.nevals/sC$seq.design.maxRepeats;
-#browser()  
-    tunerVal <- powell(param, fn=tdmStartOther, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
-    # powell calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
 
+    resPowell <- powell(param, fn=tdmStartOther, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
+    # powell calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
+    # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
+
+    tunerVal = envT$spotConfig;
+		tunerVal$alg.currentResult <- envT$res;       
+		tunerVal$alg.currentBest <- envT$bst;         
+    tunerVal$powell = resPowell;
+    tunerVal$powell$count=nrow(envT$res);
     tunerVal;  
 }
 
@@ -385,8 +417,10 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
 #' @param envT the environment variable
 #' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
 #'
-#' @return result of BFGS algorithm
-#' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@fh-koeln.de}
+#' @return the result of BFGS tuning, i.e. the list \code{envT$spotConfig}, extended by
+#'    \item{\code{bfgs}}{ the return value from \code{optim(...,method="L-BFGS-B")}   }
+#'    \item{\code{bfgs$count}}{ the number of calls to \code{tdmStartOther}  }
+#' @author Wolfgang Konen \email{wolfgang.konen@@fh-koeln.de}, Patrick Koch 
 #' @export
 #' @keywords internal
 ######################################################################################
@@ -412,14 +446,21 @@ bfgsTuner <- function(confFile,tdm,envT,dataObj){
     tdm$roi <- sC$alg.roi;
   
     maxEvaluations = sC$auto.loop.nevals/sC$seq.design.maxRepeats;
-  
-    tunerVal <- optim(par=param, fn=tdmStartOther, gr=NULL, method="L-BFGS-B", lower=roiLower, upper=roiUpper, control=list(maxit=maxEvaluations), opts=sC$opts)
+    maxEvaluations = round(maxEvaluations);
+
+    bfgs <- optim(par=param, fn=tdmStartOther, gr=NULL, method="L-BFGS-B", lower=roiLower, upper=roiUpper, control=list(maxit=maxEvaluations), opts=sC$opts)
     # optim calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
+    # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
   
     cat(">>>>>> RESULT:\n")
-    print(tunerVal)
+    print(bfgs)
   
-    tunerVal;
+    tunerVal = envT$spotConfig;
+		tunerVal$alg.currentResult <- envT$res;       
+		tunerVal$alg.currentBest <- envT$bst;         
+    tunerVal$bfgs = bfgs;
+    tunerVal$bfgs$count=nrow(envT$res);
+    tunerVal;  
 }
 
 

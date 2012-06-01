@@ -1,12 +1,13 @@
 #*# --------- demo/demo03sonar_B.r ---------
-#*# Same as demo/demo03sonar.r, but with parameters for a longer tuning run:
-#*#    tdm$nExperim=1; tdm$nrun=5;
-#*#    and in sonar_05.conf: auto.loop.nevals = 50; init.design.size = 10;
+#*# Same as demo/demo03sonar.r, but with parameters for multiple tuning experiments & longer tuning runs:
+#*#    in demo03sonar_B.r:    tdm$nExperim=2; tdm$nrun=5;
+#*#    and in sonar_05.conf:  auto.loop.nevals = 50; init.design.size = 10;
+#*# and with two tuners SPOT and LHD in comparison.
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
-library(TDMR);
-#path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
-path <- paste("../inst", "demo02sonar",sep="/");
+#library(TDMR);
+path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
+#path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();
 setwd(path);
 source("main_sonar.r");    # in working dir

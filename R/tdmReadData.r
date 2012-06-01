@@ -65,8 +65,8 @@ tdmReadData <- function(opts) {
     }
     if (opts$READ.TST) {
 	  if (is.null(opts$TST.COL)) stop("Need a non-NULL definition for opts$TST.COL!");
-      dset <- bind_response(dset,opts$TST.COL,rep(0,nrow(dset)))
-      tset <- bind_response(tset,opts$TST.COL,rep(1,nrow(tset)))
+      dset <- tdmBindResponse(dset,opts$TST.COL,rep(0,nrow(dset)))
+      tset <- tdmBindResponse(tset,opts$TST.COL,rep(1,nrow(tset)))
       dset <- rbind(dset,tset)
     }
     cat1(opts,opts$filename,":", length(dset[,1]), "records read.\n")

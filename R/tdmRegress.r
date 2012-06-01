@@ -60,16 +60,10 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
     filename <- opts$filename;
     input.variables_0 <- input.variables;      # save copy for response.variable loop
 
-    if (is.null(opts$MOD.method)) opts$MOD.method="RF";
-    if (is.null(opts$SRF.kind)) opts$SRF.kind="xperc";
-    if (is.null(opts$RF.ntree)) opts$RF.ntree=500;
     if (is.null(opts$RF.samp)) opts$RF.samp=3000;
-    if (is.null(opts$RF.mtry)) opts$RF.mtry=NULL;
-    if (is.null(opts$RF.p.all)) opts$RF.p.all=F;
     if (is.null(opts$SVM.gamma)) opts$SVM.gamma=0.01;
     if (is.null(opts$SVM.epsilon)) opts$SVM.epsilon=0.01;
     if (is.null(opts$SVM.tolerance)) opts$SVM.tolerance=0.001;
-    if (is.null(opts$VERBOSE)) opts$VERBOSE=2;
     if (is.null(opts$gr.log)) opts$gr.log=F;
     
     
@@ -97,6 +91,21 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         #print(summary(d_train))            # most columns are of numeric type
                                            # -> summary min,max,quantiles...
         cat1(opts,"\n")
+
+        # NEW (May 2012): if opts$MOD.SEED is set, also the importance selection 
+        # starts with a deterministic seed
+        #
+        if (is.null(opts$MOD.SEED)) {
+          # NEW: when called via SPOT, the RNG might be at (different but) fixed seed in each call.
+          #      But if MOD.SEED==NULL we want different seeds (for RF training) to see the variability       
+          set.seed(tdmRandomSeed());                                                                  
+        } else if (opts$MOD.SEED=="algSeed") {  # use the seed from SPOT
+          newseed=opts$ALG.SEED+(opts$i-1)+opts$NRUN*(opts$rep-1);
+          set.seed(newseed); 
+        } else {
+          newseed=opts$MOD.SEED+(opts$i-1)+opts$NRUN*(opts$rep-1);
+          set.seed(newseed) # if you want reproducably the same model training,
+        }                   # but different for each run i
 
         #=============================================
         # PART 4.2: IMPORTANCE SELECTION (BY USING RF)
@@ -271,8 +280,8 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
       	}
         # bind the predicted class pred_... as last column to the data frames
         name.of.prediction <- paste("pred_", response.variable, sep="")
-        d_train <- bind_response(d_train, name.of.prediction, train.predict)
-        d_test  <- bind_response(d_test, name.of.prediction, test.predict)
+        d_train <- tdmBindResponse(d_train, name.of.prediction, train.predict)
+        d_test  <- tdmBindResponse(d_test, name.of.prediction, test.predict)
 
         #=============================================
         # PART 4.6: EVAL: RMSE, RMAE on TRAIN/OOB/TEST
@@ -287,9 +296,9 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         #naive.predict2=d_train[,opts$old.response.variable]
         #rmse$Theil2.train <- rmse$train/sqrt(mean((naive.predict2-d_train[,response.variable])^2))
         rmae=list()
-        madtr <- mean(abs(d_train[,response.variable]))
-        rmae$train <- mean(abs(train.predict-d_train[,response.variable]))/madtr
-        rmae$Theil.train <- rmae$train/(mean(abs(naive.predict-d_train[,response.variable]))/madtr)
+        rmae$madtr <- mean(abs(d_train[,response.variable]))
+        rmae$train <- mean(abs(train.predict-d_train[,response.variable]))/rmae$madtr
+        rmae$Theil.train <- rmae$train/(mean(abs(naive.predict-d_train[,response.variable]))/rmae$madtr)
 
         cat2(opts,"\nTraining cases (",length(train.predict),"):\n")
         cat2(opts,"rmse$train (OOB):", rmse$train, "\n")
@@ -301,9 +310,9 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         rmse$Theil.test <- rmse$test/sqrt(mean((naive.predict-d_test[,response.variable])^2))
         #naive.predict2=d_test[,opts$old.response.variable]
         #rmse$Theil2.test <- rmse$test/sqrt(mean((naive.predict2-d_test[,response.variable])^2))
-        madt <- mean(abs(d_test[,response.variable]))
-        rmae$test <- mean(abs(test.predict-d_test[,response.variable]))/madt
-        rmae$Theil.test <- rmae$test/(mean(abs(naive.predict-d_test[,response.variable]))/madt)
+        rmae$madte <- mean(abs(d_test[,response.variable]))
+        rmae$test <- mean(abs(test.predict-d_test[,response.variable]))/rmae$madte
+        rmae$Theil.test <- rmae$test/(mean(abs(naive.predict-d_test[,response.variable]))/rmae$madte)
         cat2(opts,"\nTest cases (",length(test.predict),"):\n")
       	cat2(opts,"rmse$test:", rmse$test, ", rmse$train (OOB):", rmse$train,"\n")
         cat2(opts,"RMAE$test:", rmae$test, "\n")
@@ -376,7 +385,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
     res =   list(rmse=RMSE          # root mean square error, summed over all response.variables
                 ,rmae=RMAE          # relative mean absolute error, summed over all response.variables
                 ,allRMAE=allRMAE	 	# RMAE for each response.variable 
-                ,lastModel = res.rf         #   from last response.variable 
+                ,lastModel = res.rf #   from last response.variable 
                 ,d_train=d_train
                 ,d_test=d_test 
                 ,opts=opts          # some defaults might have been added  
