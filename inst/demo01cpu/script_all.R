@@ -16,15 +16,11 @@ tdm <- list(tdmPath=NULL # from where to load TDMR: if NULL, load package TDMR, 
             , parallelCPUs = 1         # [1] 1: sequential, >1: parallel execution with snowFall using this many cpus
             );
 
-#
-# the following 3 lines are only needed if you want to initialize for parallel execution or from developper sources in tdm$tdmPath, 
-# otherwise a simple  "require(TDMR);"  will do
-tdm$theSpotPath <- NA;
-start.tdm.path <- ifelse(is.null(tdm$tdmPath),.find.package("TDMR"),paste(tdm$tdmPath,"..",sep="/")); 
-source(paste(start.tdm.path,"start.tdm.r",sep="/"),local=T); 
 
-runList = c("cpu_01.conf") #,"cpu_02.conf"); 
-spotList = NULL # list() #       #  =NULL: all in runList; =list(): none
+tdm$runList = c("cpu_01.conf") #,"cpu_02.conf"); 
+tdm$spotList = NULL # list() #       #  =NULL: all in runList; =list(): none
 spotStep = "auto"
 
-envT <- tdmCompleteEval(runList,spotList,spotStep,tdm);
+envT <- tdmEnvTMakeNew(tdm);
+envT <- tdmBigLoop(envT,spotStep);
+#deprecated: envT <- tdmCompleteEval(runList,spotList,spotStep,tdm);

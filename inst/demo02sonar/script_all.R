@@ -21,8 +21,10 @@ start.tdm.path <- ifelse(is.null(tdm$tdmPath),.find.package("TDMR"),paste(tdm$td
 source(paste(start.tdm.path,"start.tdm.r",sep="/"),local=T); 
 #require(TDMR);
 
-runList = c("sonar_04.conf"); # ,"sonar_01.conf","sonar_02.conf","sonar_03.conf"); #
-spotList = NULL # list() #       #  =NULL: all in runList; =list(): none
+tdm$runList = c("sonar_04.conf"); # ,"sonar_01.conf","sonar_02.conf","sonar_03.conf"); #
+tdm$spotList = NULL # list() #       #  =NULL: all in runList; =list(): none
 spotStep = "auto"
 
-envT <- tdmCompleteEval(runList,spotList,spotStep,tdm);
+envT <- tdmEnvTMakeNew(tdm);
+envT <- tdmBigLoop(envT,spotStep);
+#deprecated: envT <- tdmCompleteEval(runList,spotList,spotStep,tdm);

@@ -46,7 +46,7 @@
   \item{filename}{ \code{opts$filename}, from where the
   data were read}
 
-  Known caller: \code{\link{tdmCompleteEval}}
+  Known caller: \code{\link{tdmBigLoop}}
 }
 \description{
   Read the task data using \code{\link{tdmReadData}} and
@@ -54,10 +54,12 @@
   training/validation-part.
 }
 \author{
-  Wolfgang Konen, FHK, Apr'2012
+  Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), FHK,
+  Apr'2012 - Nov'2012
 }
 \seealso{
   \code{\link{dsetTrnVa.TDMdata}},
-  \code{\link{tdmReadData}}, \code{\link{tdmCompleteEval}}
+  \code{\link{dsetTest.TDMdata}},
+  \code{\link{tdmReadData}}, \code{\link{tdmBigLoop}}
 }
 

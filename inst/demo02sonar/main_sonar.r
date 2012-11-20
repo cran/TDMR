@@ -5,9 +5,7 @@
 # Example usage:
 #       result <- main_sonar();
 #
-# Author: Wolfgang Konen, FHK, Sep'2010 - Dec'2010
-#
-main_sonar <- function(opts=NULL,dset=NULL) {          
+main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {          
 
     if (is.null(opts)) {
       opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See ?tdmOptsDefaultsSet

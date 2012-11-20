@@ -1,30 +1,39 @@
+######################################################################################
 # tdmMapDesLoad
 #
 #'    Load the mapping files. 
 #'
 #'    Load the map files \code{"tdmMapDesign.csv"} and optionally 
-#'    also \code{"userMapDesign.csv"} and store them in \code{envT$map} and \code{envT$mapUser},
+#'    also \code{"userMapDesign.csv"} and store them in \code{tdm$map} and \code{tdm$mapUser},
 #'    resp. These maps are used by \code{\link{tdmMapDesApply}}.   \cr
 #'    \code{"tdmMapDesign.csv"} is searched in the TDMR library path \code{.find.package("TDMR")}.
 #'    (For the developer version: \code{<tdm$tdmPath>/inst}). \cr
 #'    \code{"userMapDesign.csv"} is searched in tdm$path (which is getwd() if the user did not define tdm$path).
 #'
-#' @param envT  environment
 #' @param tdm   list, needed for \code{tdm$tdmPath} and \code{tdm$path}
+#' @return \code{tdm}, the modified list with new elements \code{tdm$map} and \code{tdm$mapUser}
 #' @seealso  \code{\link{tdmMapDesApply}}
 #' @export
-tdmMapDesLoad <- function(envT,tdm=list()) {
+tdmMapDesLoad <- function(tdm=list()) {
       if (is.null(tdm$tdmPath)) {
-        mapPath <- .find.package("TDMR");   # this is for the package version
+        mapPath <- .find.package("TDMR");               # this is for the package version
       } else {
-        mapPath <- paste(tdm$tdmPath,"inst",sep="/");
+        mapPath <- paste(tdm$tdmPath,"inst",sep="/");   # this is for the developer source version
       }
       tdmMapFile=paste(mapPath,"tdmMapDesign.csv",sep="/")
       if (!file.exists(tdmMapFile)) stop(sprintf("Could not find map file %s",tdmMapFile));
-      envT$map <- read.table(tdmMapFile,sep=";",header=T)
+      tdm$map <- read.table(tdmMapFile,sep=";",header=T);
+      cat(sprintf("Read tdmMapDesign.csv from %s\n",mapPath));
       #userMapDir=ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
       userMapFile=paste(tdm$path,"userMapDesign.csv",sep="");
-      if (file.exists(userMapFile)) envT$mapUser <- read.table(userMapFile,sep=";",header=T)
+      if (file.exists(userMapFile)) {
+        tdm$mapUser <- read.table(userMapFile,sep=";",header=T);
+        cat(sprintf("Read userMapDesign.csv from %s\n",tdm$path));
+      } else {
+        tdm$mapUser <- NULL;
+        cat(sprintf("Note: No file userMapDesign.csv in %s\n",tdm$path));
+      }
+      tdm;
 }    
 
 # tdmMapDesApply
@@ -38,13 +47,13 @@ tdmMapDesLoad <- function(envT,tdm=list()) {
 #' @param des   design points data frame
 #' @param opts  list of options
 #' @param k     apply mapping for the \code{k}-th design point
-#' @param envT  environment, we needed here \code{envT$map} and \code{envT$mapUser}, see \code{\link{tdmMapDesLoad}},
+#' @param spotConfig  list, we needed here \code{spotConfig$alg.roi} and \code{envT$mapUser}, see \code{\link{tdmMapDesLoad}},
 #'              and in addition \code{envT$spotConfig$alg.roi} 
-#' @param tdm   list
+#' @param tdm   list, we need here \code{tdm$map} and \code{tdm$mapUser}
 #' @return \code{opts}, the modified list of options
 #' @seealso  \code{\link{tdmMapDesLoad}}
 #' @export
-tdmMapDesApply <- function(des,opts,k,envT,tdm) {
+tdmMapDesApply <- function(des,opts,k,spotConfig,tdm) {
     cRound <- function(n,map,x) {
       x <- ifelse(map$isInt[n]==1,round(x),x);
       x; 
@@ -57,101 +66,26 @@ tdmMapDesApply <- function(des,opts,k,envT,tdm) {
     }
     
     # check whether each parameter column in des can be found in map or mapUser (thus whether it can be mapped to a variable in opts):
-    pNames=row.names(envT$spotConfig$alg.roi);
+    pNames=row.names(spotConfig$alg.roi);
     for (d in pNames) {
-      if (length(which(envT$map$roiValue==d))+length(which(envT$mapUser$roiValue==d))==0)
+      if (length(which(tdm$map$roiValue==d))+length(which(tdm$mapUser$roiValue==d))==0)
         stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
     }
     
-    for (n in 1:nrow(envT$map)) {
-      opts <- setMapValue(n,envT$map,des,opts,k);
+    for (n in 1:nrow(tdm$map)) {
+      opts <- setMapValue(n,tdm$map,des,opts,k);
     }
-    if (!is.null(envT$mapUser)) {
-      for (n in 1:nrow(envT$mapUser)) {
-        opts <- setMapValue(n,envT$mapUser,des,opts,k);
+    if (!is.null(tdm$mapUser)) {
+      for (n in 1:nrow(tdm$mapUser)) {
+        opts <- setMapValue(n,tdm$mapUser,des,opts,k);
       }
     }
+    
+    # TODO: check and extend this for arbitrary class length
     if (!is.null(opts$CLS.CLASSWT) && is.na(opts$CLS.CLASSWT[1])) opts$CLS.CLASSWT[1]=10;
     
     opts;
 }
-
-######################################################################################
-# makeTdmMapDesSpot is a helper fct for tdmMapDesSpot:
-#     function to make tdmMapDesSpot, which contains two functions load and apply (see below)
-#     This is necessary to have private storage (map, mapUser) which allows to  read the 
-#     csv files at one point (e.g. before parallel execution) and map the elements later
-#     (e.g. on the individual parallel cores) 
-#
-# Author: Wolfgang Konen, FHK, Sep'2010 - Nov'2010
-#
-makeTdmMapDesSpot <- function() {
-    # For each variable which appears in .roi (and thus in .des file): set its counterpart in list opts.
-    # For each variable not appearing: leave its counterpart in opts at its default value from .apd file.
-    # (The check "if (!is.null...)" assures that tdmMapDes will work for all different .roi files.)
-    #
-    map = NULL;
-    mapUser = NULL; 
-    loadFunc <- function(tdm) {
-      if (is.null(tdm$tdmPath)) {
-        mapPath <- .find.package("TDMR");   # this is for the package version
-      } else {
-        mapPath <- paste(tdm$tdmPath,"inst",sep="/");
-      }
-      tdmMapFile=paste(mapPath,"tdmMapDesign.csv",sep="/")
-      if (!file.exists(tdmMapFile)) stop(sprintf("Could not find map file %s",tdmMapFile));
-      map <<- read.table(tdmMapFile,sep=";",header=T)
-      #userMapDir=ifelse(is.null(tdm$mainFile),".",dirname(tdm$mainFile));
-      userMapFile=paste(tdm$path,"userMapDesign.csv",sep="");
-      mapUser <<- NULL;
-      if (file.exists(userMapFile)) mapUser <<- read.table(userMapFile,sep=";",header=T)
-    }    
-    
-    applyFunc <- function(des,opts,k,tdm,spotConfig) {
-      cRound <- function(n,map,x) {
-        x <- ifelse(map$isInt[n]==1,round(x),x);
-        x; 
-      }
-      setMapValue <- function(n,map,des,opts,k) {
-      	cmd = paste("if(!is.null(des$",map$roiValue[n],")) ",map$optsValue[n],"=cRound(n,map,des$",map$roiValue[n],"[k])",sep="");
-      	eval(parse(text=cmd));
-      	opts;
-      }         #
-      
-      # check whether each param column in des can be found in map or mapUser (thus whether it can be mapped to a variable in opts):
-      pNames=row.names(spotConfig$alg.roi);
-      for (d in pNames) {
-        if (length(which(map$roiValue==d))+length(which(mapUser$roiValue==d))==0)
-          stop(sprintf("tdmMapDesSpot: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
-      }
-      
-      for (n in 1:nrow(map)) {
-        opts <- setMapValue(n,map,des,opts,k);
-      }
-      if (!is.null(mapUser)) {
-        for (n in 1:nrow(mapUser)) {
-          opts <- setMapValue(n,mapUser,des,opts,k);
-        }
-      }
-      if (!is.null(opts$CLS.CLASSWT) && is.na(opts$CLS.CLASSWT[1])) opts$CLS.CLASSWT[1]=10;
-      
-      opts;
-    }
-    list(load=loadFunc, apply=applyFunc);
-}
-
-######################################################################################
-# tdmMapDesSpot:
-#'   Helper fct for \code{\link{tdmStartSpot}}.
-#'
-#'   Map the parameters from \code{des} to \code{opts} for the \code{k}th line of \code{des}.
-#'   The object tdmMapDesSpot has two function elements: \cr
-#'      \code{load(tdm)}   \cr
-#'      \code{apply(des,opts,k,tdm)}
-#' @keywords internal
-#' @export
-#
-tdmMapDesSpot <- makeTdmMapDesSpot();
 
 ######################################################################################
 tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
@@ -174,7 +108,7 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 
 ######################################################################################
 # tdmMapOpts:
-#   helper fct for unbiasedBestRun_*.R, map certain parameters of opts for the unbiased
+#   helper fct for unbiasedRun_*.r, map certain parameters of opts for the unbiased
 #   runs, depending on parameter umode, which controls the mode of the unbiased run
 # INPUT
 #   umode       # one of { "RSUB" | "CV" | "TST" | "SP_T" }
@@ -185,11 +119,12 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 #   opts        # current state of parameter settings
 #   tdm         # list, here we use the elements
 #     nfold         # [10] value for opts$TST.NFOLD during unbiased runs with umode="CV"
+#     tstCol        # ["TST"] value for opts$TST.COL during unbiased runs with umode="TST"
 #     tstFrac       # [0.2] value for opts$TST.valiFrac during unbiased runs with umode="RSUB"
-#     tstFrac       # ["TST"] value for opts$TST.COL during unbiased runs with umode="TST"
+#     TST.trnFrac   # [NULL] value for opts$TST.trnFrac during unbiased runs with umode="SP_T"
 #     nrun          # [5] value for opts$NRUN during unbiased runs
 #     test2.string  # ["default.cutoff"] value for opts$test2.string during unbiased runs
-#   (the defaults in '[...]' are filled via tdmDefaultsFill, if tdm does not yet define them.)
+#   (the defaults in '[...]' are filled via tdmDefaultsFill, if tdm does not define them.)
 # OUTPUT
 #   opts        #  enhanced state of parameter settings
 ######################################################################################
@@ -211,15 +146,23 @@ tdmMapOpts <- function(umode,opts,tdm)
     } 
     setOpts.CV <- function(opts) {
       opts$TST.kind <- "cv"       # select test data by CV, see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$TST.NFOLD = tdm$nfold  # number of CV-folds (only for TST.kind=="cv")
+      opts$TST.NFOLD = tdm$nfold  # number of CV-folds 
       opts$READ.TST = F           # =F: do not read in extra unseen test data 
+      opts;
+    } 
+    setOpts.SP_T <- function(opts) {
+      # [we leave opts$TST.kind at its current value]
+      if (!is.null(tdm$TST.trnFrac)) 
+        opts$TST.trnFrac=tdm$TST.trnFrac# Set this fraction of the TrainVa-data aside for training (only for opts$TST.kind="rand").
+                                        # If tdm$TST.trnFrac is NULL, then tdmModCreateCVindex sets opts$TST.trnFrac = 1-opts$TST.valiFrac.
+      opts$TST.NFOLD = tdm$nfold  # number of CV-folds (only for opts$TST.kind=="cv")
       opts;
     } 
     opts <- switch(umode
       , "RSUB" = setOpts.RSUB(opts)
       , "CV" = setOpts.CV(opts)
       , "TST" = setOpts.TST(opts)
-      , "SP_T" = setOpts.TST(opts)
+      , "SP_T" = setOpts.SP_T(opts)
       , "INVALID"
       );
     if (opts[1]=="INVALID") 
@@ -246,6 +189,7 @@ tdmMapOpts.OLD <- function(umode,opts,test2.string="no postproc",nfold=10) {
 }
 
 ######################################################################################
+# ---- tdmMapCutoff is deprecated now, all is done in tdmModAdjustCutoff now. ---
 # tdmMapCutoff:
 #   helper fct for tdmStart*.r in the classification task case
 #   enforce parameter constraint sum(CUTOFFi)=1 if CUTOFF2,3,4 appears in .des-file.

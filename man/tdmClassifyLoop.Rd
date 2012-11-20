@@ -4,10 +4,14 @@
 \title{Core classification double loop of TDMR returning a \code{\link{TDMclassifier}} object.}
 \usage{
   tdmClassifyLoop(dset, response.variables,
-    input.variables, opts)
+    input.variables, opts, tset = NULL)
 }
 \arguments{
   \item{dset}{the data frame for which cvi is needed}
+
+  \item{tset}{[NULL] optional validation data set. If NULL,
+  the validation set is build from \code{dset} according to
+  the procedure prescribed in \code{opts$TST.*}.}
 
   \item{response.variables}{name of column which carries
   the target variable - or - vector of names specifying
@@ -42,8 +46,15 @@
   gain on training set} \item{R_train}{ relative gain on
   training set (percentage of max. gain on this set)}
   \item{*_test}{ --- similar, with test set instead of
-  training set} \item{*_test2}{ --- similar, with test2 set
-  instead of training set}
+  training set --- } \item{*_test2}{ --- similar, with
+  test2 set instead of training set --- } \item{Err}{ }
+  \item{predictions}{ last run: data frame with dimensions
+  [nrow(dset),length(response.variable)]. In case of CV,
+  all CV predictions (for each record in dset), in other
+  cases mixed validation / train set predictions.  }
+  \item{predProbList}{ the ith element in this list has
+  data on the prediction probabilities of the ith run. See
+  info on \code{predProb} in \code{\link{tdmClassify}}. }
 
   Each performance measure \code{C_*, G_*, R_*} is a vector
   of length \code{opts$NRUN}. To be specific,
@@ -91,7 +102,7 @@ setwd(oldwd);
 }
 \author{
   Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), FHK,
-  Sep'2010 - Apr'2012
+  Sep'2010 - Jun'2012
 }
 \seealso{
   \code{\link{print.TDMclassifier}},

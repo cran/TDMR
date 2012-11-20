@@ -34,7 +34,7 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
     dset <- NULL;
     if(!is.null(dataObj)) dset<-dsetTrnVa(dataObj);
     # If dset is not NULL, this has an effect on mainCommand (see below) which contains "...,dset=dset".
-    # If dset is NULL, the reading of the data is deferred to main_TASK.
+    # If dset is NULL, the reading of the data is deferred to main_TASK (deprecated).
   
     # put parameter vector x in a one-row data frame and attach param names from .roi file:
     des <- as.data.frame(t(x));
@@ -56,10 +56,10 @@ makeTdmStartOther <- function(tdm,envT,dataObj) {
     
     k=1;                                # only one design point
     yres=NULL;
-    des <- tdmMapCutoff(des,k,envT$spotConfig);    # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
+    #des <- tdmMapCutoff(des,k,envT$spotConfig);    # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
   	for (r in 1:des$REPEATS[k]){
       opts$rep <- r;
-    	opts <- tdmMapDesApply(des,opts,k,envT,tdm);
+    	opts <- tdmMapDesApply(des,opts,k,envT$spotConfig,tdm);
     			
       if (!is.null(des$STEP))	theStep <- des$STEP[k];
 			opts$ALG.SEED <- des$SEED[k]+r;				# now used in tdmClassify, tdmClassifyLoop

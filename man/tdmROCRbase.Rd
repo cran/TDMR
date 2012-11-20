@@ -50,7 +50,8 @@
 #*# --------- demo/demo06ROCR.r ---------
 #*# Run task SONAR with "area under ROC curve" as performance measure (rgain.type="arROC").
 #*# Other settings are similar to demo00sonar.r (phase 1 of TDMR).
-#*# Finally, ROC curve and lift chart are plotted
+#*# Finally, plot ROC curve for validataion data set and 
+#+#          plot lift chart for training data set
 #*#
     oldwd=getwd(); setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
     source("main_sonar.r");

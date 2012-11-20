@@ -7,11 +7,13 @@
 #      opts$MOD.method = "SVM"
       opts$TST.SEED = 124;
       opts$MOD.SEED = 124;
+      opts$CLS.cutoff = c(1,-1);  # NEW
+      opts$SRF.cutoff = c(1,-1);  # NEW
       opts$NRUN =  1          # how many runs with different train & test samples  - or - 
                               # how many CV-runs, if TST.kind="cv"
       opts$GD.DEVICE="non"    # ["pdf"|"win"|"non"]: all graphics to 
                               # [one multi-page PDF | (several) windows (X11) | dev.null]
       opts$GD.RESTART=F;       
-      opts$VERBOSE=0;      
+      opts$VERBOSE=2;      
       opts$SRF.verbose = opts$VERBOSE; #
 

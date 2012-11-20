@@ -2,7 +2,7 @@
 \alias{tdmMapDesApply}
 \title{Apply the mapping from \code{des} to \code{opts}.}
 \usage{
-  tdmMapDesApply(des, opts, k, envT, tdm)
+  tdmMapDesApply(des, opts, k, spotConfig, tdm)
 }
 \arguments{
   \item{des}{design points data frame}
@@ -11,11 +11,13 @@
 
   \item{k}{apply mapping for the \code{k}-th design point}
 
-  \item{envT}{environment, we needed here \code{envT$map}
-  and \code{envT$mapUser}, see \code{\link{tdmMapDesLoad}},
-  and in addition \code{envT$spotConfig$alg.roi}}
+  \item{spotConfig}{list, we needed here
+  \code{spotConfig$alg.roi} and \code{envT$mapUser}, see
+  \code{\link{tdmMapDesLoad}}, and in addition
+  \code{envT$spotConfig$alg.roi}}
 
-  \item{tdm}{list}
+  \item{tdm}{list, we need here \code{tdm$map} and
+  \code{tdm$mapUser}}
 }
 \value{
   \code{opts}, the modified list of options

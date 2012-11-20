@@ -16,6 +16,7 @@
 }
 \description{
   The log file is opened in
-  \code{opts$dir.output/opts$LOGFILE}.
+  \code{opts$dir.output/opts$LOGFILE}, but only if
+  opts$fileMode==TRUE.
 }
 

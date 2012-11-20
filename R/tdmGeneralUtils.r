@@ -18,7 +18,7 @@
 #' 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr
 #' 4) Easy parallelization of those experiments with the help of R package \code{\link{snowfall}}.
 #' 
-#' The main entry point functions are \code{\link{tdmClassifyLoop}}, \code{\link{tdmRegressLoop}} and \code{\link{tdmCompleteEval}}. 
+#' The main entry point functions are \code{\link{tdmClassifyLoop}}, \code{\link{tdmRegressLoop}} and \code{\link{tdmBigLoop}}. 
 #' See \code{\link{tdmOptsDefaultsSet}} and \code{\link{tdmDefaultsFill}} for an overview of adjustable TDMR-parameters.
 #'
 #' @name TDMR-package

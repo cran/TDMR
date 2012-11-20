@@ -28,7 +28,8 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
         }
         if (.Platform$OS.type=="windows") {
           theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOT/R/';
-          if (Sys.info()["user"]=="wolfgang")  theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOT/R/';
+          if (Sys.info()["user"]=="wolfgang")  #theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOT/R/';
+            theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOTsrc/';
         }
       }
       # if 'theSpotPath' is a string different from "USE.SOURCE", then we try 
@@ -60,9 +61,19 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
     if (is.na(theSpotPath)) {
         require("SPOT");     # load SPOT from the installed library (package version)
     } else {
-        oldwd=getwd(); setwd(theSpotPath);
-        for (f in dir())   source(f);
-        setwd(oldwd);
+        cat("Sourcing SPOT from R files in",theSpotPath,"\n");    
+        sourceSpotFromDir <- function(sdir) {
+            oldwd=getwd(); setwd(sdir);
+            for (f in dir())   {
+              if (file.info(f)$isdir) {
+                sourceSpotFromDir(f);
+              } else {            
+                source(f);
+              }
+            }
+            setwd(oldwd);
+        }
+        sourceSpotFromDir(theSpotPath);         # recursive call (march through all subdirs)
     }
     
     if (is.na(theRsfaPath)) {
@@ -91,9 +102,11 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
     source(createSourcePath("tdmRegress.r"))
     source(createSourcePath("tdmRegressLoop.r"))
 
+    source(createSourcePath("tdmBigLoop.r"))
     source(createSourcePath("tdmCompleteEval.r"))
     source(createSourcePath("tdmDefaultsFill.r"))
     source(createSourcePath("tdmDispatchTuner.r"))
+    source(createSourcePath("tdmEnvTMakeNew.r"))
     source(createSourcePath("tdmGetObj.r"))
     source(createSourcePath("tdmMapDesign.r"))
     source(createSourcePath("tdmPlotResMeta.r"))
@@ -112,6 +125,19 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
     if (is.na(theSpotPath)) {
         sfLibrary("SPOT",character.only=TRUE);     # load SPOT from the installed library (package version)
     } else {
+        cat("Sourcing SPOT from R files in",theSpotPath,"\n");    
+        sfSourceSpotFromDir <- function(sdir) {
+            oldwd=getwd(); setwd(sdir);
+            for (f in dir())   {
+              if (file.info(f)$isdir) {
+                sourceSpotFromDir(f);
+              } else {            
+                sfSource(f);
+              }
+            }
+            setwd(oldwd);
+        }
+        sfSourceSpotFromDir(theSpotPath);         # recursive call (march through all subdirs)
         oldwd=getwd(); setwd(theSpotPath);
         for (f in dir()) sfSource(f);
         setwd(oldwd);
@@ -141,9 +167,11 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
     sfSource(createSourcePath("tdmRegress.r"))
     sfSource(createSourcePath("tdmRegressLoop.r"))
 
+    sfSource(createSourcePath("tdmBigLoop.r"))
     sfSource(createSourcePath("tdmCompleteEval.r"))
     sfSource(createSourcePath("tdmDefaultsFill.r"))
     sfSource(createSourcePath("tdmDispatchTuner.r"))
+    sfSource(createSourcePath("tdmEnvTMakeNew.r"))
     sfSource(createSourcePath("tdmGetObj.r"))
     sfSource(createSourcePath("tdmMapDesign.r"))
     sfSource(createSourcePath("tdmPlotResMeta.r"))

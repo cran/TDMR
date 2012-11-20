@@ -2,18 +2,22 @@
 \alias{tdmClassify}
 \title{Core classification function of TDMR.}
 \usage{
-  tdmClassify(d_train, d_test, d_dis, response.variables,
-    input.variables, opts)
+  tdmClassify(d_train, d_test, d_dis, d_preproc,
+    response.variables, input.variables, opts)
 }
 \arguments{
   \item{d_train}{training set}
 
-  \item{d_test}{test set, same columns as training set}
+  \item{d_test}{validation set, same columns as training
+  set}
 
   \item{d_dis}{'disregard set', i.e. everything what is
   neither train nor test. The model is applied to all
   records in d_dis (needed for active learning, see
   ssl_methods.r)}
+
+  \item{d_preproc}{data used for preprocessing (usually all
+  non-validation data)}
 
   \item{response.variables}{name of column which carries
   the target variable - or - vector of names specifying
@@ -57,26 +61,31 @@
   predicted class column(s) } \item{\code{d_test}}{ test
   set + predicted class column(s) } \item{\code{d_dis}}{
   disregard set + predicted class column(s) }
-  \item{\code{sumEVAL}}{ list with evaluation measures,
-  summed over all response variables }
+  \item{\code{avgEVAL}}{ list with evaluation measures,
+  averaged over all response variables }
   \item{\code{allEVAL}}{ data frame with evaluation
   measures, one row for each response variable }
   \item{\code{lastCmTrain}}{ a list with evaluation info
   for training set (confusion matrix, gain, class errors,
-  ...)  } \item{\code{lastCmTest}}{ a list with evaluation
-  info for test set (confusion matrix, gain, class errors,
-  ...) } \item{\code{lastModel}}{ the last model built
-  (i.e. for the last response variable) }
+  ...)  } \item{\code{lastCmVali}}{ a list with evaluation
+  info for validation set (confusion matrix, gain, class
+  errors, ...) } \item{\code{lastModel}}{ the last model
+  built (i.e. for the last response variable) }
   \item{\code{lastProbs}}{ a list with three probability
   matrices (row: records, col: classes) v_train, v_test,
   v_dis, if the model provides probabilities; NULL else. }
   \item{\code{lastPred}}{ name of the colum where the
   prediction of the last model is appended to the datasets
-  d_train, d_test and d_dis } \item{\code{opts}}{ parameter
-  list from input, some default values might have been
-  added }
+  d_train, d_test and d_dis } \item{\code{predProb}}{ a
+  list with two data frames Trn and Val. They contain at
+  least a column IND.dset (index of each train / validation
+  record into data frame dset). If the model has
+  probabilities, then they contain in addition a column for
+  each response variable with the prediction probabilities.
+  } \item{\code{opts}}{ parameter list from input, some
+  default values might have been added }
 
-  The 9 evaluation measures in sumEVAL and allEVAL are
+  The 9 evaluation measures in avgEVAL and allEVAL are
   cerr.* (misclassification errror), gain.* (total gain)
   and rgain.* (relative gain, i.e. total gain divided by
   max. achievable gain in *) where * = [trn | tst | tst2 ]
@@ -84,7 +93,7 @@
   special treatment ] and the special treatment is either
   opts$test2.string = "no postproc" or = "default cutoff".
   \cr\cr The five items \code{lastCmTrain},
-  \code{lastCmTest}, \code{lastModel}, \code{lastProbs},
+  \code{lastCmVali}, \code{lastModel}, \code{lastProbs},
   \code{lastPred} are specific for the *last* model (the
   one built for the last response variable in the last run
   and last fold)
@@ -102,7 +111,7 @@
   d_train and d_test must have at least one record. \cr
 }
 \author{
-  Wolfgang Konen, FHK, Sep'2009 - Dec'2011
+  Wolfgang Konen, FHK, Sep'2009 - Jun'2012
 }
 \seealso{
   \code{\link{print.tdmClass}}

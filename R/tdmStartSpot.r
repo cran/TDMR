@@ -43,7 +43,7 @@ tdmStartSpot <- function(spotConfig) {
 
     dset <- switch(as.character(is.null(spotConfig$dataObj)),"TRUE"=NULL,"FALSE"=dsetTrnVa(spotConfig$dataObj));    
     # If dset is not NULL, this has an effect on mainCommand which contains "...,dset=dset".
-    # If dset is NULL, the data reading is deferred to main_TASK.
+    # If dset is NULL, the data reading is deferred to main_TASK (deprecated).
 
   	writeLines("tdmStartSpot run...", con=stderr());   
 
@@ -73,11 +73,11 @@ tdmStartSpot <- function(spotConfig) {
     #}
   	for (k in 1:config){
   	
-      des <- tdmMapCutoff(des,k,spotConfig);  # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
+      #des <- tdmMapCutoff(des,k,spotConfig);  # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
       
   		for (r in 1:des$REPEATS[k]){
   	    opts$rep <- r;
-      	opts <- tdmMapDesSpot$apply(des,opts,k,tdm,spotConfig);
+      	opts <- tdmMapDesApply(des,opts,k,spotConfig,tdm);
    			
         if (!is.null(des$STEP))	theStep <- des$STEP[k];
   			opts$ALG.SEED <- des$SEED[k]+r;		# now used in tdmClassify, tdmClassifyLoop

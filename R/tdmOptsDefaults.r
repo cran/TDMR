@@ -36,6 +36,7 @@
 #' 			\item{dir.output}{[<path>/Output] where to put output files} 
 #' 			\item{filename}{["default.txt"] the task data} 
 #' 			\item{filetest}{[NULL] the test data, only relevant for READ.TST=T} 
+#' 			\item{fileMode}{[TRUE] if =T, write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file} 
 #' 			\item{data.title}{["Default Data"] title for plots} 
 #' 			\item{READ.TXT}{[T] =T: read data from .csv and save as .Rdata, =F: read from .Rdata}                                                   
 #' 			\item{READ.NROW}{[-1] read this amount of rows or -1 for 'read all rows'} 
@@ -51,13 +52,9 @@
 #' 			\item{TST.valiFrac}{[0.1] set this fraction of data aside for validation (only for TST.kind=="rand")} 
 #' 			\item{TST.testFrac}{[0.1] set prior to tuning this fraction of data aside for testing (if tdm$umode=="SP_T" and opts$READ.INI==TRUE)
 #'                      or set this fraction of data aside for testing after tuning (if tdm$umode=="RSUB" or =="CV") } 
+#'      \item{TST.trnFrac}{[NULL] train set fraction, if NULL then \code{\link{tdmModCreateCVindex}} will set it to 1 - opts$TST.valiFrac. }
 #' 			\item{TST.SEED}{[NULL] a seed for the random test set selection (\code{\link{tdmRandomSeed}}) and random validation set selection. 
 #'            (\code{\link{tdmClassifyLoop}}). If NULL, use \code{\link{tdmRandomSeed}}. } 
-#' 			\item{CLS.cutoff}{[NULL] vote fractions for the n.class classes. The class i with maximum ratio (\% votes)/CLS.cutoff[i] wins. 
-#'                      If NULL, then each class gets the cutoff 1/n.class (i.e. majority vote wins) }
-#' 			\item{CLS.CLASSWT}{[NULL] class weights for the n.class classes, e.g. c(10,20) for n.class=2. The higher, the more costly
-#'                      is a misclassification of that real class). NULL for equal weights for each class.} 
-#' 			\item{CLS.gainmat}{[NULL] (n.class x n.class) gain matrix. If NULL, CLS.gainmat will be set to unit matrix in \code{\link{tdmClassify}} }
 #' 			\item{PRE.PCA}{["none" (default)|"linear"] PCA preprocessing: [don't | normal pca (prcomp) ] } 
 #' 			\item{PRE.PCA.REPLACE}{[T] =T: replace with the PCA columns the original numerical columns, =F: add the PCA columns} 
 #' 			\item{PRE.PCA.npc}{[0] if >0: add monomials of degree 2 for the first PRE.PCA.npc columns (PCs)} 
@@ -82,6 +79,7 @@
 #'      \item{SRF.maxS}{    [40] how many variables to show in plot }
 #'      \item{SRF.minlsi}{  [1] a lower bound for the length of SRF$input.variables  }
 #'      \item{SRF.method}{ ["RFimp"] }
+#'      \item{SRF.scale}{  [TRUE] option 'scale' for call importance() in \code{\link{tdmModSortedRFimport}}   }
 #' 			\item{MOD.SEED}{[NULL] a seed for the random model initialization (if model is non-deterministic). If NULL, use \code{\link{tdmRandomSeed}}. } 
 #' 			\item{MOD.method}{["RF" (default) |"MC.RF" |"SVM" |"NB" ]: use [RF | MetaCost-RF | SVM | Naive Bayes ] in \code{\link{tdmClassify}}  \cr
 #'                      ["RF" (default) |"SVM" |"LM" ]: use [RF | SVM | linear model ] in \code{\link{tdmRegress}}  } 
@@ -96,12 +94,15 @@
 #' 			\item{SVM.epsilon}{[0.005] needed only for regression} 
 #' 			\item{SVM.gamma}{[0.005] } 
 #' 			\item{SVM.tolerance}{[0.008] } 
-#'      \item{CLS.cutoff}{ [NULL] vote fractions for the n.class classes. The class i with maximum ratio (% votes)/RF.cutoff[i] wins. 
-#'                      If NULL, then each class gets the cutoff 1/n.class (i.e. majority vote wins).   }
+#' 			\item{CLS.cutoff}{[NULL] vote fractions for the n.class classes. The class i with maximum ratio (\% votes)/CLS.cutoff[i] wins. 
+#'                      If NULL, then each class gets the cutoff 1/n.class (i.e. majority vote wins). 
+#'                      The smaller CLS.cutoff[i], the more likely class i will win. }
 #'      \item{CLS.CLASSWT}{ [NULL] class weights for the n.class classes, e.g. \cr
-#'                                   c(10,20) for n.class=2         \cr
-#'                      (the higher, the more costly is a misclassification of that real class). NULL for no weights.  }
-#'      \item{CLS.gainmat}{ [NULL]  if [NULL], opts$CLS.gainmat will be set to unit matrix in \code{\link{tdmClassify}}   }
+#'                                   c(A=10,B=20) for a 2-class problem with classes A and B         \cr
+#'                      (the higher, the more costly is a misclassification of that real class). It should be a named vector with the same
+#'                      length and names as the levels of the response variable. If no names are given, the levels of the response variables 
+#'                      in lexicographical order will be attached in \code{\link{tdmClassify}}. CLS.CLASSWT=NULL for no weights.  }
+#' 			\item{CLS.gainmat}{[NULL] (n.class x n.class) gain matrix. If NULL, CLS.gainmat will be set to unit matrix in \code{\link{tdmClassify}} }
 #' 			\item{rgain.type}{["rgain" (default) |"meanCA" |"minCA" ] in case of \code{\link{tdmClassify}}: For classification, the measure 
 #'                      \code{Rgain} returned from \code{\link{tdmClassifyLoop}} in \code{result$R_*} is
 #'                      [relative gain (i.e. gain/gainmax) | mean class accuracy | minimum class accuracy ]. 
@@ -148,6 +149,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$dir.output <- paste("./", "Output/", sep="")
       opts$filename = "default.txt"
       opts$data.title <- "Default Data"
+      opts$fileMode = TRUE    # =T: write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file
 
       opts$READ.TXT = TRUE    # =T: read data from .csv and save as .Rdata, =F: read from .Rdata
       opts$READ.NROW = -1     # [-1] read this amount of rows or -1 for 'read all rows' 
@@ -187,10 +189,11 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$SRF.maxS=40;       #
       opts$SRF.minlsi=1;      #
       opts$SRF.XPerc = 0.95;  # 0.0..1.0: how much of the overall importance to keep
+      opts$SRF.scale = TRUE;  # option 'scale' for call importance() in tdmModSortedRFimport 
       opts$SRF.calc = TRUE    # =T: calculate SRF variable ranking
                               # =F: reload previously calculated and stored variable ranking
                                     
-      opts$MOD.method="RF";       # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in tdmClassify
+      opts$MOD.method="RF";   # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in tdmClassify
                               # ["RF"|"SVM"|"LM"]: use [RF| SVM| linear model] in tdmRegress
 
       opts$RF.ntree = 500
@@ -206,10 +209,8 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$SVM.tolerance=0.008;   
       opts$CLS.cutoff = NULL  # [NULL] vote fractions for the n.class classes. The class i with
                               # maximum ratio (% votes)/RF.cutoff[i] wins. If NULL, then each
-                              # class gets the cutoff 1/n.class (i.e. majority vote wins)
-      opts$CLS.CLASSWT = NULL # class weights for the n.class classes, e.g.
-                              #     c(10,20) for n.class=2         (the higher, the more costly
-                              # is a misclassification of that real class). NULL for no weights
+                              # class gets the cutoff 1/n.class (i.e. majority vote wins).
+      opts$CLS.CLASSWT = NULL # class weights for the n.class classes, 
       opts$CLS.gainmat <- NULL# if [NULL], opts$CLS.gainmat will be set to unit matrix in \code{\link{tdmClassify}}
       opts$rgain.type="rgain" # ["rgain" (def.)|"meanCA"|"minCA"] for tdmClassify: the measure result$R_* will contain 
                               # relative gain (i.e. gain/gainmax), mean or minimum class accuracy. 
@@ -240,15 +241,17 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$VERBOSE=2;
   }  #if (is.null(opts))
   
-  if (!(path=="./" | length(grep(path,opts$dir.data))==1)) {
-      #preceede the following strings with 'path' *only*, if path is not "./" and  
-      #if opts$dir.data not contains 'path' (first pass through tdmOptsDefaulsSet)
-      opts$dir.data <- paste(path,opts$dir.data,sep="")
-      opts$dir.txt  <- paste(path,opts$dir.txt,sep="")
-      opts$dir.Rdata <- paste(path,opts$dir.Rdata,sep="")
-      opts$dir.output <- paste(path,opts$dir.output,sep="")
-  }
-  
+  if (!is.null(path)) 
+    if (!(path=="./" | length(grep(path,opts$dir.data))==1)) {
+        #preceede the following strings with 'path' *only*, if path is not "./" and  
+        #if opts$dir.data not contains 'path' (first pass through tdmOptsDefaulsSet)
+        opts$dir.data <- paste(path,opts$dir.data,sep="")
+        opts$dir.txt  <- paste(path,opts$dir.txt,sep="")
+        opts$dir.Rdata <- paste(path,opts$dir.Rdata,sep="")
+        opts$dir.output <- paste(path,opts$dir.output,sep="")
+    }
+  class(opts) <- c("tdmOpts","TDM")     
+
   tdmOptsDefaultsFill(opts);
 }
 
@@ -293,29 +296,31 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
 ######################################################################################
 tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
     if (is.null(opts)) opts = tdmOptsDefaultsSet();
-    
+    if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmClass");
+
     filename = opts$filename; 
     #if (is.null(opts$filesuffix)) {              # WK/05/12: bug fix: set opts$filesuffix *always* as the suffix of opts$filename
       opts$filesuffix = tail(unlist(strsplit(opts$filename,".",fixed=TRUE)),1);
       opts$filesuffix = paste(".",opts$filesuffix,sep="");
     #}
-    suffix = opts$filesuffix;
 
     if (is.null(opts$TST.COL)) opts$TST.COL="TST.COL";
     # bug fix 05/12: removed the is.null-check from  opts$PDFFILE, $GD.PNGDIR, $LOGFILE, $EVALFILE
     # (otherwise it might happen that opts$LOGFILE = "default.log"):
-    opts$PDFFILE=sub(suffix,"_pic.pdf",filename)
-    opts$GD.PNGDIR=paste("PNG",sub(suffix,"",filename),"/",sep="");
-    opts$LOGFILE=sub(suffix,".log",filename)
-    opts$EVALFILE=sub(suffix,"_eval.csv",filename)      # contains evaluation results allEVAL
+    opts$PDFFILE=sub(opts$filesuffix,"_pic.pdf",filename)
+    opts$GD.PNGDIR=paste("PNG",sub(opts$filesuffix,"",filename),"/",sep="");
+    opts$LOGFILE=sub(opts$filesuffix,".log",filename)
+    opts$EVALFILE=sub(opts$filesuffix,"_eval.csv",filename)      # contains evaluation results allEVAL
     
-    if (is.null(opts$SRF.samp)) opts$SRF.samp=min(opts$RF.samp,3000);  # new 06/2011
-    if (is.null(opts$SRF.cutoff)) opts$SRF.cutoff=opts$CLS.cutoff;     # new 01/2011, might change the default behaviour
-    if (is.null(opts$rgain.string)) {
-      rgainTypeVals = c("rgain","meanCA","minCA","rmae","rmse","arROC","arLIFT","arPRE");
-      rgainStringVals=c("RGain","MeanCA","MinCA","RMAE","RMSE","AreaROC","AreaLift","AreaPrRe");
-      opts$rgain.string = rgainStringVals[which(opts$rgain.type==rgainTypeVals)];
-    }
+    if (is.null(opts$rgain.type)) opts$rgain.type="rgain";
+    #if (is.null(opts$rgain.string)) {
+      rgainTypeVals = c("rgain","meanCA","minCA","rmae","rmse","made","arROC","arLIFT","arPRE");
+      rgainStringVals=c("RGain","MeanCA","MinCA","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe");
+      ind = which(opts$rgain.type==rgainTypeVals);
+      if (length(ind)==0) stop(sprintf("Could not find opts$rgain.type=%s in c(%s)"
+                                        ,opts$rgain.type,"'rgain','meanCA','minCA','rmae','rmse','made','arROC','arLIFT','arPRE'"));
+      opts$rgain.string = rgainStringVals[ind];
+    #}
 
     if (!is.null(opts$DO.GRAPHICS))
       if (opts$DO.GRAPHICS==F) opts$GD.DEVICE="non";        # DO.GRAPHICS is now (01/2011) deprecated
@@ -338,6 +343,8 @@ tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
     # code which was previously in tdmModSortedRFimport. Now we put it here and call tdmOptsDefaultsFill from tdmModSortedRFimport
     # (cleaner code, less places where opts-values are set)
     #
+    if (is.null(opts$SRF.samp)) opts$SRF.samp=min(opts$RF.samp,3000);  # new 06/2011
+    if (is.null(opts$SRF.cutoff)) opts$SRF.cutoff=opts$CLS.cutoff;     # new 01/2011, might change the default behaviour
     if (is.null(opts$SRF.kind)) opts$SRF.kind="xperc";
     if (is.null(opts$SRF.XPerc)) opts$SRF.XPerc=0.95;
     if (is.null(opts$SRF.calc)) opts$SRF.calc=TRUE;
@@ -346,6 +353,7 @@ tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
     if (is.null(opts$SRF.maxS)) opts$SRF.maxS=40;
     if (is.null(opts$SRF.minlsi)) opts$SRF.minlsi=1;
     if (is.null(opts$SRF.method)) opts$SRF.method="RFimp";
+    if (is.null(opts$SRF.scale)) opts$SRF.scale = TRUE;  # option 'scale' for call importance() in tdmModSortedRFimport 
 
     opts;
 }

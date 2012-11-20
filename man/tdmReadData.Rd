@@ -25,9 +25,10 @@
   \code{dset}, a data frame with all data read
 }
 \description{
-  Side effect: data are saved on .Rdata file if
-  opts$READ.TXT=TRUE (for quicker next-time access).  They
-  are re-loaded from .Rdata if opts$READ.TXT=FALSE.
+  Side effect: Data are saved on .Rdata file if
+  opts$READ.TXT=TRUE (for quicker next-time access).
+  Next-time access: Data are re-loaded from .Rdata if
+  opts$READ.TXT=FALSE.
 }
 \details{
   When opts$READ.TST==T, the following things happen in
@@ -39,5 +40,20 @@
   is invoked either with umode="TST" in
   \code{\link{unbiasedRun}} or with opts$TST.kind="col" in
   \code{\link{tdmModCreateCVindex}}.
+}
+\note{
+  If opts$READ.TXT=T and opts$READ.NROW>0, then only the
+  first READ.NROW records are read from opts$filename and
+  from opts$filetest.  Only the records read are saved to
+  the .Rdata files. This means: when starting tdmReadData
+  again with opts$READ.TXT=F, not more than these READ.NROW
+  records can be retrieved from the relevant .Rdata files.
+  To have again the full data sets on the .Rdata files, you
+  need to invoke tdmReadData at least once with
+  opts$READ.TXT=T and opts$READ.NROW==-1.  \cr If, on the
+  other hand, the full data sets are stored in the .Rdata
+  files, then opts$READ.TXT=F and opts$READ.NROW=<any
+  value> allows to select a smaller subset of records from
+  the .Rdata files.
 }
 

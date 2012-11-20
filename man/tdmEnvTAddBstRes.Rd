@@ -1,0 +1,22 @@
+\name{tdmEnvTAddBstRes}
+\alias{tdmEnvTAddBstRes}
+\title{Add BST and RES data frames to an existing \code{envT} environment.}
+\usage{
+  tdmEnvTAddBstRes(envT, fileRData)
+}
+\arguments{
+  \item{envT}{the TDMR environment}
+
+  \item{fileRData}{string with filename to load. This file
+  is searched in \code{envT$tdm$path}.}
+}
+\value{
+  the augmented \code{envT}
+}
+\description{
+  Load an \code{envT}-type environment from file
+  \code{fileRData}. Its elements \code{bst}, \code{bstGrid}
+  \code{res}, and \code{resGrid} overwrite the elements in
+  \code{envT} passed in as argument.
+}
+

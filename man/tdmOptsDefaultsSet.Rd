@@ -22,9 +22,11 @@
   where to put output files}
   \item{filename}{["default.txt"] the task data}
   \item{filetest}{[NULL] the test data, only relevant for
-  READ.TST=T} \item{data.title}{["Default Data"] title for
-  plots} \item{READ.TXT}{[T] =T: read data from .csv and
-  save as .Rdata, =F: read from .Rdata}
+  READ.TST=T} \item{fileMode}{[TRUE] if =T, write
+  opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData
+  file and *_train.log file} \item{data.title}{["Default
+  Data"] title for plots} \item{READ.TXT}{[T] =T: read data
+  from .csv and save as .Rdata, =F: read from .Rdata}
   \item{READ.NROW}{[-1] read this amount of rows or -1 for
   'read all rows'} \item{READ.TST}{[F] =T: read unseen test
   data from opts$filetest (usually you will do this only
@@ -50,21 +52,13 @@
   fraction of data aside for testing (if tdm$umode=="SP_T"
   and opts$READ.INI==TRUE) or set this fraction of data
   aside for testing after tuning (if tdm$umode=="RSUB" or
-  =="CV") } \item{TST.SEED}{[NULL] a seed for the random
-  test set selection (\code{\link{tdmRandomSeed}}) and
-  random validation set selection.
-  (\code{\link{tdmClassifyLoop}}). If NULL, use
-  \code{\link{tdmRandomSeed}}. } \item{CLS.cutoff}{[NULL]
-  vote fractions for the n.class classes. The class i with
-  maximum ratio (\% votes)/CLS.cutoff[i] wins.  If NULL,
-  then each class gets the cutoff 1/n.class (i.e. majority
-  vote wins) } \item{CLS.CLASSWT}{[NULL] class weights for
-  the n.class classes, e.g. c(10,20) for n.class=2. The
-  higher, the more costly is a misclassification of that
-  real class). NULL for equal weights for each class.}
-  \item{CLS.gainmat}{[NULL] (n.class x n.class) gain
-  matrix. If NULL, CLS.gainmat will be set to unit matrix
-  in \code{\link{tdmClassify}} } \item{PRE.PCA}{["none"
+  =="CV") } \item{TST.trnFrac}{[NULL] train set fraction,
+  if NULL then \code{\link{tdmModCreateCVindex}} will set
+  it to 1 - opts$TST.valiFrac. } \item{TST.SEED}{[NULL] a
+  seed for the random test set selection
+  (\code{\link{tdmRandomSeed}}) and random validation set
+  selection.  (\code{\link{tdmClassifyLoop}}). If NULL, use
+  \code{\link{tdmRandomSeed}}. } \item{PRE.PCA}{["none"
   (default)|"linear"] PCA preprocessing: [don't | normal
   pca (prcomp) ] } \item{PRE.PCA.REPLACE}{[T] =T: replace
   with the PCA columns the original numerical columns, =F:
@@ -107,9 +101,11 @@
   [2] } \item{SRF.maxS}{ [40] how many variables to show in
   plot } \item{SRF.minlsi}{ [1] a lower bound for the
   length of SRF$input.variables } \item{SRF.method}{
-  ["RFimp"] } \item{MOD.SEED}{[NULL] a seed for the random
-  model initialization (if model is non-deterministic). If
-  NULL, use \code{\link{tdmRandomSeed}}. }
+  ["RFimp"] } \item{SRF.scale}{ [TRUE] option 'scale' for
+  call importance() in \code{\link{tdmModSortedRFimport}} }
+  \item{MOD.SEED}{[NULL] a seed for the random model
+  initialization (if model is non-deterministic). If NULL,
+  use \code{\link{tdmRandomSeed}}. }
   \item{MOD.method}{["RF" (default) |"MC.RF" |"SVM" |"NB"
   ]: use [RF | MetaCost-RF | SVM | Naive Bayes ] in
   \code{\link{tdmClassify}} \cr ["RF" (default) |"SVM"
@@ -122,16 +118,23 @@
   \item{SVM.cost}{[1.0] } \item{SVM.C}{[1] needed only for
   regression} \item{SVM.epsilon}{[0.005] needed only for
   regression} \item{SVM.gamma}{[0.005] }
-  \item{SVM.tolerance}{[0.008] } \item{CLS.cutoff}{ [NULL]
+  \item{SVM.tolerance}{[0.008] } \item{CLS.cutoff}{[NULL]
   vote fractions for the n.class classes. The class i with
-  maximum ratio (% votes)/RF.cutoff[i] wins.  If NULL, then
-  each class gets the cutoff 1/n.class (i.e. majority vote
-  wins).  } \item{CLS.CLASSWT}{ [NULL] class weights for
-  the n.class classes, e.g. \cr c(10,20) for n.class=2 \cr
-  (the higher, the more costly is a misclassification of
-  that real class). NULL for no weights.  }
-  \item{CLS.gainmat}{ [NULL] if [NULL], opts$CLS.gainmat
-  will be set to unit matrix in \code{\link{tdmClassify}} }
+  maximum ratio (\% votes)/CLS.cutoff[i] wins.  If NULL,
+  then each class gets the cutoff 1/n.class (i.e. majority
+  vote wins).  The smaller CLS.cutoff[i], the more likely
+  class i will win. } \item{CLS.CLASSWT}{ [NULL] class
+  weights for the n.class classes, e.g. \cr c(A=10,B=20)
+  for a 2-class problem with classes A and B \cr (the
+  higher, the more costly is a misclassification of that
+  real class). It should be a named vector with the same
+  length and names as the levels of the response variable.
+  If no names are given, the levels of the response
+  variables in lexicographical order will be attached in
+  \code{\link{tdmClassify}}. CLS.CLASSWT=NULL for no
+  weights.  } \item{CLS.gainmat}{[NULL] (n.class x n.class)
+  gain matrix. If NULL, CLS.gainmat will be set to unit
+  matrix in \code{\link{tdmClassify}} }
   \item{rgain.type}{["rgain" (default) |"meanCA" |"minCA" ]
   in case of \code{\link{tdmClassify}}: For classification,
   the measure \code{Rgain} returned from

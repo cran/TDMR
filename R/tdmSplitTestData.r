@@ -34,25 +34,22 @@
 #'                      TST.COL="tdmSplit", else TST.COL=opts$TST.COL. }
 #'      \item{filename}{ \code{opts$filename}, from where the data were read}
 #'
-#'    Known caller: \code{\link{tdmCompleteEval}}
+#'    Known caller: \code{\link{tdmBigLoop}}
 #'
-#' @seealso   \code{\link{dsetTrnVa.TDMdata}}, \code{\link{tdmReadData}}, \code{\link{tdmCompleteEval}}
-#' @author Wolfgang Konen, FHK, Apr'2012
+#' @seealso   \code{\link{dsetTrnVa.TDMdata}}, \code{\link{dsetTest.TDMdata}}, \code{\link{tdmReadData}}, \code{\link{tdmBigLoop}}
+#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Apr'2012 - Nov'2012
 #' @aliases TDMdata 
 #' @export
 ######################################################################################
 tdmSplitTestData <- function(opts,tdm,nExp=0) {
 	if (opts$READ.INI) {
   	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
-		oldwd = getwd();                                    #
-    if (!is.null(tdm$mainFile)) {
-        setwd(dirname(tdm$mainFile));                   # save & change working dir
-    } 
-    #else {
-    #    cat("NOTE <tdmSplitTestData>: tdm$mainFile is not defined. Will use current directory when locating data with tdmReadData\n");
-    #}
+		oldwd = getwd();                                              #
+    if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));     # save & change working dir
+
 		dset <- tdmReadData(opts);
-		setwd(oldwd);                                       # restore working dir
+
+		setwd(oldwd);                                                 # restore working dir
 		
 		if (tdm$umode[1]=="SP_T") {                         # NOTE: if tdm$umode is a list, its **first** element controls
         if (is.null(tdm$SPLIT.SEED)) {                  # what is happening here in tdmSplitTestData
@@ -67,7 +64,8 @@ tdmSplitTestData <- function(opts,tdm,nExp=0) {
     		
         if (!is.null(tdm$stratified)) {
           # the division is done by ***stratified*** random sampling (recommended for classification):
-      		cat1(opts,opts$filename,": Stratified random test-trainVali-index w.r.t. variable",tdm$stratified,"and with opts$TST.testFrac = ",opts$TST.testFrac*100,"%\n");
+      		cat1(opts,opts$filename,": Stratified random test-trainVali-index w.r.t. variable",tdm$stratified
+              ,"and with opts$TST.testFrac = ",opts$TST.testFrac*100,"%\n");
       		if (!any(names(dset)==tdm$stratified)) stop("The value of tdm$stratified does not match any column name in dset!");
           rv <- dset[,tdm$stratified];
           #lrv = length(response.variables);
@@ -120,7 +118,7 @@ tdmSplitTestData <- function(opts,tdm,nExp=0) {
    	if (exists("SAVESEED")) assign(".Random.seed", SAVESEED, envir=globalenv()); 		#load the saved RNG status
 	} else {   # i.e. if opts$READ.INI==FALSE
 		dataObj <- NULL;
-	}	
+	}	# if (opts$READ.INI)
 	
 	dataObj;
 }
@@ -134,11 +132,12 @@ dsetTrnVa.default <- function(x)  stop("Method dsetTrnVa only allowed for object
 #'
 #'   @method dsetTrnVa TDMdata
 #'   @param x  return value from a prior call to \code{\link{tdmSplitTestData}}, an object of class \code{TDMdata}.
+#'   @return \code{dset}, a data frame with all train-validation records
 #'
-#' @seealso   \code{\link{tdmSplitTestData}}
+#' @seealso   \code{\link{dsetTest.TDMdata}} \code{\link{tdmSplitTestData}}
 #' @author Wolfgang Konen, FHK, Feb'2012
 #' @export
-#' @keywords internal
+#### @keywords internal
 ######################################################################################
 dsetTrnVa.TDMdata <- function(x)  {
   if (!any(names(x$dset)==x$TST.COL)) {
@@ -148,10 +147,23 @@ dsetTrnVa.TDMdata <- function(x)  {
   x$dset[x$dset[,x$TST.COL]==0,];	# return the training-validation part of data frame dset
 }
 
-# --- so far, method dsetTest is not needed by TDMR ---
-dsetTest <- function(x, ...)  UseMethod("dsetTest");
-dsetTest.default <- function(x, ...)  stop("Method dsetTest only allowed for objects of class TDMdata");
-dsetTest.TDMdata <- function(x, ...)  {
+dsetTest <- function(x)  UseMethod("dsetTest");
+dsetTest.default <- function(x)  stop("Method dsetTest only allowed for objects of class TDMdata");
+######################################################################################
+# dsetTest.TDMdata
+#
+#'   Return the test part of a \code{TDMdata} object containing the task data.
+#'
+#'   @method dsetTest TDMdata
+#'   @param x  return value from a prior call to \code{\link{tdmSplitTestData}}, an object of class \code{TDMdata}.
+#'   @return \code{tset}, a data frame with all test records
+#'
+#' @seealso   \code{\link{unbiasedRun}} \code{\link{dsetTrnVa.TDMdata}} 
+#' @author Wolfgang Konen, FHK, Feb'2012
+#' @export
+#### @keywords internal
+######################################################################################
+dsetTest.TDMdata <- function(x)  {
 	x$dset[x$dset[,x$TST.COL]==1,];	# return the test part of data frame dset
 }
 

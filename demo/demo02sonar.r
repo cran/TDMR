@@ -8,7 +8,7 @@ oldwd <- getwd();
 setwd(path);
 
 tdm=tdmDefaultsFill(mainFile="main_sonar.r");
-tdmMapDesSpot$load(tdm);     # load the mapping from design variables to opts variables
+tdm <- tdmMapDesLoad(tdm);      # load the mapping from design variables to opts variables
 
 source("sonar_01.apd");      # read in settings for opts
 source(tdm$mainFile);

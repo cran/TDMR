@@ -17,7 +17,7 @@ source("main_cpu.r");   # in working dir
 opts = tdmOptsDefaultsSet();    
       opts$dir.output <- paste("Output/", sep="")
       opts$filename = "cpu.csv"
-      opts$READ.CMD = "read.csv2(file=paste(dir.data, filename, sep=\"\"), dec=\".\", na.string=\"-1\",nrow=opts$READ.NROW)"
+      opts$READ.CMD = "read.csv2(file=paste(opts$dir.data, filename, sep=\"\"), dec=\".\", na.string=\"-1\",nrow=opts$READ.NROW)"
       opts$SRF.kind = "ndrop"
       opts$SRF.ndrop =  2     # 0..n: how many variables (those with lowest importance) to drop
       opts$OCUT = 600         # cut records with output > OCUT (may be strong outliers, dropping

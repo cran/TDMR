@@ -34,8 +34,13 @@
   vector of strings containing the unbiased resampling
   strategies to execute \code{"RSUB", "TST", "CV", "SP_T"},
   see \code{\link{unbiasedRun}} }
+  \item{\code{fileMode}}{[TRUE]: see "Note" section}
   \item{\code{finalFile}}{filename where to save
-  \code{envT$theFinals}}
+  \code{envT$theFinals}, only relevant for
+  \code{tdm$fileMode==TRUE}}
+  \item{\code{experFile}}{filename where to append
+  \code{envT$theFinals}, only relevant for
+  \code{tdm$fileMode==TRUE}}
   \item{\code{withParams}}{[length(runList)==1] Boolean, if
   \code{=TRUE}: include best parameters as columns in
   output \code{envT$theFinals}.  If \code{=FALSE}: don't
@@ -64,17 +69,17 @@
   \code{envT$getBst(confFile,nExp,theTuner)} \cr to
   retrieve a specific \code{bst}. } \item{theFinals}{ data
   frame with one line for each triple
-  \code{confFile,nExp,tuner}, each line contains summary
+  \code{(confFile,nExp,tuner)}, each line contains summary
   information about the tuning run in the form: \cr
   \code{confFile tuner nExp [params] NRUN NEVAL RGain.bst
-  RGain.* sdR.*} \cr \code{[params]} is written depending
-  on \code{tdm$withParams}. \cr \code{NRUN} is the number
-  of unbiased evaluation runs. \cr \code{NEVAL} is the
-  number of function evaluations (model builds) during
-  tuning. \cr \code{RGain} denotes the relative gain on a
-  certain data set: the actual gain achieved with the model
-  divided by the maximum gain possible for the current cost
-  matrix and the current data set. This is for
+  RGain.* sdR.*} \cr where \code{[params]} is written
+  depending on \code{tdm$withParams}. \cr \code{NRUN} is
+  the number of unbiased evaluation runs. \cr \code{NEVAL}
+  is the number of function evaluations (model builds)
+  during tuning. \cr \code{RGain} denotes the relative gain
+  on a certain data set: the actual gain achieved with the
+  model divided by the maximum gain possible for the
+  current cost matrix and the current data set. This is for
   classification tasks, in the case of regression each
   \code{RGain.*} is replaced by \code{RMAE.*}, the relative
   mean absolute error. \cr Each 'sdR.' denotes the standard
@@ -121,10 +126,9 @@
 }
 \details{
   Tuning is skipped if the \code{.conf} file does not
-  appear in \code{spotList} or if
-  \code{!(spotStep=="auto")}. In this case it is assumed
-  then that the appropriate \code{.bst} and \code{.res}
-  files exist already.
+  appear in \code{spotList} or if \code{spotStep!="auto"}.
+  In this case it is assumed then that the appropriate
+  \code{.bst} and \code{.res} files exist already.
 
   The available tuning algorithms (tuners) are \itemize{
   \item{\code{\link{spotTuner}}: Call \code{\link{spot}}.
@@ -166,17 +170,21 @@
   experiment for \code{.conf} file \code{cpu_01.conf}, then
   the \code{.res} file \code{lhd/cpu_01_lhd_03.res} is
   written relative to the directory of \code{.conf} file.
-  Analoguously for \code{.bst} file.  \cr
+  Analoguously for \code{.bst} file.  \cr If
+  \code{tdm$finalFile==NULL}, then it is set to
+  \code{sub(".conf",".fin",runList[1]}.  \cr If
+  \code{tdm$experFile==NULL}, then nothing is appended to
+  \code{tdm$experFile}.
 
-  Example usages of function tdmCompleteEval are shown in
-  demo/demo03sonar.r, demo/demo03sonar_B.r and
-  demo/demo04cpu.r, accessible via \cr \code{
-  demo(demo03sonar)},\cr \code{ demo(demo03sonar_B)} and
-  \cr \code{ demo(demo04cpu)}
+  Example usages of function \code{tdmCompleteEval} are
+  shown with \cr \code{ demo(demo03sonar)},\cr \code{
+  demo(demo03sonar_B)} and \cr \code{ demo(demo04cpu)} \cr
+  where the corresponding R-sources are in directory
+  \code{demo}.
 }
 \examples{
 #*# --------- demo/demo03sonar.r ---------
-#*# This demo shows a complete tuned data mining process (phase 3 of TDMR) where the data mining task is the classification task
+#*# This demo shows a complete tuned data mining process (level 3 of TDMR) where the data mining task is the classification task
 #*# SONAR (from UCI repository, http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+\%28Sonar,+Mines+vs.+Rocks\%29).
 #*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify
 #*# with Random Forest as the prediction model. 
@@ -189,12 +197,12 @@
 #library(TDMR);
 path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
-oldwd <- getwd();
-setwd(path);
-source("main_sonar.r");    # in working dir
+oldwd <- getwd();  setwd(path);
+source("main_sonar.r");    # from working dir
 
 ## preliminary settings for TDMR
 tdm <- list( mainFunction="main_sonar"
+            , runList = c("sonar_04.conf")  
             , umode=c("RSUB")           # ["CV" | "RSUB" | "TST"]
             , tuneMethod = c("lhd")    # c("spot","lhd")
             , filenameEnvT="demo03.RData"   # file to save environment envT (in working dir)
@@ -202,31 +210,35 @@ tdm <- list( mainFunction="main_sonar"
             , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
             , withParams=TRUE         # list the columns with tuned parameter in final results 
             , nExperim=1
+            , parallelCPUs=1
             , optsVerbosity = 0       # the verbosity for the unbiased runs
             );
-## fill in other defaults for list tdm            
-tdm <- tdmDefaultsFill(tdm);      
-## sonar_04.conf has the settings for the tuning process (e.g. "auto.loop.steps"=number of SPOT generations       
+## tdm$runList="sonar_04.conf" has the settings for the tuning process (e.g. "auto.loop.steps"=number of SPOT generations       
 ## "auto.loop.evals"=budget of model building runs and io.roiFileName = "sonar_04.roi").
-## runList could contain other files as well (e.g. c("sonar_01.conf","sonar_02.conf","sonar_03.conf")), if desired.
-runList = c("sonar_04.conf");     
-## spotStep can be either "auto" (do automatic tuning) or "rep" (make a visual report of best results)
-spotStep = "auto";
+## tdm$runList could contain other files as well (e.g. c("sonar_01.conf","sonar_02.conf","sonar_03.conf")), if desired.
 
-## the call to tdmCompleteEval will start the whole TDMR process:
-## - for each file in runList a complete DM tuning is started with each tuning method
-## - the best result from tuning are fed into an unbiased model building and evaluation run 
+spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or "rep" (make a visual report and an unbiased run on best results)
+
+## construct an initial environment envT from the given TDMR settings in tdm
+## (this contains also the fill-in of other defaults for tdm via
+##      envT$tdm <- tdmDefaultsFill(tdm);
+## )
+envT <- tdmEnvTMakeNew(tdm);
+
+## the call to tdmBigLoop will start the whole TDMR process:
+## - for each file in tdm$runList a complete DM tuning is started with each tuning method tdm$tuneMethod  (if spotStep=="auto")
+## - the best result from tuning is fed into an unbiased model build and evaluation run 
 ## - results are printed and returned in envT$theFinals 
-## - more detailed results are in other elements of envT
+## - more detailed results are in other elements of environment envT
 ## - two plots: 
 ##      a) the progression of the response variable Y and the parameter variables during tuning
 ##      b) the sensitivity plot for each parameter in the vicinity of the best solution found 
-envT <- tdmCompleteEval(runList,NULL,spotStep,tdm);
+envT <- tdmBigLoop(envT,spotStep);
 
 ## restore old working directory
 setwd(oldwd);
 
-## the resulting tuning surface (the metamodel) can be inspected interactively with
+## the resulting tuning surface(s) (the metamodel(s)) can be inspected interactively with
 ##      load(paste(path,tdm$filenameEnvT,sep="/");     
 ##      tdmPlotResMeta(envT);
 ## (load(...) is only needed for reloading envT in another R-session)

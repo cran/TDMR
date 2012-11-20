@@ -6,9 +6,7 @@
 #
 # Author: Wolfgang Konen, FHK, Oct'2009 - Apr'2010
 #
-main_cpu <- function(opts=NULL,dset=NULL) {           
-    #tdmPath <- "../tdm";
-    #source(paste(tdmPath,"start.tdm.r",sep="/"),local=T);  
+main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {           
 
     directory <- "./"
     dir.data <- paste(directory, "data/", sep="")
@@ -43,6 +41,7 @@ main_cpu <- function(opts=NULL,dset=NULL) {
                               # ="win": all graphics to (several) windows (X11)
       opts$VERBOSE=2;      
     }
+    if (opts$rgain.type=="rgain") opts$rgain.type="rmae";
     opts <- tdmOptsDefaultsSet(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     filename = opts$filename; 
     
@@ -100,7 +99,7 @@ main_cpu <- function(opts=NULL,dset=NULL) {
     
 }                                                   
 
-cpu.postproc <- function(x,opts) { 
+cpu.postproc <- function(x,d,opts) { 
         x[x<0] <- 0; 		# clip all negative predictions to value 0	
         x;
 }

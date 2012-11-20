@@ -1,0 +1,33 @@
+
+
+
+opts = tdmOptsDefaultsSet();
+opts$filename = "sonar.data" 
+opts$dir.txt="data/"
+
+# when TST.SEED is set no resampling takes place:
+#opts$TST.SEED = 1
+
+opts$READ.TST = FALSE
+opts$READ.CMD = "readSonar(filename,opts)";
+#"read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW, header=FALSE)"; 
+opts$READ.INI = TRUE 
+opts$TST.kind = "rand"
+opts$TST.testFrac = 0.20
+opts$TST.valiFrac = 0.25      # 25% of the 80% train-vali-set data are 20% of all data (!)
+#opts$TST.trnFrac is set via tdm$TST.trnFrac
+#opts$DO.GRAPHICS = F
+opts$SRF.kind = "none"
+opts$SRF.calc = FALSE
+opts$RF.OOB = FALSE
+opts$MOD.method="SVM" # "RF" # 
+opts$data.title <- "Sonar Data"
+opts$NRUN =  1          # how many runs with different train & validation samples  
+opts$GD.DEVICE="non"     # ["pdf"|"win"|"non"]: all graphics to 
+opts$PRE.SFA = "none"
+opts$PRE.SFA.npc = 0
+
+opts$GD.RESTART=F;       
+opts$VERBOSE=0;      
+opts$SRF.verbose = opts$VERBOSE; #
+

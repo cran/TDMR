@@ -55,13 +55,13 @@
   absolute error (on test + train set) + Theil's U (on test
   + train set).  rmse and rmae are lists. If there is more
   than one response variable, then rmse and rmae contain
-  the *sum* over response.variables for each list-entry. }
-  \item{\code{allRMAE}}{ data frame with columns =
-  list-entries in rmae and rows = response variables }
-  \item{\code{lastModel}}{ the last model built (e.g. the
-  last Random Forest in the case of MOD.method=="RF") }
-  \item{\code{opts}}{ parameter list from input, some
-  default values might have been added }
+  the *average* over response.variables for each
+  list-entry. } \item{\code{allRMAE}}{ data frame with
+  columns = list-entries in rmae and rows = response
+  variables } \item{\code{lastModel}}{ the last model built
+  (e.g. the last Random Forest in the case of
+  MOD.method=="RF") } \item{\code{opts}}{ parameter list
+  from input, some default values might have been added }
 
   The item \code{lastModel} is specific for the *last*
   model (the one built for the last response variable in
@@ -76,7 +76,7 @@
   validation set.
 }
 \author{
-  Wolfgang Konen, FHK, Sep'2009 - Oct'2011
+  Wolfgang Konen, FHK, Sep'2009 - Jun'2012
 }
 \seealso{
   \code{\link{print.tdmRegre}} \code{\link{tdmRegressLoop}}

@@ -1,6 +1,6 @@
 \name{tdmDispatchTuner}
 \alias{tdmDispatchTuner}
-\title{Helper function for \code{\link{tdmCompleteEval}}.}
+\title{Helper function for \code{\link{tdmBigLoop}}.}
 \usage{
   tdmDispatchTuner(tuneMethod, confFile, spotStep, tdm,
     envT, dataObj)
@@ -13,7 +13,8 @@
   \item{confFile}{the configuration file.}
 
   \item{spotStep}{which step to execute for \link{SPOT} .
-  Values "rep" and "auto" are supported by TDMR.}
+  Values "rep" ("report") and "auto" are supported by
+  TDMR.}
 
   \item{tdm}{the TDMR object}
 
@@ -33,8 +34,7 @@
 \description{
   tdmDispatchTuner selects and starts the tuner specified
   by tuneMethod. \cr See the 'Details' section of
-  \code{\link{tdmCompleteEval}} for a list of available
-  tuners
+  \code{\link{tdmBigLoop}} for a list of available tuners.
 }
 \note{
   Side effects: Environment \code{envT} is extended by
@@ -46,7 +46,7 @@
   Wolfgang Konen, FHK, Sep'2010 - Oct'2011
 }
 \seealso{
-  \code{\link{tdmCompleteEval}}
+  \code{\link{tdmBigLoop}}
 }
 \keyword{internal}
 

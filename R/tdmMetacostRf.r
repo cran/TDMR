@@ -56,7 +56,10 @@ tdmMetacostRf <- function(response.variable,to.model,opts)
         if (DBG) {          # debug info to chase the "Incorrect cutoff specified bug": 
           print2(opts,c(Targets=NA,table(to.model[,response.variable])))      # debug info: 
           dir.Rdata <- paste(dirname(opts$dir.Rdata),basename(opts$dir.Rdata),sep="/")  # remove trailing "/", if it exists
-          if (!file.exists(dir.Rdata)) dir.create(dir.Rdata);     
+          if (!file.exists(dir.Rdata)) {
+            success = dir.create(dir.Rdata);     
+            if (!success) stop(sprintf("Could not create dir.Rdata=%s",dir.Rdata));
+          }
           save(formul,to.model,response.variable,rf.options,opts,file=paste(dir.Rdata,"rf_input_dbg.Rdata",sep=""));
           cat1(opts,"RF-debug-data saved to", paste(dir.Rdata,"rf_input_dbg.Rdata",sep=""),"\n");
           if (!is.null(opts$CLS.cutoff))
@@ -109,7 +112,10 @@ tdmMetacostRf <- function(response.variable,to.model,opts)
           #if (!is.null(opts$CLS.cutoff)) cat2(opts,"Cutoff: ", opts$CLS.cutoff,"\n")
           print2(opts,c(Targets=NA,table(to.model[,response.variable])))      # debug info: 
           dir.Rdata <- paste(dirname(opts$dir.Rdata),basename(opts$dir.Rdata),sep="/")  # remove trailing "/", if it exists
-          if (!file.exists(dir.Rdata)) dir.create(dir.Rdata);     
+          if (!file.exists(dir.Rdata)) {
+            success = dir.create(dir.Rdata);     
+            if (!success) stop(sprintf("Could not create dir.Rdata=%s",dir.Rdata));
+          }
           save(formul,to.model,response.variable,rf.options,opts,file=paste(dir.Rdata,"rf_input_dbg.Rdata",sep=""));
           cat1(opts,"RF-debug-data saved to", paste(dir.Rdata,"rf_input_dbg.Rdata",sep=""),"\n");
           if (!is.null(opts$CLS.cutoff))

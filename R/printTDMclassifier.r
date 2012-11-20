@@ -10,7 +10,7 @@
 #'      \describe{
 #'      \item{\code{"overview"}}{ (default) relative gain on training/test set, number of records, see \code{\link{tdmClassifySummary}}}
 #'      \item{\code{"cm.train"}}{ confusion matrix on train set}
-#'      \item{\code{"cm.test"}}{ confusion matrix on test set}
+#'      \item{\code{"cm.vali"}}{ confusion matrix on test set}
 #'      \item{\code{"?"}}{ help on this method}
 #'      }
 #'
@@ -29,17 +29,17 @@ print.TDMclassifier <- function(x,...) {
               1;  # a value for z
               }
       , "cm.train"= show.cm.train(result)
-      , "cm.test"= show.cm.test(result)
+      , "cm.vali"= show.cm.vali(result)
       , "?"={cat("Help for print(<TDMclassifier>,type=t). Possible values for 't' are:\n"
                ,"\"overview\": [def.] see help(tdmClassifySummary)\n"
                ,"\"cm.train\": confusion matrix on training data\n"
-               ,"\"cm.test\" : confusion matrix on test data\n"
+               ,"\"cm.vali\" : confusion matrix on validation data\n"
                ,"\"?\" : display this help message"
                ,"\nThe commands > result or > print(result) invoke the default print(result,type=\"overview\") for TDMclassifier object result"
                ); 1;}     # a value for z
       , "invalid type"
       );
-    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.test, ?.");
+    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.vali, ?.");
     cat("\n");
   }
 
@@ -68,18 +68,18 @@ print.tdmClass <- function(x,...) {
               1;    # a value for z
               }
       , "cm.train"= show.cm.train(res)
-      , "cm.test"= show.cm.test(res)
+      , "cm.vali"= show.cm.vali(res)
       , "?"={cat("Help for print(<tdmClass>,type=t). Possible values for 't' are:\n"
                ,"\"overview\": [def.] info on model and datasets in tdmClass object\n"
                ,"\"cm.train\": confusion matrix on training data\n"
-               ,"\"cm.test\" : confusion matrix on test data\n"
+               ,"\"cm.vali\" : confusion matrix on validation data\n"
                ,"\"?\" : display this help message"
                ,"\n\nThe commands > res or > print(res) invoke the default print(res,type=\"overview\") for tdmClass object res\n"
                ); 1;   # a value for z
             }
       , "invalid type"
       );
-    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.test, ?.");
+    if (z[1]=="invalid type") warning("Invalid type = ",type,". Allowed types are: overview, cm.train, cm.vali, ?.");
   }
 
   vaarg <- list(...)
@@ -92,7 +92,7 @@ show.tdmClass <- function(res) {
     cat("Model (for last response variable) of tdmClass object:")
     print(res$lastModel);
     cat("\nConfusion matrix on validation set\n");
-    print(res$lastCmTest$mat);
+    print(res$lastCmVali$mat);
     cat(sprintf("\nDatasets (# rows) of tdmClass object:\n  d_train (%d), d_test (%d), d_dis (%d)\n",
                       nrow(res$d_train),nrow(res$d_test),nrow(res$d_dis)));
 }
@@ -126,26 +126,26 @@ show.cm.train <- function(result) {
 }
 
 # this helper fct works for both classes tdmClass and TDMClassifier in object result:
-show.cm.test <- function(result) {
+show.cm.vali <- function(result) {
   cls <- class(result)[1];
   z <- switch(cls
-    , "TDMclassifier"= {show.cm.test(result$lastRes); 1; }
+    , "TDMclassifier"= {show.cm.vali(result$lastRes); 1; }
     , "tdmClass"={
         # note that in here the object 'result' is of class ***tdmClass*** !
         opts = Opts(result);
         opts$VERBOSE = 2;
-        cm.test <- result$lastCmTest;
-        n.test <- nrow(result$d_test);
-        if (n.test>0) {
-          cat1(opts,"Test cases (",n.test
+        cm.vali <- result$lastCmVali;
+        n.vali <- nrow(result$d_test);
+        if (n.vali>0) {
+          cat1(opts,"Vali cases (",n.vali
               ,ifelse(opts$TST.kind=="cv",", last fold )",")")
               ,sprintf("on last response variable '%s' :", tail(row.names(result$allEVAL),1))
               ,"\n");
-          print1(opts,cm.test$mat)                      # confusion matrix on test set
-          print1(opts,cm.test$gain.vector)
+          print1(opts,cm.vali$mat)                      # confusion matrix on test set
+          print1(opts,cm.vali$gain.vector)
           cat1(opts,sprintf("total gain : %7.1f (is %7.3f%% of max. gain = %7.1f)\n",
-                            cm.test$gain,cm.test$gain/cm.test$gainmax*100,cm.test$gainmax));
-          cat1(opts,sprintf("Relative gain (rgain.type='%s') is %7.2f%%\n",opts$rgain.type,cm.test$rgain));
+                            cm.vali$gain,cm.vali$gain/cm.vali$gainmax*100,cm.vali$gainmax));
+          cat1(opts,sprintf("Relative gain (rgain.type='%s') is %7.2f%%\n",opts$rgain.type,cm.vali$rgain));
         } else {
           cat1(opts,"There are no test cases in data set!\n");
         }

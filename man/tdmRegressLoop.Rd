@@ -44,7 +44,12 @@
   "rmse"} \item{S_train}{ RMSE on training set (vector of
   length NRUN)} \item{T_train}{ Theil's U for RMAE on
   training set (vector of length NRUN)} \item{*_test}{ ---
-  similar, with test set instead of training set}
+  similar, with test set instead of training set --- }
+  \item{Err}{ } \item{predictions}{ last run: data frame
+  with dimensions [nrow(dset),length(response.variable)].
+  In case of CV, all validation set predictions (for each
+  record in dset), in other cases mixed validation / train
+  set predictions.  }
 }
 \description{
   tdmRegressLoop contains a double loop (opts$NRUN and
@@ -72,7 +77,7 @@ source("main_cpu.r");   # in working dir
 opts = tdmOptsDefaultsSet();    
       opts$dir.output <- paste("Output/", sep="")
       opts$filename = "cpu.csv"
-      opts$READ.CMD = "read.csv2(file=paste(dir.data, filename, sep=\\"\\"), dec=\\".\\", na.string=\\"-1\\",nrow=opts$READ.NROW)"
+      opts$READ.CMD = "read.csv2(file=paste(opts$dir.data, filename, sep=\\"\\"), dec=\\".\\", na.string=\\"-1\\",nrow=opts$READ.NROW)"
       opts$SRF.kind = "ndrop"
       opts$SRF.ndrop =  2     # 0..n: how many variables (those with lowest importance) to drop
       opts$OCUT = 600         # cut records with output > OCUT (may be strong outliers, dropping
@@ -92,7 +97,8 @@ setwd(oldwd);
 
 }
 \author{
-  Wolfgang Konen, FHK, Sep'2010 - Oct'2011
+  Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), FHK,
+  Sep'2010 - Jun'2012
 }
 \seealso{
   \code{\link{tdmRegress}}, \code{\link{tdmClassifyLoop}},

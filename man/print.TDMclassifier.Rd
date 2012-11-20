@@ -18,7 +18,7 @@
   gain on training/test set, number of records, see
   \code{\link{tdmClassifySummary}}}
   \item{\code{"cm.train"}}{ confusion matrix on train set}
-  \item{\code{"cm.test"}}{ confusion matrix on test set}
+  \item{\code{"cm.vali"}}{ confusion matrix on test set}
   \item{\code{"?"}}{ help on this method} }}
 }
 \description{

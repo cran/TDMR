@@ -160,7 +160,7 @@ tdmPrePCA.train <- function(dset,opts)  {
     other.vars <- setdiff(names(dset),numeric.variables);
     
     if (opts$PRE.PCA=="linear") {
-      cat1(opts,fname,": linear PCA with",length(numeric.variables),"numeric variables...\n");
+      cat1(opts,fname,": linear PCA with",length(numeric.variables),"numeric variables on",nrow(dset),"records ...\n");
       x <- dset[,numeric.variables];
 
       pcaList <- prcomp(x);
@@ -345,7 +345,7 @@ tdmPreSFA.train <- function(dset,response.var,opts)  {
   		stop("linear expansion functions are not yet implemented, please check later versions");
     }    
     else if (opts$PRE.SFA=="2nd") {		
-      cat1(opts,fname,": SFA 2nd degree with",length(numeric.variables),"numeric variables and PPRANGE =",ppRange,"...\n");
+      cat1(opts,fname,": SFA 2nd degree with",length(numeric.variables),"numeric variables and PPRANGE =",ppRange,"on ",nrow(dset)," records ...\n");
       x <- dset[,numeric.variables];
     	realclass=dset[,response.var];
   		sfaList = sfa2Create(ppRange, xpDim(ppRange), "PCA2", "ORD1", 0, sfaOpts)

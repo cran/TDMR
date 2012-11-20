@@ -1,0 +1,18 @@
+\name{tdmEnvTLoad}
+\alias{tdmEnvTLoad}
+\title{Load an \code{envT}-type environment from file \code{fileRData}.}
+\usage{
+  tdmEnvTLoad(fileRData)
+}
+\arguments{
+  \item{fileRData}{string with filename to load. This file
+  is searched in the working dir.}
+}
+\value{
+  envT
+}
+\description{
+  The loaded envT is augmented with getter functions, see
+  \code{\link{tdmEnvTAddGetters}}.
+}
+

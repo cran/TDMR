@@ -41,7 +41,7 @@
 #'       \item{\code{rmse}}{ root mean square error (on test + train set) + Theil's U (on test + train set) }
 #'       \item{\code{rmae}}{ relative mean absolute error (on test + train set) + Theil's U  (on test + train set).
 #'                   rmse and rmae are lists. If there is more than one response variable, then rmse and rmae 
-#'                   contain the *sum* over response.variables for each list-entry. }
+#'                   contain the *average* over response.variables for each list-entry. }
 #'       \item{\code{allRMAE}}{ data frame with columns = list-entries in rmae and rows = response variables  }
 #'       \item{\code{lastModel}}{       the last model built (e.g. the last Random Forest in the case of MOD.method=="RF") }
 #'       \item{\code{opts}}{ parameter list from input, some default values might have been added }
@@ -50,13 +50,12 @@
 #'    specific for the *last* model (the one built for the last response variable in the last run and last fold) 
 #'
 #' @seealso  \code{\link{print.tdmRegre}} \code{\link{tdmRegressLoop}} \code{\link{tdmClassifyLoop}}
-#' @author Wolfgang Konen, FHK, Sep'2009 - Oct'2011
+#' @author Wolfgang Konen, FHK, Sep'2009 - Jun'2012
 #'
 #' @export
 ######################################################################################
 tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
 {    
-    first <- TRUE; 
     filename <- opts$filename;
     input.variables_0 <- input.variables;      # save copy for response.variable loop
 
@@ -66,7 +65,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
     if (is.null(opts$SVM.tolerance)) opts$SVM.tolerance=0.001;
     if (is.null(opts$gr.log)) opts$gr.log=F;
     
-    
+    allRMAE <- allRMSE <- allMADE <- NULL;    
     for (response.variable in response.variables) {    
         input.variables <- input.variables_0;
         
@@ -119,7 +118,8 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
           SRF <- tdmModSortedRFimport(d_train,response.variable,
                                           input.variables,opts)
           input.variables <- SRF$input.variables;  
-          opts <- SRF$opts;       # some defaults might have been added  
+          opts <- SRF$opts;       # some defaults might have been added, some opts$SRF.* values changed  
+          SRF$opts <- NULL;       # simplify list result, which will contain both, SRF and opts
          
         }  else {
           if (opts$i==1) {
@@ -162,7 +162,6 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         # estimate random forest based on previous step:
         to.model <- d_train[,c(input.variables,response.variable)]
         to.test <- d_test[,c(input.variables,response.variable)]
-        
         train.rf <- function(formula,to.model,opts) {
             cat1(opts,opts$filename,": Train RF ...\n")
             flush.console();
@@ -195,10 +194,6 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
             res.rf <- lm( formula=formula, data=to.model)
         }
         
-        #
-        # TODO: add lm
-        #
-
         ptm <- proc.time()
         cat1(opts, "Run ",ifelse(opts$the.nfold>1,paste(opts$i,".",opts$k,sep="")           ,opts$i)    ,"/",
                           ifelse(opts$the.nfold>1,paste(opts$NRUN,".",opts$the.nfold,sep=""),opts$NRUN) ,":\n"); 
@@ -274,9 +269,9 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
           }
         }
       	if (!is.null(opts$fct.postproc)) {
-      		cat1(opts,filename,": User-defined postprocessing: Applying opts$fct.postproc ...\n")
-      		train.predict <- eval(parse(text=paste(opts$fct.postproc,"(train.predict,opts)",sep="")));
-      		test.predict <- eval(parse(text=paste(opts$fct.postproc,"(test.predict,opts)",sep="")));
+      		cat1(opts,filename,": User-defined postprocessing: Applying function",opts$fct.postproc,"...\n");
+      		train.predict <- eval(parse(text=paste(opts$fct.postproc,"(train.predict,d_train,opts)",sep="")));
+      		test.predict <- eval(parse(text=paste(opts$fct.postproc,"(test.predict,d_test,opts)",sep="")));
       	}
         # bind the predicted class pred_... as last column to the data frames
         name.of.prediction <- paste("pred_", response.variable, sep="")
@@ -289,40 +284,42 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
         cat1(opts,filename,": Calc RMSE ...\n")
         naive.predict=mean(d_train[,response.variable])
         rmse=list()
-        rmse$train <- sqrt(mean((train.predict-d_train[,response.variable])^2)) # this is the OOB-error
+        rmse$train <- sqrt(mean((train.predict-d_train[,response.variable])^2)) # this is the OOB-error in case of RF
         if (opts$MOD.method=="RF") rmse$OOB <- sqrt(res.rf$mse[res.rf$ntree])
         else rmse$OOB <- 0;
         rmse$Theil.train <- rmse$train/sqrt(mean((naive.predict-d_train[,response.variable])^2))
         #naive.predict2=d_train[,opts$old.response.variable]
         #rmse$Theil2.train <- rmse$train/sqrt(mean((naive.predict2-d_train[,response.variable])^2))
         rmae=list()
-        rmae$madtr <- mean(abs(d_train[,response.variable]))
-        rmae$train <- mean(abs(train.predict-d_train[,response.variable]))/rmae$madtr
-        rmae$Theil.train <- rmae$train/(mean(abs(naive.predict-d_train[,response.variable]))/rmae$madtr)
+        rmae$made.tr <- mean(abs(train.predict-d_train[,response.variable]))
+        rmae$ma.train <- mean(abs(d_train[,response.variable]))
+        rmae$train <- rmae$made.tr/rmae$ma.train;
+        rmae$Theil.train <- rmae$train/(mean(abs(naive.predict-d_train[,response.variable]))/rmae$ma.train)
 
         cat2(opts,"\nTraining cases (",length(train.predict),"):\n")
-        cat2(opts,"rmse$train (OOB):", rmse$train, "\n")
-        cat2(opts,"RMAE$train (OOB):", rmae$train,"\n")
+        cat2(opts,"rmse$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$train, "\n")
+        cat2(opts,"RMAE$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmae$train,"\n")
         cat2(opts,"Theils U1 (train, RMSE):", rmse$Theil.train,"\n")#, U2 (train):",rmse$Theil2.train,"\n")    # <1: better than naive forecast
         cat2(opts,"Theils U3 (train, RMAE):", rmae$Theil.train,"\n")    # based on RMAE instead of RMSE
-      
+ 
         rmse$test <- sqrt(mean((test.predict-d_test[,response.variable])^2))
         rmse$Theil.test <- rmse$test/sqrt(mean((naive.predict-d_test[,response.variable])^2))
         #naive.predict2=d_test[,opts$old.response.variable]
         #rmse$Theil2.test <- rmse$test/sqrt(mean((naive.predict2-d_test[,response.variable])^2))
-        rmae$madte <- mean(abs(d_test[,response.variable]))
-        rmae$test <- mean(abs(test.predict-d_test[,response.variable]))/rmae$madte
-        rmae$Theil.test <- rmae$test/(mean(abs(naive.predict-d_test[,response.variable]))/rmae$madte)
-        cat2(opts,"\nTest cases (",length(test.predict),"):\n")
-      	cat2(opts,"rmse$test:", rmse$test, ", rmse$train (OOB):", rmse$train,"\n")
+        rmae$made.te <- mean(abs(test.predict-d_test[,response.variable]));
+        rmae$ma.test <- mean(abs(d_test[,response.variable]))
+        rmae$test <- rmae$made.te/rmae$ma.test
+        rmae$Theil.test <- rmae$test/(mean(abs(naive.predict-d_test[,response.variable]))/rmae$ma.test)
+        cat2(opts,"\nVali cases (",length(test.predict),"):\n")
+      	cat2(opts,"rmse$test:", rmse$test, ", rmse$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$train,"\n")
         cat2(opts,"RMAE$test:", rmae$test, "\n")
         cat2(opts,"Theils U1 (test, RMSE):", rmse$Theil.test,"\n")#, U2 (test):",rmse$Theil2.test,"\n")    # <1: better than naive forecast
         cat2(opts,"Theils U3 (test, RMAE):", rmae$Theil.test,"\n")    # based on RMAE instead of RMSE
      
         if (!is.na(match("SRF",ls()))) {
-        	rmae$SRF.perc = SRF$perc;			# just to report these
-        	rmae$SRF.lsd = SRF$lsd;				# three numbers below in allRMAE
-        	rmae$SRF.lsi = length(SRF$input.variables)	#
+        	rmae$SRF.perc = SRF$perc;			               # just to report these
+        	rmae$SRF.lsd = SRF$lsd;				               # three numbers below  
+        	rmae$SRF.lsi = length(SRF$input.variables)   # in allRMAE
        	}
 
         #=============================================
@@ -332,62 +329,65 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
           # point plot: true response (x) vs. predicted response (y)
           tdmGraphicNewWin(opts);
           if (opts$gr.log) {
-            gr_trans <- function(x) { log(x[!is.na(x)]+1, base=10); }
+            gr_trans <- function(x,xmin) { log(x[!is.na(x)]+1-xmin, base=10); }
+            min_trans <- function(x) { min(min(x[!is.na(x)]),0); }            
           } else {
-            gr_trans <- function(x) { x; }
+            gr_trans <- function(x,xmin) { x; }
+            min_trans <- function(x) { 0; }            
           }
-          true_out = gr_trans(d_train[,response.variable])
           r = c(d_train[,response.variable],d_test[,response.variable]);
+          rmin = min_trans(r);
           if (is.null(opts$lim)) lim=c(min(r),max(r)) else lim=opts$lim;
+          true_out = gr_trans(d_train[,response.variable],rmin)
 
-          plot(c(0,max(true_out)),c(0,max(true_out)),col='blue',type="l"
+          plot(gr_trans(lim,rmin),gr_trans(lim,rmin),col='blue',type="l"
                ,xlab=ifelse(opts$gr.log,"lg(true_out+1)","true_out")
                ,ylab=ifelse(opts$gr.log,"lg(predict+1)","predict")
-               ,xlim=gr_trans(lim)
-               ,ylim=gr_trans(lim)
+               ,xlim=gr_trans(lim,rmin)
+               ,ylim=gr_trans(lim,rmin)
                )
           #points(true_out[true_out<opts$OCUT],train.predict[true_out<opts$OCUT],col='green')
           #points(true_out[true_out<opts$OCUT],train.predict[true_out<opts$OCUT],col='blue')
-          points(true_out,gr_trans(train.predict),col='blue')
-          true_out = gr_trans(d_test[,response.variable])
-          points(true_out,gr_trans(test.predict),col='red')
+          points(true_out,gr_trans(train.predict,rmin),col='blue')
+          true_out = gr_trans(d_test[,response.variable],rmin)
+          points(true_out,gr_trans(test.predict,rmin),col='red')
           title(response.variable)
           legend("topleft",legend=c("train", "test"),
                  col=c("blue","red"), lty=c(1,1), lwd=c(1,1),
                  pch=c(5,5), pt.bg=c("white","white"), pt.cex=1.0,
                  text.col="blue4", bg="gray95")
+          tdmGraphicCloseWin(opts);
         } # if (opts$GD.DEVICE!="non")
         
-        if (first) {
-            RMSE=lapply(rmse,sum);
-            RMAE=lapply(rmae,sum);
-            allRMAE=as.data.frame(rmae);
-            first=F;
-        } else {
-            RMSE<- as.list(mapply(sum,rmse,RMSE));
-            RMAE<- as.list(mapply(sum,rmae,RMAE));
-            allRMAE <- rbind(allRMAE,as.data.frame(rmae));
-        }
+        allRMAE <- rbind(allRMAE,as.data.frame(rmae));
+        allRMSE <- rbind(allRMSE,as.data.frame(rmse));
         
-          cat1(opts,sprintf("  %s: rmae$test =%8.3f, RMAE$test =%8.3f\n",response.variable,rmae$test,RMAE$test));
-          cat1(opts,sprintf("  %s: rmae$train=%8.3f, RMAE$train=%8.3f\n",response.variable,rmae$train,RMAE$train));
+        cat1(opts,sprintf("  %s: rmae$test =%8.3f, RMAE$test =%8.3f\n",response.variable,rmae$test,mean(allRMAE$test)));
+        cat1(opts,sprintf("  %s: rmae$train=%8.3f, RMAE$train=%8.3f\n",response.variable,rmae$train,mean(allRMAE$train)));
 
     } # for (response.variable)
+    
+    RMAE <- as.list(mapply(mean,allRMAE));
+    RMSE <- as.list(mapply(mean,allRMSE));
                
     #=============================================
     # PART 4.8: WRITE RESULTS ON TEST SET TO FILE
     #=============================================
     dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
-    if (!file.exists(dir.output)) dir.create(dir.output);     
+    if (!file.exists(dir.output)) {
+      success = dir.create(dir.output);     
+      if (!success) stop(sprintf("Could not create dir.output=%s",dir.output));
+    }
     #outfile = paste(opts$dir.output,sub(".csv", "", filename), "_predictions.csv", sep="")
     #write.table(d_test, file=outfile, quote=F, sep=";", dec=".", row.names=F, col.names=TRUE)
 
-    res =   list(rmse=RMSE          # root mean square error, summed over all response.variables
-                ,rmae=RMAE          # relative mean absolute error, summed over all response.variables
-                ,allRMAE=allRMAE	 	# RMAE for each response.variable 
-                ,lastModel = res.rf #   from last response.variable 
+    res =   list(rmse=RMSE          # root mean square error, averaged over all response.variables
+                ,rmae=RMAE          # relative mean absolute error, Theil's U and mean abs deviation, averaged over all response.variables
+                ,allRMAE=allRMAE	 	# RMAE, Theil's U and mean abs deviation, separately for each response.variable 
+                ,lastModel = res.rf # model from last response.variable 
                 ,d_train=d_train
                 ,d_test=d_test 
+                ,SRF=SRF            # output from tdmModSortedRFimport or NULL
                 ,opts=opts          # some defaults might have been added  
                )
     if (opts$MOD.method=="RF" & opts$RF.p.all) res$train.indiv=app$train.indiv;

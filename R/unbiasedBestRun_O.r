@@ -43,7 +43,7 @@ unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F
     if (is.null(envT$spotConfig)) envT$spotConfig <- spotGetOptions(srcPath=tdm$theSpotPath,confFile);
     if (is.null(envT$theTuner)) envT$theTuner <- "lhd";
     if (is.null(envT$nExp)) envT$nExp <- 1;
-    if (is.null(envT$map)) tdmMapDesLoad(envT,tdm); 
+    if (is.null(tdm$map)) tdm <- tdmMapDesLoad(tdm); 
     if (is.null(envT$spotConfig$opts)) {
       pdFile = envT$spotConfig$io.apdFileName;
       warning(paste("List envT$spotConfig does not have the required variable 'opts'."
@@ -55,7 +55,7 @@ unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F
     envT$tdm <- tdm;    # just as information to the caller of this function
  	
     writeLines(paste("start unbiased run for",basename(tdm$mainFunc),"..."), con=stderr());
-# --- this is now in tdmCompleteEval.r (before parallel execution branch) ---
+# --- this is now in tdmBigLoop.r (before parallel execution branch) ---
 #   pdFile = envT$spotConfig$io.apdFileName;
 #  	source(pdFile,local=T)            # read problem design  (here: all elements of list opts)   
 #   if (!is.null(tdm$mainFile)) source(tdm$mainFile)
@@ -66,12 +66,12 @@ unbiasedBestRun_O <- function(confFile,envT,finals=NULL,umode="DEF",withParams=F
     # (depending on switch umode, see tdmMapDesign.r)
   	opts <- tdmMapOpts(umode,opts,tdm);           # sets opts$NRUN = tdm$nrun
 
-    bst <- tdmGetObj(envT$bst,envT$spotConfig$io.bstFileName,envT$theTuner,tdm);
-    res <- tdmGetObj(envT$res,envT$spotConfig$io.resFileName,envT$theTuner,tdm);
+    bst <- envT$bst;
+    res <- envT$res;
 
     k <- nrow(bst);       # last line has the best solution
-    bst <- tdmMapCutoff(bst,k,envT$spotConfig);  # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
-  	opts <- tdmMapDesApply(bst,opts,k,envT,tdm);
+    #bst <- tdmMapCutoff(bst,k,envT$spotConfig);  # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
+  	opts <- tdmMapDesApply(bst,opts,k,envT$spotConfig,tdm);
   	cat("Best solution:\n"); print(bst[k,]);
   	#
   	# now opts has the best solution obtained in a prior tuning, and it has 

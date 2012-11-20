@@ -1,0 +1,35 @@
+\name{tdmEnvTSensi}
+\alias{tdmEnvTSensi}
+\title{Make a sensitivity plot based on \code{envT}}
+\usage{
+  tdmEnvTSensi(envT, ind)
+}
+\arguments{
+  \item{envT}{results from a prior tuning run. If
+  envT$tdm$run==0}
+
+  \item{ind}{an integer from \code{1:length(envT$bstGrid)}:
+  Take the tuning run with index \code{ind}.}
+}
+\value{
+  \code{finals}, either NULL (no unbiased run) or a one-row
+  data frame with the results from the unbiased run
+}
+\description{
+  Given the results from a prior tuning run in \code{envT},
+  make a sensitivity plot for this run (call SPOT with
+  spotStep="rep") If \code{envT$tdm$nrun > 0} then make
+  additionally with the best-performing parameters from the
+  tuning run a new unbiased run on the test data.
+}
+\examples{
+## The best results are read from demo02sonar/demoSonar.RData relative to the TDMR package directory.
+   oldwd <- getwd(); setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+   envT = tdmEnvTLoad("demoSonar.RData");    # loads envT
+   source("main_sonar.r");
+   envT$tdm$nrun=0;       # =0: no unbiasedRun, >0: perform unbiasedRun with opts$NRUN=envT$tdm$nrun
+   finals = tdmEnvTSensi(envT,1);
+   if (!is.null(finals)) print(finals);
+   setwd(oldwd);
+}
+

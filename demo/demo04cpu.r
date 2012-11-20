@@ -26,23 +26,34 @@ tdm <- list(    mainFunction="main_cpu"
               );
 ## fill in other defaults for list tdm            
 tdm <- tdmDefaultsFill(tdm);            
-runList = c("cpu_01.conf");     
 ## cpu_01.conf has the settings for the tuning process (e.g. "auto.loop.steps"=number of SPOT generations       
 ## "auto.loop.evals"=budget of model building runs and io.roiFileName = "cpu_01.roi").
+tdm$runList = c("cpu_01.conf");     
+## spotStep can be either "auto" (do automatic tuning) or "rep" (make a visual report and an unbiased run on best results)
+spotStep = "auto";
               
    
-## the call to tdmCompleteEval will start the whole TDMR process:
-## - for each file in runList a complete DM tuning is started with each tuning method
-## - the best result from tuning are fed into an unbiased model building and evaluation run 
+## construct an initial environment envT from the given TDMR settings in tdm
+## (this contains also the fill-in of other defaults for tdm via
+##      envT$tdm <- tdmDefaultsFill(tdm);
+## )
+envT <- tdmEnvTMakeNew(tdm);
+
+## the call to tdmBigLoop will start the whole TDMR process:
+## - for each file in tdm$runList a complete DM tuning is started with each tuning method tdm$tuneMethod  (if spotStep=="auto")
+## - the best result from tuning is fed into an unbiased model build and evaluation run 
 ## - results are printed and returned in envT$theFinals 
-## - more detailed results are in other elements of envT
+## - more detailed results are in other elements of environment envT
 ## - two plots: 
 ##      a) the progression of the response variable Y and the parameter variables during tuning
 ##      b) the sensitivity plot for each parameter in the vicinity of the best solution found 
-envT <- tdmCompleteEval("cpu_01.conf",NULL,"auto",tdm);
+envT <- tdmBigLoop(envT,spotStep);
+
+## deprecated:
+#envT <- tdmCompleteEval("cpu_01.conf",NULL,spotStep,tdm);
 
 ## restore old working directory
-#setwd(oldwd);
+setwd(oldwd);
 
 ## the resulting tuning surface (the metamodel) can be inspected interactively with
 ##      load(paste(path,tdm$filenameEnvT,sep="/");     

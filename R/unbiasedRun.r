@@ -51,7 +51,7 @@
 #'
 #' @examples
 #'    ## Load the best results obtained in a prior tuning for the configuration "sonar_04.conf" with tuning method "spot".
-#'    ## The result envT from a prior run of tdmCompleteEval with this .conf is read from demo02sonar/demoSonar.RData.
+#'    ## The result envT from a prior run of tdmBigLoop with this .conf is read from demo02sonar/demoSonar.RData.
 #'    ## Run task main_sonar again with these best parameters, using the default settings from tdmDefaultsFill 
 #'    ## umode="RSUB", tdm$nrun=5  and tdm$tstFrac=0.2.
 #'    oldwd <- getwd();          
@@ -63,20 +63,21 @@
 #'    print(finals);
 #'    setwd(oldwd);
 #'    
-#'    \dontrun{
-#'    ## If you do not have 'envT' but only a .bst file from a prior tuning run:
-#'    ## The best results are read from demo02sonar/spot/sonar_04.bst relative to the TDMR package directory.
-#'    ## (This example is not run automatically, because sonar_04.bst is not in the package distribution) 
-#'    setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
-#'    envT <- new.env();
-#'    tdm <- list(mainFunction="main_sonar", tuneMethod="spot");
-#'    source("main_sonar.r");
-#'    finals <- unbiasedRun("sonar_04.conf",envT,tdm=tdm);
-#'    print(finals);
-#'    setwd(oldwd);
-#'    }
+#    --- This example is now deprecated, because we do not support .bst-files any longer ----
+#    \dontrun{
+#    ## If you do not have 'envT' but only a .bst file from a prior tuning run:
+#    ## The best results are read from demo02sonar/spot/sonar_04.bst relative to the TDMR package directory.
+#    ## (This example is not run automatically, because sonar_04.bst is not in the package distribution) 
+#    setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+#    envT <- new.env();
+#    tdm <- list(mainFunction="main_sonar", tuneMethod="spot");
+#    source("main_sonar.r");
+#    finals <- unbiasedRun("sonar_04.conf",envT,tdm=tdm);
+#    print(finals);
+#    setwd(oldwd);
+#    }
 #'
-#' @seealso   \code{\link{tdmCompleteEval}}
+#' @seealso   \code{\link{tdmBigLoop}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Dec'2011
 #' @export
 #
@@ -86,7 +87,9 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     if (is.null(envT$spotConfig)) envT$spotConfig <- spotGetOptions(srcPath=tdm$theSpotPath,confFile);
     if (is.null(envT$theTuner)) envT$theTuner <- "spot";
     if (is.null(envT$nExp)) envT$nExp <- 1;
-    if (is.null(envT$map)) tdmMapDesLoad(envT,tdm); 
+    if (is.null(tdm$map)) tdm <- tdmMapDesLoad(tdm); 
+    #if (is.null(envT$map)) tdmMapDesLoad(envT,tdm); 
+    
     if (is.null(envT$spotConfig$opts)) {
       if (is.null(envT$sCList[[1]]$opts)) {
         pdFile = envT$spotConfig$io.apdFileName;
@@ -105,28 +108,37 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     envT$tdm <- tdm;    # just as information to the caller of this function
 
     writeLines(paste("start unbiased run for function \"", tdm$mainFunc,"\" ...",sep=""), con=stderr());
-# --- this is now in tdmCompleteEval.r (before optional parallel execution) ---
+# --- this is now in tdmBigLoop.r (before optional parallel execution) ---
 #   pdFile = envT$spotConfig$io.apdFileName;
 #  	source(pdFile,local=TRUE)         # read problem design  (here: all elements of list opts)   
 #   if (!is.null(tdm$mainFile)) source(tdm$mainFile)
 
-	
   	if (opts$READ.INI) {
+  	  if (is.null(dataObj)) dataObj <- tdmSplitTestData(opts,tdm);
       tdm$tstCol=dataObj$TST.COL;  # needed for tdmMapOpts
-      dset <- dataObj$dset;    
+      #dset <- dataObj$dset;    
+      dset <- dsetTrnVa(dataObj);
+      tset <- dsetTest(dataObj);
     } else {
       dset <- NULL;
+      tset <- NULL;
     }
     # set certain elements of opts which control selection of training & test data 
     # (depending on switch tdm$umode, see tdmMapDesign.r)
   	opts <- tdmMapOpts(umode,opts,tdm);           # sets opts$NRUN = tdm$nrun
-  	
+
+    # deprecated, only for downward compatibility. For actual runs, a simple
+    #   bst <- envT$bst
+    #   res <- envT$res
+    # would be sufficient.
     bst <- tdmGetObj(envT$bst,envT$spotConfig$io.bstFileName,envT$theTuner,tdm);
     res <- tdmGetObj(envT$res,envT$spotConfig$io.resFileName,envT$theTuner,tdm);
 
     k <- nrow(bst);       # last line has the best solution
-    bst <- tdmMapCutoff(bst,k,envT$spotConfig);  # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
-  	opts <- tdmMapDesApply(bst,opts,k,envT,tdm);
+    #bst <- tdmMapCutoff(bst,k,envT$spotConfig);  # enforce CUTOFF parameter constraint if CUTOFF2[,3,4] appears in .des-file
+  	opts <- tdmMapDesApply(bst,opts,k,envT$spotConfig,tdm);
+  	if (is.null(opts$fileMode)) opts$fileMode=TRUE;    # might be necessary for older opts from file
+
   	cat("Best solution:\n"); print(bst[k,]);
   	#
   	# now opts has the best solution obtained in a prior tuning, and it has 
@@ -141,10 +153,13 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
 		oldwd = getwd();                                               #
     if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));      # save & change working dir
 		result = NULL;         
-  	mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
+  	mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset,tset=tset)",sep=" ");
     eval(parse(text=mainCommand));                  # execute the command given in text string mainCommand
-    #if (!exists("result")) stop("tdm$mainFunc did not return a list 'result'");
     if (!is.list(result)) stop("tdm$mainFunc did not return a list 'result'");
+#--- only for testing parallel execution: comment 2 lines above out and uncomment 2 lines below:
+#    load("Results2013/DMC2007-base.RData"); 
+#    result=envT2$result
+#---
 		setwd(oldwd);                                                  # restore working dir
     envT$result <- result;
 
@@ -160,8 +175,9 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
       finals <- cbind(finals
                      , NRUN=opts$NRUN
                      , NEVAL=nrow(res)
-                      );
-      add.finals        <- data.frame(-as.numeric(bst[k,1]),-mean(res$Y));
+                      );                      
+      sgn <- ifelse(class(envT$result)[1]=="TDMregressor",+1,-1);   # minus sign only for classification
+      add.finals        <- data.frame(sgn*as.numeric(bst[k,1]),sgn*mean(res$Y));
       names(add.finals) <- paste(opts$rgain.string,c(".bst",".avg"),sep="");
       finals <- cbind(finals,add.finals);
       #

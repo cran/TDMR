@@ -27,7 +27,7 @@
   The main entry point functions are
   \code{\link{tdmClassifyLoop}},
   \code{\link{tdmRegressLoop}} and
-  \code{\link{tdmCompleteEval}}. See
+  \code{\link{tdmBigLoop}}. See
   \code{\link{tdmOptsDefaultsSet}} and
   \code{\link{tdmDefaultsFill}} for an overview of
   adjustable TDMR-parameters.

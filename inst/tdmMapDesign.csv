@@ -5,6 +5,7 @@ PCA.npc;    opts$PRE.PCA.npc;   1
 SFA.npc;    opts$PRE.SFA.npc;   1
 SFA.PPRANGE;opts$PRE.SFA.PPRANGE;1
 SFA.ODIM;   opts$PRE.SFA.ODIM;  1
+NCOPIES;    opts$ncopies;       1      
 XPERC;      opts$SRF.XPerc;     0
 NDROP;      opts$SRF.ndrop;     1
 MTRY;       opts$RF.mtry;       1
@@ -26,21 +27,24 @@ CUTOFF1;    opts$CLS.cutoff[1]; 0
 CUTOFF2;    opts$CLS.cutoff[2]; 0
 CUTOFF3;    opts$CLS.cutoff[3]; 0
 CUTOFF4;    opts$CLS.cutoff[4]; 0
-# opts$CLS.cutoff[N_c] is set in main_*.r
+CUTOFF5;    opts$CLS.cutoff[5]; 0
 #
-NCOPIES;    opts$ncopies;       1      
 #
 # DMC2010             
 VOTECUT;    opts$votecut;       0
 #
+# appStorm
 LEAKY1;     opts$PRE.leaky1;    0
 LEAKY2;     opts$PRE.leaky2;    0
-PRE_NPC;    opts$PRE.npc;       0
+LAMBDA;     opts$lambda;        0
+LAMBDA2;    opts$lambda2;       0
+SEQ;        opts$seq;           0
+SEQ2;       opts$seq2;          0
+EMBDIM;     opts$embdim;        0
+EMBDIM2;    opts$embdim2;       0
 #      
 # appTemp
 EMBDIM;     opts$PRE.embdim;    0
-embdimTemperature;   opts$PRE.embdimTemperature;  1
-embdimConductivity;  opts$PRE.embdimConductivity; 1
 embdimO2;   opts$PRE.embdimO2;  1
 embdimPO4P; opts$PRE.embdimPO4P;1
 embdimpH;   opts$PRE.embdimpH;  1
@@ -52,11 +56,3 @@ diff;       opts$PRE.diff;      1
 mvAVG;      opts$PRE.mvAVG;     1
 # how many values of differences to sum:
 depth;      opts$PRE.depth;     1
-
-# appStorm
-LAMBDA;     opts$lambda;        0
-LAMBDA2;    opts$lambda2;       0
-SEQ;        opts$seq;           0
-SEQ2;       opts$seq2;          0
-EMBDIM;     opts$embdim;        0
-EMBDIM2;    opts$embdim2;       0

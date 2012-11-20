@@ -1,4 +1,9 @@
 ######################################################################################
+#----- deprecated, only for downward compatibility. For actual runs, a simple
+#-----   bst <- envT$bst
+#-----   res <- envT$res
+#----- should be sufficient.
+#
 # tdmGetObj: 
 #
 #- Helper fct to get \code{bst} or \code{res} object from \code{envT}.

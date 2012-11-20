@@ -158,12 +158,49 @@ tdmModAdjustSampsize <- function(samp, to.model, response.variable, opts) {
 }
 
 ######################################################################################
-# adjust cutoff (optional parameter for Random Forest)
+# adjust cutoff (optional parameter for Random Forest and SVM)
 #   a) if length(cutoff)=n.class-1,  add cutoff[n.class] as the remainder to 1.
 #   b) if sum(cutoff) != 1, scale it to 1
 #   c) if sum(cutoff) > 1 by a small amount (<=1e-8), reduce it to 1 or smaller.
 ######################################################################################
 tdmModAdjustCutoff <- function(cutoff,n.class)
+{
+    if (!is.null(cutoff)) {
+      if (length(cutoff)==n.class-1) cutoff=c(cutoff,-1);   # assume that the last element is to adjusted as remainder to 1
+      if (length(cutoff)!=n.class) stop(sprintf("length(cutoff) differs from n.class=%d. cutoff = ",n.class),sprintf("%7.3f ",cutoff));
+      w = which(cutoff<0);
+      if (length(w)>1) stop("cutoff has more than one element < 0. cutoff = ",sprintf("%7.3f ",cutoff));
+      if (length(w)==1) {
+          s = sum(cutoff[-w]);
+          if (s>=1) cutoff=cutoff/s*(1-1/n.class);
+          cutoff[w] = 1-sum(cutoff[-w]);
+      }
+      if (abs(sum(cutoff)-1)>1e-8) cutoff = cutoff/sum(cutoff);
+      #
+      # Due to rounding inaccurarcies, it can happen that sum(cutoff)=1+ 2.2e-16,
+      # i.e. slightly larger than 1. randomForest does not allow this,
+      # sum(cutoff) may not be larger than 1. The following code enforces this
+      # by modifying cutoff as little as possible:
+      eps = sum(cutoff)-1;
+      if (eps>0) {
+        if (eps>1e-8) stop("Something wrong with eps");
+        eps = max(1.5*eps,1e-10);
+        cutoff = cutoff-eps/n.class;
+        if (sum(cutoff)>1) stop("Something wrong, sum(cutoff) is still >1 ");
+      }
+    }
+
+    cutoff;
+}
+
+#--- the old, now deprecated version ----------------
+######################################################################################
+# adjust cutoff (optional parameter for Random Forest and SVM)
+#   a) if length(cutoff)=n.class-1,  add cutoff[n.class] as the remainder to 1.
+#   b) if sum(cutoff) != 1, scale it to 1
+#   c) if sum(cutoff) > 1 by a small amount (<=1e-8), reduce it to 1 or smaller.
+######################################################################################
+tdmModAdjustCutoff.OLD <- function(cutoff,n.class)
 {
     if (!is.null(cutoff)) {
       if (length(cutoff)!=n.class) {
@@ -182,12 +219,13 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
         if (eps>1e-8) stop("Something wrong with eps");
         eps = max(1.5*eps,1e-10);
         cutoff = cutoff-eps/n.class;
-        if (sum(cutoff)>1) stop("Something wrong, sum(cutoff) still >1 ");
+        if (sum(cutoff)>1) stop("Something wrong, sum(cutoff) is still >1 ");
       }
     }
 
     cutoff;
 }
+
 ######################################################################################
 # tdmModSortedRFimport:
 #
@@ -240,7 +278,10 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
     ptm <- proc.time();
     filename <- opts$filename;
     dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
-    if (!file.exists(dir.output)) dir.create(dir.output);     
+    if (!file.exists(dir.output)) {
+      success = dir.create(dir.output);     
+      if (!success) stop(sprintf("Could not create dir.output=%s",dir.output));
+    }
     SRF.file <- paste(paste(dir.output,filename,sep="/"),"SRF",response.variable,"Rdata",sep=".")
     
 
@@ -276,9 +317,10 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
         #dbg_chase_cutoff_bug(formul,to.model,d_train,response.variable,rf.options,opts);
 #print(.Random.seed[1:6]);
         flush.console();
-        res.SRF <- NULL;        
+        res.SRF <- NULL;      
         eval(parse(text=paste("res.SRF <- randomForest( formul, data=to.model,",rf.options,")")));
-        res.SRF$imp1 <- importance(res.SRF, type=1);      # select MeanDecreaseAccuracy-importance (NEW, with switch 'importance=TRUE' above)
+        # select MeanDecreaseAccuracy-importance (NEW 05/11, together with switch 'importance=TRUE' above)
+        res.SRF$imp1 <- importance(res.SRF, type=1, scale=opts$SRF.scale);      
 #print(.Random.seed[1:6]);
         
         # only for debug or in-depth-analysis:
@@ -322,11 +364,14 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       
       s_input <- input.variables[order(imp1,decreasing=TRUE)]  # input.variables sorted by increasing importance
       s_imp1 <- imp1[order(imp1,decreasing=TRUE)]
-      cat1(opts,filename,": Saving sorted RF importance to file", SRF.file, "...\n")
-      save(file=SRF.file,s_input,s_imp1,input.variables); #,accum_imp1);
+      if (opts$fileMode) {
+        cat1(opts,filename,": Saving sorted RF importance to file", SRF.file, "...\n")
+        save(file=SRF.file,s_input,s_imp1,input.variables); #,accum_imp1);
+      }
     } 
     else {
       cat1(opts,filename,": Loading sorted RF importance from file", SRF.file, "...\n")
+      if (!file.exists(SRF.file)) stop(sprintf("tdmModSortedRFimport: SRF.file=%s does not exist"));   
       load(file=SRF.file);
     } # if (opts$SRF.calc)
     
@@ -392,14 +437,15 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       tdmGraphicNewWin(opts)
       par(mar=c(20,3,2,2)+0.1)
       barplot(t(s_imp1[1:maxS]), names.arg=s_input[1:maxS], las=3, cex.lab=0.75, col=2, main=paste(filename, response.variable, sep=" : "))
-      tdmGraphicCloseWin(opts);
       par(mar=c(5,4,4,4) + 0.1)   # reset to standard (for multi-page PDF graphic device)
+      tdmGraphicCloseWin(opts);
       if (opts$SRF.calc==TRUE & opts$SRF.method=="RFimp") {
         tdmGraphicNewWin(opts)
         varImpPlot(res.SRF,n.var=maxS)    # NEW: plot both MeanDecreaseAccuracy and MeanDecreaseGini
         tdmGraphicCloseWin(opts);
       }
     }
+
 
     SRF = list(input.variables=input.variables
               , s_input=s_input
@@ -466,7 +512,7 @@ analyzeImportance <- function(res.SRF,input.variables,opts)  {
     for (v in impOneVar[1:min(length(impOneVar),6)])  cat(sprintf("%s: %d  %f\n", v,length(which(splitLst==v)),res.SRF$imp1[rownames(res.SRF$imp1)==v]))
     avg=0;  for (v in impOneVar) avg = avg + length(which(splitLst==v)); 
     cat("Avg. count:", avg/length(impOneVar),"\n");
-browser()        
+#browser()        
 }
 
 ######################################################################################
@@ -656,7 +702,10 @@ tdmModConfmat <- function(d,colreal,colpred,opts,predProb=NULL)
 dbg_chase_cutoff_bug <- function(formul,to.model,d_train,response.variable,rf.options,opts) {
   print2(opts,c(Targets=NA,table(to.model[,response.variable])))
   dir.Rdata <- paste(dirname(opts$dir.Rdata),basename(opts$dir.Rdata),sep="/")  # remove trailing "/", if it exists
-  if (!file.exists(dir.Rdata)) dir.create(dir.Rdata);     
+  if (!file.exists(dir.Rdata)) {
+    success = dir.create(dir.Rdata);     
+    if (!success) stop(sprintf("Could not create dir.Rdata=%s",dir.Rdata));
+  }
   save(formul,to.model,response.variable,rf.options,opts,file=paste(dir.Rdata,"rf_input_dbg.Rdata",sep="/"));
   cat1(opts,"RF-debug-data saved to", paste(dir.Rdata,"rf_input_dbg.Rdata",sep="/"),"\n");
   if (!is.null(opts$SRF.cutoff))

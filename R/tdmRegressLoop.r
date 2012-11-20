@@ -30,23 +30,25 @@
 #'       \item{R_train}{ RMAE / RMSE on training set (vector of length NRUN), depending on opts$rgain.type=="rmae" or "rmse"}
 #'       \item{S_train}{ RMSE on training set (vector of length NRUN)}
 #'       \item{T_train}{ Theil's U for RMAE on training set (vector of length NRUN)}
-#'       \item{*_test}{ --- similar, with test set instead of training set}
+#'       \item{*_test}{ --- similar, with test set instead of training set ---  }
+#'       \item{Err}{ }
+#'       \item{predictions}{ last run: data frame with dimensions [nrow(dset),length(response.variable)]. In case of CV, all 
+#'              validation set predictions (for each record in dset), in other cases mixed validation / train set predictions.  }
 #    }
 #'
 #' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmClassifyLoop}}, \code{\link{tdmClassify}}
-#' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
+#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Sep'2010 - Jun'2012
 #' @aliases TDMregressor 
 #' @example demo/demo01cpu.r
 #' @export
 ######################################################################################
 tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
   	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
-    if (is.null(opts$NRUN)) opts$NRUN=1;
-    if (is.null(opts$GD.RESTART)) opts$GD.RESTART=TRUE;
+    if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmClass");
 
     R_train <- R_test <- T_train <- T_test <- NULL       # reserve names (dynamic extension of
     S_train <- S_test <- NULL                            # these vectors at and of for-i-loop)
-
+    Err <- NULL
     for (i in 1:opts$NRUN) {
         if (opts$NRUN>1) {
           if (opts$GD.RESTART) tdmGraphicCloseDev(opts);
@@ -69,49 +71,82 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
           set.seed(newseed);  # if you want reproducably the same training/test sets,
         }                     # but different for each run i and each repeat (opts$rep)
 
-        cvi <- tdmModCreateCVindex(dset,response.variables,opts)
-        nfold = max(cvi)
-
-#--- very probably obsolete now with MOD.SEED ---
-#        # if the seed was fixed above, set it here again to a random value:
-#        # (use different random numbers for each RF run)
-#        if (!is.null(opts$TST.SEED)) set.seed(as.integer(Sys.time()));
+        cvi <- tdmModCreateCVindex(dset,response.variables,opts);
+        nfold = max(cvi,1);     # Why ',1'? - In the special case where all records belong to train sample (max(cvi)=0), we want 
+                                # to have exactly one fold  (one pass through k-loop) and NOT k in { 1, 0 }
 
         #=============================================
         # PART 4: MODELING, EVALUATION, VISUALIZATION
         #=============================================
-        allerr = NULL;
+        alltrn = alltst = NULL;
+        predictions <- as.data.frame(0*dset[,response.variables]);
+        names(predictions) <- response.variables;
         for (k in 1:nfold) {
             opts$k=k;
             opts$the.nfold = nfold;
-            d_test  <- dset[cvi==k, ]             # test set
-            d_train <- dset[cvi!=k & cvi>=0, ]    # training set (disregard records with cvi<0)
+            d_test  <- dset[cvi==k, ];             # validation set
+            d_train <- dset[cvi!=k & cvi>=0, ];    # training set (disregard records with cvi<0)
+            ntst=nrow(d_test);
+            ntrn=nrow(d_train);
+
+            if (opts$PRE.PCA.npc>0 | opts$PRE.PCA!="none") {
+              # a) do PCA on the numeric variables of d_train, if opts$PRE.PCA!="none"
+              # b) add monomials of degree 2 for the first opts$PRE.PCA.npc numeric variables
+              # c) apply this PCA and monomials to d_test and d_dis in the same way
+              other.variables <- setdiff(input.variables,opts$PRE.PCA.numericV);
+              pca <- tdmPrePCA.train(d_train,opts);                 # see tdmPreprocUtils.r
+              d_train <- pca$dset;
+              d_test <- tdmPrePCA.apply(d_test,pca$pcaList,opts,d_train)$dset;
+              d_dis <- tdmPrePCA.apply(d_dis,pca$pcaList,opts,d_train)$dset;
+
+              input.variables <- union(pca$numeric.variables,other.variables);
+              opts$PRE.SFA.numericV <- pca$numeric.variables;
+              if (length(setdiff(input.variables,names(d_train)))>0) 
+                  stop("Some elements of input.variables are not columns of d_train");
+            }
 
             res <- tdmRegress(d_train,d_test,response.variables,input.variables,opts)
             #res <- regress_lm(d_train,d_test,response.variables,input.variables,opts)
 
             cat1(opts,sprintf("k=%d  res$rmae$train=%7.5f  res$rmae$test=%7.5f\n",k,res$rmae$train,res$rmae$test))
-            allerr = rbind(allerr,as.data.frame(list(rmae.trn=res$rmae$train
-                                                    ,rmae.tst=res$rmae$test
-                                                    ,rmse.trn=res$rmse$train
-                                                    ,rmse.tst=res$rmse$test
-                                                    ,rmae.Theil.trn=res$rmae$Theil.train
-                                                    ,rmae.Theil.tst=res$rmae$Theil.test
+            alltrn = rbind(alltrn,as.data.frame(list(rmae.trn=res$rmae$train * ntrn
+                                                    ,rmse.trn=res$rmse$train * ntrn
+                                                    ,made.trn=res$rmae$made.tr * ntrn
+                                                    ,rmae.Theil.trn=res$rmae$Theil.train * ntrn
+                                                    ,ntrn=ntrn
                                                     )));
+            alltst = rbind(alltst,as.data.frame(list(rmae.tst=res$rmae$test * ntst
+                                                    ,rmse.tst=res$rmse$test * ntst
+                                                    ,made.tst=res$rmae$made.te * ntst
+                                                    ,rmae.Theil.tst=res$rmae$Theil.test * ntst
+                                                    ,ntst=ntst
+                                                    )));
+            predictions[cvi==k,response.variables] <- res$d_test[,paste("pred_",response.variables,sep="")];
+            if (!(opts$TST.kind=="cv")) {
+              predictions[cvi!=k & cvi>=0,response.variables] <- res$d_train[,paste("pred_",response.variables,sep="")];
+            } 
         } # for (k)
-        Err = colSums(allerr)/nfold     # assumes that each fold has the same (or nearly the same) size
+        
+        # each measure is a weighted average over folds, weighted with #cases in each fold:
+        Err = rbind(Err,c(colSums(alltrn)/sum(alltrn$ntrn),colSums(alltst)/sum(alltst$ntst)));
+        Err[i,"ntrn"]=ifelse(opts$TST.kind=="cv",nrow(dset),nrow(d_train));   # the number of distinct cases 
+        Err[i,"ntst"]=ifelse(opts$TST.kind=="cv",nrow(dset),nrow(d_test));    # used for this line of measures
 
-        cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV",""),"RMAE on training set   ",Err["rmae.trn"]*100,"%\n")
-        cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV",""),"RMAE on     test set   ",Err["rmae.tst"]*100,"%\n\n")
+        col.trn = paste(opts$rgain.type,".trn",sep="");
+        col.tst = paste(opts$rgain.type,".tst",sep="");
+        cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV",""),opts$rgain.string,"on training set   ",Err[i,col.trn],"\n")
+        cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV",""),opts$rgain.string,"on     test set   ",Err[i,col.tst],"\n\n")
 
-        R_train[i] = Err["rmae.trn"];
-        if (opts$rgain.type=="rmse") R_train[i] = Err["rmse.trn"];
-        S_train[i] = Err["rmse.trn"];
-        T_train[i] = Err["rmae.Theil.trn"];
-        R_test[i] = Err["rmae.tst"]
-        if (opts$rgain.type=="rmse") R_test[i] = Err["rmse.tst"];
-        S_test[i] = Err["rmse.tst"]
-        T_test[i] = Err["rmae.Theil.tst"]
+        R_train[i] = Err[i,col.trn];
+        #if (opts$rgain.type=="rmse") R_train[i] = Err["rmse.trn"];
+        #if (opts$rgain.type=="made") R_train[i] = Err["made.trn"];
+        S_train[i] = Err[i,"rmse.trn"];
+        T_train[i] = Err[i,"rmae.Theil.trn"];
+        R_test[i] = Err[i,col.tst];
+        #if (opts$rgain.type=="rmse") R_test[i] = Err["rmse.tst"];
+        #if (opts$rgain.type=="made") R_test[i] = Err["made.tst"];
+        S_test[i] = Err[i,"rmse.tst"]
+        T_test[i] = Err[i,"rmae.Theil.tst"]
 
         #=============================================
         # PART 5: SOME MORE GRAPHICS
@@ -145,6 +180,8 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
               	, T_test = T_test
               	, S_train = S_train
               	, S_test = S_test
+              	, Err = Err
+              	, predictions = predictions
               	);
     class(result) <- c("TDMregressor", "TDM")     # this causes > result; or > print(result);
                                                   # NOT to print out the whole list (might be very long!!)
@@ -202,7 +239,7 @@ tdmRegressSummary <- function(result,opts,dset=NULL)
       result$y=y;             # the score (to be minimized by SPOT) is "RMAE test set"
       result$sd.y=sd(result$R_test);
     }
-    cat1(opts,sprintf("%s  Test    RMAE: %7.3f",ifelse(opts$TST.kind=="cv","CV ",""),y));
+    cat1(opts,sprintf("%s  Vali    RMAE: %7.3f",ifelse(opts$TST.kind=="cv","CV ",""),y));
     cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_test)),""));
     cat1Records(nrow(res$d_test));
 

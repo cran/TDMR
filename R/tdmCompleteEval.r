@@ -8,7 +8,7 @@
 #' of \code{tdm$unbiasedFunc} (as many as \code{tdm$umode} has elements). Usually, \code{tdm$unbiasedFunc = \link{unbiasedRun}}.
 #'
 #Details:
-#' Tuning is skipped if the \code{.conf} file does not appear in \code{spotList} or if \code{!(spotStep=="auto")}. In this
+#' Tuning is skipped if the \code{.conf} file does not appear in \code{spotList} or if \code{spotStep!="auto"}. In this
 #' case it is assumed then that the appropriate \code{.bst} and \code{.res} files exist already.
 #'
 #' The available tuning algorithms (tuners) are 
@@ -43,8 +43,10 @@
 #'          \code{\link{cmaesTuner}}, \code{\link{lhdTuner}}, \code{\link{bfgsTuner}}, \code{\link{powellTuner}}   }
 #'     \item{\code{unbiasedFunc}}{name of the function for unbiased evaluations to call}
 #'     \item{\code{umode}}{a vector of strings containing the unbiased resampling strategies
-#'          to execute \code{"RSUB", "TST", "CV", "SP_T"}, see \code{\link{unbiasedRun}} }
-#'     \item{\code{finalFile}}{filename where to save \code{envT$theFinals}}
+#'          to execute \code{"RSUB", "TST", "CV", "SP_T"}, see \code{\link{unbiasedRun}}   }
+#'     \item{\code{fileMode}}{[TRUE]: see "Note" section} 
+#'     \item{\code{finalFile}}{filename where to save \code{envT$theFinals}, only relevant for \code{tdm$fileMode==TRUE}}
+#'     \item{\code{experFile}}{filename where to append \code{envT$theFinals}, only relevant for \code{tdm$fileMode==TRUE}}
 #'     \item{\code{withParams}}{[length(runList)==1] Boolean, if \code{=TRUE}: include best parameters as columns in output \code{envT$theFinals}.  
 #'			    If \code{=FALSE}: don't (this is appropriate if \code{runList} combines several .conf files which differ in their parameters)}
 #'     \item{\code{timeMode}}{ [1] see \code{\link{tdmDefaultsFill}}   }
@@ -62,10 +64,10 @@
 #'      \item{bstGrid}{  list with data frames \code{bst} from all tuning runs. Use \cr
 #'            \code{envT$getBst(confFile,nExp,theTuner)}  \cr
 #'        to retrieve a specific \code{bst}. }
-#'      \item{theFinals}{ data frame with one line for each triple \code{confFile,nExp,tuner}, each line contains summary
+#'      \item{theFinals}{ data frame with one line for each triple \code{(confFile,nExp,tuner)}, each line contains summary
 #'        information about the tuning run in the form: \cr
 #'            \code{confFile tuner nExp [params] NRUN NEVAL RGain.bst RGain.* sdR.*} \cr
-#'        \code{[params]} is written depending on \code{tdm$withParams}. \cr
+#'        where \code{[params]} is written depending on \code{tdm$withParams}. \cr
 #'        \code{NRUN} is the number of unbiased evaluation runs. \cr
 #'        \code{NEVAL} is the number of function evaluations (model builds) during tuning. \cr
 #'        \code{RGain} denotes the relative gain on a certain data set: the actual gain achieved with the model 
@@ -104,11 +106,14 @@
 #'   More precisely: If \code{tdm$fileMode==TRUE} and we tune with \code{tuneMethod="lhd"} while performing  the 3rd experiment 
 #'   for \code{.conf} file \code{cpu_01.conf}, then the \code{.res} file \code{lhd/cpu_01_lhd_03.res} is written relative to the directory 
 #'   of \code{.conf} file. Analoguously for \code{.bst} file.  \cr
+#'   If \code{tdm$finalFile==NULL}, then it is set to \code{sub(".conf",".fin",runList[1]}.  \cr
+#'   If \code{tdm$experFile==NULL}, then nothing is appended to \code{tdm$experFile}.
 #'
-#' Example usages of function tdmCompleteEval are shown in demo/demo03sonar.r, demo/demo03sonar_B.r and demo/demo04cpu.r, accessible via \cr
+#' Example usages of function \code{tdmCompleteEval} are shown with \cr
 #' \code{   demo(demo03sonar)},\cr 
 #' \code{   demo(demo03sonar_B)} and \cr
-#' \code{   demo(demo04cpu)} 
+#' \code{   demo(demo04cpu)} \cr
+#' where the corresponding R-sources are in directory \code{demo}.
 #'
 #' @example      demo/demo03sonar.r
 #'
@@ -118,86 +123,28 @@
 ######################################################################################
 tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
   tdm <- tdmDefaultsFill(tdm);
-  if (is.null(tdm$finalFile)) tdm$finalFile <- sub(".conf",".fin",runList[1],fixed=TRUE);
   if (is.null(spotList)) spotList <- runList;
-  tdm$wP <- ifelse(is.null(tdm$withParams), length(runList)==1, tdm$withParams)
+  tdm$runList = runList;
+  tdm$spotList = spotList;
+  if (is.null(tdm$finalFile)) tdm$finalFile <- sub(".conf",".fin",tdm$runList[1],fixed=TRUE);
 
-  envT <- new.env();      # The environment envT is passed by reference into the inner functions
-                          # which means that it can be used a) to transport information back from
-                          # those inner functions and b) to transport information to and back even 
-                          # for functions like tdmStartOther which are not allowed to have envT in 
-                          # their argument list
-                          
-  envT$bstGrid <- list();
-  envT$resGrid <- list();
-  envT$sCList <- list();
-  envT$theFinals <- NULL;
-  envT$runList <- runList;
-  envT$tdm <- tdm;
-  # envT$getInd: private helper fct for envT$getBst and envT$getRes
-  envT$getInd <- function(confFile,nExp,theTuner) {
-    indTuner = which(envT$tdm$tuneMethod==theTuner);
-    if (length(indTuner)==0) stop(paste("Could not find tuner ",theTuner,"in tdm$tuneMethod"));
-    nConf = which(envT$runList==confFile);
-    if (length(nConf)==0) stop(paste("Could not find conf file ",confFile,"in envT$runList"));
-    if (nExp<1 | nExp>tdm$nExperim) stop(paste("nExp is not in range {1,...,",tdm$nExperim,"}",sep=""));
-    ind = indTuner + length(tdm$tuneMethod)*((nExp-1) + tdm$nExperim*(nConf-1));
-  }
-  # envT$getBst: return from the linear list envT$bstGrid the data frame bst for the triple {confFile,nExp,theTuner}
-  envT$getBst <- function(confFile,nExp,theTuner) {
-    ind = envT$getInd(confFile,nExp,theTuner);
-    envT$bstGrid[[ind]];
-  }
-  # envT$getRes: return from the linear list envT$resGrid the data frame res for the triple {confFile,nExp,theTuner}
-  envT$getRes <- function(confFile,nExp,theTuner) {
-    ind = envT$getInd(confFile,nExp,theTuner);
-    envT$resGrid[[ind]];
-  }
-  nTuner <- length(tdm$tuneMethod);
-  nRunList <- length(runList);
+  envT <- tdmEnvTMakeNew(tdm); # The environment envT is passed by reference into the inner functions
+                            # which means that it can be used a) to transport information back from
+                            # those inner functions and b) to transport information to and back even 
+                            # for functions like tdmStartOther which are not allowed to have envT in 
+                            # their argument list
 
-  #
-  # do all necessary file reading **before**  branching into completeEvalConfNexpTuner
-  # (completeEvalConfNexpTuner can be in parallel execution branch, where file access might be not possible)
-  #
-  k=0;
-  for (confFile in runList) {
-    k=k+1;
-    pathConfFile = paste(tdm$path,confFile,sep="");
-    if (!file.exists(pathConfFile)) stop(sprintf("Could not find confFile=%s (current dir=%s)",pathConfFile,getwd()));
-    envT$sCList[[k]] <- spotGetOptions(srcPath=tdm$theSpotPath,pathConfFile);
-    sC <- envT$sCList[[k]]; print(sC$spot.seed); 
-    tdm$wP <- checkRoiParams(tdm$wP,confFile,sC,envT);
-    pdFile = sC$io.apdFileName;
-  	print(pdFile);	
-    pdFile = paste(tdm$path,pdFile,sep="");
-    if (!file.exists(pdFile)) stop(sprintf("Could not find pdFile=%s (current dir=%s)",pdFile,getwd()));
-    opts <- NULL;     # just to make 'R CMD check' happy  (and in case that after sourcing pdFile 'opts' is not there as expected)
-  	source(pdFile,local=TRUE);        # read problem design  (here: all elements of list opts)   
-		if (is.null(opts))
-		  warning(sprintf("%s does not define the required object opts.",pdFile));  	
-#    if (tdm$parallelCPUs>1 & sC$spot.fileMode) {
-#      warning(sprintf("%s: Should not have spot.fileMode==TRUE in parallel execution. spot.fileMode is set to FALSE.",confFile));
-#      envT$sCList[[k]]$spot.fileMode=FALSE;
-#    }
-    if (!is.null(tdm$TST.trnFrac)) opts$TST.trnFrac=tdm$TST.trnFrac;
+  tdm <- tdmMapDesLoad(tdm);
 
-    opts=tdmOptsDefaultsSet(opts,path=tdm$path);
- 	  envT$sCList[[k]]$opts=opts;
-  }
-  rm("roiNames1",envir=envT);    # delete this helper var (was needed only temporarily by checkRoiParams above)
-
-  tdmMapDesLoad(envT,tdm); 
-  tdmMapDesSpot$load(tdm); 
-  #envT$wP <- wP;
   if (!is.null(tdm$mainFile)) source(tdm$mainFile);           # deprecated (sourcing main_TASK should be done in caller of tdmCompleteEval)
+  nTuner <- length(tdm$tuneMethod);
+  nRunList <- length(tdm$runList);
 
-  if (tdm$parallelCPUs>1) {
-    if (!exists(".Random.seed")) set.seed(42);
-    sfExport(list=c(".Random.seed","tdmMapDesSpot",tdm$mainFunc));
-  }
-  
-	#
+  # 
+  # if tdm$parallelCPUs>1, set up everything for parallel execution
+  #
+  if (tdm$parallelCPUs>1) prepareParallelExec(tdm);
+
 	# depending on tdm$parallelCPUs, the following lines execute the code either in parallel 
 	# or sequential: For each value of indVec the function completeEvalConfNexpTuner is 
 	# called. The vectors tuneVec, expeVec, confVec contain for each element of indVec the
@@ -207,29 +154,29 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
 	indVec <- 1:(tdm$nExperim*nTuner*nRunList);
 	tuneVec <- rep(tdm$tuneMethod,tdm$nExperim*nRunList);
 	expeVec <- rep(sort(rep(1:tdm$nExperim,nTuner)),nRunList);
-	confVec <- sort(rep(runList,tdm$nExperim*nTuner));
+	confVec <- sort(rep(tdm$runList,tdm$nExperim*nTuner));
 	if (length(indVec)==1 & tdm$parallelCPUs>1) {
 	  warning("There is only one job (length(indVec)==1) --> snowfall would not run, so we set tdm$ParallelCPUs=1");
 	  tdm$parallelCPUs=1;
   }
+
   if (tdm$parallelCPUs>1) {
-    sappResult <- sfSapply(indVec, fun=completeEvalConfNexpTuner, tuneVec,expeVec,confVec,spotList,spotStep,envT,tdm);
+    sappResult <- sfSapply(indVec, fun=completeEvalConfNexpTuner, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
   } else {  		
-		sappResult <- sapply(indVec, completeEvalConfNexpTuner, tuneVec,expeVec,confVec,spotList,spotStep,envT,tdm);
+		sappResult <- sapply(indVec, completeEvalConfNexpTuner, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
   }
   # populate envT with the results returned in matrix sappResult:
-  populateEnvT(sappResult,envT,tdm);
+  populateEnvT(sappResult,envT,tdm);              # see tdmBigLoop.r
   
   ### The older version had a triple for-loop:
-  #   for (confFile in runList) {
+  #   for (confFile in tdm$runList) {
   #    for (nExp in 1:tdm$nExperim) {    
   #     for (theTuner in tdm$tuneMethod) { 
   #
   #    } # for (theTuner)
   #   } # for (nExp)
   #  } # for (confFile)
-
-  saveEnvT(envT,runList,tdm$filenameEnvT);
+  saveEnvT(envT,tdm$runList,tdm$filenameEnvT);    # see tdmBigLoop.r
   
   print(envT$theFinals);
 
@@ -271,13 +218,18 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
           tConfFile <- confFile;
           tRoiFile <- sC$io.roiFileName;                                        
         }
+
         sC <- spotGetOptions(srcPath=tdm$theSpotPath,tConfFile);
               # this configures sC$io.bstFileName and sC$io.resFileName with the right endings 
               # (matching to tConfFile); therefore confFile itself should NOT define these filenames (!)
         sC$io.roiFileName <- tRoiFile;
         sC$opts <- envT$sCList[[nConf]]$opts;
         envT$spotConfig <- sC;
+        envT$spotConfig$spot.fileMode <- tdm$fileMode;
 
+        #
+        # this is the preferred place to read the data and split them into test data and train/vali data
+        #
         dataObj <- tdmSplitTestData(sC$opts,tdm,nExp);
         if (!is.null(dataObj)) envT$spotConfig$opts$TST.COL = dataObj$TST.COL;    # this column has to be subtracted in main_* from the input variables
 
@@ -288,8 +240,7 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
           # If those subdir files don't exist, we assume that .bst and .res file found in 
           # the current dir are the right ones.
           copyFromTunedir(theTuner,sC$io.resFileName);
-          copyFromTunedir(theTuner,sC$io.bstFileName);
-     
+          copyFromTunedir(theTuner,sC$io.bstFileName);  
           if (confFile %in% spotList) {
               
               cat(sprintf("*** Starting TUNER %s, spotStep=%s, on task %s ***\n",theTuner,spotStep[i],tConfFile));
@@ -300,7 +251,7 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
               # but instead writes the corresponding .bst and .res file, then as a 2nd option
               # these results are fetched below with the tdmGetObj-calls and put into envT. 
               # This 2nd option can of course only work if tdm$fileMode==TRUE)
-              
+
               if (spotStep=="auto") {
                 # copy .bst and .res files (they contain new results) into the right subdir:
                 copyToTunedir(theTuner,sC$io.resFileName);
@@ -321,11 +272,12 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
               # tdmDispatchTuner puts its results in envT$bst, envT$res and returns the (extended) spotConfig in envT$tunerVal
              
         } # if(tdm$fileMode)        
+        
         #
         # now we have envT$bst and envT$res filled in any case (either from tdmDispatchTuner or from file)
         #
         
-        time.txt = c("Proc", "", "Elapsed");
+        time.txt = c("Proc", "System", "Elapsed");
         time.TRN=(proc.time()-ptm)[tdm$timeMode]; opts=list(); opts$VERBOSE=1;  
         cat1(opts,paste(time.txt[tdm$timeMode], "time for tuning with tdmDispatchTuner:",time.TRN,"sec\n"));     
         
@@ -333,12 +285,11 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
         finals <- NULL;
         for (umode in tdm$umode) {
           cat("*** starting",tdm$unbiasedFunc,"for",tConfFile,"with umode=",umode,"***\n");
-          cmd=paste("finals <-",tdm$unbiasedFunc,"(tConfFile,envT,dataObj,umode=umode,finals=finals,withParams=tdm$wP,tdm=tdm)",sep="");
+          cmd=paste("finals <-",tdm$unbiasedFunc,"(tConfFile,envT,dataObj,umode=umode,finals=finals,withParams=envT$wP,tdm=tdm)",sep="");
           eval(parse(text=cmd));
         }
         time.TST=(proc.time()-ptm)[tdm$timeMode];   
         cat1(opts,paste(time.txt[tdm$timeMode], "time for",tdm$unbiasedFunc,":",time.TST,"sec\n"));   
-
         finals <- cbind(finals,Time.TST=time.TST,Time.TRN=time.TRN);  
         
         if (tdm$fileMode) {  
@@ -381,75 +332,6 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
   		#------------------------------------------------------------------------------------------------------
 
 ######################################################################################
-# helper fct for tdmCompleteEval: 
-#     Populate the global envT after parallel execution  with snowfall (sfSapply with results in sappResult).
-#     For simplicity we use it also after sequential execution (sapply with results in sappResult). 
-populateEnvT <- function(sappResult,envT,tdm) {
-      nGrid = length(envT$bstGrid);
-      for (ind in 1:(tdm$nExperim*length(tdm$tuneMethod)*length(envT$runList))) {
-          nGrid = nGrid+1;
-          envT$bstGrid[[nGrid]] <- as.data.frame(sappResult["bst",ind][[1]]);
-          envT$resGrid[[nGrid]] <- as.data.frame(sappResult["res",ind][[1]]);   
-          envT$theFinals <- rbind(envT$theFinals,as.data.frame(sappResult["theFinals",ind][[1]]));
-          # "[[1]]" is necessary to avoid prefix "theFinals." in the header names 
-      }
-      rownames(envT$theFinals) <- (1:nrow(envT$theFinals));
-      envT$bst <- as.data.frame(sappResult["bst",ncol(sappResult)][[1]]);
-      envT$res <- as.data.frame(sappResult["res",ncol(sappResult)][[1]]);
-      envT$tunerVal <- sappResult["tunerVal",ncol(sappResult)][[1]];    # last tuning result
-      envT$result <- sappResult["result",ncol(sappResult)][[1]];        # last tuning result
-}
-
-######################################################################################
-# helper fct for tdmCompleteEval: 
-#     Save a small version of environment envT (passed in as thisEnvT) on filenameEnvT
-#     (if NULL, use <runList[1]>.rda)
-saveEnvT <- function(thisEnvT,runList,filenameEnvT=NULL) {
-      envT = list() # new.env(); #            # when saving thisEnvT, we copy the relevant elements to a *list* envT
-                                              # and skip the function elements (getBst,getInd,getRes) in envT, because 
-                                              # they would also save *their* environment which tends to make the .rda file rather big
-      for (ele in setdiff(ls(thisEnvT),c("getBst","getInd","getRes"))) 
-        eval(parse(text=paste("envT$",ele," = thisEnvT$",ele,sep="")));
-                                              # for the save on .rda file we delete also some potentially voluminous elements 
-      envT$result$lastRes$d_train=NULL;       # from the local envT, we want only res and bst objects + describing vars ...
-      envT$result$lastRes$d_test=NULL;
-      envT$result$lastRes$d_dis=NULL;
-      envT$result$lastRes$lastProbs=NULL;
-      envT$result$lastRes$lastModel=NULL;
-      envT$tunerVal$seq.modelFit=NULL;        # this can be quite big in the case of spotPredictRandomForest
-      envT$result$dset=NULL;
-      envT$result$TST=NULL;
-      envT$spotConfig=NULL;     # versions of spotConfig are contained in envT$sCList[[i]] and envT$tunerVal
-      envT$theTuner=NULL;
-      envT$nExp=NULL;           # see envT$tdm$nExperim for number of experiments
-      if (is.null(filenameEnvT)) filenameEnvT=sub(".conf",".RData",runList[1],fixed=TRUE);
-
-      save(envT,file=filenameEnvT);              
-                                              # ... but we leave thisEnvT (which is envT in tdmCompleteEval) untouched
-                                              #     and thus return the full envT environment to the caller of tdmCompleteEval
-}
-
-######################################################################################
-# helper fct for tdmCompleteEval:
-#     Check whether each .roi file in envT$runList contains the same design parameters, otherwise set wP=FALSE and issue a warning 
-checkRoiParams <- function(wP,confFile,sC,envT) {
-      if (wP) {
-        if (confFile==envT$runList[1]) {
-          envT$roiNames1 = rownames(sC$alg.roi);
-        } else {
-          roiNames = rownames(sC$alg.roi);
-          if (length(roiNames)!=length(envT$roiNames1)) {
-            wP=FALSE;
-          } else {
-            if (any(roiNames!=envT$roiNames1)) wP=FALSE;
-          }
-        }
-        if (wP==FALSE) warning("The design parameters in differents ROI files are different --> TDMR sets tdm$withParams to FALSE (no param columns in envT$theFinals)");      
-      }
-      wP;
-}
-  
-######################################################################################
 # some helper fcts for tdmCompleteEval needed only in case tdm$fileMode==TRUE
 copyFromTunedir <- function(theTuner,File) {          
       tfile <- paste(theTuner,File,sep="/");
@@ -476,4 +358,35 @@ removeTmpfiles <- function(tConfFile) {
       }
 }
    
+#--- see function prepareParallelExec in tdmBigLoop.r ---------------------------------------------
+#######################################################################################
+## helper function for tdmCompleteEval, only needed in case tdmParallelCPUs>1 
+#  # 
+#  # set up everything for parallel execution
+#  #
+#  prepareParallelExec <- function(tdm) 
+#  {
+#    require(snow)
+#    require(snowfall)
+#    parallelCPUs = tdm$parallelCPUs;
+#    sfInit(parallel=TRUE, cpus=parallelCPUs, type="SOCK" )
+#    sfExport(list=c("tdm"))
+#    
+#    if (!exists(".Random.seed")) set.seed(42);
+#    sfExport(list=".Random.seed");
+#    sfExport(list=c(tdm$mainFunc,tdm$parallelFuncs));
+#    if (is.null(tdm$tdmPath)) {
+#        cat("sfLibrary for installed library TDMR \n");
+#        sfLibrary("TDMR",character.only=TRUE);
+#    } else {
+#        cat("Sourcing and sfExport for TDMR from R files in",tdm$tdmPath,"\n");
+#        source(paste(tdm$tdmPath,"source.tdm.r",sep="/"),local=TRUE);
+#        if (is.null(tdm$theSpotPath)) tdm$theSpotPath <- NA;
+#        if (is.null(tdm$theRsfaPath)) tdm$theRsfaPath <- NA;
+#        source.tdm(tdm$tdmPath,tdmParallelCPUs=tdm$parallelCPUs,theSpotPath=tdm$theSpotPath,theRsfaPath=tdm$theRsfaPath);
+#        sfExport(list=c("tdmRandomSeed"));
+#    }
+#  } # prepareParallelExec()
+#  
+  
 

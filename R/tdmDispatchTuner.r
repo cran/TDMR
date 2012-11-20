@@ -3,14 +3,14 @@
 ###########################################################################################
 #tdmDispatchTuner:
 #
-#'     Helper function for \code{\link{tdmCompleteEval}}.
+#'     Helper function for \code{\link{tdmBigLoop}}.
 #'
 #'     tdmDispatchTuner selects and starts the tuner specified by tuneMethod. \cr
-#'     See the 'Details' section of \code{\link{tdmCompleteEval}} for a list of available tuners
+#'     See the 'Details' section of \code{\link{tdmBigLoop}} for a list of available tuners.
 #'
 #' @param tuneMethod the tuning algorithm given as a string. Possible values are \{ "spot" | "lhd" | "cmaes" | "cma_j" | "bfgs" | "powell" \}.
 #' @param confFile the configuration file.
-#' @param spotStep which step to execute for \link{SPOT} . Values "rep" and "auto" are supported by TDMR.
+#' @param spotStep which step to execute for \link{SPOT} . Values "rep" ("report") and "auto" are supported by TDMR.
 #' @param tdm the TDMR object
 #' @param envT the environment variable
 #' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
@@ -26,7 +26,7 @@
 #'         \item \code{envT$res  } the RES data frame
 #'         \item \code{envT$bst  } the BST data frame
 #'      }
-#' @seealso   \code{\link{tdmCompleteEval}}
+#' @seealso   \code{\link{tdmBigLoop}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
 #' @export
 #' @keywords internal
@@ -37,11 +37,20 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
     if (spotStep=="auto") {
       #if (is.null(tdm$mainFile)) stop("Element tdm$mainFile is missing, but this is required for spotStep='auto'");
       if (is.null(tdm$mainFunc)) stop("Element tdm$mainFunc is missing, but this is required for spotStep='auto'");
+    }   
+    if (!is.null(envT$spotConfig$alg.currentBest)) {
+      # Fix for upgading older BST data frames to the new SPOT version (V1.0.2662): 
+      # A BST data frame now has to have a column STEP, otherwise a crash in spotWriteBest (spotHelpFunctions.R) will occur.  
+      if (!any(names(envT$spotConfig$alg.currentBest)=="STEP")) {
+        cat("NOTE: Since envT$spotConfig$alg.currentBest has no column STEP, we add for SPOT a dummy column STEP containing the numbers 1 :",nrow(envT$spotConfig$alg.currentBest),"\n");
+        envT$spotConfig$alg.currentBest <- cbind(envT$spotConfig$alg.currentBest,STEP=(1:nrow(envT$spotConfig$alg.currentBest)));
+      }
     }
+    if (tdm$fileMode==FALSE) confFile="NULL";      # everything is passed to spot() via envT$spotConfig
     
     tunerVal = switch(spotStep
-      ,"rep" = spot(confFile,spotStep,theSpotPath)
-      ,"auto" = switch(tuneMethod
+      ,"rep"=,"report"= spot(confFile,spotStep,theSpotPath,envT$spotConfig)
+      ,"auto"= switch(tuneMethod
                 ,"spot" = spotTuner(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
                 ,"lhd" = lhdTuner(confFile,spotStep,theSpotPath,tdm,envT,dataObj) 
                 ,"cmaes" = cmaesTuner(confFile,tdm,envT,dataObj)
@@ -99,8 +108,6 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
 ######################################################################################
 spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 {
-    if (tdm$fileMode==FALSE) envT$spotConfig$spot.fileMode=FALSE;
-    
     sC <- envT$spotConfig;
     #sC$alg.func <- "tdmStartSpot";
     #sC$spot.fileMode = TRUE; 
@@ -110,7 +117,8 @@ spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 
     sC <- spot(confFile,spotStep,theSpotPath,sC);
     # spot calls tdmStartSpot. 
-    # tdmStartSpot reads opts from sC$opts, dataObj from sC$dataObj, and writes sC$alg.currentResult
+    # tdmStartSpot reads opts from sC$opts, dataObj from sC$dataObj (it takes only the train-validation part), 
+    # and writes sC$alg.currentResult
 
     envT$res <- sC$alg.currentResult;
     envT$bst <- sC$alg.currentBest;	
@@ -138,7 +146,10 @@ spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 ######################################################################################
 lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 {
-    if (tdm$fileMode==FALSE) envT$spotConfig$spot.fileMode=FALSE;
+    #if (tdm$fileMode==FALSE) {
+    #  envT$spotConfig$spot.fileMode=FALSE;
+    #  confFile="NULL";
+    #}  
 
     sC <- envT$spotConfig;
     sC$tdm <- tdm;              # needed for tdm$mainFile, tdm$mainFunc, tdm$fileMode
@@ -197,7 +208,7 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
       if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
       if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
     }
-    
+
     if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
       tdmStartOther = tdm$startOtherFunc;
 
@@ -211,7 +222,7 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
     # Be aware, that control$lambda (# of offsprings) controls the # of fct calls, 
     # NOT control$mu. The number of calls to tdmStartOther will be N=ceiling(control$maxit)*control$lambda, 
     # the number of calls to the DM training fct main_TASK will be N*sC$seq.design.maxRepeats.
-    control$maxit=round(control$maxit);     # BUG FIX 05/12: if control$maxit were NOT an integer, we would get 
+    control$maxit=max(round(control$maxit),1);     # BUG FIX 05/12: if control$maxit were NOT an integer, we would get 
             # from cma_es: "Error in eigen.log[iter, ] <- rev(sort(e$values)): subscript out of bounds"
     control$diag.pop=FALSE;
     control$diag.sigma=TRUE;
@@ -323,8 +334,6 @@ cma_jTuner <- function(confFile,tdm,envT,dataObj)
     # tdmStartOther appends to data frames envT$res and envT$bst
     # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
     # Finally cma_j.r will save cma_j3.rda (the modified elements res,bst,spotConfig of envT, but not envT itself) 
-    cat(sprintf("Function calls to tdmStartOther: %d\n",tunerVal$cma$count[1]));
-    
     res <- bst <- spotConfig <- NULL;     # just to make 'R CMD check' happy  (and in case that cma_j3.rda has not the content as expected)
 		load("cma_j3.rda");         # load the things modified in envT    (spotConfig, res, bst, as saved by javabin/cma_j.r)
 		if (is.null(res) | is.null(bst) | is.null(spotConfig))
@@ -338,6 +347,7 @@ cma_jTuner <- function(confFile,tdm,envT,dataObj)
     tunerVal$cma = list()
     tunerVal$cma$sres <- sres; 
     tunerVal$cma$count=nrow(envT$res);
+    cat(sprintf("Function calls to tdmStartOther: %d\n",tunerVal$cma$count[1]));
     tunerVal;
 }
 
@@ -372,7 +382,7 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
       x;
     }
     
-    if (tdm$fileMode==FALSE) envT$spotConfig$spot.fileMode=FALSE;
+    #if (tdm$fileMode==FALSE) envT$spotConfig$spot.fileMode=FALSE;
     envT$spotConfig$alg.currentResult <- NULL;
  
     sC <- envT$spotConfig;
@@ -427,7 +437,7 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
 bfgsTuner <- function(confFile,tdm,envT,dataObj){
     #require("optimx")
     envT$spotConfig$alg.currentResult <- NULL;
-    if (tdm$fileMode==FALSE) envT$spotConfig$spot.fileMode=FALSE;
+    #if (tdm$fileMode==FALSE) envT$spotConfig$spot.fileMode=FALSE;
     sC <- envT$spotConfig;
     roiLower <- sC$alg.roi[,1];
     roiUpper <- sC$alg.roi[,2];

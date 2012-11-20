@@ -2,18 +2,20 @@
 \alias{tdmMapDesLoad}
 \title{Load the mapping files.}
 \usage{
-  tdmMapDesLoad(envT, tdm = list())
+  tdmMapDesLoad(tdm = list())
 }
 \arguments{
-  \item{envT}{environment}
-
   \item{tdm}{list, needed for \code{tdm$tdmPath} and
   \code{tdm$path}}
+}
+\value{
+  \code{tdm}, the modified list with new elements
+  \code{tdm$map} and \code{tdm$mapUser}
 }
 \description{
   Load the map files \code{"tdmMapDesign.csv"} and
   optionally also \code{"userMapDesign.csv"} and store them
-  in \code{envT$map} and \code{envT$mapUser}, resp. These
+  in \code{tdm$map} and \code{tdm$mapUser}, resp. These
   maps are used by \code{\link{tdmMapDesApply}}.  \cr
   \code{"tdmMapDesign.csv"} is searched in the TDMR library
   path \code{.find.package("TDMR")}.  (For the developer

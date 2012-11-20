@@ -1,0 +1,1950 @@
+<html>
+
+<head>
+<meta http-equiv=Content-Type content="text/html; charset=windows-1252">
+<meta name=Generator content="Microsoft Word 14 (filtered)">
+<title>Tutorial TDMR</title>
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Wingdings;
+	panose-1:5 0 0 0 0 0 0 0 0 0;}
+@font-face
+	{font-family:Cambria;
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+@font-face
+	{font-family:Calibri;
+	panose-1:2 15 5 2 2 2 4 3 2 4;}
+@font-face
+	{font-family:Tahoma;
+	panose-1:2 11 6 4 3 5 4 4 2 4;}
+@font-face
+	{font-family:"Arial Narrow";
+	panose-1:2 11 6 6 2 2 2 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+h1
+	{mso-style-link:"Überschrift 1 Zchn";
+	margin-top:24.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	page-break-before:always;
+	page-break-after:avoid;
+	font-size:18.0pt;
+	font-family:"Cambria","serif";
+	color:#365F91;
+	text-decoration:underline;}
+h2
+	{mso-style-link:"Überschrift 2 Zchn";
+	margin-top:10.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	page-break-after:avoid;
+	font-size:13.0pt;
+	font-family:"Cambria","serif";
+	color:#4F81BD;}
+h3
+	{mso-style-link:"Überschrift 3 Zchn";
+	margin-top:10.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	page-break-after:avoid;
+	font-size:11.0pt;
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-style:italic;}
+h4
+	{mso-style-link:"Überschrift 4 Zchn";
+	margin-top:10.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	page-break-after:avoid;
+	font-size:11.0pt;
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-style:italic;}
+p.MsoToc1, li.MsoToc1, div.MsoToc1
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:5.0pt;
+	margin-left:0cm;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoToc2, li.MsoToc2, div.MsoToc2
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:5.0pt;
+	margin-left:11.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoToc3, li.MsoToc3, div.MsoToc3
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:5.0pt;
+	margin-left:22.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoFootnoteText, li.MsoFootnoteText, div.MsoFootnoteText
+	{mso-style-link:"Fußnotentext Zchn";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoHeader, li.MsoHeader, div.MsoHeader
+	{mso-style-link:"Kopfzeile Zchn";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoFooter, li.MsoFooter, div.MsoFooter
+	{mso-style-link:"Fußzeile Zchn";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoCaption, li.MsoCaption, div.MsoCaption
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:10.0pt;
+	margin-left:0cm;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";
+	color:#4F81BD;
+	font-weight:bold;}
+span.MsoFootnoteReference
+	{vertical-align:super;}
+p.MsoList, li.MsoList, div.MsoList
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:14.15pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListCxSpFirst, li.MsoListCxSpFirst, div.MsoListCxSpFirst
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:14.15pt;
+	margin-bottom:.0001pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListCxSpMiddle, li.MsoListCxSpMiddle, div.MsoListCxSpMiddle
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:14.15pt;
+	margin-bottom:.0001pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListCxSpLast, li.MsoListCxSpLast, div.MsoListCxSpLast
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:14.15pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoList2, li.MsoList2, div.MsoList2
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:28.3pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoList2CxSpFirst, li.MsoList2CxSpFirst, div.MsoList2CxSpFirst
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:28.3pt;
+	margin-bottom:.0001pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoList2CxSpMiddle, li.MsoList2CxSpMiddle, div.MsoList2CxSpMiddle
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:28.3pt;
+	margin-bottom:.0001pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoList2CxSpLast, li.MsoList2CxSpLast, div.MsoList2CxSpLast
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:28.3pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoList3, li.MsoList3, div.MsoList3
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:42.45pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoList3CxSpFirst, li.MsoList3CxSpFirst, div.MsoList3CxSpFirst
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:42.45pt;
+	margin-bottom:.0001pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoList3CxSpMiddle, li.MsoList3CxSpMiddle, div.MsoList3CxSpMiddle
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:42.45pt;
+	margin-bottom:.0001pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoList3CxSpLast, li.MsoList3CxSpLast, div.MsoList3CxSpLast
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:42.45pt;
+	text-indent:-14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListBullet3, li.MsoListBullet3, div.MsoListBullet3
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:46.3pt;
+	text-indent:-18.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListBullet3CxSpFirst, li.MsoListBullet3CxSpFirst, div.MsoListBullet3CxSpFirst
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:46.3pt;
+	margin-bottom:.0001pt;
+	text-indent:-18.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListBullet3CxSpMiddle, li.MsoListBullet3CxSpMiddle, div.MsoListBullet3CxSpMiddle
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:46.3pt;
+	margin-bottom:.0001pt;
+	text-indent:-18.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListBullet3CxSpLast, li.MsoListBullet3CxSpLast, div.MsoListBullet3CxSpLast
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:46.3pt;
+	text-indent:-18.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoTitle, li.MsoTitle, div.MsoTitle
+	{mso-style-link:"Titel Zchn";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:15.0pt;
+	margin-left:0cm;
+	border:none;
+	padding:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.MsoTitleCxSpFirst, li.MsoTitleCxSpFirst, div.MsoTitleCxSpFirst
+	{mso-style-link:"Titel Zchn";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	border:none;
+	padding:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.MsoTitleCxSpMiddle, li.MsoTitleCxSpMiddle, div.MsoTitleCxSpMiddle
+	{mso-style-link:"Titel Zchn";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	border:none;
+	padding:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.MsoTitleCxSpLast, li.MsoTitleCxSpLast, div.MsoTitleCxSpLast
+	{mso-style-link:"Titel Zchn";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:15.0pt;
+	margin-left:0cm;
+	border:none;
+	padding:0cm;
+	font-size:26.0pt;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+p.MsoBodyText, li.MsoBodyText, div.MsoBodyText
+	{mso-style-link:"Textkörper Zchn";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:6.0pt;
+	margin-left:0cm;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoBodyTextIndent, li.MsoBodyTextIndent, div.MsoBodyTextIndent
+	{mso-style-link:"Textkörper-Zeileneinzug Zchn";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:6.0pt;
+	margin-left:14.15pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoSubtitle, li.MsoSubtitle, div.MsoSubtitle
+	{mso-style-link:"Untertitel Zchn";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	letter-spacing:.75pt;
+	font-style:italic;}
+p.MsoBodyTextFirstIndent, li.MsoBodyTextFirstIndent, div.MsoBodyTextFirstIndent
+	{mso-style-link:"Textkörper-Erstzeileneinzug Zchn";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:0cm;
+	text-indent:18.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoBodyTextFirstIndent2, li.MsoBodyTextFirstIndent2, div.MsoBodyTextFirstIndent2
+	{mso-style-link:"Textkörper-Erstzeileneinzug 2 Zchn";
+	margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:18.0pt;
+	text-indent:18.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+a:link, span.MsoHyperlink
+	{color:blue;
+	text-decoration:underline;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+pre
+	{mso-style-link:"HTML Vorformatiert Zchn";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:10.0pt;
+	font-family:"Courier New";
+	color:black;}
+p.MsoAcetate, li.MsoAcetate, div.MsoAcetate
+	{mso-style-link:"Sprechblasentext Zchn";
+	margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:8.0pt;
+	font-family:"Tahoma","sans-serif";}
+span.MsoPlaceholderText
+	{color:gray;}
+p.MsoNoSpacing, li.MsoNoSpacing, div.MsoNoSpacing
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:36.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListParagraphCxSpFirst, li.MsoListParagraphCxSpFirst, div.MsoListParagraphCxSpFirst
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListParagraphCxSpMiddle, li.MsoListParagraphCxSpMiddle, div.MsoListParagraphCxSpMiddle
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:36.0pt;
+	margin-bottom:.0001pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoListParagraphCxSpLast, li.MsoListParagraphCxSpLast, div.MsoListParagraphCxSpLast
+	{margin-top:0cm;
+	margin-right:0cm;
+	margin-bottom:3.0pt;
+	margin-left:36.0pt;
+	font-size:11.0pt;
+	font-family:"Calibri","sans-serif";}
+p.MsoTocHeading, li.MsoTocHeading, div.MsoTocHeading
+	{margin-top:24.0pt;
+	margin-right:0cm;
+	margin-bottom:0cm;
+	margin-left:0cm;
+	margin-bottom:.0001pt;
+	line-height:115%;
+	page-break-before:always;
+	page-break-after:avoid;
+	font-size:14.0pt;
+	font-family:"Cambria","serif";
+	color:#365F91;
+	font-weight:bold;}
+span.berschrift2Zchn
+	{mso-style-name:"Überschrift 2 Zchn";
+	mso-style-link:"Überschrift 2";
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-weight:bold;}
+span.berschrift3Zchn
+	{mso-style-name:"Überschrift 3 Zchn";
+	mso-style-link:"Überschrift 3";
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-weight:bold;
+	font-style:italic;}
+span.berschrift4Zchn
+	{mso-style-name:"Überschrift 4 Zchn";
+	mso-style-link:"Überschrift 4";
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	font-weight:bold;
+	font-style:italic;}
+span.SprechblasentextZchn
+	{mso-style-name:"Sprechblasentext Zchn";
+	mso-style-link:Sprechblasentext;
+	font-family:"Tahoma","sans-serif";}
+span.berschrift1Zchn
+	{mso-style-name:"Überschrift 1 Zchn";
+	mso-style-link:"Überschrift 1";
+	font-family:"Cambria","serif";
+	color:#365F91;
+	font-weight:bold;
+	text-decoration:underline;}
+span.citation
+	{mso-style-name:citation;}
+span.printonly
+	{mso-style-name:printonly;}
+span.reference-accessdate
+	{mso-style-name:reference-accessdate;}
+span.KopfzeileZchn
+	{mso-style-name:"Kopfzeile Zchn";
+	mso-style-link:Kopfzeile;}
+span.FuzeileZchn
+	{mso-style-name:"Fußzeile Zchn";
+	mso-style-link:Fußzeile;}
+span.FunotentextZchn
+	{mso-style-name:"Fußnotentext Zchn";
+	mso-style-link:Fußnotentext;}
+span.TitelZchn
+	{mso-style-name:"Titel Zchn";
+	mso-style-link:Titel;
+	font-family:"Cambria","serif";
+	color:#17365D;
+	letter-spacing:.25pt;}
+span.TextkrperZchn
+	{mso-style-name:"Textkörper Zchn";
+	mso-style-link:Textkörper;}
+span.Textkrper-ZeileneinzugZchn
+	{mso-style-name:"Textkörper-Zeileneinzug Zchn";
+	mso-style-link:Textkörper-Zeileneinzug;}
+span.UntertitelZchn
+	{mso-style-name:"Untertitel Zchn";
+	mso-style-link:Untertitel;
+	font-family:"Cambria","serif";
+	color:#4F81BD;
+	letter-spacing:.75pt;
+	font-style:italic;}
+span.Textkrper-ErstzeileneinzugZchn
+	{mso-style-name:"Textkörper-Erstzeileneinzug Zchn";
+	mso-style-link:Textkörper-Erstzeileneinzug;}
+span.Textkrper-Erstzeileneinzug2Zchn
+	{mso-style-name:"Textkörper-Erstzeileneinzug 2 Zchn";
+	mso-style-link:"Textkörper-Erstzeileneinzug 2";}
+span.HTMLVorformatiertZchn
+	{mso-style-name:"HTML Vorformatiert Zchn";
+	mso-style-link:"HTML Vorformatiert";
+	font-family:"Courier New";
+	color:black;}
+.MsoChpDefault
+	{font-family:"Calibri","sans-serif";}
+.MsoPapDefault
+	{margin-bottom:10.0pt;
+	line-height:115%;}
+ /* Page Definitions */
+ @page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+ /* List Definitions */
+ ol
+	{margin-bottom:0cm;}
+ul
+	{margin-bottom:0cm;}
+-->
+</style>
+
+</head>
+
+<body lang=DE link=blue vlink=purple>
+
+<div class=WordSection1>
+
+<h1 align=center style='text-align:center'><a name="_Toc341098053"></a><a
+name="_Toc315339095"><u><span lang=EN-US>The TDMR Tutorial: <br>
+Tuned Data Mining in R</span></u></a></h1>
+
+<p class=MsoNormal align=center style='margin-top:18.0pt;text-align:center'><b><span
+lang=EN-US style='font-size:14.0pt;font-family:"Cambria","serif";color:#365F91'><br>
+Wolfgang Konen, Patrick Koch</span></b></p>
+
+<p class=MsoNormal align=center style='margin-top:18.0pt;text-align:center'><b><span
+lang=EN-US style='font-size:12.0pt;font-family:"Cambria","serif";color:#365F91'>Cologne
+University of Applied Sciences</span></b></p>
+
+<p class=MsoNormal align=center style='margin-top:18.0pt;text-align:center'><b><span
+lang=EN-US style='font-size:12.0pt;font-family:"Cambria","serif";color:#365F91'>Last
+update: Nov 2012</span></b></p>
+
+<p class=MsoTocHeading>Contents</p>
+
+<p class=MsoToc1><span class=MsoHyperlink><a href="#_Toc341098053"><span
+lang=EN-US>The TDMR Tutorial:  Tuned Data Mining in R</span><span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>1</span></a></span></p>
+
+<p class=MsoToc1><span class=MsoHyperlink><a href="#_Toc341098054"><span
+lang=EN-US>Tutorial TDMR</span><span style='color:windowtext;display:none;
+text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
+
+<p class=MsoToc2><span class=MsoHyperlink><a href="#_Toc341098055"><span
+lang=EN-US>Overview</span><span style='color:windowtext;display:none;
+text-decoration:none'>.. </span><span
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
+
+<p class=MsoToc2><span class=MsoHyperlink><a href="#_Toc341098056"><span
+lang=EN-US>Installing TDMR</span><span style='color:windowtext;display:none;
+text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
+
+<p class=MsoToc2><span class=MsoHyperlink><a href="#_Toc341098057"><span
+lang=EN-US>Lessons</span><span style='color:windowtext;display:none;text-decoration:
+none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098058"><span
+lang=EN-US>Lesson 1: DM on task SONAR</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098059"><span
+lang=EN-US>Lesson 2: SPOT tuning on task SONAR</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>5</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098060"><span
+lang=EN-US>Lesson 3: “The Big Loop” on task SONAR</span><span style='color:
+windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>7</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098061"><span
+lang=EN-US>Lesson 4: Regression Big Loop</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>8</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098062"><span
+lang=EN-US>Lesson 5: Interactive Visualization</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>8</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098063"><span
+lang=EN-US>Lesson 6: Performance Measure Plots</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>10</span></a></span></p>
+
+<p class=MsoToc2><span class=MsoHyperlink><a href="#_Toc341098064"><span
+lang=EN-US>Frequently Asked Questions (FAQ)</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>11</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098065"><span
+lang=EN-US>How can I rerun a certain best tuning solution and test it on the
+same / other data?</span><span style='color:windowtext;display:none;text-decoration:
+none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>11</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098066"><span
+lang=EN-US>How can I make with a trained model new predictions?</span><span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>12</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098067"><span
+lang=EN-US>How can I add a new tuning parameter to TDMR?</span><span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>12</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098068"><span
+lang=EN-US>How can I add a new machine learning algorithm  to TDMR?</span><span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>12</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc341098069"><span
+lang=EN-US>How can I add a new tuning algorithm  to TDMR?</span><span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>12</span></a></span></p>
+
+<p class=MsoToc1><span class=MsoHyperlink><a href="#_Toc341098070">References<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>13</span></a></span></p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<h1><a name="_Toc341098054"><u><span lang=EN-US>Tutorial TDMR</span></u></a></h1>
+
+<h2><a name="_Toc341098055"><span lang=EN-US>Overview</span></a></h2>
+
+<p class=MsoNormal><a name="_Toc341098056"><span lang=EN-US>The TDMR framework
+is written in R with the aim to facilitate the training, tuning and evaluation
+of data mining (DM) models. It puts special emphasis on tuning these data
+mining models as well as simultaneously tuning certain preprocessing options. </span></a></p>
+
+<p class=MsoNormal><span lang=EN-US>This document (</span><a
+href="../../../../../Docu.d/TDMR-tutorial.html"><span lang=EN-US>TDMR-tutorial.html</span></a><span
+lang=EN-US>)</span></p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
+lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>describes the TDMR <b>installation</b></span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
+lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>shows <b>example usages</b>: how to use TDMR on
+new data mining tasks.  </span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>provides a <b>FAQ</b>-section (frequently asked
+questions)</span></p>
+
+<p class=MsoNormal><span lang=EN-US>This document should be read in conjunction
+with </span><a href="../../../../../Docu.d/TDMR-docu.html"><span lang=EN-US>TDMR-docu.html</span></a><span
+lang=EN-US>, which describes more details and software concepts of TDMR.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Both documents concentrate more on the
+software usage aspects of the TDMR package. For a more scientific discussion of
+the underlying ideas and the results obtained, the reader is referred to
+[Kone10a, Kone11b].</span></p>
+
+<h2><span lang=EN-US>Installing TDMR</span></h2>
+
+<p class=MsoNormal><span lang=EN-US>Once you have R (<a
+href="http://cran.r-project.org/">http://cran.r-project.org/</a>), &gt; 2.14,
+up and running, simply install TDMR with</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  &gt; install.packages(&quot;TDMR&quot;);</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  &gt; library(TDMR);</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h2><a name="_Toc341098057"></a><a name="_Phase_1:_DM"></a><span lang=EN-US>Lessons</span></h2>
+
+<h3><a name="_Toc341098058"><span lang=EN-US>Les</span></a><a name=Lesson01></a><span
+lang=EN-US>son 1: DM on task SONAR</span></h3>
+
+<p class=MsoNormal><span lang=EN-US>If you want to build a DM classification model
+for the SONAR data (see </span><a
+href="http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+%28Sonar,+Mines+vs.+Rocks%29"><span
+lang=EN-US>UCI repository</span></a><span lang=EN-US> or package mlbench for
+further info on SONAR), you write a file main_sonar.r </span><a href="#_ftn1"
+name="_ftnref1" title=""><span class=MsoFootnoteReference><span lang=EN-US
+style='font-size:10.0pt;font-family:"Courier New"'><span
+class=MsoFootnoteReference><span lang=EN-US style='font-size:10.0pt;font-family:
+"Courier New"'>[1]</span></span></span></span></a><span lang=EN-US>:</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>main_sonar
+  &lt;- function(opts=NULL, dset=NULL) {            </span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>                if
+  (is.null(opts)) {</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>                 
+      opts = tdmOptsDefaultsSet();           # set initial defaults for many
+  elements  of opts. See tdmOptsDefaults.r</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>                                                               #
+  for the list of those elements and many explanatory comments</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>      opts$filename =
+  &quot;sonar.txt&quot;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>      opts$READ.CMD =
+  &quot;read.csv2(file=paste(opts$dir.data, filename, sep=\&quot;\&quot;),
+  header=FALSE)&quot;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>      opts$data.title &lt;-
+  &quot;Sonar Data&quot;</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>                }</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>opts &lt;- tdmOptsDefaultsSet(opts);   
+       # fill in all opts params which are not yet set (see tdmOptsDefaults.r)</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>    </span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>gdObj&lt;-tdmGraAndLogInitialize(opts);   #
+  init graphics and log file</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>    </span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>#===============================================</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'># PART 1: READ DATA</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>#===============================================</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>if (is.null(dset)) {</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>     
+  cat1(opts,opts$filename,&quot;: Read data ...\n&quot;)</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>      dset &lt;-
+  tdmReadData(opts);</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>}</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>names(dset)[61] &lt;-
+  &quot;Class&quot;                    # 60 columns V1,...,V60 with input data,
+  </span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>                                                  
+              # one response column &quot;Class&quot; with levels
+  [&quot;M&quot; (metal) | &quot;R&quot; (rock)] </span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>    <br>
+  response.variable &lt;- &quot;Class&quot;                  # which variable
+  is response variable</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'> </span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'># which variables are input
+  variables (in this case all others):</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>input.variables &lt;-
+  setdiff(names(dset), c(response.variable))</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>#===============================================</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'># PART 2: Model building and
+  evaluation</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>#===============================================</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>result &lt;-
+  tdmClassifyLoop(dset,response.variable,input.variables,opts);</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'># print summary output and
+  attach certain columns (here: y, sd.y, dset) to list result:</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>result &lt;-
+  tdmClassifySummary(result,opts,dset);</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>tdmGraAndLogFinalize(opts,gdObj);      #
+  close graphics and log file</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>result;  </span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>}</span></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>This function is invoked with </span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  result &lt;- main_sonar();</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>or alternatively with</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  demo(demo00sonar,ask=F);</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>In the first case, the control flow will
+pass through the branch </span><span lang=EN-US style='font-family:"Arial Narrow","sans-serif"'>if
+(is.null(opts))</span><span lang=EN-US>, in the second case demo00sonar.r will
+define opts and pass it to main_sonar(). In either case, tdmOptsDefaultsSet()
+will construct a default list opts. You need to specify only those things which
+differ from tdmOptsDefaultsSet(): in this case the filename of the SONAR
+dataset. Since you do not specify anything  else, an RF model will be built and
+the dataset will be divided in a training part (90%) and test part (10%), based
+on opts$TST.kind=”rand”, opts$TST.testFrac=0.1. Since you do not specify
+anything from the opts$SRF-block, you use the default SRF variable ranking
+(opts$SRF.kind =”xperc”, opts$SRF.Xperc=0.95). This means that the most
+important columns containing about 95% of the overall importance will be selected.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>You need to specify in main_sonar.r what
+column in dset is response variable (classification target) and what columns
+are used for input (in this case all the others, because the SONAR dataset does
+not have ID columns or otherwise irrelevant columns).</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Function tdmClassifyLoop() is started, it
+builds an RF model using the training data and evaluates it on training and validation
+data.</span></p>
+
+<p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+lang=EN-US>The object  </span><span lang=EN-US style='font-size:10.0pt;
+font-family:"Courier New"'>result</span><span lang=EN-US> of class
+TDMclassifier is explained in more detail in </span><b><span
+lang=EN-US>Table 3</span></b><span lang=EN-US>.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Some of the graphics output generated by tdmClassify:</span></p>
+
+<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0
+ style='border-collapse:collapse;border:none'>
+ <tr>
+  <td width=307 valign=top style='width:230.3pt;border:solid windowtext 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal style='page-break-after:avoid'><img border=0 width=321
+  height=287 id="Grafik 1" src="TDMR-tutorial-Dateien/image001.jpg"></p>
+  <p class=MsoCaption><a name="_Ref284364992"><span lang=EN-US>Figure </span></a><span lang=EN-US>1</span><span lang=EN-US>: RF-based variable importance for task <span
+  style='text-transform:uppercase'>sonar</span>.</span></p>
+  </td>
+  <td width=307 valign=top style='width:230.3pt;border:solid windowtext 1.0pt;
+  border-left:none;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal style='page-break-after:avoid'><span lang=EN-US>&nbsp;</span></p>
+  <p class=MsoNormal style='page-break-after:avoid'><img border=0 width=266
+  height=266 id="Grafik 2" src="TDMR-tutorial-Dateien/image002.jpg"></p>
+  <p class=MsoCaption><a name="_Ref284365033"><span lang=EN-US>Figure </span></a><span lang=EN-US>2</span><span lang=EN-US>: True/false classification for the two
+  classes M and R of task <span style='text-transform:uppercase'>sonar</span>.</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>The two plots in </span><span
+lang=EN-US>Figure 1</span><span lang=EN-US> show the RF-based importance, where
+MeanDecreaseAccuracy, which has V9, V11 and V12 as the most important
+variables, is the more reliable measure. The right plot in </span><span lang=EN-US>Figure 2</span><span lang=EN-US> shows the true/false classifications
+on the test set (which is here however rather small, so the results are not
+very reliable, a more reliable test set classification would be obtained with
+CV). </span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h3><a name="_Toc341098059"></a><a name="_Phase_2:_SPOT"></a><span lang=EN-US>Les<a
+name=Lesson02></a>son 2: SPOT tuning on task SONAR</span></h3>
+
+<p class=MsoNormal><span lang=EN-US>If you want to do a SPOT tuning on task
+SONAR, you should follow the steps described in </span><a
+href="#_Phase_2:_Tuned"><span lang=EN-US>TDMR Workflow, Level 2</span></a><span
+lang=EN-US> and create the three small files sonar.conf, sonar.apd and
+sonar.roi. The files’ content may look for example like this: </span></p>
+
+<p class=MsoNormal><span lang=EN-US>sonar_01.conf: </span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>alg.func = &quot;tdmStartSpot&quot;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>alg.resultColumn =
+&quot;Y&quot;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>alg.seed = 1235</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>io.apdFileName =
+&quot;sonar_01.apd&quot;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>io.roiFileName =
+&quot;sonar_01.roi&quot;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>io.verbosity = 3;       </span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>auto.loop.steps = 50;       #
+number of SPOT’s sequential generations</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>auto.loop.nevals = 100;   #
+concurrently, max number of algo evaluations may be specified</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>init.design.func =
+&quot;spotCreateDesignLhd&quot;;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>init.design.size = 10;       #
+number of initial design points</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>init.design.repeats = 1;   #
+number of initial repeats</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>seq.merge.func &lt;- mean;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>seq.design.size = 100;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>seq.design.retries = 15;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>seq.design.maxRepeats = 2;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>seq.design.oldBest.size &lt;-
+1;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>seq.design.new.size &lt;- 3;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>seq.predictionModel.func =
+&quot;spotPredictRandomForest&quot;;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>report.func = &quot;spotReportSens&quot;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>sonar_01.apd:</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts = tdmOptsDefaultsSet();    
+# set initial defaults for many elements of opts. </span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$filename =
+&quot;sonar.txt&quot;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$data.title &lt;-
+&quot;Sonar Data&quot;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$READ.CMD =
+&quot;read.csv2(file=paste(opts$dir.txt, filename, sep=\&quot;\&quot;),
+dec=\&quot;.\&quot;, sep=\&quot;,\&quot;, nrow=opts$READ.NROW,header=F)&quot;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$RF.mtry = 4</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$NRUN =  1          # how
+many runs with different train &amp; test samples  - or - </span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>                                    #
+how many CV-runs, if TST.kind=&quot;cv&quot;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$GRAPHDEV=&quot;non&quot;;                  
+           </span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>opts$GD.RESTART=F;       </span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span style='font-size:10.0pt;
+font-family:"Arial Narrow","sans-serif"'>opts$VERBOSE= opts$SRF.verbose = 0;     
+</span></p>
+
+<p class=MsoNormal>&nbsp;</p>
+
+<p class=MsoNormal><span lang=EN-US>sonar_01.roi:</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>name low high
+type                                               </span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>CUTOFF1 0.1 0.80 FLOAT</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>CLASSWT2 5 15 FLOAT</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>XPERC 0.90 1.00 FLOAT</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>The three parameter CUTOFF1, CLASSWT2 and
+XPERC are tuned within the borders specified by sonar_01.roi. Usually you
+should set opts$GRAPHDEV=”non” and opts$GD.RESTART=F to avoid any graphic
+output and any graphics device closing from main_sonar.r, so that you get only
+the graphics made by SPOT.  </span></p>
+
+<p class=MsoNormal><span lang=EN-US>After this preparation, the SPOT tuning is
+started with  </span><span lang=EN-US style='font-family:"Courier New"'>demo/demo02sonar.r</span><span
+lang=EN-US>:</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 width=614
+ style='width:460.7pt;margin-left:5.4pt;background:#F2F2F2;border-collapse:
+ collapse;border:none'>
+ <tr>
+  <td width=614 valign=top style='width:460.7pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>path &lt;-
+  paste(.find.package(&quot;TDMR&quot;),
+  &quot;demo02sonar&quot;,sep=&quot;/&quot;);</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>oldwd &lt;-
+  getwd();</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>setwd(path);</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>tdm=tdmDefaultsFill(mainFile=&quot;main_sonar.r&quot;);
+  <br>
+  tdmMapDesSpot$load(tdm); </span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>source(&quot;sonar_01.apd&quot;);     
+  # read in opts-settings</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>source(tdm$mainFile);</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>spotUserConfig
+  = list(tdm=tdm,spot.fileMode=F, opts=opts);</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>spotConfig =
+  spot(&quot;sonar_01.conf<a name="OLE_LINK4"></a><a name="OLE_LINK3">&quot;</a>,&quot;auto&quot;,spotConfig=spotUserConfig);</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>&nbsp;</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><img width=313 height=313
+src="TDMR-tutorial-Dateien/image003.jpg" align=left hspace=12></p>
+
+<p class=MsoNormal><span lang=EN-US>It will generate the usual SPOT result
+files (see SPOT manual [Bart10e]) </span></p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
+lang=EN-US>-<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>sonar_01.res</span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US>-<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>sonar_01.bst</span></p>
+
+<p class=MsoNormal><span lang=EN-US>The tuning will stop after 16 sequential
+steps with the configuration CONFIG=58, because the budget of
+auto.loop.nevals=100 evaluations is exhausted. The best solution can be seen
+from the <u>last</u> line of sonar_01.bst (or alternatively from the printout
+of spotConfig$alg.currentBest). </span></p>
+
+<p class=MsoNormal><span lang=EN-US>With </span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=274 valign=top style='width:205.55pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  spot(“sonar_01.conf”,”rep”);</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US> </span></p>
+
+<p class=MsoNormal><img width=313 height=54
+src="TDMR-tutorial-Dateien/image004.png" align=left hspace=12
+alt="Figure 3: Sensitivity plot. Each ROI [low,high] is mapped to the normalized ROI [-1,1] on the abscissa."><span
+lang=EN-US>the results from a prior tuning run producing sonar_01.res are read
+in again and a report including a sensitivity plot (see </span><b><span lang=EN-US>Figure 3</span></b><span lang=EN-US>) is made.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>The sensitivity plot shows the response of
+the metamodel in the vicinity of the best solution. Consider for example the
+black line (CUTOFF1) in </span><b><span
+lang=EN-US>Figure 3</span></b><span lang=EN-US>: This line is produced by
+fixing the other parameters (CLASSWT2, XPERC) at their best-solution values
+(green and red dot) and varying CUTOFF1 within its ROI-interval [0.10, 0.80],
+which is mapped to the normalized abscissa [-1.0, 1.0] in the plot. The black
+line is the response of the metamodel. The best-solution value of CUTOFF1 is
+the black dot. The steep valley of the black line around the black dot shows
+that the metamodel is quite sensitive to CUTOFF1.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><a
+href="../../../../../../../../../../../Dokumente%20und%20Einstellungen/wolfgang/Anwendungsdaten/Microsoft/Word/TDM-docu.docx#details_Lesson02"><i><span
+lang=EN-US>See Sec. &quot;Details for Lesson 2&quot; in TDM-docu for more
+details</span></i></a></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:72.0pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt'>&nbsp;</span></p>
+
+<h3><a name="_Toc341098060"></a><a name="_Phase_3:_“The_2"></a><span
+lang=EN-US>Les<a name=Lesson03></a>son 3: “The Big Loop” on task SONAR</span></h3>
+
+<p class=MsoNormal><span lang=EN-US style='font-size:6.0pt'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>To start “The Big Loop”, you configure a
+file similar to </span><span lang=EN-US style='font-family:"Courier New"'>demo/demo03sonar.r</span><span
+lang=EN-US>:</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>path &lt;-
+  paste(.find.package(&quot;TDMR&quot;),
+  &quot;demo02sonar&quot;,sep=&quot;/&quot;);</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>oldwd &lt;- getwd();</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>setwd(path);</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>source(&quot;main_sonar.r&quot;);    # in
+  working dir</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>tdm &lt;- list(
+  mainFunction=&quot;main_sonar&quot;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            , umode=c(&quot;RSUB&quot;)          
+  # [&quot;CV&quot; | &quot;RSUB&quot; | &quot;TST&quot;]</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            , tuneMethod =
+  c(&quot;spot&quot;,&quot;lhd&quot;)</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            , filenameEnvT=&quot;demo03.RData&quot;  
+  # file to save environment envT (in working dir)</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            , finalFile=&quot;sonar.fin&quot;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            , nrun=5, nfold=2          # repeats
+  and CV-folds for the unbiased runs</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            , withParams=TRUE     # list the
+  columns with tuned parameters in final results </span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            , nExperim=2</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            , optsVerbosity = 0       # the
+  verbosity for the unbiased runs</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>            );</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>## tdm$runList can contain also more than one
+  file (e.g. c(&quot;sonar_01.conf&quot;,&quot;sonar_02.conf&quot;)):.</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>tdm$runList = c(&quot;sonar_04.conf&quot;);     </span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>## spotStep can be either &quot;auto&quot; (do
+  automatic tuning) or &quot;rep&quot; (make a visual report of best results)</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>spotStep = &quot;auto&quot;;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>## construct an initial environment envT from
+  the given TDMR settings in tdm</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>envT &lt;- tdmMakeNewEnvT(tdm);</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>envT &lt;- tdmBigLoop(envT,spotStep);</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+  margin-left:8.8pt;margin-bottom:.0001pt'><span lang=EN-US style='font-family:
+  "Arial Narrow","sans-serif"'>setwd(oldwd);    # restore old working directory<br>
+  <br>
+  </span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
+margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>demo03sonar.r  specifies a vector of TDMR
+tasks in tdm$runList (a vector of .conf files), and it specifies a vector of
+tuners in </span><a href="#tdm"><span lang=EN-US style='color:windowtext;
+text-decoration:none'>tdm</span></a><span lang=EN-US>$tuneMethod, e.g.
+c(“spot”,“lhd”) and other values of </span><a href="#tdm"><span lang=EN-US
+style='color:windowtext;text-decoration:none'>tdm</span></a><span lang=EN-US>.
+Then it calls tdmBigLoop.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Here, this script will trigger the
+following sequence of experiments: </span></p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
+lang=EN-US>-<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>sonar_04.conf is started with tuner spot</span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US>-<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>sonar_04.conf is started with tuner lhd</span></p>
+
+<p class=MsoNormal><span lang=EN-US>This sequence of 2 tuning experiments is
+repeated nExperim=2 times. The corresponding 4 result lines are written to data
+frame </span><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>envT$theFinals</span><span
+lang=EN-US>.<a href="#_ftn2" name="_ftnref2" title=""><span
+class=MsoFootnoteReference><span class=MsoFootnoteReference><span lang=EN-US
+style='font-size:11.0pt;font-family:"Calibri","sans-serif"'>[2]</span></span></span></a>
+The switch tdm$withParams=TRUE is only sensible if all .conf files have the
+same set of parameters in their .roi file.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-bottom:6.0pt'><span lang=EN-US>The resulting
+data frame </span><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>envT$theFinals</span><span
+lang=EN-US> contains:</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0 width=652
+ style='width:489.1pt;margin-left:-8.8pt;background:#F2F2F2;border-collapse:
+ collapse;border:none'>
+ <tr>
+  <td width=652 valign=top style='width:489.1pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+  0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+  0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>CONF TUNER NEXP CLASSWT2  
+  XPERC NRUN NEVAL RGain.bst RGain.avg RGain.OOB   sdR.OOB RGain.RSUB sdR.RSUB</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+  0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>sonar_02   lhd     1      12.026543
+   0.930197     3       36         86.70213     84.3676       84.4311    1.03715 
+       83.73984      5.63268</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+  0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>sonar_02  spot    1      14.713475
+   0.981312     3       36         86.96809     84.6926       85.6287    1.03715 
+       86.99187      7.04085</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+  0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>sonar_03   lhd     2        8.037636
+   0.954494     3       36         81.91489     78.6643       80.4391    1.82937 
+       79.67480      7.45134</span></p>
+  <p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+  0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>sonar_03  spot    2        7.375221
+   0.914740     3       35         81.91489     78.7082       78.8423    0.34571
+        74.79675      2.81634</span></p>
+  <p class=MsoNormal style='text-align:justify'><span lang=EN-US
+  style='font-size:10.0pt;font-family:"Courier New"'>&nbsp;</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Here CLASSWT2 and XPERC are the tuning
+parameters, the other columns are defined in </span><span
+lang=EN-US><b>Table</b> <b>2</b></span><span lang=EN-US>. </span></p>
+
+<p class=MsoNormal><span lang=EN-US>In the case of the example above, the
+tuning process had a budget of NEVAL=36 model trainings, resulting in a best
+solution with class accuracy RGain.bst (in %). The average class accuracy (mean
+w.r.t. all design points) during tuning is RGain.avg. When the tuning is
+finished, the best solution is taken and NRUN=3 unbiased evaluation runs are
+done with the parameters of the best solution. Since the classification model
+in this example is RF (Random Forest), an OOB-error from the 3 trainings is
+returned, with average RGain.OOB and standard deviation sdR.OOB. Additionally,
+NRUN=3 trainings are done with random subsampling (RSUB) of the data set in
+training and test set, resulting in an average class accuracy on the test set
+RGain.RSUB and the corresponding standard deviation in sdR.RSUB. </span></p>
+
+<p class=MsoNormal><span lang=EN-US>Note that the standard deviation sdR.RSUB
+is in this case quite large (because the test set is very small). A more
+reliable result might be obtained with tdm$umode=“CV” instead of “RSUB”.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><a
+href="../../../../../../../../../../../Dokumente%20und%20Einstellungen/wolfgang/Anwendungsdaten/Microsoft/Word/TDM-docu.docx#details_Lesson03"><i><span
+lang=EN-US>See &quot;Details for Lesson 3&quot; in TDM-Docu for more details</span></i></a></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h3><a name="_Toc341098061"><span lang=EN-US>Less</span></a><a name=Lesson04></a><span
+lang=EN-US>on 4: Regression Big Loop</span></h3>
+
+<p class=MsoNormal><a
+href="../../../../../../../../../../../Dokumente%20und%20Einstellungen/wolfgang/Anwendungsdaten/Microsoft/TDMR/demo/demo04cpu.r"><span
+lang=EN-US>demo/demo04cpu.r</span></a></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h3><a name="_Toc341098062"><span lang=EN-US>Less</span></a><a name=Lesson05></a><span
+lang=EN-US>on 5: Interactive Visualization</span></h3>
+
+<p class=MsoNormal><a
+href="../../../../../../../../../../../Dokumente%20und%20Einstellungen/wolfgang/Anwendungsdaten/Microsoft/TDMR/demo/demo05visMeta.r"><span
+lang=EN-US>demo/demo05visMeta.r</span></a></p>
+
+<p class=MsoNormal><span lang=EN-US>Once a lesson-3 experiment is completed,
+the return value </span><span lang=EN-US style='font-family:"Courier New"'>envT</span><span
+lang=EN-US>  from tdmBigLoop() contains the result of such an experiment and
+may be visually inspected. Alternatively, envT may be loaded from an
+appropriate .RData file. The call <br>
+<br>
+</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=595 valign=top style='width:446.55pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  tdmPlotResMeta(envT);</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US> </span></p>
+
+<p class=MsoNormal><span lang=EN-US>allows to visually inspect all RES data
+frames contained in envT.</span></p>
+
+<p class=MsoNormal><img width=313 height=143
+src="TDMR-tutorial-Dateien/image005.png" align=left hspace=12
+alt="Figure 4: The user interface in tdmPlotResMeta. The user may select the tuner, the design variables to show on x- and y-axis, the display function (spotReport3d or spotReportContour) and the metamodel function (modelFit). Two optional sliders are nExper and nSkip (see text)."><img
+border=0 width=227 height=214 id="Grafik 8"
+src="TDMR-tutorial-Dateien/image006.jpg"></p>
+
+<p class=MsoNormal><span lang=EN-US>The user interface is shown and explained
+in </span><b><span lang=EN-US>Figure 4</span></b><span lang=EN-US>. An
+additional combo box “confFile” appears only, if envT$runList has more than one
+element. An additional slider “nExper” appears only, if envT$tdm$nExperim&gt;1.
+</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0
+ style='border-collapse:collapse;border:none'>
+ <tr>
+  <td width=307 valign=top style='width:230.3pt;border:solid gray 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><img border=0 width=290 height=307 id="Grafik 11"
+  src="TDMR-tutorial-Dateien/image007.jpg"></p>
+  </td>
+  <td width=307 valign=top style='width:230.3pt;border:solid gray 1.0pt;
+  border-left:none;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><img border=0 width=271 height=319 id="Grafik 14"
+  src="TDMR-tutorial-Dateien/image008.jpg"></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=614 colspan=2 valign=top style='width:460.6pt;border:solid gray 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoCaption><a name="_Ref322421880"><span lang=EN-US>Figure </span></a><span lang=EN-US>5</span><span lang=EN-US>: Two example outputs from tdmPlotResMeta
+  with reportFunc=spotReport3d. Left: modelFit = spotPredictGausspr, right: =
+  spotPredictRandomForest.</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>The user selects with “tuner”, “confFile”
+and “nExper” a certain RES data frame from envT. This data frame contains a
+collection of function evaluations for certain design points selected by the
+tuner. With one of the metamodel construction functions (see package SPOT for
+further details)</span></p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
+lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>spotPredictGausspr</span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
+lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>spotPredictRandomForest</span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>spotPredictMlegp</span></p>
+
+<p class=MsoNormal><span lang=EN-US>a metamodel is fitted to the RES data frame
+and the result is shown as shaded surface in the plot. The RES data points are
+shown as black points in </span><b><span
+lang=EN-US>Figure</span></b><span lang=EN-US> <b>5</b></span><span lang=EN-US>.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Since certain “bad” RES point may dominate
+the plot as outliers and hinder the user to inspect the region near the
+optimum, there are two options to suppress “bad” points:</span></p>
+
+<p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
+lang=EN-US>1.<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>If the slider nSkip has a value &gt;0, then the
+nSkip RES data points with the worst y-value are discarded.</span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US>2.<span
+style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span></span><span
+lang=EN-US>If the checkbox “Skip incomplete CONFIGs” is activated, then design
+points belonging to a configuration which was not evaluated maxRepeats times
+are discarded (relevant for SPOT only).</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Note that both options will reduce the
+number of RES data points. This will also affect the metamodel fit, so use both
+options with care, if the number of RES data points is small. </span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>The plots created with spotReport3d make
+use of the </span><span lang=EN-US style='font-family:"Courier New"'>rgl</span><span
+lang=EN-US>-package. They can be interactively manipulated with the mouse. They
+can be selected and saved as PNG images with commands like</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  rgl.set(7);</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>  rgl.snapshot(“myFile.png”);</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>A complete demo example is invoked with:<br>
+<br>
+</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  demo(demo05visMeta);</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h3><a name="_Toc341098063"><span lang=EN-US>Less</span></a><a name=Lesson06></a><span
+lang=EN-US>on 6: Performance Measure Plots</span></h3>
+
+<p class=MsoNormal><span lang=EN-US>With the help of package ROCR [Sing05],
+several area performance measure can be used for binary classification. The
+file </span><a
+href="../../../../../../../../../../../Dokumente%20und%20Einstellungen/wolfgang/Anwendungsdaten/Microsoft/TDMR/demo/demo06ROCR.r"><b><span
+lang=EN-US>demo/demo06ROCR.r</span></b></a><span lang=EN-US> shows an example:<br>
+<br>
+</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  setwd(paste(.find.package(&quot;TDMR&quot;),
+  &quot;demo02sonar&quot;,sep=&quot;/&quot;));</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  source(&quot;main_sonar.r&quot;);     </span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  opts = tdmOptsDefaultsSet();    </span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  # ...</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  opts$rgain.type &lt;- &quot;arROC&quot;;</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  result = main_sonar(opts);</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  tdmGraphicNewWin(opts);</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  cat(&quot;Area under ROC-curve for validation data set: &quot;);</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  print(tdmROCRbase(result));        # side effect: plot ROC-curve</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  tdmGraphicNewWin(opts);</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  cat(&quot;Area under lift curve for training data set: &quot;);</span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  print(tdmROCRbase(result,dataset=&quot;training&quot;,typ=&quot;lift&quot;));  
+  </span></p>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  # side effect: plot lift chart</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0
+ style='border-collapse:collapse;border:none'>
+ <tr>
+  <td width=307 valign=top style='width:230.3pt;border:solid #A6A6A6 1.0pt;
+  padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><img border=0 width=294 height=294 id="Grafik 15"
+  src="TDMR-tutorial-Dateien/image009.jpg"></p>
+  </td>
+  <td width=307 valign=top style='width:230.3pt;border:solid #A6A6A6 1.0pt;
+  border-left:none;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><img border=0 width=294 height=294 id="Grafik 16"
+  src="TDMR-tutorial-Dateien/image010.jpg"></p>
+  </td>
+ </tr>
+ <tr>
+  <td width=614 colspan=2 valign=top style='width:460.6pt;border:solid #A6A6A6 1.0pt;
+  border-top:none;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoCaption><span lang=EN-US>Figure </span><span
+  lang=EN-US>6</span><span lang=EN-US>: Left: ROC chart, right: lift chart, as
+  produced by demo06ROCR.r with the help of package ROCR [Sing05]. The bar on
+  the right side of each plot shows a color coding of the cutoff parameter.</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Once the variable </span><span lang=EN-US
+style='font-family:"Courier New"'>result</span><span lang=EN-US> contains an
+object of class </span><span lang=EN-US style='font-family:"Courier New"'>TDMclassifier</span><span
+lang=EN-US>, it is also possible to inspect such  an object interactively and to
+plot ROC-, lift- or precision-recall-chart for the training set or the
+validation set:</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  tdmROCR(result);</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>A </span><a
+href="http://cran.r-project.org/web/packages/twiddler/index.html"><span
+lang=EN-US>twiddler</span></a><span lang=EN-US> interface for object </span><span
+lang=EN-US style='font-family:"Courier New"'>result</span><span lang=EN-US> 
+shows up, as shown in </span><b><span
+lang=EN-US>Figure 7</span></b><span lang=EN-US>, and allows to select between
+different performance measure plots:</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><img width=313 height=143
+src="TDMR-tutorial-Dateien/image011.png" align=left hspace=12
+alt="Figure 7: The user interface of tdmROCR. The user may select the dataset (training or validation), the type of plot (ROC, lift, or precision-recall) and the number of run (only if Opts(result)$NRUN&gt;1)."><img
+border=0 width=230 height=153 id="Grafik 13"
+src="TDMR-tutorial-Dateien/image012.jpg"></p>
+
+<h2><a name="_Toc341098064"><span lang=EN-US>Freq</span></a><a name=FAQ></a><span
+lang=EN-US>uently Asked Questions (FAQ)</span></h2>
+
+<h3><a name="_Toc341098065"><span lang=EN-US>How can I rerun a certain best
+tuning solution and test it on the same / other data?</span></a></h3>
+
+<p class=MsoNormal><span lang=EN-US>Rerun your </span><a href="#Lesson03"><span
+lang=EN-US>lesson-3 script</span></a><span lang=EN-US> with spotStep =”rep”.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Or use the following code snippet:<br>
+<br>
+</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  envT = tdmEnvTLoad(&quot;demoSonar.RData&quot;);    # load envT<br>
+    source(&quot;main_sonar.r&quot;);<br>
+    envT$tdm$nrun=0;       # =0: no unbiasedRun<br>
+    finals = tdmEnvTSensi(envT,1);<br>
+    if (!is.null(finals)) print(finals); </span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>This makes solely the sensitivity plot (w/o
+unbiased runs). </span></p>
+
+<p class=MsoNormal><span lang=EN-US>If envT$tdm$nrun&gt;0, then a certain
+number of unbiased runs are done with the best tuning solution.</span></p>
+
+<h3><a name="_Toc341098066"><span lang=EN-US>How can I make with a trained
+model new predictions?</span></a></h3>
+
+<h3><a name="_Toc341098067"><span lang=EN-US>How can I add a new tuning
+parameter to TDMR?</span></a></h3>
+
+<p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>[user] Add a new line to userMapDesign.csv in
+directory tdm$path.<a href="#_ftn3" name="_ftnref3" title=""><span
+class=MsoFootnoteReference><span class=MsoFootnoteReference><span lang=EN-US
+style='font-size:11.0pt;font-family:"Calibri","sans-serif"'>[3]</span></span></span></a>
+Suppose you want to tune the variable opts$SRF.samp: add to file
+userMapDesign.csv a line</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:40.85pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=539 valign=top style='width:404.0pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'> 
+  SRF.SAMP;    opts$SRF.samp;   0</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoListParagraphCxSpFirst><span lang=EN-US>This specifies that
+whenever SRF.SAMP appears in a .roi file in dir tdm$path, the tuner will tune
+this variable. TDMR maps SRF.SAMP to opts$SRF.SAMP. </span></p>
+
+<p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
+lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>[developer] Add similarly a new line to
+tdmMapDesign.csv. This means that the mapping is available for <b>all</b>
+tasks, not only for those in the current tdm$path.</span></p>
+
+<p class=MsoListParagraphCxSpLast style='text-indent:-18.0pt'><span lang=EN-US
+style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span lang=EN-US>[optional, for developer] For a new variable
+opts$Z, add a default-value-line to tdmOptsDefaultsSet(). Then all existing and
+further tasks have this default setting for opts$Z.</span></p>
+
+<h3><a name="_Toc341098068"><span lang=EN-US>How can I add a new machine
+learning algorithm  to TDMR?</span></a></h3>
+
+<p class=MsoNormal><span lang=EN-US>see section “</span><a
+href="../../../../../Docu.d/TDMR-docu.docx#integrate_new_ML_algo"><span
+lang=EN-US>How to integrate new machine learning algorithms</span></a><span
+lang=EN-US>” in </span><a href="../../../../../Docu.d/TDMR-docu.docx"><span
+lang=EN-US>TDM_docu.docx</span></a><span lang=EN-US>.</span></p>
+
+<h3><a name="_Toc341098069"><span lang=EN-US>How can I add a new tuning
+algorithm  to TDMR?</span></a></h3>
+
+<p class=MsoNormal><span lang=EN-US>See section “</span><a
+href="../../../../../Docu.d/TDMR-docu.docx#integrate_new_tuners"><span
+lang=EN-US>How to integrate new tuners</span></a><span lang=EN-US>” in </span><a
+href="../../../../../Docu.d/TDMR-docu.docx"><span lang=EN-US>TDM_docu.docx</span></a><span
+lang=EN-US>.</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+0cm;margin-left:0cm;margin-bottom:.0001pt'><a name="_TDMR_Tuner_Concept"></a><span
+lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+
+<p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
+0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
+10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+
+<h1><a name="_Toc341098070"><u>References</u></a></h1>
+
+<p class=MsoNormal><span class=citation>[Bart10e] T. Bartz-Beielstein. </span><span
+class=citation><span lang=EN-US>SPOT: An R package for automatic and
+interactive tuning of optimization algorithms by sequential parameter
+optimization. Technical Report, FH Köln, 2010 </span></span></p>
+
+<p class=MsoNormal><span class=citation>[Kone10a] W. Konen, P. Koch, O. Flasch,
+T. Bartz-Beielstein. </span><a
+href="http://www.gm.fh-koeln.de/~konen/Publikationen/GMACI10_tunedDM.pdf"><span
+lang=EN-US>Parameter-tuned data mining: A general framework</span></a><span
+class=citation><span lang=EN-US>. In F. Hoffmann and E. Hüllermeier, editors,
+Proceedings 20. </span>Workshop Computational Intelligence. Universitätsverlag
+Karlsruhe, 2010. </span></p>
+
+<p class=MsoNormal><span class=citation>[Kone11b] W. Konen, P. Koch, O. Flasch,
+T. Bartz-Beielstein. </span><a
+href="http://maanvs03.gm.fh-koeln.de/webpub/CIOPReports.d/Kone11b.d/tdm-cioprep.pdf"><span
+lang=EN-US>Tuned Data Mining: A Benchmark Study on Different Tuners</span></a><span
+lang=EN-US>, Proc. GECCO 2011, Dublin, July 2011<span class=citation>.  </span></span></p>
+
+<p class=MsoNormal style='margin-bottom:10.0pt;line-height:115%'><span
+lang=EN-US>[Sing05] Tobias Sing, Oliver Sander, Niko Beerenwinkel, Thomas
+Lengauer. </span><a
+href="http://bioinformatics.oxfordjournals.org/cgi/content/abstract/21/20/3940"><span
+lang=EN-US>ROCR: visualizing classifier performance in R</span></a><span
+lang=EN-US>. <i>Bioinformatics</i> 21(20):3940-3941 (2005). See also </span><a
+href="http://rocr.bioinf.mpi-sb.mpg.de/"><span lang=EN-US>http://rocr.bioinf.mpi-sb.mpg.de/</span></a><span
+lang=EN-US> </span></p>
+
+</div>
+
+<div><br clear=all>
+
+<hr align=left size=1 width="33%">
+
+<div id=ftn1>
+
+<p class=MsoFootnoteText><a href="#_ftnref1" name="_ftn1" title=""><span
+class=MsoFootnoteReference><span class=MsoFootnoteReference><span
+style='font-size:10.0pt;font-family:"Calibri","sans-serif"'>[1]</span></span></span></a>
+<span lang=EN-US>Template main_sonar.r is available from </span><a href="#inst"><span
+lang=EN-US>inst</span></a><span lang=EN-US>/demo02sonar.</span></p>
+
+</div>
+
+<div id=ftn2>
+
+<p class=MsoFootnoteText><a href="#_ftnref2" name="_ftn2" title=""><span
+class=MsoFootnoteReference><span class=MsoFootnoteReference><span
+style='font-size:10.0pt;font-family:"Calibri","sans-serif"'>[2]</span></span></span></a>
+<span lang=EN-US>If tdm$fileMode==TRUE (now deprecated), the 4 lines are also
+written to tdm$finalFile. If (tdm$experFile != NULL), these lines are also
+appended to file tdm$experFile.</span></p>
+
+</div>
+
+<div id=ftn3>
+
+<p class=MsoFootnoteText><a href="#_ftnref3" name="_ftn3" title=""><span
+class=MsoFootnoteReference><span class=MsoFootnoteReference><span
+style='font-size:10.0pt;font-family:"Calibri","sans-serif"'>[3]</span></span></span></a><span
+lang=EN-US> If such a file does not exist yet, the user has to create it with a
+first line<br>
+</span><span lang=EN-US style='font-family:"Courier New"'>      roiValue;  
+optsValue;          isInt</span></p>
+
+</div>
+
+</div>
+
+</body>
+
+</html>

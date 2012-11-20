@@ -6,7 +6,7 @@
 ######################################################################################
 #' Initialize graphics and log file. 
 #'
-#' The log file is opened in \code{opts$dir.output/opts$LOGFILE}.
+#' The log file is opened in \code{opts$dir.output/opts$LOGFILE}, but only if opts$fileMode==TRUE.
 #'
 #' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
 #' @return \code{gdObj}, an object of class TDMgdev. Pass this object on when calling tdmGraAndLogFinalize(opts,gdObj)
@@ -15,12 +15,18 @@
 tdmGraAndLogInitialize <- function(opts) {
 
     dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
-    if (!file.exists(dir.output)) dir.create(dir.output);     
+    if (!file.exists(dir.output)) {
+      success = dir.create(dir.output);     
+      if (!success) stop(sprintf("Could not create dir.output=%s",dir.output));
+    }
     if (opts$GD.DEVICE!="non") {
       if (opts$GD.RESTART==T) graphics.off()          # close all graphics windows
       tdmGraphicInit(opts);                        
     }  
-    sink(paste(dir.output,opts$LOGFILE,sep="/"),split=T,append=F);	  
+
+    if (is.null(opts$fileMode)) opts$fileMode=TRUE;   # this might be necessary for older opts from file
+    
+    if (opts$fileMode) sink(paste(dir.output,opts$LOGFILE,sep="/"),split=T,append=F);	  
     
     gdObj = list();
     class(gdObj) <- c("TDMgdev","TDM");
@@ -37,7 +43,7 @@ tdmGraAndLogFinalize <- function(opts,gdObj=NULL) {
     if (opts$GD.CLOSE & opts$GD.DEVICE!="win") tdmGraphicCloseDev(opts);
     cat1(opts,sprintf("\n%s: All done.\n\n",opts$filename));
     if (is.null(gdObj)) warning("Deprecated: No gdObj (return value from tdmGraAndLogInitialize) passed"); 
-    sink();       # close the LOGFILE
+    if (opts$fileMode) sink();       # close the LOGFILE
 }
 ######################################################################################
 #
@@ -54,7 +60,10 @@ tdmGraphicInit <- function(opts,...) {
         file.remove(paste(opts$dir.output,opts$GD.PNGDIR,"/",d,sep=""));
   }
   dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
-  if (!file.exists(dir.output)) dir.create(dir.output);     
+  if (!file.exists(dir.output)) {
+    success = dir.create(dir.output);     
+    if (!success) stop(sprintf("Could not create dir.output=%s",dir.output));
+  }
   if (is.null(opts$GD.DEVICE)) opts$GD.DEVICE="win";
   switch (opts$GD.DEVICE
     , "pdf" = pdf(paste(opts$dir.output,opts$PDFFILE,sep=""),onefile=T,paper="a4r",...)

@@ -15,7 +15,7 @@ setwd(path);
 source("main_sonar.r");    # in working dir
 
 ## preliminary settings for TDMR
-tdm <- list( mainFunction="main_sonar"
+tdm <- list(  mainFunction="main_sonar"
             , umode=c("RSUB")           # ["CV" | "RSUB" | "TST"]
             , tuneMethod = c("cma_j","spot")
             , filenameEnvT="demoSonar.RData"   # file to save environment envT (in working dir)
@@ -31,19 +31,13 @@ tdm <- tdmDefaultsFill(tdm);
 ## sonar_03.conf has the settings for the tuning process (e.g. "auto.loop.steps"=number of SPOT generations       
 ## "auto.loop.evals"=budget of model building runs and io.roiFileName = "sonar_01.roi").
 ## runList could contain other files as well (e.g. c("sonar_01.conf","sonar_02.conf","sonar_03.conf")), if desired.
-runList = c("sonar_03.conf");     
+tdm$runList = c("sonar_03.conf");     
 ## spotStep can be either "auto" (do automatic tuning) or "rep" (make a visual report of best results)
 spotStep = "auto";
 
-## the call to tdmCompleteEval will start the whole TDMR process:
-## - for each file in runList a complete DM tuning is started with each tuning method
-## - the best result from tuning are fed into an unbiased model building and evaluation run 
-## - results are printed and returned in envT$theFinals 
-## - more detailed results are in other elements of envT
-## - two plots: 
-##      a) the progression of the response variable Y and the parameter variables during tuning
-##      b) the sensitivity plot for each parameter in the vicinity of the best solution found 
-envT <- tdmCompleteEval(runList,NULL,spotStep,tdm);
+envT <- tdmEnvTMakeNew(tdm);
+envT <- tdmBigLoop(envT,spotStep);
+# deprecated: envT <- tdmCompleteEval(runList,NULL,spotStep,tdm);
 
 ## restore old working directory
 setwd(oldwd);
