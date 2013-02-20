@@ -10,7 +10,8 @@
   \code{TDMdata}.}
 }
 \value{
-  \code{tset}, a data frame with all test records
+  \code{tset}, a data frame with all test records. If there
+  are 0 test records, return NULL.
 }
 \description{
   Return the test part of a \code{TDMdata} object

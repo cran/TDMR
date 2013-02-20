@@ -9,6 +9,7 @@
 #'
 #'   @param d_train     training set
 #'   @param d_test      test set, same columns as training set
+#'   @param d_preproc   data used for preprocessing, only relevant for opts$PRE.SFA!="none" (usually all non-validation data)
 #'   @param response.variables   name of column which carries the target variable - or - 
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for evaluation)
@@ -54,20 +55,21 @@
 #'
 #' @export
 ######################################################################################
-tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
+tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variables,opts)
 {    
     filename <- opts$filename;
-    input.variables_0 <- input.variables;      # save copy for response.variable loop
+    saved.input.variables <- input.variables;      # save copy for response.variable loop
 
     if (is.null(opts$RF.samp)) opts$RF.samp=3000;
     if (is.null(opts$SVM.gamma)) opts$SVM.gamma=0.01;
     if (is.null(opts$SVM.epsilon)) opts$SVM.epsilon=0.01;
     if (is.null(opts$SVM.tolerance)) opts$SVM.tolerance=0.001;
     if (is.null(opts$gr.log)) opts$gr.log=F;
+    if (is.null(opts$PRE.SFA.numericV)) opts$PRE.SFA.numericV <- input.variables;
     
     allRMAE <- allRMSE <- allMADE <- NULL;    
     for (response.variable in response.variables) {    
-        input.variables <- input.variables_0;
+        input.variables <- saved.input.variables;
         
         if (!is.null(opts$OUTTRAFO)) {
           if (opts$OUTTRAFO=="log") {
@@ -82,6 +84,24 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
               d_test[,response.variable] <- d_test[,response.variable]-response.mean
           }
         }
+        
+        # SFA preprocessing, if requested by opts$PRE.SFA, is done *inside* the response.variable-for-loop
+        # because SFA training depends on the response variable
+        if (opts$PRE.SFA!="none") {
+          # a) do SFA on the numeric variables of d_train, if opts$PRE.SFA!="none"
+          # b) add monomials of degree 2 for the first opts$PRE.SFA.npc numeric variables
+          # c) apply this SFA and monomials to d_test and d_dis in the same way
+          other.variables <- setdiff(input.variables,opts$PRE.SFA.numericV);
+          sfa <- tdmPreSFA.train(d_preproc,response.variable,opts);                 # see tdmPreprocUtils.r                 
+          d_train <- tdmPreSFA.apply(d_train,sfa$sfaList,opts,d_train)$dset;
+          d_test <- tdmPreSFA.apply(d_test,sfa$sfaList,opts,d_train)$dset;
+
+          input.variables <- union(sfa$numeric.variables,other.variables);
+          if (length(setdiff(input.variables,names(d_train)))>0) 
+              stop("Some elements of input.variables are not columns of d_train");
+        }
+
+
         #=============================================
         # PART 4.1: SUMMARY OF DATA
         #=============================================
@@ -117,8 +137,8 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
           opts$RF.sampsize <- tdmModAdjustSampsize(opts$SRF.samp, d_train, response.variable, opts);
           SRF <- tdmModSortedRFimport(d_train,response.variable,
                                           input.variables,opts)
-          input.variables <- SRF$input.variables;  
-          opts <- SRF$opts;       # some defaults might have been added, some opts$SRF.* values changed  
+          input.variables <- as.character(SRF$input.variables);
+          opts <- SRF$opts;       # some defaults might have been added, some opts$SRF.* values or list opts$srf might be changed
           SRF$opts <- NULL;       # simplify list result, which will contain both, SRF and opts
          
         }  else {
@@ -181,12 +201,20 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
             res.rf;
         } 
         train.svm <- function(formula,to.model,opts) {
-            cat1(opts,filename,": Train SVM ...\n")
+            kernelChoices = c("linear","polynomial","radial","sigmoid");
+            kernelType = kernelChoices[opts$SVM.kernel];
+            cat1(opts,filename,": Train SVM (kernel=",kernelType,") ...\n");
             flush.console();
             #res.rf <- svm(formula, to.model, kernel="radial", gamma=0.02, epsilon=0.0001, tolerance=0.001, type="eps-regression", cachesize=512)
-            res.rf <- svm(formula, to.model, kernel="radial"
-                                    , gamma=opts$SVM.gamma, epsilon=opts$SVM.epsilon, tolerance=opts$SVM.tolerance, cost=opts$SVM.cost
-                                    , type="eps-regression")
+            res.rf <- svm(formula, to.model
+                							, kernel=kernelType
+                              , gamma=opts$SVM.gamma
+                              , coef0=opts$SVM.coef0
+                              , degree=opts$SVM.degree
+                              , cost=opts$SVM.cost
+                              , epsilon=opts$SVM.epsilon
+                              , tolerance=opts$SVM.tolerance
+                              , type="eps-regression")
         }
         train.lm <- function(formula,to.model,opts) {
             cat1(opts,filename,": Train LM ...\n")
@@ -388,7 +416,7 @@ tdmRegress <- function(d_train,d_test,response.variables,input.variables,opts)
                 ,d_train=d_train
                 ,d_test=d_test 
                 ,SRF=SRF            # output from tdmModSortedRFimport or NULL
-                ,opts=opts          # some defaults might have been added  
+                ,opts=opts          # some defaults might have been added, list opts$srf might have been added
                )
     if (opts$MOD.method=="RF" & opts$RF.p.all) res$train.indiv=app$train.indiv;
     

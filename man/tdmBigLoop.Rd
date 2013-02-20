@@ -7,8 +7,8 @@
 \arguments{
   \item{envT}{an environment containing on input at least
   the element \code{tdm} (a list with general settings for
-  TDMR, see \code{\link{tdmDefaultsFill}}), which has as
-  extra elements \describe{ \item{\code{tdm$runList}}{
+  TDMR, see \code{\link{tdmDefaultsFill}}), which has at
+  least the elements \describe{ \item{\code{tdm$runList}}{
   vector of \code{.conf} filenames }
   \item{\code{tdm$spotList}}{ \code{[NULL]} vector of
   \code{.conf} filenames for which spot tuning is done.  If
@@ -26,14 +26,14 @@
   frame with the best-so-far results from last tuning (one
   line collected after each (SPO) step)} \item{resGrid}{
   list with data frames \code{res} from all tuning runs.
-  Use \cr \code{envT$getRes(confFile,nExp,theTuner)} \cr to
-  retrieve a specific \code{res}. } \item{bstGrid}{ list
-  with data frames \code{bst} from all tuning runs. Use \cr
-  \code{envT$getBst(confFile,nExp,theTuner)} \cr to
-  retrieve a specific \code{bst}. } \item{theFinals}{ data
-  frame with one line for each triple
-  \code{(confFile,nExp,tuner)}, each line contains summary
-  information about the tuning run in the form: \cr
+  Use \cr \code{envT$getRes(envT,confFile,nExp,theTuner)}
+  \cr to retrieve a specific \code{res}. } \item{bstGrid}{
+  list with data frames \code{bst} from all tuning runs.
+  Use \cr \code{envT$getBst(envT,confFile,nExp,theTuner)}
+  \cr to retrieve a specific \code{bst}. }
+  \item{theFinals}{ data frame with one line for each
+  triple \code{(confFile,nExp,tuner)}, each line contains
+  summary information about the tuning run in the form: \cr
   \code{confFile tuner nExp [params] NRUN NEVAL RGain.bst
   RGain.* sdR.*} \cr where \code{[params]} is written
   depending on \code{tdm$withParams}. \cr \code{NRUN} is
@@ -88,10 +88,10 @@
   elements). Usually, \code{tdm$unbiasedFunc =
   \link{unbiasedRun}}. \cr Each of these experiments is
   repeated tdm$nEperim times. Thus we have for each tripel
-  \cr \code{(confFile,nExp,theTuner)} \cr a tuning result
-  with \cr \code{confFile in tdm$runList} \cr \code{nExp in
-  1,...,tdm$nExperim} \cr \code{theTuner in tdm$tuneMethod}
-  \cr
+  \cr \code{ (confFile,nExp,theTuner)} \cr a tuning result.
+  The tripel ranges are: with \cr \code{ confFile in
+  tdm$runList} \cr \code{ nExp in 1,...,tdm$nExperim} \cr
+  \code{ theTuner in tdm$tuneMethod} \cr
 }
 \details{
   \code{tdm} refers to \code{envT$tdm}. \cr\cr Tuning is
@@ -135,25 +135,27 @@
   \itemize{ \item \code{envT$theFinals } is written to file
   \code{tdm$finalFile} and appended to \code{tdm$experFile}
   } If \code{tdm$finalFile==NULL}, then it is set to
-  \code{sub(".conf",".fin",runList[1]}.  \cr If
+  \code{sub(".conf",".fin",runList[1])}.  \cr If
   \code{tdm$experFile==NULL}, then nothing is appended to
   any experiment file.
 
-  Example usages of function \code{tdmBigLoop} are shown
-  with \cr \code{ demo(demo03sonar)},\cr \code{
-  demo(demo03sonar_B)} and \cr \code{ demo(demo04cpu)} \cr
+  Example usages of function \code{tdmBigLoop} are shown in
+  \cr \code{ demo(demo03sonar)},\cr \code{
+  demo(demo03sonar_B)} \cr \code{ demo(demo04cpu)} \cr
   where the corresponding R-sources are in directory
   \code{demo}.
 }
 \examples{
 #*# --------- demo/demo03sonar.r ---------
-#*# This demo shows a complete tuned data mining process (level 3 of TDMR) where the data mining task is the classification task
-#*# SONAR (from UCI repository, http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+\%28Sonar,+Mines+vs.+Rocks\%29).
+#*# This demo shows a complete tuned data mining process (level 3 of TDMR) where 
+#*# the data mining task is the classification task SONAR (from UCI repository, 
+#*# http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+\%28Sonar,+Mines+vs.+Rocks\%29).
 #*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify
 #*# with Random Forest as the prediction model. 
-#*# The three parameter to be tuned are CUTOFF1, CLASSWT2 and XPERC, as specified in file sonar_04.roi.
-#*# The tuner used here is LHD.  
-#*# Tuning runs are rather short, to make the example run quickly. Do not expect good numeric results. 
+#*# The three parameter to be tuned are CUTOFF1, CLASSWT2 and XPERC, as specified 
+#*# in file sonar_04.roi. The tuner used here is LHD.  
+#*# Tuning runs are rather short, to make the example run quickly. 
+#*# Do not expect good numeric results. 
 #*# See demo/demo03sonar_B.r for a somewhat longer tuning run, with two tuners SPOT and LHD.
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
@@ -164,23 +166,26 @@ oldwd <- getwd();  setwd(path);
 source("main_sonar.r");    # from working dir
 
 ## preliminary settings for TDMR
-tdm <- list( mainFunction="main_sonar"
-            , runList = c("sonar_04.conf")  
-            , umode=c("RSUB")           # ["CV" | "RSUB" | "TST"]
-            , tuneMethod = c("lhd")    # c("spot","lhd")
+tdm <- list( mainFunc="main_sonar"
+            , runList = "sonar_04.conf"
+            , umode=c("CV")           # ["CV" | "RSUB" | "TST" | "SP_T" ]
+            , tuneMethod = c("lhd")   # c("spot","lhd")
             , filenameEnvT="demo03.RData"   # file to save environment envT (in working dir)
-            , finalFile="sonar.fin"
             , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
-            , withParams=TRUE         # list the columns with tuned parameter in final results 
             , nExperim=1
             , parallelCPUs=1
             , optsVerbosity = 0       # the verbosity for the unbiased runs
             );
-## tdm$runList="sonar_04.conf" has the settings for the tuning process (e.g. "auto.loop.steps"=number of SPOT generations       
-## "auto.loop.evals"=budget of model building runs and io.roiFileName = "sonar_04.roi").
-## tdm$runList could contain other files as well (e.g. c("sonar_01.conf","sonar_02.conf","sonar_03.conf")), if desired.
+## tdm$runList="sonar_04.conf" has the settings for the tuning process (e.g. 
+##    - "auto.loop.steps"=number of SPOT generations       
+##    - "auto.loop.evals"=budget of model building runs and 
+##    - io.roiFileName = "sonar_04.roi"
+## ). tdm$runList could contain other files as well (e.g. 
+##    c("sonar_01.conf","sonar_02.conf","sonar_03.conf")
+## ), if desired.
 
-spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or "rep" (make a visual report and an unbiased run on best results)
+spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or 
+            ## "rep" (make a visual report and an unbiased run on best results)
 
 ## construct an initial environment envT from the given TDMR settings in tdm
 ## (this contains also the fill-in of other defaults for tdm via
@@ -189,7 +194,8 @@ spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or 
 envT <- tdmEnvTMakeNew(tdm);
 
 ## the call to tdmBigLoop will start the whole TDMR process:
-## - for each file in tdm$runList a complete DM tuning is started with each tuning method tdm$tuneMethod  (if spotStep=="auto")
+## - for each file in tdm$runList a complete DM tuning is started with each tuning 
+##   method tdm$tuneMethod  (if spotStep=="auto")
 ## - the best result from tuning is fed into an unbiased model build and evaluation run 
 ## - results are printed and returned in envT$theFinals 
 ## - more detailed results are in other elements of environment envT
@@ -198,8 +204,7 @@ envT <- tdmEnvTMakeNew(tdm);
 ##      b) the sensitivity plot for each parameter in the vicinity of the best solution found 
 envT <- tdmBigLoop(envT,spotStep);
 
-## restore old working directory
-setwd(oldwd);
+setwd(oldwd);               # restore old working directory
 
 ## the resulting tuning surface(s) (the metamodel(s)) can be inspected interactively with
 ##      load(paste(path,tdm$filenameEnvT,sep="/");     

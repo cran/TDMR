@@ -5,6 +5,44 @@
 #-#####################################################################################
 
 ######################################################################################
+#tdmPreNAroughfix
+#
+#' Replace <NA> values with suitable non <NA> values
+#'
+#' This function replaces <NA> values in a list entry or data frame column with the median 
+#' (for numeric columns) or the most frequent mode (for factor columns). 
+#' It does the same as \code{na.roughfix} in package randomForest, but does so faster.
+#' 
+#' @param  object      list or data frame
+#' @param  ...         additional arguments
+#'
+#' @return \code{object}, the list or data frame with <NA> values replaced
+#'     
+#' @export
+######################################################################################
+#--- code borrowed from https://stat.ethz.ch/pipermail/r-help/2010-July/244390.html  ---------------
+tdmPreNAroughfix <- function (object, ...) {
+  res <- lapply(object, roughfix)
+  structure(res, class = "data.frame", row.names = seq_len(nrow(object)))
+}
+
+roughfix <- function(x) {
+  missing <- is.na(x)
+  if (!any(missing)) return(x)
+
+  if (is.numeric(x)) {
+    x[missing] <- median.default(x[!missing])
+  } else if (is.factor(x)) {
+    freq <- table(x)
+    x[missing] <- names(freq)[which.max(freq)]
+  } else {
+    stop("tdmPreNAroughfix only works for numeric or factor")
+  }
+  x
+}
+#---------------------------------------------------------------------------------------------------
+
+######################################################################################
 #
 #' Find constant columns. 
 #'
@@ -138,7 +176,8 @@ tdmPreLevel2Target <- function(dset,target,f,opts)
 #'     \item{dset}{  the input data frame dset with columns numeric.variables replaced or extended (depending on \code{opts$PRE.PCA.REPLACE})
 #'                    by the PCs with names PC1, PC2, ... (in case PRE.PCA=="linear")
 #'                    or with names KP1, KP2, ... (in case PRE.PCA=="kernel")
-#'                    and optional with monomial columns added, if PRE.PCA.npc>0  }
+#'                    and optional with monomial columns added, if PRE.PCA.npc>0. 
+#'                    The number of PCs is min(nrows(dset),length(numeric.variables)).  }
 #'     \item{numeric.variables}{  the new numeric column names (PCs, monomials, and optionally old numericV, if \code{opts$PRE.PCA.REPLACE==F}) }
 #'     \item{pcaList}{  a list with the items \code{sdev, rotation, center, scale, x} as returned from \code{\link{prcomp}} 
 #'                    plus \code{eigval}, the eigenvalues for the PCs }
@@ -153,7 +192,11 @@ tdmPreLevel2Target <- function(dset,target,f,opts)
 tdmPrePCA.train <- function(dset,opts)  {
     if (is.null(opts$PRE.PCA.numericV))
       stop("Please define opts$PRE.PCA.numericV, the vector of numeric column names, in order to run PCA");
-      
+
+    if (nrow(dset) < length(opts$PRE.PCA.numericV))
+      stop("There are fewer rows in dset than numeric variables. Please increase the rows in dset.
+            Consider opts$PRE.allNonVali=TRUE (use all non-validation data for PCA training)");      
+
     numeric.variables = opts$PRE.PCA.numericV;
     ptm <- proc.time()
     fname <-  opts$filename;
@@ -209,7 +252,7 @@ tdmPrePCA.train <- function(dset,opts)  {
       pcaList = NULL;
     }
   
-    # adding nonlinear input combinations (monomials of degree 2 for the first PRE.PCA.npc PCs)
+    # adding nonlinear input combinations (monomials of degree 2 for the first opts$PRE.PCA.npc PCs)
     dset <- tdmPreAddMonomials(dset,rx,opts$PRE.PCA.npc,opts);
     numeric.variables = setdiff(names(dset),other.vars);  
     #  = union{ PC-names , monomial names , original numeric.variables (if opts$PRE.PCA.REPLACE=FALSE)}
@@ -273,7 +316,7 @@ tdmPrePCA.apply <- function(dset,pcaList,opts,dtrain=NULL)  {
         rx = dset[,numeric.variables];
       }
     
-      # adding nonlinear input combinations (monomials of degree 2 for the first PRE.PCA.npc PCs)
+      # adding nonlinear input combinations (monomials of degree 2 for the first opts$PRE.PCA.npc PCs)
       dset <- tdmPreAddMonomials(dset,rx,opts$PRE.PCA.npc,opts);
       numeric.variables = setdiff(names(dset),other.vars);   
       #  = union{ PC-names , monomial names , original numeric.variables (if opts$PRE.PCA.REPLACE=FALSE)}
@@ -390,7 +433,7 @@ tdmPreSFA.train <- function(dset,response.var,opts)  {
       sfaList = NULL;
     }
   
-    # adding nonlinear input combinations (monomials of degree 2 for the first PRE.SFA.npc SFA-components)
+    # adding nonlinear input combinations (monomials of degree 2 for the first opts$PRE.SFA.npc SFA-components)
     dset <- tdmPreAddMonomials(dset,sx,opts$PRE.SFA.npc,opts);
     numeric.variables = setdiff(names(dset),other.vars);   
     #  = union{ SFA-component-names , monomial names , original numeric.variables (if opts$PRE.SFA.REPLACE=FALSE)}
@@ -458,7 +501,7 @@ tdmPreSFA.apply <- function(dset,sfaList,opts,dtrain=NULL)  {
         sx = dset[,numeric.variables];
       }
     
-      # adding nonlinear input combinations (monomials of degree 2 for the first PRE.SFA.npc PCs)
+      # adding nonlinear input combinations (monomials of degree 2 for the first opts$PRE.SFA.npc PCs)
       dset <- tdmPreAddMonomials(dset,sx,opts$PRE.SFA.npc,opts);
       numeric.variables = setdiff(names(dset),other.vars);   
       #  = union{ SFA-component-names , monomial names , original numeric.variables (if opts$PRE.SFA.REPLACE=FALSE)}
@@ -520,7 +563,8 @@ tdmAdjustDSet <- function(dset,numeric.variables,rx,prefix,PRE.REPLACE) {
 #' @param   degree  [2] (currently only 2 is supported)
 #' @param   prefix  ["R"] character prefix for the monomial column names
 #'
-#' @return  data frame \code{dset} with the new monomial columns appended
+#' @return  data frame \code{dset} with the new monomial columns appended. If 
+#'          PRE.npc==0, the data frame is returned unchanged.
 #'
 #' @note CAVEAT: The double for-loop costs some time (e.g. 2-4 sec for ncol(rx)=8 or 10)
 #' How to fix: make a version w/o for-loop and w/o frequent assigns to dset (**TODO**)

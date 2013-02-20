@@ -14,11 +14,12 @@
 #'   Depending on the value of TST.kind, the returned index cvi is
 #'   \enumerate{
 #'   \item TST.kind="cv": a random cross validation index P([111...222...333...]) - or -
-#'   \item TST.kind="rand": a random index with P([000...111...]) for training (0) and validation (1) cases - or -
-#'   \item TST.kind="col": the column dset[,opts$TST.COL] contains the training (0) and validation (1) set division
+#'   \item TST.kind="rand": a random index with P([00...11...-1-1...]) for training (0), validation (1) and disregard (-1) cases - or -
+#'   \item TST.kind="col": the column dset[,opts$TST.COL] contains the training (0), validation (1) and disregard (-1) set division
 #'         (and all records with a value <0 in column TST.COL are disregarded).
 #'   }
-#'   Here P(.) denotes random permutation of the sequence.
+#'   Here P(.) denotes random permutation of the sequence. \cr
+#'   The disregard set is optional, i.e. cvi may contain only 0 and 1, if desired. \cr
 #'   Special case TST.kind="cv" and TST.NFOLD=1: make *every* record a training record, i.e. index [000...]. \cr
 #'   In case TST.kind="rand" and stratified=TRUE a \emph{stratified} sample is drawn, where the strata in the 
 #'   training case reflect the rel. frequency of each level of the **1st** response variable
@@ -34,7 +35,7 @@
 #'      \item TST.COL:   column of dset containing the (0/1/<0) index (only relevant in case TST.kind=="col")
 #'                       or NULL if no such column exists
 #'      \item TST.valiFrac:  fraction of records to set aside for validation (only relevant in case TST.kind=="rand")
-#'      \item TST.trnFrac:  [1-opts$TST.valiFrac] fraction of records to set aside for validation (only relevant in case TST.kind=="rand")
+#'      \item TST.trnFrac:  [1-opts$TST.valiFrac] fraction of records to use for training (only relevant in case TST.kind=="rand")
 #'    }
 #'  @param stratified [F] do stratified sampling for TST.kind="rand" with at least one training 
 #'         record for each response variable level (classification)
@@ -79,9 +80,11 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
             if (opts$TST.kind=="rand") {   # make a (random) division
               if (is.null(opts$TST.valiFrac))
                 stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac is not defined"));
-              if (opts$TST.valiFrac >= 1)
-                stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac must be < 1. Current value is opts$TST.valiFrac = %f", opts$TST.valiFrac));
               if (is.null(opts$TST.trnFrac)) opts$TST.trnFrac = 1-opts$TST.valiFrac;
+              if (opts$TST.valiFrac >= 1 | opts$TST.valiFrac < 0)
+                stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac must be in [0,1). Current value is opts$TST.valiFrac = %f", opts$TST.valiFrac));
+              if (opts$TST.trnFrac > 1 | opts$TST.trnFrac <= 0)
+                stop(sprintf("tdmModCreateCVindex: opts$TST.trnFrac must be in (0,1]. Current value is opts$TST.trnFrac = %f", opts$TST.trnFrac));
               if (opts$TST.valiFrac+opts$TST.trnFrac>1)
                 stop(sprintf("tdmModCreateCVindex: opts$TST.valiFrac+opts$TST.trnFrac > 1. Current value is opts$TST.valiFrac = %f"
                             , opts$TST.valiFrac,", opts$TST.trnFrac = %f", opts$TST.trnFrac ));
@@ -94,8 +97,8 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
                 # calculate tfr, the number of training set records for each level of the response variable            
                 tfr <- sapply(unique(rv),function(x) { round(opts$TST.trnFrac*length(which(rv==x))) });
                 # (this seems complicated, but the simpler command: tfr <- round((1-opts$TST.valiFrac)*table(rv));
-                # does not work, because 'table' orders the levels alphabetically but 'strata' below requires them in the 
-                # order they appear in column rv. 'unique' sorts the levels also in the order of appearance.) 
+                # does not work, because 'table' orders the levels alphabetically but 'unique' (or 'strata') below 
+                # requires them in the order they appear in column rv.) 
                 #
                 tfr[tfr<1] <- 1;      # ensure that there is at least one record for each class 
                 cvi <- rep(-1,L);
@@ -113,7 +116,7 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
                 idxCviMinus <- which(cvi==-1);
                 p <- sample(length(idxCviMinus));
                 vfr <- opts$TST.valiFrac*L;     # index where the validation data ends
-                cvi[idxCviMinus[p[1:vfr]]] <- 1;
+                if (trunc(vfr)>0) cvi[idxCviMinus[p[1:vfr]]] <- 1;
                 
               } else {  # i.e. stratified=FALSE
                 # simple random sampling (recommended for regression):
@@ -122,9 +125,10 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
                 tfr <- opts$TST.trnFrac*L;      # index where the training data ends
                 vfr <- (1-opts$TST.valiFrac)*L; # index where the validation data starts
                 cat1(opts,opts$filename,": Random training-validation-index with opts$TST.valiFrac = ",opts$TST.valiFrac*100,"%\n")
-                cvi <- rep(-1,L);
-                cvi[p[1:tfr]] <- 0;             # training set index ( opts$TST.trnFrac  percent of the data) 
-                cvi[p[(vfr+1):L]] <- 1;         # validation set index ( opts$TST.valiFrac  percent of the data)
+                cvi <- rep(-1,L);        
+                if (trunc(tfr)==0) stop(sprintf("No training data! opts$TST.trnFrac=%7.2f",opts$TST.trnFrac));
+                cvi[p[1:tfr]] <- 0;                         # training set index ( opts$TST.trnFrac  percent of the data) 
+                if (trunc(vfr)<L) cvi[p[(vfr+1):L]] <- 1;   # validation set index ( opts$TST.valiFrac  percent of the data)
               }
             } # opts$TST.kind=="rand"
             else           # i.e. opts$TST.kind=="col"
@@ -132,7 +136,7 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
               if (is.null(opts$TST.COL))
                 stop(sprintf("tdmModCreateCVindex: opts$TST.COL is NULL, but opts$TST.kind=='col'"));
               if (!(opts$TST.COL %in% names(dset)))
-                stop(sprintf("tdmModCreateCVindex: Data frame dset does not contain a column opts$TST.COL named '%s'", opts$TST.COL));
+                stop(sprintf("tdmModCreateCVindex: Data frame dset does not contain a column opts$TST.COL named \"%s\"", opts$TST.COL));
               cat1(opts,opts$filename,": Using training-validation-index from column",opts$TST.COL,"\n")
               cvi <- dset[,opts$TST.COL];
             }
@@ -277,12 +281,13 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
 
     ptm <- proc.time();
     filename <- opts$filename;
-    dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
-    if (!file.exists(dir.output)) {
-      success = dir.create(dir.output);     
-      if (!success) stop(sprintf("Could not create dir.output=%s",dir.output));
-    }
-    SRF.file <- paste(paste(dir.output,filename,sep="/"),"SRF",response.variable,"Rdata",sep=".")
+#--- this is now in tdmEnvTMakeNew.r ---
+#    dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
+#    if (!file.exists(dir.output)) {
+#      success = dir.create(dir.output);
+#      if (!success) stop(sprintf("Could not create dir.output=%s",dir.output));
+#    }
+#    SRF.file <- paste(paste(dir.output,filename,sep="/"),"SRF",response.variable,"Rdata",sep=".")
     
 
     if (opts$SRF.calc==TRUE) {
@@ -364,16 +369,26 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       
       s_input <- input.variables[order(imp1,decreasing=TRUE)]  # input.variables sorted by increasing importance
       s_imp1 <- imp1[order(imp1,decreasing=TRUE)]
-      if (opts$fileMode) {
-        cat1(opts,filename,": Saving sorted RF importance to file", SRF.file, "...\n")
-        save(file=SRF.file,s_input,s_imp1,input.variables); #,accum_imp1);
-      }
-    } 
-    else {
-      cat1(opts,filename,": Loading sorted RF importance from file", SRF.file, "...\n")
-      if (!file.exists(SRF.file)) stop(sprintf("tdmModSortedRFimport: SRF.file=%s does not exist"));   
-      load(file=SRF.file);
+      #if (opts$fileMode) {
+      #  cat1(opts,filename,": Saving sorted RF importance to file", SRF.file, "...\n")
+      #  save(file=SRF.file,s_input,s_imp1,input.variables); #,accum_imp1);
+      #}
+      cat1(opts,filename,": Saving SRF (sorted RF) importance info on opts ...\n");
+      opts$srf[[response.variable]] = data.frame(inp_var=input.variables
+                                                ,s_input=s_input
+                                                ,s_imp1=s_imp1
+                                                );
+    }
+    else {   # i.e. if (opts$SRF.calc==F)
+      cat1(opts,filename,": Loading sorted RF importance info from opts ...\n")
+      #if (!file.exists(SRF.file)) stop(sprintf("tdmModSortedRFimport: SRF.file=%s does not exist"));
+      #load(file=SRF.file);
+      if (!any(names(opts$srf)==response.variable))
+        stop(sprintf("list opts$srf contains no data frame named %s. Consider opts$SRF.calc==TRUE.",response.variable));
+      s_input=opts$srf[[response.variable]]$s_input;
+      s_imp1 =opts$srf[[response.variable]]$s_imp1;
     } # if (opts$SRF.calc)
+    if (is.null(s_input) | is.null(s_imp1)) stop("opts$SRF.s_input or opts$SRF.s_imp1 are not available. Consider opts$SRF.calc=TRUE.");
     
     # OLD AND WRONG: s_imp2 was a copy of s_imp1, shifted by -min(s_imp1)-0.001 if s_imp1 contains negative values
     # which is not allowed for cumsum (MeanDecreaseAccuracy can be negative)
@@ -404,7 +419,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
     # don't let lsi = length(input.variables) become smaller than minlsi
     minlsi <- min(length(s_input),opts$SRF.minlsi);
     lsi <- max(lsi,minlsi);
-    input.variables <- s_input[1:lsi]
+    input.variables <- as.character(s_input[1:lsi])
 
     s_dropped <- setdiff(s_input,input.variables);
     lsd <- length(s_dropped);

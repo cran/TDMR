@@ -26,7 +26,11 @@ tdmGraAndLogInitialize <- function(opts) {
 
     if (is.null(opts$fileMode)) opts$fileMode=TRUE;   # this might be necessary for older opts from file
     
-    if (opts$fileMode) sink(paste(dir.output,opts$LOGFILE,sep="/"),split=T,append=F);	  
+    if (opts$fileMode) {
+      logFile = paste(dir.output,opts$LOGFILE,sep="/");
+      while(sink.number()>0) sink();                  # remove any sinks which might be open from previous (interrupted) runs (prevents logFile from growing big!)
+      sink(logFile,split=T,append=F);	  
+    }
     
     gdObj = list();
     class(gdObj) <- c("TDMgdev","TDM");

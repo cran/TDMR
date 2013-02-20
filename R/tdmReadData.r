@@ -25,7 +25,7 @@
 #'    \item \code{filename}:   string of filename in opts$dir.txt 
 #'    \item \code{filetest}:   string of filename test data in opts$dir.txt (only if READ.TST=T)
 #'    \item \code{READ.TXT}:   =T: read from opts$filename, =F: load from .Rdata file 
-#'    \item \code{READ.CMD}:   ["read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW)"] 
+#'    \item \code{READ.CMD}:   ["tdmReadCmd(filename,opts)"] 
 #'                             string with a file-read-command with placeholder 'filename' 
 #'    \item \code{READ.TST}:   if =T: read also test data from \code{filetest} 
 #'    \item \code{TST.COL}:    string, create a column with the name of this string in \code{dset}, which has 0 for training and 1 for test data 
@@ -35,21 +35,30 @@
 #'
 #' @export
 tdmReadData <- function(opts) {
-    if (is.null(opts$READ.CMD))
-        opts$READ.CMD = "read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW)";   # includes header=T, sep="," and dec="."
-    if (is.null(opts$filesuffix))
-        stop("Cannot continue with opts$filesuffix==NULL. Please use 'opts=tdmOptsDefaultsSet()' to construct opts correctly.");
-    suffix = opts$filesuffix;
-    filename <- opts$filename;
+    if (is.null(opts$READ.CMD)) opts$READ.CMD = "tdmReadCmd(filename,opts)";
+        #OLD: opts$READ.CMD = "read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW)";   # includes header=T, sep="," and dec="."
     
+    getFilenameRdata <- function(filename) { 
+        ssp = strsplit(filename,".",fixed=TRUE);
+        if (length(ssp[[1]])==1) {                  
+          # filename has no suffix --> add just ".Rdata"
+          filenameRdata = paste(filename,".Rdata");
+        } else {
+          suffix = paste(".",tail(unlist(ssp),1),sep="");
+          filenameRdata =  sub(suffix,".Rdata",filename);
+        }
+        filenameRdata;
+    }
+    
+    filename = opts$filename; 
     if (opts$READ.TXT) {
       cat1(opts,filename,": Read data from",filename,"...\n")
       cmd <- paste("dset <-",opts$READ.CMD);
-      eval(parse(text=paste("dset <-",opts$READ.CMD)));
+      eval(parse(text=cmd));
       #dset <- read.csv2(file=paste(opts$dir.txt, filename, sep=""), dec=".", sep=";", nrow=opts$READ.NROW,header=T)
-      filenameRdata =  sub(suffix,".Rdata",filename);
+      filenameRdata =  getFilenameRdata(filename);
       if (filenameRdata==filename)        # this should normally not happen. Just for safety, to avoid overwriting of filename
-          stop(sprintf("filenameRdata=%s has to differ from filename=%s. Please check opts$filesuffix.",filenameRdata,filename)); 
+          stop(sprintf("filenameRdata=%s has to differ from filename=%s.",filenameRdata,filename)); 
       pathfile=paste(opts$dir.data,filenameRdata,sep="")
       if (!file.exists(dirname(pathfile))) {
         # why dirname(pathfile) and not simply opts$dir.data? - Because opts$dir.data has trailing "/" which confuses file.exists
@@ -61,20 +70,20 @@ tdmReadData <- function(opts) {
         cat1(opts,filename,": Read test data from",opts$filetest, "...\n");
         filename=opts$filetest;
         cmd <- paste("tset <-",opts$READ.CMD);
-        eval(parse(text=paste("tset <-",opts$READ.CMD)));
+        eval(parse(text=cmd));
         #tset <- read.csv2(file=paste(opts$dir.txt, opts$filetest, sep=""), dec=".", sep=";",header=T)  # read the test data
-        filenameRdata =  sub(suffix,".Rdata",opts$filetest);
+        filenameRdata =  getFilenameRdata(opts$filetest);
         if (filenameRdata==filename)      # this should normally not happen. Just for safety, to avoid overwriting of opts$filetest
-            stop(sprintf("filenameRdata=%s has to differ from filetest=%s. Please check opts$filesuffix.",filenameRdata,opts$filetest)); 
+            stop(sprintf("filenameRdata=%s has to differ from filetest=%s.",filenameRdata,opts$filetest)); 
         save(tset, file=paste(opts$dir.data,filenameRdata,sep=""))
       }
     } else {
       cat1(opts,filename,": Load data from .Rdata ...\n")
-      load(file=paste(opts$dir.data,sub(suffix,".Rdata",opts$filename),sep=""))
+      load(file=paste(opts$dir.data,getFilenameRdata(opts$filename),sep=""))
       if (opts$READ.NROW>0)  dset <- dset[1:min(opts$READ.NROW,length(dset[,1])) , ];
       if (opts$READ.TST)
-        load(file=paste(opts$dir.data,sub(suffix,".Rdata",opts$filetest),sep=""))
-        if (opts$READ.NROW>0)  tset <- tset[1:min(opts$READ.NROW,length(dset[,1])) , ];
+        load(file=paste(opts$dir.data,getFilenameRdata(opts$filetest),sep=""))
+        if (opts$READ.NROW>0)  tset <- tset[1:min(opts$READ.NROW,length(tset[,1])) , ];
     }
     if (opts$READ.TST) {
 	    if (is.null(opts$TST.COL)) stop("Need a non-NULL definition for opts$TST.COL!");
@@ -85,4 +94,40 @@ tdmReadData <- function(opts) {
     cat1(opts,opts$filename,":", length(dset[,1]), "records read.\n")
 
     dset;
+}
+
+######################################################################################
+# tdmReadCmd:
+#
+#'   Template function, the default for opts$READ.CMD.
+#'
+#'   This template function is used by \code{\link{tdmReadData}} for data reading.  
+#'
+#' @note 
+#'    This default template function will issue the command \cr
+#'    \code{dset=read.csv(file=paste(opts$dir.txt, filename, sep=""),nrow=opts$READ.NROW)} \cr
+#'    which includes the default settings \code{header=T, sep="," and dec="."}. The user
+#'    may alternatively specify his/her own function, the only rules are 
+#'      \itemize{
+#'      \item{	that it has to return a data frame (\code{dset} or \code{tset})  }
+#'      \item{ 	that the string \code{opts$READ.CMD}  contains an argument \code{filename}  }
+#'      }
+#'    (\code{\link{tdmReadData}} will call this function with either \code{opts$filename} or 
+#'    \code{opts$filetest} replacing \code{filename})
+#' 
+#' @param filename  this is either opts$filename or opts$filetest
+#' @param opts      list of options, we need here
+#'  \itemize{
+#'    \item \code{dir.txt}:    string, the directory where to read \code{filename} 
+#'    \item \code{READ.NROW}:  [-1] read only that many rows from opts$filename. -1 for 'read all rows'.
+#'  }
+#' @return \code{dset},  a data frame with all data read
+#'
+#' @export
+tdmReadCmd <- function(filename,opts) {
+  dset = read.csv(file=paste(opts$dir.txt, filename, sep=""), nrow=opts$READ.NROW);   # includes header=T, sep="," and dec="."
+    
+  #
+  # alternatively, all data may be read first, then scaled, and only then the first opts$READ.NROW data were extracted
+  #
 }

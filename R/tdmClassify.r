@@ -14,7 +14,7 @@
 #'   @param d_test      validation set, same columns as training set
 #'   @param d_dis       'disregard set', i.e. everything what is neither train nor test. The model is 
 #'                      applied to all records in d_dis (needed for active learning, see ssl_methods.r)
-#'   @param d_preproc   data used for preprocessing (usually all non-validation data)
+#'   @param d_preproc   data used for preprocessing, only relevant for opts$PRE.SFA!="none" (usually all non-validation data)
 #'   @param response.variables   name of column which carries the target variable - or - 
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for evaluation)
@@ -75,10 +75,15 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
 {
     first <- TRUE; 
     filename <- opts$filename
-    saved.input.variables <- input.variables;      # save copy for response.variable loop
+    saved.input.variables <- input.variables;       # save copy for response.variable loop
    
-    # be sure that all necessary  defaults are set:
-    opts <- tdmOptsDefaultsSet(opts);
+    opts <- tdmOptsDefaultsSet(opts);               # be sure that all necessary  defaults are set
+
+    if (opts$MOD.method %in% c("RF","MC.RF","SVM")) {
+      d_train <- na_input_check(d_train,"d_train",input.variables);
+      d_test <- na_input_check(d_test,"d_test",input.variables);
+      if (nrow(d_dis)>0) d_dis  <- na_input_check(d_dis,"d_dis",input.variables);
+    }
 
     if (is.null(opts$PRE.SFA.numericV)) opts$PRE.SFA.numericV <- input.variables;
     if (!is.null(opts$RF.mtry)) opts$RF.mtry=min(length(input.variables),opts$RF.mtry);
@@ -100,7 +105,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         
         # SFA preprocessing, if requested by opts$PRE.SFA, is done *inside* the response.variable-for-loop
         # because SFA training depends on the response variable
-        if (opts$PRE.SFA.npc>0 | opts$PRE.SFA!="none") {
+        if (opts$PRE.SFA!="none") {
           # a) do SFA on the numeric variables of d_train, if opts$PRE.SFA!="none"
           # b) add monomials of degree 2 for the first opts$PRE.SFA.npc numeric variables
           # c) apply this SFA and monomials to d_test and d_dis in the same way
@@ -135,11 +140,13 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         lev.resp <- levels(d_train[,response.variable]);
         n.class <- length(lev.resp);
         if (!is.null(opts$CLS.CLASSWT)) {
-          if (n.class !=  length(opts$CLS.CLASSWT)) stop("Length of opts$CLS.CLASSWT differs from the number of levels in response variable.");
+          if (n.class !=  length(opts$CLS.CLASSWT)) 
+            stop("Length of opts$CLS.CLASSWT differs from the number of levels in response variable.");
           if (is.null(names(opts$CLS.CLASSWT))) 
             names(opts$CLS.CLASSWT) <- lev.resp;    # RF needs a *named* vector for option 'classwt', otherwise it will change (!) this vector 
         }
-        if (length(setdiff(names(opts$CLS.CLASSWT),lev.resp))>0) stop("Names in opts$CLS.CLASSWT differ from the levels of the response variable.");
+        if (length(setdiff(names(opts$CLS.CLASSWT),lev.resp))>0) 
+          stop("Names in opts$CLS.CLASSWT differ from the levels of the response variable.");
 
         opts$CLS.cutoff <- tdmModAdjustCutoff(opts$CLS.cutoff,n.class);
         opts$SRF.cutoff <- tdmModAdjustCutoff(opts$SRF.cutoff,n.class);
@@ -173,8 +180,9 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
           opts$RF.sampsize <- tdmModAdjustSampsize(opts$SRF.samp, d_train, response.variable, opts);
           SRF <- tdmModSortedRFimport(d_train,response.variable,
                                       input.variables,opts)
-          input.variables <- SRF$input.variables;  
-          opts <- SRF$opts;       # some defaults might have been added, some opts$SRF.* values changed  
+
+          input.variables <- as.character(SRF$input.variables);
+          opts <- SRF$opts;       # some defaults might have been added, some opts$SRF.* values or list opts$srf might be changed
           SRF$opts <- NULL;       # simplify list result, which will contain both, SRF and opts
         }  else {
           SRF=NULL;
@@ -205,12 +213,12 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         res.rf <- res.nb <- train.predict <- test.predict <- NULL
         #================================================================
         # PART 4.3: MODELING: TRAIN RANDOM FOREST (OR OTHER METHOD)
-        #================================================================      
-        to.model <- d_train[,c(input.variables,response.variable)]
+        #================================================================
+        to.train <- d_train[,c(input.variables,response.variable)]
         to.test <- d_test[,c(input.variables,response.variable)]
         if (opts$MOD.method %in% c("RF","MC.RF"))
-          opts$RF.sampsize <- tdmModAdjustSampsize(opts$RF.samp, to.model, response.variable, opts);
-        train.rf <- function(response.variable,to.model,opts) {
+          opts$RF.sampsize <- tdmModAdjustSampsize(opts$RF.samp, to.train, response.variable, opts);
+        train.rf <- function(response.variable,to.train,opts) {
             cat1(opts,opts$filename,": Train RF with sampsize =", opts$RF.sampsize,"...\n")
             if (!is.null(opts$CLS.CLASSWT)) {
                 cat1(opts,"Class weights: ", opts$CLS.CLASSWT,"\n")
@@ -233,31 +241,31 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,paste(" mtry=",eval(opts$RF.mtry)),sep=",")
             if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options," cutoff=opts$CLS.cutoff",sep=",")
             if (!is.null(opts$RF.nodesize)) rf.options = paste(rf.options,paste(" nodesize=",eval(opts$RF.nodesize)),sep=",")
-            #dbg_chase_cutoff_bug(formul,to.model,d_train,response.variable,rf.options,opts);
+            #dbg_chase_cutoff_bug(formul,to.train,d_train,response.variable,rf.options,opts);
             flush.console();          
-            eval(parse(text=paste("res.rf <- randomForest( formul, data=to.model,",rf.options,")"))); 
+            eval(parse(text=paste("res.rf <- randomForest( formul, data=to.train,",rf.options,")"))); 
             res.rf$HasVotes = TRUE; 
             res.rf$HasProbs = TRUE; 
             res.rf$cutoff = opts$CLS.cutoff;
             res.rf$classwt = opts$CLS.CLASSWT;
             res.rf;
         } 
-        train.mc.rf <- function(response.variable,to.model,opts) {
+        train.mc.rf <- function(response.variable,to.train,opts) {
             cat1(opts,opts$filename,": Train tdmMetacostRf ...\n")
             flush.console();
-            res.rf <- tdmMetacostRf(response.variable,to.model,opts)
+            res.rf <- tdmMetacostRf(response.variable,to.train,opts)
             res.rf$HasVotes = TRUE; 
             res.rf$HasProbs = TRUE; 
             res.rf;
         }
-#        train.kSVM <- function(response.variable,to.model,opts) {
+#        train.kSVM <- function(response.variable,to.train,opts) {
 #            cat1(opts,filename,": Train kSVM ...\n")
 #		        res.rf = list()
 #      		  class(res.rf) <- "TDMres_c"
 #            formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
 #  	        flush.console();
 #            res.rf$model <- ksvm(formul
-#                    	           , data=to.model
+#                    	           , data=to.train
 #          						           , kernel="rbfdot"
 #	                               , kpar=list(sigma=opts$SVM.sigma)
 #                        	       , cost=opts$SVM.cost
@@ -268,35 +276,56 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
 #            res.rf$HasProbs = FALSE; 
 #	        res.rf;
 #        } # train.kSVM
-        train.svm <- function(response.variable,to.model,opts) {
-            cat1(opts,filename,": Train SVM ...\n")
+        train.svm <- function(response.variable,to.train,opts) {
+            kernelChoices = c("linear","polynomial","radial","sigmoid");
+            kernelType = kernelChoices[opts$SVM.kernel];
+            cat1(opts,filename,": Train SVM (kernel=",kernelType,") ...\n");
 	          require(e1071)		
             if (!is.null(opts$CLS.CLASSWT)) cat1(opts,"Class weights: ", opts$CLS.CLASSWT,"\n")
             if (!is.null(opts$CLS.cutoff)) cat1(opts,"Cutoff: ", opts$CLS.cutoff,"\n")
             flush.console();
             formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
             res.rf <- svm(formul 
-            							, data=to.model 
-            							, kernel="radial"
+            							, data=to.train 
+            							, kernel=kernelType
                           , gamma=opts$SVM.gamma
+                          , coef0=opts$SVM.coef0
+                          , degree=opts$SVM.degree
                  	        , cost=opts$SVM.cost
                           , type="C-classification"
             							, class.weights = opts$CLS.CLASSWT
+            							, tolerance = opts$SVM.tolerance
             							, na.action=na.omit
             							, probability=TRUE)
             res.rf$HasVotes = FALSE;            
             res.rf$HasProbs = TRUE; 
       			res.rf;
-        }# train.SVM
-        train.naiveBayes <- function(response.variable,to.model,opts) {
+        }# train.svm
+        train.ada <- function(response.variable,to.train,opts) {
+            coefChoices = c("Breiman","Freund","Zhu");
+            coefType = coefChoices[opts$ADA.coeflearn];
+            cat1(opts,filename,": Train AdaBoost ( mfinal =",opts$ADA.mfinal,", coeflearn =",coefType,") ...\n");
+	          require(adabag)
+            flush.console();
+            formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
+            res.rf <- boosting(formul
+							               , data=to.train
+            							   , mfinal=opts$ADA.mfinal
+                             , coeflearn=coefType
+                              );
+            res.rf$HasVotes = FALSE;
+            res.rf$HasProbs = TRUE;
+      			res.rf;
+        }# train.ada
+        train.naiveBayes <- function(response.variable,to.train,opts) {
             cat1(opts,filename,": Train NB ...\n")
             flush.console();
             formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
             # CAUTION 1: Be careful, that the column ordering in 'naiveBayes(...,data=..)' is 
             # the same as below in 'predict(res.nb,newdata=..)'. Therefore we need here
-            #     to.model=d_train[,c(input.variables,response.variable)]
+            #     to.train=d_train[,c(input.variables,response.variable)]
             # instead of a simple 'data=d_train'
-            res.rf <- naiveBayes(formula=formul, data=to.model)
+            res.rf <- naiveBayes(formula=formul, data=to.train)
             res.rf$HasVotes = FALSE;                          
             res.rf$HasProbs = FALSE; 
             res.rf;
@@ -312,11 +341,12 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         cat1(opts, "Run ",ifelse(opts$the.nfold>1,paste(opts$i,".",opts$k,sep="")           ,opts$i)    ,"/",
                           ifelse(opts$the.nfold>1,paste(opts$NRUN,".",opts$the.nfold,sep=""),opts$NRUN) ,":\n"); 
         res.rf = switch(opts$MOD.method
-          ,"RF"  =  train.rf(response.variable,to.model,opts)
-          ,"MC.RF"  =  train.mc.rf(response.variable,to.model,opts)
-          ,"SVM" =  train.svm(response.variable,to.model,opts)
-#          ,"kSVM" =  train.kSVM(response.variable,to.model,opts)
-          ,"NB"  =  train.naiveBayes(response.variable,to.model,opts)
+          ,"RF"  =  train.rf(response.variable,to.train,opts)
+          ,"MC.RF"  =  train.mc.rf(response.variable,to.train,opts)
+          ,"SVM" =  train.svm(response.variable,to.train,opts)
+          ,"ADA" =  train.ada(response.variable,to.train,opts)
+#          ,"kSVM" =  train.kSVM(response.variable,to.train,opts)
+          ,"NB"  =  train.naiveBayes(response.variable,to.train,opts)
           ,"CMB" = train.CMB(opts)
           ,"INVALID"
           );
@@ -330,7 +360,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         #=====================================================================
         # PART 4.4: APPLY RANDOM FOREST  (OR OTHER METHOD)
         #=====================================================================
-        apply.rf <- function(res.rf,to.model,to.test,to.dis,opts) {        
+        apply.rf <- function(res.rf,to.train,to.test,to.dis,opts) {        
             cat1(opts,filename,": Apply",opts$MOD.method,"...\n")
             app = list()            
             app$train.predict <- res.rf$predicted
@@ -348,28 +378,29 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             
             app;
         }
-        apply.other <- function(res.rf,to.model,to.test,to.dis,opts) {
+        apply.other <- function(res.rf,to.train,to.test,to.dis,opts) {
             predict.TDMres_c <- function(res.rf, newdata) {predict(res.rf$model, newdata=newdata);}#required for S4 models
             cat1(opts,opts$filename,": Apply",opts$MOD.method,"...\n")
             app = list()  
-            app$train.predict <- predict(res.rf, newdata=to.model)
+            app$train.predict <- predict(res.rf, newdata=to.train)
             app$test.predict <- predict(res.rf, newdata=to.test)
             if (nrow(to.dis)>0) app$dis.predict <- predict(res.rf, newdata=to.dis)
             app;
         }
-        apply.SVM <- function(res.rf,to.model,to.test,to.dis,opts) {
+        apply.svm <- function(res.rf,to.train,to.test,to.dis,opts) {
             cat1(opts,opts$filename,": Apply",opts$MOD.method,"...\n")
             app = list()  
 
-            app$train.prob <- attr(predict(res.rf, newdata=to.model, probability=TRUE),"probabilities");
+            app$train.prob <- attr(predict(res.rf, newdata=to.train, probability=TRUE),"probabilities");
             if (is.null(opts$CLS.cutoff)) {
-              app$train.predict <- predict(res.rf, newdata=to.model)
+              app$train.predict <- predict(res.rf, newdata=to.train)
             } else {
               cat1(opts,"Cutoff: ", opts$CLS.cutoff,"\n")
   			      # Apply new weighting scheme for training set            
-     			    app$train.predict <- apply(app$train.prob/(matrix(1,nrow(to.model),1) %*% opts$CLS.cutoff),1,which.max);
-     			    app$train.predict <- lev.resp[app$train.predict];
-
+     			    app$train.predict <- apply(app$train.prob/(matrix(1,nrow(to.train),1) %*% opts$CLS.cutoff),1,which.max);
+     			    app$train.predict <- colnames(app$train.prob)[app$train.predict];
+     			    # -- only for debug: --
+   	  		    #if (!check.apply.svm(res.rf,app$train.prob,app$train.predict,to.train,d_train[,response.variable],opts)) browser();  
             }
 
       			if (nrow(to.test)>0) {
@@ -379,7 +410,9 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
               } else {
           			# Apply new weighting scheme for test set            
        			    app$test.predict <- apply(app$test.prob/(matrix(1,nrow(to.test),1) %*% opts$CLS.cutoff),1,which.max)
-     	  		    app$test.predict <- lev.resp[app$test.predict];
+     	  		    app$test.predict <- colnames(app$test.prob)[app$test.predict];
+       			    # -- only for debug: --
+     	  		    #if (!check.apply.svm(res.rf,app$test.prob,app$test.predict,to.test,d_test[,response.variable],opts)) browser(); 
     			    }
   			    }
   			    
@@ -388,14 +421,36 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
               if (is.null(opts$CLS.cutoff)) {
                 app$dis.predict <- predict(res.rf, newdata=to.dis)
               } else {
-          			# Apply new weighting scheme for disregard set (unknown label data in active learning)
+          			# Apply new weighting scheme for disregard set (unknown label data, e.g. for active learning)
        			    app$dis.predict <- apply(app$dis.prob/(matrix(1,nrow(to.dis),1) %*% opts$CLS.cutoff),1,which.max)
-       			    app$dis.predict <- lev.resp[app$dis.predict];
+       			    app$dis.predict <- colnames(app$dis.prob)[app$dis.predict];
     			    }
   			    }
             app;
         }
-        apply.CMB <- function(to.model,to.test,to.dis,opts) {
+        apply.ada <- function(res.rf,to.train,to.test,to.dis,opts) {        
+            cat1(opts,filename,": Apply",opts$MOD.method,"...\n")
+            app = list()                        
+            pa <- predict(res.rf, newdata=to.train);
+            app$train.predict <- pa$class;
+            app$train.votes <- pa$votes;
+            app$train.prob <- pa$prob;
+            
+            pa <- predict(res.rf, newdata=to.test);
+            app$test.predict <- pa$class;
+            app$test.votes <- pa$votes;
+            app$test.prob <- pa$prob;
+            
+      			if (nrow(to.dis)>0) {
+              pa <- predict(res.rf, newdata=to.dis);
+              app$dis.predict <- pa$class;
+              app$dis.votes <- pa$votes;
+              app$dis.prob <- pa$prob;
+            }
+            
+            app;
+        }
+        apply.CMB <- function(to.train,to.test,to.dis,opts) {
             cat1(opts,opts$filename,": Apply",opts$MOD.method,"...\n")
             app = list()  
   
@@ -403,34 +458,39 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
       			app$test.prob <- opts$result1$lastRes$lastProbs$v_test * opts$result2$lastRes$lastProbs$v_test;
       			app$dis.prob <- opts$result1$lastRes$lastProbs$v_dis * opts$result2$lastRes$lastProbs$v_dis;
 
-   			    app$train.predict <- lev.resp[apply(app$train.prob,1,which.max)];
-   			    app$test.predict <- lev.resp[apply(app$test.prob,1,which.max)];
-   			    app$dis.predict <- lev.resp[apply(app$dis.prob,1,which.max)];   			    
+   			    app$train.predict <- colnames(app$train.prob)[apply(app$train.prob,1,which.max)];
+   			    app$test.predict <- colnames(app$test.prob)[apply(app$test.prob,1,which.max)];
+   			    app$dis.predict <- colnames(app$dis.prob)[apply(app$dis.prob,1,which.max)];   			    
    			    app;
         }
           
         ptm <- proc.time()
         opts$response.variable <- response.variable;
+        pred.vars = input.variables;
+        if (opts$MOD.method=="ADA") pred.vars = c(pred.vars,response.variable);
+        # CAUTION 2: AdaBoost requires both, response.variable and input.variables
+        
         #if (opts$MOD.method=="NB") {
-          # CAUTION 2: predict.naiveBayes requires that only the input variables
+          # CAUTION 3: predict.naiveBayes requires that only the input variables
           # enter via 'newdata', so we have to exclude column response.variable
           # Otherwise a strange error message occurs:
           #     Fehler in FUN(1:6[[1L]], ...) : Indizierung ausserhalb der Grenzen
-          to.model <- data.frame(a=d_train[,input.variables]); 
-          to.test <- data.frame(a=d_test[,input.variables]);
-          to.dis <- data.frame(a=d_dis[,input.variables]);
-          names(to.model) <- names(to.test) <- names(to.dis) <- input.variables;
+          to.train <- data.frame(a=d_train[,pred.vars]); 
+          to.test <- data.frame(a=d_test[,pred.vars]);
+          to.dis <- data.frame(a=d_dis[,pred.vars]);
+          names(to.train) <- names(to.test) <- names(to.dis) <- pred.vars;
           # Why 'data.frame', 'a=' and 'names...'? - In this way it works also
           # for length(input.variables)==1. If we had instead the simple 
-          #     to.model <- d_test[,input.variables]
+          #     to.train <- d_test[,input.variables]
           # this would lead to an unnamed vector.
         #}
 
         app = switch(opts$MOD.method
-          ,"RF" =,"MC.RF" =  apply.rf(res.rf,to.model,to.test,to.dis,opts)
-          ,"NB" =, "kSVM" = apply.other(res.rf,to.model,to.test,to.dis,opts) 
-    		  ,"SVM" = apply.SVM(res.rf,to.model,to.test,to.dis,opts)
-    		  ,"CMB" = apply.CMB(to.model,to.test,to.dis,opts)
+          ,"RF" =,"MC.RF" =  apply.rf(res.rf,to.train,to.test,to.dis,opts)
+          ,"NB" =, "kSVM" = apply.other(res.rf,to.train,to.test,to.dis,opts) 
+    		  ,"SVM" = apply.svm(res.rf,to.train,to.test,to.dis,opts)
+    		  ,"ADA" = apply.ada(res.rf,to.train,to.test,to.dis,opts)
+    		  ,"CMB" = apply.CMB(to.train,to.test,to.dis,opts)
           ,"INVALID"
           );
         if (app[1]=="INVALID") {
@@ -442,6 +502,8 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
 
         #
         # column "votes" is beneficial for opts$fct.postproc (e.g. in the case of DMC2010)
+        # (it is currently only implemented for opts$MOD.method=="RF", so that is why the other methods have res.rf$HasVotes==FALSE)
+        #
         if (res.rf$HasVotes) {  # column "votes" is the fraction of trees voting for the majority class
           name.of.votes <- "votes";
           d_train <- tdmBindResponse(d_train, name.of.votes, res.rf$votes[,1])
@@ -466,7 +528,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
                               , v_dis = app$dis.votes
                               );
           }
-          if (opts$MOD.method %in% c("SVM","CMB")) {
+          if (opts$MOD.method %in% c("SVM","CMB","ADA")) {
             lastProbs = list(  v_train = app$train.prob             
                               , v_test = app$test.prob
                               , v_dis = app$dis.prob
@@ -496,12 +558,12 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             if (opts$APPLY_TIME) {
               xstart = proc.time()
               for (t in 1:100) {
-                dummy <- predict(res.rf, newdata=to.model)
+                dummy <- predict(res.rf, newdata=to.train)
               }
               xend = proc.time()
               cat1(opts,"\nElapsed time for 100x APPLY on train set:\n")
               print(xend-xstart)
-              print(nrow(to.model))
+              print(nrow(to.train))
             }
     
         #=============================================
@@ -633,7 +695,14 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         if (opts$GD.DEVICE!="non") {
             # bar plot of true/false test cases for all classes
             tdmGraphicNewWin(opts);
-            cmt<-cm.vali$mat
+            if (nrow(d_test)>0) {
+              cmt <- cm.vali$mat;
+              setStr = "test set";
+            } else {
+              cmt <- cm.train$mat;
+              setStr = "train set";
+              cat1(opts,"\nNOTE: No validation cases -> we plot the true/false training cases.\n");
+            }
             height<-t(matrix(c(diag(cmt),rowSums(cmt)-diag(cmt)),nrow=n.class,ncol=2))
             # 'height' is a 2*n.class matrix containing in its first row the number of
             # correct classifications for each class level (diagonal of confusion matrix)
@@ -641,7 +710,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             # (sum of off-diagonal elements in each row of the confusion matrix)
             barplot(height,beside=TRUE,col=c("blue","red"),legend=c("true","false"),
                     names.arg=colnames(cmt),
-                    main="True/false classification on test set")
+                    main=paste("True/false classification on",setStr));
             tdmGraphicCloseWin(opts);
         } # if (opts$GD.DEVICE!="non")
  
@@ -688,7 +757,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
                 ,d_test=d_test 
                 ,d_dis=d_dis 
                 ,SRF=SRF                  # output from tdmModSortedRFimport or NULL
-                ,opts=opts                # some defaults might have been added  
+                ,opts=opts                # some defaults might have been added, list opts$srf might have been added
                 );
                
     class(res) <- c("tdmClass","TDM")     # this causes > res; or > print(res);
@@ -697,3 +766,37 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
     res;
 }  # tdmClassify
 
+na_input_check <- function(dfr, name_dfr, input.variables) {
+    unknownCols = setdiff(input.variables,names(dfr))   
+    if (length(unknownCols)>0) stop("Unknown columns %s in data set %s",paste(unknownCols,collapse=","),name_dfr);
+    if (any(is.na(dfr[,input.variables]))) {
+      warning(sprintf("There are NA's in the input variable columns of %s. Now replacing them using tdmPreNAroughfix().
+        Consider to use this (or a more sophisticated imputation technique) prior to calling tdmClassify.",name_dfr));
+      dfr[,input.variables] <- tdmPreNAroughfix(dfr[,input.variables]);      # see tdmPreprocUtils.r
+    }
+    dfr;
+}
+
+# debug routine for apply.svm: 
+#   there are rare cases (currcntly detected in benchmark dataset wdbc) where the prediction without probabilites
+#   and the prediction with probabilities in case opts$CLS.cutoff=c(0.5,0.5) (disable CUTOFF line in wdbc_02.roi) give different results, 
+#   although in theory they shouldn't.
+#   The differences occur in those cases, where the probablities are close to 0.5, normally only the one or two cases closest to 0.5.
+#   They occur in training and in test cases.
+#   The routine check.apply.svm detects them, prints some diagnostics and stops in a browser. 
+#   The reason for the differences is still unclear.
+#
+check.apply.svm <- function(res.rf,appProb,appPredict,to.data,respVar,opts) {
+  P.alt <- predict(res.rf, newdata=to.data);
+  y=(P.alt==appPredict)
+  retVal = TRUE;
+  if (any(y==FALSE)) {
+    if (length(P.alt) != nrow(appProb)) { cat("NOTE: data frame binding problems 1 ahead!\n"); browser(); }
+    if (length(P.alt) != length(respVar)) { cat("NOTE: data frame binding problems 2 ahead!\n"); browser(); }
+    x=data.frame(y,mid.diff=abs(0.5-appProb[,1]),P.cl=P.alt,true=respVar,M.prob=appProb[,1]);
+    print(x[order(x[,2]),]);
+    browser();     	  
+    #retVal = FALSE;
+  }		    
+  retVal;
+}

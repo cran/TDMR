@@ -24,10 +24,11 @@
 }
 \description{
   This function is called by \code{\link{spot}} for
-  evaluations during a tuning run. It accumulates in
+  evaluations during a tuning run. It accumulates \cr in
   \code{spotConfig$alg.currentResult} the RES data frame of
-  all evaluations and in \code{spotConfig$alg.currentBest}
-  the BST data frame of the so far best solution.
+  all evaluations and \cr in
+  \code{spotConfig$alg.currentBest} the BST data frame of
+  the so far best solution.
 }
 \details{
   \code{\link{spot}} is invoked from

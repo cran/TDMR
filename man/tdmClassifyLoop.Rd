@@ -7,11 +7,13 @@
     input.variables, opts, tset = NULL)
 }
 \arguments{
-  \item{dset}{the data frame for which cvi is needed}
+  \item{dset}{the data frame containing training and
+  validation data.}
 
-  \item{tset}{[NULL] optional validation data set. If NULL,
-  the validation set is build from \code{dset} according to
-  the procedure prescribed in \code{opts$TST.*}.}
+  \item{tset}{[NULL] If not NULL, this is the validation
+  data set. If NULL, the validation data set is build from
+  \code{dset} according to the procedure prescribed in
+  \code{opts$TST.*}.}
 
   \item{response.variables}{name of column which carries
   the target variable - or - vector of names specifying
@@ -70,13 +72,14 @@
 \description{
   tdmClassifyLoop contains a double loop (opts$NRUN and
   CV-folds) and calls \code{\link{tdmClassify}}. It is
-  called by all R-functions main_*. \cr It returns an
-  object of class \code{\link{TDMclassifier}}.
+  called by all classification R-functions main_*. \cr It
+  returns an object of class \code{\link{TDMclassifier}}.
 }
 \examples{
 #*# --------- demo/demo00sonar.r ---------
 #*# This demo shows a simple data mining process (phase 1 of TDMR) for the classification task
-#*# SONAR (from UCI repository, http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+\%28Sonar,+Mines+vs.+Rocks\%29).
+#*# SONAR (from UCI repository, 
+#*' http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+\%28Sonar,+Mines+vs.+Rocks\%29).
 #*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify.
 #*# with Random Forest as the prediction model. 
 
@@ -86,16 +89,10 @@ path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();
 setwd(path);
-source("main_sonar.r");
+source("main_sonar.r");              # contains also readCmdSonar()
 
-## set the elements of list opts. See ?tdmOptsDefaultsSet
-## for a complete list of all default settings and explanatory comments
-opts = tdmOptsDefaultsSet();    
-opts$filename = "sonar.txt"
-opts$READ.CMD = "read.csv2(file=paste(opts$dir.data, filename, sep=\\"\\"), dec=\\".\\", sep=\\",\\",header=FALSE)"
-opts$data.title <- "Sonar Data";
-opts$CLS.CLASSWT <- c(10,10);
-      
+source("sonar_00.apd",local=TRUE);   # set opts 
+
 result=main_sonar(opts);
 
 setwd(oldwd);

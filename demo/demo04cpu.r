@@ -10,14 +10,12 @@
 path <- paste(.find.package("TDMR"), "demo01cpu/",sep="/");
 #path <- paste("../inst", "demo01cpu/",sep="/");
 oldwd <- getwd();  setwd(path);
-#path=paste(getwd(),"/",sep="");  setwd(oldwd);      # not yet ready
-#
-source(paste(path,"main_cpu.r",sep=""));   
+source("main_cpu.r");   
 
 ## preliminary settings for TDMR
-tdm <- list(    mainFunction="main_cpu"
+tdm <- list(    mainFunc="main_cpu"
 #              , path=path
-              , umode=c("RSUB","CV")    # ["CV" | "RSUB" | "TST"]
+              , umode="RSUB"            # ["CV" | "RSUB" | "TST" | "SP_T" ]
               , tuneMethod=c("spot","lhd")
               , filenameEnvT="demo04cpu.RData"   # file to save environment envT (in working dir)
               , finalFile="cpu.fin"     # where to write final results (best solution & unbiased eval for each tuner/.conf-combination)
@@ -49,11 +47,7 @@ envT <- tdmEnvTMakeNew(tdm);
 ##      b) the sensitivity plot for each parameter in the vicinity of the best solution found 
 envT <- tdmBigLoop(envT,spotStep);
 
-## deprecated:
-#envT <- tdmCompleteEval("cpu_01.conf",NULL,spotStep,tdm);
-
-## restore old working directory
-setwd(oldwd);
+setwd(oldwd);               # restore old working directory
 
 ## the resulting tuning surface (the metamodel) can be inspected interactively with
 ##      load(paste(path,tdm$filenameEnvT,sep="/");     

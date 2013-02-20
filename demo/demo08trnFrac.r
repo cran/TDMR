@@ -72,7 +72,7 @@ readSonar <- function(filename, opts) {
 tdm <- list(  unbiasedFunc="unbiasedRun"
             , umode=c("SP_T")
             , mainFile=NULL#""
-            , mainFunction="mainTrnFrac"
+            , mainFunc="mainTrnFrac"
             , tuneMethod=c("spot")   #   ,  "cma_j"   "cmaes"   "bfgs"     ,     
             , finalFile=paste("Output/",name,".fin",sep="")
             , nrun=1, nfold=2          # repeats and CV-folds for the unbiased runs
@@ -95,7 +95,7 @@ source(paste(start.tdm.path,"start.tdm.r",sep="/"),local=T);
 tdm$runList = c(paste(name,"_01.conf",sep=""));  
 tdm$spotList = NULL # list() #       #  =NULL: all in tdm$runList; =list(): none
 spotStep = "rep"
-if (tdm$parallelCPUs>1) sfExport(list=c("Sonar","readSonar"));
+if (tdm$parallelCPUs>1) tdm$parallelFuncs=c(tdm$parallelFuncs,"Sonar","readSonar");
 
 dir.output <- "Results2013";
 if (!file.exists(dir.output)) {
@@ -119,7 +119,7 @@ for(nruns in 1:2){       # now we do 10 experiments via tdm$nExperim
   j=1                    # j is loop variable similar to xperc and just required for the file name description
   for(xperc in seq(0.05,0.75,0.10)){      # dfFinalA.RData
 
-    tdm$TST.trnFrac=xperc;          # trnFrac of train-vali-set is trnFrac*(1-20%) of all data (if opts$TST.testFrac=20%)
+    tdm$TST.trnFrac=xperc;          # trnFrac of train-vali-set is trnFrac*(1-20%) of all data (if tdm$TST.testFrac=20%)
     valiPerc = 1-xperc;
     # Note: As long as opts$TST.SEED in .apd is set to a fixed value, we will have the
     # same split into training and validation data during all tuning evaluations within this for-loop.

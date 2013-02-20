@@ -44,7 +44,10 @@
 ######################################################################################
 tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
   	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
-    if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmClass");
+    if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmOpts");
+    if (is.null(opts$PRE.PCA.numericV)) opts$PRE.PCA.numericV <- input.variables;
+    if (opts$NRUN<=0) stop(sprintf("opts$NRUN has to be positive, but it is %d",opts$NRUN));
+    if (opts$PRE.PCA!="none" & opts$PRE.SFA!="none") stop("It is not allowed to activate opts$PRE.PCA and opts$PRE.SFA simultaneously.")
 
     R_train <- R_test <- T_train <- T_test <- NULL       # reserve names (dynamic extension of
     S_train <- S_test <- NULL                            # these vectors at and of for-i-loop)
@@ -89,23 +92,31 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
             ntst=nrow(d_test);
             ntrn=nrow(d_train);
 
-            if (opts$PRE.PCA.npc>0 | opts$PRE.PCA!="none") {
+            d_preproc <- NULL;                # no preprocessing -> no mem-consumption for d_preproc  (if condition on next line is false)
+            if (opts$PRE.PCA!="none" | opts$PRE.SFA!="none") {
+              if (opts$PRE.allNonVali) {
+                d_preproc <- dset[cvi!=k, ]   # all non-validation-data are used for preproc
+              } else {
+                d_preproc <- d_train 
+              }
+            } 
+            if (opts$PRE.PCA!="none") {
               # a) do PCA on the numeric variables of d_train, if opts$PRE.PCA!="none"
               # b) add monomials of degree 2 for the first opts$PRE.PCA.npc numeric variables
               # c) apply this PCA and monomials to d_test and d_dis in the same way
               other.variables <- setdiff(input.variables,opts$PRE.PCA.numericV);
               pca <- tdmPrePCA.train(d_train,opts);                 # see tdmPreprocUtils.r
-              d_train <- pca$dset;
+              d_train <- tdmPrePCA.apply(d_train,pca$pcaList,opts,d_train)$dset;
               d_test <- tdmPrePCA.apply(d_test,pca$pcaList,opts,d_train)$dset;
               d_dis <- tdmPrePCA.apply(d_dis,pca$pcaList,opts,d_train)$dset;
 
               input.variables <- union(pca$numeric.variables,other.variables);
-              opts$PRE.SFA.numericV <- pca$numeric.variables;
+              #opts$PRE.SFA.numericV <- pca$numeric.variables;        # -- now obsolete, no SFA after PCA allowed --
               if (length(setdiff(input.variables,names(d_train)))>0) 
                   stop("Some elements of input.variables are not columns of d_train");
             }
 
-            res <- tdmRegress(d_train,d_test,response.variables,input.variables,opts)
+            res <- tdmRegress(d_train,d_test,d_preproc,response.variables,input.variables,opts)
             #res <- regress_lm(d_train,d_test,response.variables,input.variables,opts)
 
             cat1(opts,sprintf("k=%d  res$rmae$train=%7.5f  res$rmae$test=%7.5f\n",k,res$rmae$train,res$rmae$test))
@@ -172,8 +183,8 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
         cat1(opts,sprintf("RMSE.test: (%7.2f +- %4.2f)%%\n", mean(S_test), sd(S_test)));
     }
 
-    result = list(opts = res$opts
-              	, lastRes = res     # last run, last fold: result from tdmRegress
+    result = list(lastRes = res     # last run, last fold: result from tdmRegress
+              	#, opts = res$opts    # deprecated (12/2011), use result$lastRes$opts or Opts(result)
               	, R_train = R_train
               	, R_test = R_test
               	, T_train = T_train

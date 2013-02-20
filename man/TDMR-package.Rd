@@ -22,7 +22,7 @@
   multiple tuning experiments (different settings,
   repetitions with different resamplings, ...).  \cr 4)
   Easy parallelization of those experiments with the help
-  of R package \code{\link{snowfall}}.
+  of R packages \code{snow} and \code{\link{parallel}}.
 
   The main entry point functions are
   \code{\link{tdmClassifyLoop}},

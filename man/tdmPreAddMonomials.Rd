@@ -23,7 +23,8 @@
 }
 \value{
   data frame \code{dset} with the new monomial columns
-  appended
+  appended. If PRE.npc==0, the data frame is returned
+  unchanged.
 }
 \description{
   Given the data frame \code{dset} and a data frame

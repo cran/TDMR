@@ -1,13 +1,9 @@
-#--- this does not work any longer, mainFile & mainCommand are now def'd in script_all.R ---
-#      if (is.na(match("tdm",ls()))) tdm <- list(); 
-#      tdm$mainFile <- "../../ClassifyTemplate/main_sonar.r";
-#      tdm$mainCommand <- "result <- main_sonar(opts)";
 
-      opts = tdmOptsDefaultsSet();     # set initial defaults for many elements of opts. See tdmOptsDefaults.r
+      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
                                       # for the list of those elements and many explanatory comments                                                                                                         
       opts$dir.output <- "Output/"
       opts$filename = "cpu.csv"
-#      opts$filesuffix = ".csv"
+      opts$READ.CMD = "readCmdCpu(filename,opts)"     # def'd in main_cpu.r
       opts$SRF.kind = "xperc"
       opts$OCUT = 600         # cut records with output > OCUT (may be strong outliers, dropping
                               # them makes rmse$test and rmse$OOB faster converge)

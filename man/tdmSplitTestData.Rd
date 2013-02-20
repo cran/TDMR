@@ -3,7 +3,7 @@
 \alias{tdmSplitTestData}
 \title{Read and split the task data and return a \code{\link{TDMdata}} object.}
 \usage{
-  tdmSplitTestData(opts, tdm, nExp = 0)
+  tdmSplitTestData(opts, tdm, nExp = 0, dset = NULL)
 }
 \arguments{
   \item{opts}{a list from which we need here the elements
@@ -34,6 +34,9 @@
 
   \item{nExp}{[0] experiment counter, used to select a
   reproducible different seed, if tdm$SPLIT.SEED!=NULL}
+
+  \item{dset}{[NULL] if non-NULL, reading of dset is
+  skipped and the given data frame dset is used.}
 }
 \value{
   dataObj, either NULL (if opts$READ.INI==FALSE) or an

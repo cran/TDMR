@@ -140,28 +140,28 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
   nTuner <- length(tdm$tuneMethod);
   nRunList <- length(tdm$runList);
 
-  # 
-  # if tdm$parallelCPUs>1, set up everything for parallel execution
-  #
-  if (tdm$parallelCPUs>1) prepareParallelExec(tdm);
-
 	# depending on tdm$parallelCPUs, the following lines execute the code either in parallel 
 	# or sequential: For each value of indVec the function completeEvalConfNexpTuner is 
 	# called. The vectors tuneVec, expeVec, confVec contain for each element of indVec the
 	# corresponding value of tuner, experiment number and .conf file, resp.
-	# In case of parallel execution, sfSapply will only return after the last parallel job has finished.
+	# In case of parallel execution, parSapply will only return after the last parallel job has finished.
 	#
 	indVec <- 1:(tdm$nExperim*nTuner*nRunList);
 	tuneVec <- rep(tdm$tuneMethod,tdm$nExperim*nRunList);
 	expeVec <- rep(sort(rep(1:tdm$nExperim,nTuner)),nRunList);
 	confVec <- sort(rep(tdm$runList,tdm$nExperim*nTuner));
 	if (length(indVec)==1 & tdm$parallelCPUs>1) {
-	  warning("There is only one job (length(indVec)==1) --> snowfall would not run, so we set tdm$ParallelCPUs=1");
+	  warning("There is only one job (length(indVec)==1) --> snow would not run, so we set tdm$ParallelCPUs=1");
 	  tdm$parallelCPUs=1;
   }
 
   if (tdm$parallelCPUs>1) {
-    sappResult <- sfSapply(indVec, fun=completeEvalConfNexpTuner, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
+    cl = prepareParallelExec(tdm);
+    sappResult <- parSapply(cl,indVec, completeEvalConfNexpTuner, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
+    stopCluster(cl);
+    #--- old version was:
+    #prepareParallelExec_SF(tdm);   # this is now in deprecated sources
+    #sappResult <- sfSapply(indVec, fun=completeEvalConfNexpTuner, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
   } else {  		
 		sappResult <- sapply(indVec, completeEvalConfNexpTuner, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
   }
@@ -185,9 +185,10 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
 
 ######################################################################################
   		#------------------------------------------------------------------------------------------------------
-      #  Helper function for tdmCompleteEval, called via sapply or sfSapply:
+      #  Helper function for tdmCompleteEval, called via sapply or parSapply:
       #  (ind is an index where confFile varies slowest, nExp varies 2nd-slowest and theTuner varies fastest)
       completeEvalConfNexpTuner <- function(ind,tuneVec,expeVec,confVec,spotList,spotStep,envT,tdm) {
+        if (tdm$parallelCPUs>1) library(TDMR);
         theTuner = tuneVec[ind];
         nExp = expeVec[ind];
         confFile = confVec[ind];
@@ -321,7 +322,7 @@ tdmCompleteEval <- function(runList,spotList=NULL,spotStep="auto",tdm) {
         } # if(tdm$fileMode)
         
         # we return a *list* with the most important elements from environment envT and not envT itself, because 
-        # sfSapply (parallel execution) can not deal with environments as return values.
+        # parSapply (parallel execution) can not deal with environments as return values.
         list( tunerVal=envT$tunerVal    # last tuning result: spotConfig with extensions       
              ,bst=envT$bst              # last tuning result       
              ,res=envT$res              # last tuning result        
@@ -358,35 +359,4 @@ removeTmpfiles <- function(tConfFile) {
       }
 }
    
-#--- see function prepareParallelExec in tdmBigLoop.r ---------------------------------------------
-#######################################################################################
-## helper function for tdmCompleteEval, only needed in case tdmParallelCPUs>1 
-#  # 
-#  # set up everything for parallel execution
-#  #
-#  prepareParallelExec <- function(tdm) 
-#  {
-#    require(snow)
-#    require(snowfall)
-#    parallelCPUs = tdm$parallelCPUs;
-#    sfInit(parallel=TRUE, cpus=parallelCPUs, type="SOCK" )
-#    sfExport(list=c("tdm"))
-#    
-#    if (!exists(".Random.seed")) set.seed(42);
-#    sfExport(list=".Random.seed");
-#    sfExport(list=c(tdm$mainFunc,tdm$parallelFuncs));
-#    if (is.null(tdm$tdmPath)) {
-#        cat("sfLibrary for installed library TDMR \n");
-#        sfLibrary("TDMR",character.only=TRUE);
-#    } else {
-#        cat("Sourcing and sfExport for TDMR from R files in",tdm$tdmPath,"\n");
-#        source(paste(tdm$tdmPath,"source.tdm.r",sep="/"),local=TRUE);
-#        if (is.null(tdm$theSpotPath)) tdm$theSpotPath <- NA;
-#        if (is.null(tdm$theRsfaPath)) tdm$theRsfaPath <- NA;
-#        source.tdm(tdm$tdmPath,tdmParallelCPUs=tdm$parallelCPUs,theSpotPath=tdm$theSpotPath,theRsfaPath=tdm$theRsfaPath);
-#        sfExport(list=c("tdmRandomSeed"));
-#    }
-#  } # prepareParallelExec()
-#  
-  
 

@@ -37,25 +37,30 @@
   filename where to append \code{envT$theFinals}, only
   relevant for \code{tdm$fileMode==TRUE} }
   \item{theSpotPath}{[NA] use SPOT's package version}
-  \item{parallelCPUs}{[1] 1: sequential, >1: parallel with
-  snowFall and this many CPUs} \item{parallelFuncs}{[NULL]
-  in case tdm$parallelCPUs>1: a string vector with
-  functions which are sfExport'ed in addition to
-  tdm$mainFunc.  } \item{path}{[getwd()] where to search
-  .conf and .apd file} \item{stratified}{[NULL] see
+  \item{parallelCPUs}{[1] 1: sequential, >1: parallel
+  execution with this many CPUs (package parallel) }
+  \item{parallelFuncs}{[NULL] in case tdm$parallelCPUs>1: a
+  string vector with functions which are clusterExport'ed
+  in addition to tdm$mainFunc.  } \item{path}{[getwd()]
+  where to search .conf and .apd file}
+  \item{stratified}{[NULL] see
   \code{\link{tdmSplitTestData}} } \item{tdmPath}{[NULL]
   from where to source the R sources. If NULL load library
   TDMR instead.  } \item{test2.string}{["default cutoff"] }
   \item{optsVerbosity}{[0] the verbosity for the unbiased
-  runs} \item{nrun}{[5] number of runs for unbiased runs}
-  \item{tstFrac}{[0.2] test set fraction for unbiased runs
-  (only for umode="RSUB") } \item{tstCol}{["TST"]
+  runs} \item{withParams}{[TRUE] list the columns with
+  tuned parameter in final results } \item{nrun}{[5] number
+  of runs for unbiased runs} \item{tstCol}{["TST"]
   opts$TST.COL for unbiased runs (only for umode="TST") }
   \item{nfold}{[10] number of CV-folds for unbiased runs
   (only for umode="CV") } \item{TST.trnFrac}{[NULL] train
-  set fraction, copied to opts$TST.trnFrac if not NULL. }
-  \item{TST.valiFrac}{[NULL] validation set fraction,
-  copied to opts$TST.valiFrac if not NULL. }
+  set fraction (of all train-vali data),OVERWRITES
+  opts$TST.trnFrac if not NULL. }
+  \item{TST.valiFrac}{[NULL] validation set fraction (of
+  all train-vali data), OVERWRITES to opts$TST.valiFrac if
+  not NULL. } \item{TST.testFrac}{[0.2] test set fraction
+  (of *all* data) for unbiased runs (only for umode="RSUB"
+  or ="SP_T") }
 }
 \description{
   When called with \code{tdm = tdmDefaultsFill()}, a new
@@ -70,6 +75,13 @@
   tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRUE).
 }
 \note{
+  The settings \code{tdm$TST.trnFrac} and
+  \code{tdm$TST.valiFrac} allow to set programmatically
+  certain values for \code{opts$TST.trnFrac} and
+  \code{opts$TST.valiFrac} *after* \code{opts} has been
+  read from APD file. So use \code{tdm$TST.trnFrac} and
+  \code{tdm$TST.valiFrac} with CAUTION!
+
   For \code{tdm$timeMode}, the 'user time' is the CPU time
   charged for the execution of user instructions of the
   calling process.  The 'system time' is the CPU time

@@ -1,49 +1,23 @@
-#----- deprecated, you should use only sonar_01.apd and descendants instead. ---------- 
-#----- sonar_00.apd is mainly a snapshot of tdmOptsDefaultsSet at the time    ----------
-#----- the experiments listed in Benchmark-Datasets.doc                      ----------
-      if (is.na(match("tdm",ls()))) tdm <- list(); 
-      tdm$mainFile <- "../../ClassifyTemplate/main_sonar.r";
-      tdm$mainCommand <- "result <- main_sonar(opts)";
+## sonar_00.apd
+##
+## set the basic elements of list opts for task sonar. See ?tdmOptsDefaultsSet
+## for a complete list of all default settings and many explanatory comments
 
-      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
-                                      # for the list of those elements and many explanatory comments                                                                                                         
-      directory <- "./"  #""
-      opts$dir.output <- paste(directory, "Output/", sep="")
+      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts.
+      
+      opts$dir.data <- "data/";
       opts$filename = "sonar.txt"
+      opts$READ.CMD = "readCmdSonar(filename,opts)"     # def'd in main_sonar.r
       opts$data.title <- "Sonar Data"
-      opts$TST.kind <- "rand" # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$TST.COL <- NULL;   # column with train/test/disregard-flag or NULL
-      opts$TST.NFOLD =   2    # number of CV-folds (only for TST.kind=="cv")
-      opts$TST.valiFrac = 0.10    # set this fraction of data aside for validation (only for TST.kind=="rand")
-      opts$TST.SEED = NULL    # [NULL] a seed for the random test set selection
-      opts$SRF.kind = "none"
-      opts$SRF.ndrop = 10     # 0..n: how many variables (those with lowest importance) to drop
-      opts$SRF.calc = T
-      opts$SRF.XPerc = 0.95;
-      opts$MOD.method="RF";       # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in theClassifyLoop
-      opts$RF.ntree = 500
-      opts$RF.samp = 1000
-      opts$RF.mtry = 4
-      opts$RF.nodesize = 1
-      opts$CLS.cutoff = NULL #                    
-                              # [NULL] vote fractions for the n.class classes. The class i with 
-                              # maximum ratio (% votes)/RF.cutoff[i] wins. If NULL, then each
-                              # class gets the cutoff 1/n.class (i.e. majority vote wins)
-      opts$SVM.gamma=0.00541;
-      opts$SVM.epsilon=0.00527;
-      opts$SVM.tolerance=0.00886;
-      opts$CLS.CLASSWT <- NULL    # class weights for the n.class classes, e.g. 
-                              #     c(10,20) for n.class=2         (the higher, the more costly 
-                              # is a misclassification of that real class). NULL for no weights
-      opts$CLS.gainmat <- NULL
-      opts$NRUN =  1          # how many runs with different train & test samples  - or - 
-                              # how many CV-runs, if TST.kind="cv"
-      opts$DO.POSTPROC = F;
-      opts$GD.DEVICE="non"     # ["pdf"|"win"|"non"]: all graphics to 
+
+      opts$SRF.kind = "xperc"         # no variable ranking, no variable selection
+      opts$MOD.method="RF";           # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in tdmClassifyLoop
+      opts$CLS.CLASSWT <- c(10,10);
+
+      # Activate the following four lines to run the RF.default-(main_sonar.r)-experiment in Benchmark-Datasets.doc:
+      opts$GD.DEVICE="win"    # ["pdf"|"win"|"non"]: all graphics to
                               # [one multi-page PDF | (several) windows (X11) | dev.null]
-      opts$GD.RESTART=F       # [T] =T: restart the graphics device (i.e. close all 'old' windows
-                              # or re-open multi-page pdf) in each call to classfiy_RF
-                              # =F: leave all windows open (suitable for calls from SPOT) 
-                              # or write more pages in same pdf
-      opts$VERBOSE=0;      
-      opts$SRF.verbose = 0; # opts$VERBOSE; #
+      opts$TST.kind <- "cv"           # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
+      opts$TST.NFOLD =  3             # number of CV-folds (only for TST.kind=="cv")
+      opts$NRUN =  1                  # how many CV-runs, if opts$TST.kind <- "cv"
+      #opts$rgain.type="arROC"

@@ -27,6 +27,10 @@
 
   \item{...}{-- currently not used --}
 }
+\value{
+  the list \code{opts} with DM-specific settings contained
+  in the specified object
+}
 \description{
   Returns the list \code{opts} from objects of class
   \code{\link{TDMclassifier}}, \code{\link{TDMregressor}},

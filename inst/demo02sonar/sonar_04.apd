@@ -2,7 +2,7 @@
       opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
                                       # for the list of those elements and many explanatory comments                                                                                                         
       opts$filename = "sonar.txt"
-      opts$READ.CMD = "read.csv2(file=paste(opts$dir.txt, filename, sep=\"\"), dec=\".\", sep=\",\", nrow=opts$READ.NROW,header=F)"
+      opts$READ.CMD = "readCmdSonar(filename,opts)"    # def'd in main_sonar.r
       opts$data.title <- "Sonar Data"
 #      opts$MOD.method = "SVM"
       opts$TST.SEED = 124;
@@ -14,6 +14,6 @@
       opts$GD.DEVICE="non"    # ["pdf"|"win"|"non"]: all graphics to 
                               # [one multi-page PDF | (several) windows (X11) | dev.null]
       opts$GD.RESTART=F;       
-      opts$VERBOSE=2;      
+      opts$VERBOSE=0;      
       opts$SRF.verbose = opts$VERBOSE; #
 

@@ -69,7 +69,7 @@ tdmMapDesApply <- function(des,opts,k,spotConfig,tdm) {
     pNames=row.names(spotConfig$alg.roi);
     for (d in pNames) {
       if (length(which(tdm$map$roiValue==d))+length(which(tdm$mapUser$roiValue==d))==0)
-        stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s. Please extend tdmMapDesign.csv or userMapDesign.csv!",d));
+        stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s. Please check spelling or extend tdmMapDesign.csv or userMapDesign.csv!",d));
     }
     
     for (n in 1:nrow(tdm$map)) {
@@ -112,7 +112,7 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 #   runs, depending on parameter umode, which controls the mode of the unbiased run
 # INPUT
 #   umode       # one of { "RSUB" | "CV" | "TST" | "SP_T" }
-#               # ="RSUB": activate random subsampling with tdm$tstFrac test data
+#               # ="RSUB": activate random subsampling with tdm$TST.testFrac test data
 #               # ="CV": activate cross validation with tdm$nfold [10] folds
 #               # ="TST": activate test on unseen test data (user-def'd)
 #               # ="SP_T": activate test on unseen test data (randomly selected by tdmSplitTestData)
@@ -120,7 +120,7 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 #   tdm         # list, here we use the elements
 #     nfold         # [10] value for opts$TST.NFOLD during unbiased runs with umode="CV"
 #     tstCol        # ["TST"] value for opts$TST.COL during unbiased runs with umode="TST"
-#     tstFrac       # [0.2] value for opts$TST.valiFrac during unbiased runs with umode="RSUB"
+#     TST.testFrac  # [0.2] value for opts$TST.valiFrac during unbiased runs with umode="RSUB"
 #     TST.trnFrac   # [NULL] value for opts$TST.trnFrac during unbiased runs with umode="SP_T"
 #     nrun          # [5] value for opts$NRUN during unbiased runs
 #     test2.string  # ["default.cutoff"] value for opts$test2.string during unbiased runs
@@ -134,7 +134,7 @@ tdmMapOpts <- function(umode,opts,tdm)
     
     setOpts.RSUB <- function(opts) {
       opts$TST.kind <- "rand" # select test set by random subsampling, see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$TST.valiFrac=tdm$tstFrac # set this fraction of data aside for testing 
+      opts$TST.valiFrac=tdm$TST.testFrac # set this fraction of data aside for testing 
       opts;
     } 
     setOpts.TST <- function(opts) {
@@ -155,6 +155,8 @@ tdmMapOpts <- function(umode,opts,tdm)
       if (!is.null(tdm$TST.trnFrac)) 
         opts$TST.trnFrac=tdm$TST.trnFrac# Set this fraction of the TrainVa-data aside for training (only for opts$TST.kind="rand").
                                         # If tdm$TST.trnFrac is NULL, then tdmModCreateCVindex sets opts$TST.trnFrac = 1-opts$TST.valiFrac.
+      if (!is.null(tdm$TST.valiFrac)) 
+        opts$TST.valiFrac=tdm$TST.valiFrac
       opts$TST.NFOLD = tdm$nfold  # number of CV-folds (only for opts$TST.kind=="cv")
       opts;
     } 

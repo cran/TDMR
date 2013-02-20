@@ -16,7 +16,7 @@
 #' 1) A variety of tuners, with special emphasis on \link{SPOT} (another well-known R package for parameter tuning), but also CMA-ES and other tuning algorithms. \cr
 #' 2) Tuning of preprocessing (feature generation) parameters and model building parameters simultaneously.  \cr
 #' 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr
-#' 4) Easy parallelization of those experiments with the help of R package \code{\link{snowfall}}.
+#' 4) Easy parallelization of those experiments with the help of R packages \code{snow} and \code{\link{parallel}}.
 #' 
 #' The main entry point functions are \code{\link{tdmClassifyLoop}}, \code{\link{tdmRegressLoop}} and \code{\link{tdmBigLoop}}. 
 #' See \code{\link{tdmOptsDefaultsSet}} and \code{\link{tdmDefaultsFill}} for an overview of adjustable TDMR-parameters.
@@ -171,6 +171,7 @@ SRF <- function(result) {
 #'   @param x  an object of class \code{\link{TDMclassifier}}, \code{\link[=tdmClassify]{tdmClass}}, 
 #'                                \code{\link{TDMregressor}} or \code{\link[=tdmRegress]{tdmRegre}}.
 #'   @param ... -- currently not used -- 
+#'   @return the list \code{opts} with DM-specific settings contained in the specified object
 #' @export
 Opts <- function(x, ...)  UseMethod("Opts");
 

@@ -28,8 +28,10 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
         }
         if (.Platform$OS.type=="windows") {
           theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOT/R/';
-          if (Sys.info()["user"]=="wolfgang")  #theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOT/R/';
+          if (Sys.info()["user"]=="wolfgang")  {
+            #theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOT/R/';
             theSpotPath <- 'C:/WUTemp/FH-MassenDaten/svnspot/trunk/SPOTsrc/';
+          }
         }
       }
       # if 'theSpotPath' is a string different from "USE.SOURCE", then we try 
@@ -119,68 +121,8 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
   }
   else   # i.e. if (tdmParallel)
   {
-    sfLibrary("randomForest",character.only=TRUE);
-    sfLibrary("e1071",character.only=TRUE);        # svm(), Naive Bayes
-    #sfLibrary("matlab",character.only=TRUE);      # repmat() etc., for tdmParaBootstrap.r - now deprecated 12/2011
-    if (is.na(theSpotPath)) {
-        sfLibrary("SPOT",character.only=TRUE);     # load SPOT from the installed library (package version)
-    } else {
-        cat("Sourcing SPOT from R files in",theSpotPath,"\n");    
-        sfSourceSpotFromDir <- function(sdir) {
-            oldwd=getwd(); setwd(sdir);
-            for (f in dir())   {
-              if (file.info(f)$isdir) {
-                sourceSpotFromDir(f);
-              } else {            
-                sfSource(f);
-              }
-            }
-            setwd(oldwd);
-        }
-        sfSourceSpotFromDir(theSpotPath);         # recursive call (march through all subdirs)
-        oldwd=getwd(); setwd(theSpotPath);
-        for (f in dir()) sfSource(f);
-        setwd(oldwd);
-    }
-    if (is.na(theRsfaPath)) {
-        sfLibrary("rSFA",character.only=TRUE);     # load rSFA from the installed library (package version)
-    } else {
-        oldwd=getwd(); setwd(theRsfaPath);
-        for (f in dir())   sfSource(f);
-        setwd(oldwd);
-    }
-    sfSource(createSourcePath("makeTdmStartOther.r"))
-    sfSource(createSourcePath("makeTdmRandomSeed.r"))
-    sfSource(createSourcePath("printTDMclassifier.r"))
-    sfSource(createSourcePath("printTDMregressor.r"))
-    sfSource(createSourcePath("tdmClassify.r"))
-    sfSource(createSourcePath("tdmClassifyLoop.r"))
-    sfSource(createSourcePath("tdmEmbedDataFrame.r"))
-    sfSource(createSourcePath("tdmGeneralUtils.r"))
-    sfSource(createSourcePath("tdmGraphicUtils.r"))
-    sfSource(createSourcePath("tdmMetacostRf.r"))
-    sfSource(createSourcePath("tdmModelingUtils.r"))    
-    sfSource(createSourcePath("tdmOptsDefaults.r"))
-    sfSource(createSourcePath("tdmParaBootstrap.r"))
-    sfSource(createSourcePath("tdmPreprocUtils.r"))
-    sfSource(createSourcePath("tdmReadData.r"))
-    sfSource(createSourcePath("tdmRegress.r"))
-    sfSource(createSourcePath("tdmRegressLoop.r"))
-
-    sfSource(createSourcePath("tdmBigLoop.r"))
-    sfSource(createSourcePath("tdmCompleteEval.r"))
-    sfSource(createSourcePath("tdmDefaultsFill.r"))
-    sfSource(createSourcePath("tdmDispatchTuner.r"))
-    sfSource(createSourcePath("tdmEnvTMakeNew.r"))
-    sfSource(createSourcePath("tdmGetObj.r"))
-    sfSource(createSourcePath("tdmMapDesign.r"))
-    sfSource(createSourcePath("tdmPlotResMeta.r"))
-    sfSource(createSourcePath("tdmROCR.r"))
-    sfSource(createSourcePath("tdmSplitTestData.r"))
-    sfSource(createSourcePath("tdmStartSpot.r"))
-    sfSource(createSourcePath("unbiasedRun.r"))
-    sfSource(createSourcePath("unbiasedBestRun_O.r"))
-    
+    stop("For tdm$parallelCPUs>1 it is required to use the *library* version of TDMR. Consider to set tdm$tdmPath=NULL.")
+    #sourceTDMR_SF(theSpotPath,theRsfaPath)        # --- obsolete now, the old source is in R-DM-Template-deprecated\..\prepareParallelExec.r
   }
     
   collectGarbage()

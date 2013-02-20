@@ -27,13 +27,14 @@
   the PCs with names PC1, PC2, ... (in case
   PRE.PCA=="linear") or with names KP1, KP2, ... (in case
   PRE.PCA=="kernel") and optional with monomial columns
-  added, if PRE.PCA.npc>0 } \item{numeric.variables}{ the
-  new numeric column names (PCs, monomials, and optionally
-  old numericV, if \code{opts$PRE.PCA.REPLACE==F}) }
-  \item{pcaList}{ a list with the items \code{sdev,
-  rotation, center, scale, x} as returned from
-  \code{\link{prcomp}} plus \code{eigval}, the eigenvalues
-  for the PCs }
+  added, if PRE.PCA.npc>0.  The number of PCs is
+  min(nrows(dset),length(numeric.variables)).  }
+  \item{numeric.variables}{ the new numeric column names
+  (PCs, monomials, and optionally old numericV, if
+  \code{opts$PRE.PCA.REPLACE==F}) } \item{pcaList}{ a list
+  with the items \code{sdev, rotation, center, scale, x} as
+  returned from \code{\link{prcomp}} plus \code{eigval},
+  the eigenvalues for the PCs }
 }
 \description{
   tdmPrePCA.train is capable of linear PCA, based on prcomp

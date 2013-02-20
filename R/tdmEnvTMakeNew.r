@@ -28,13 +28,78 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
   envT$roiGrid <- list();
   envT$sCList <- list();
   envT$theFinals <- NULL;
-  envT$tdm <- tdmDefaultsFill(tdm);
+  envT$tdm <- tdm <- tdmDefaultsFill(tdm);
   envT$runList <- tdm$runList;
   envT$spotList <- tdm$spotList;
   envT$wP <- ifelse(is.null(tdm$withParams), length(tdm$runList)==1, tdm$withParams)
   if (is.null(tdm$runList)) stop("tdm$runList is NULL");
-  
+  if (length(unique(tdm$runList)) != length(tdm$runList)) {
+    stop(paste("There are duplicates in tdm$runList. Please remove them:\n   ",paste(tdm$runList,collapse=" ")));
+#    print(tdm$runList);
+#    stop(paste("There are duplicates in tdm$runList. Please remove them."));
+  }
+
   envT <- tdmEnvTAddGetters(envT);
+
+  firstRoiNames <- NULL;    # private storage for checkRoiParams
+  ######################################################################################
+  # checkRoiParams: helper fct for tdmEnvTMakeNew:
+  #     Check whether each .roi file in envT$runList contains the same design parameters, otherwise set wP=FALSE and issue a warning
+  checkRoiParams <- function(wP,confFile,sC,envT) {
+  #firstRoiNames <<- "test"
+        if (wP) {
+          if (confFile==envT$runList[1]) {
+            firstRoiNames <<- rownames(sC$alg.roi);
+          } else {
+            roiNames = rownames(sC$alg.roi);
+            if (length(roiNames)!=length(firstRoiNames)) {
+              wP=FALSE;
+            } else {
+              if (any(roiNames!=firstRoiNames)) wP=FALSE;
+            }
+          }
+          if (wP==FALSE) warning("The design parameters in different ROI files are different --> TDMR sets tdm$withParams to FALSE (no param columns in envT$theFinals)");
+        }
+        wP;
+  }
+  # function addSRF adds to opts the element opts$srfFile and reads in case opts$SRF.calc==FALSE from this file the
+  # element opts$srf (a list with as many data frames as there are response variables in the task of confFile)
+  addSRF <- function(confFile,opts) {
+      dir.output <- paste(dirname(opts$dir.output),basename(opts$dir.output),sep="/")  # remove trailing "/", if it exists
+      if (!file.exists(dir.output)) {
+        success = dir.create(dir.output);
+        if (!success) stop(sprintf("Could not create dir.output=%s",dir.output));
+      }
+      opts$srfFile <- paste(paste(dir.output,confFile,sep="/"),"SRF.Rdata",sep=".")
+      if (opts$SRF.calc==FALSE) {
+        cat("Loading sorted RF importance from file",opts$srfFile,"...\n")
+        if (!file.exists(opts$srfFile)) stop(sprintf("SRF.file=%s does not exist",opts$srfFile));
+        srf=NULL;                 # to make package-build-checker happy
+        load(file=opts$srfFile);  # load srf
+        opts$srf=srf;
+      }
+      opts;
+  }
+  # function checkOpts checks whether there are any new variable names in list opts (e.g. due to misspelling in APD file)
+  # and if so, issues a NOTE and a warning message.
+  checkOpts <- function(opts) {
+    availNames = c("APPLY_TIME","CLS.CLASSWT","CLS.cutoff","CLS.gainmat","data.title","dir.data","dir.output","dir.Rdata"
+                  ,"dir.txt","DO.GRAPHICS","DO.POSTPROC","EVALFILE","fct.postproc","fileMode","filename","filesuffix","filetest"
+                  ,"GD.CLOSE","GD.DEVICE","GD.PNGDIR","GD.RESTART","LOGFILE","MOD.method","MOD.SEED","ncopies","NRUN","PDFFILE"
+                  ,"PRE.allNonVali","PRE.knum","PRE.MaxLevel","PRE.PCA","PRE.PCA.npc","PRE.PCA.REPLACE","PRE.SFA","PRE.SFA.doPB"
+                  ,"PRE.SFA.fctPB","PRE.SFA.npc","PRE.SFA.ODIM","PRE.SFA.PPRANGE","PRE.SFA.REPLACE","PRE.Xpgroup","READ.CMD","READ.INI"
+                  ,"READ.NROW","READ.TST","READ.TXT","rep","RF.mtry","RF.mtry","RF.nodesize","RF.ntree","RF.OOB","RF.p.all","RF.samp"
+                  ,"rgain.string","rgain.type","srf","SRF.calc","SRF.cutoff","SRF.kind","SRF.maxS","SRF.method","SRF.minlsi","SRF.ndrop"
+                  ,"SRF.nkeep","SRF.ntree","SRF.samp","SRF.scale","SRF.verbose","SRF.XPerc","srfFile","SVM.coef0","SVM.cost","SVM.degree","SVM.epsilon"
+                  ,"SVM.gamma","SVM.kernel","SVM.tolerance","ADA.coeflearn","ADA.mfinal","ADA.rpart.minsplit","test2.string"
+                  ,"TST.COL","TST.kind","TST.NFOLD","TST.SEED","TST.trnFrac","TST.valiFrac","VERBOSE");
+    newNames = setdiff(names(opts),availNames);
+    if (length(newNames)>0) {
+      if (length(newNames)==1) cat("NOTE: A new variable has been defined for list opts: ",newNames,".\n");
+      if (length(newNames)>1) cat("NOTE: New variables have been defined for list opts: ",paste(newNames,collapse=", "),".\n");
+      warning(paste("NOTE: New variables have been defined for list opts: ",paste(newNames,collapse=", "),"."))
+    }
+  }
 
   #
   # do all necessary file reading **before**  branching into tdmBigLoop or tdmCompleteEval
@@ -67,6 +132,9 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
     if (!is.null(tdm$READ.target)) opts$READ.target=tdm$READ.target;
     if (!is.null(tdm$oFileMode)) opts$fileMode=tdm$oFileMode;
     opts=tdmOptsDefaultsSet(opts,path=tdm$path);
+    opts=addSRF(confFile,opts);      # add opts$srfFile and add opts$srf from file in case opts$SRF.cacl==FALSE
+    checkOpts(opts);
+browser()    
     if (tdm$parallelCPUs>1 & opts$fileMode==TRUE)
       warning("With tdm$parallelCPUs>1 the setting opts$fileMode=TRUE might be problematic. Consider to set tdm$oFileMode=FALSE");
     
@@ -74,10 +142,7 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
       warning(sprintf("%s: Do you really want tdm$umode=='TST' and opts$TST.kind=='col' when opts$MOD.method is not based on RF? %s",
                       confFile,"You will have no validation data!"));
  	  envT$sCList[[k]]$opts=opts;
- 	  
- 	  rm("roiNames1",envir=envT);    # delete this helper var (was needed only temporarily by checkRoiParams above)
   }
-  
 
   envT;
 }
@@ -92,26 +157,25 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
 #' @export
 ######################################################################################
 tdmEnvTAddGetters <- function(envT) {  
-  tdm <- envT$tdm;
   # envT$getInd: private helper fct for envT$getBst and envT$getRes
-  envT$getInd <- function(confFile,nExp,theTuner) {
-    indTuner = which(tdm$tuneMethod==theTuner);
-    if (length(indTuner)==0) stop(paste("Could not find tuner ",theTuner,"in tdm$tuneMethod"));
+  envT$getInd <- function(envT,confFile,nExp,theTuner) {
+    indTuner = which(envT$tdm$tuneMethod==theTuner);
+    if (length(indTuner)==0) stop(paste("Could not find tuner ",theTuner,"in envT$tdm$tuneMethod"));
     nConf = which(envT$runList==confFile);
     if (length(nConf)==0) stop(paste("Could not find conf file ",confFile,"in envT$runList"));
-    if (nExp<1 | nExp>tdm$nExperim) stop(paste("nExp is not in range {1,...,",tdm$nExperim,"}",sep=""));
-    ind = indTuner + length(tdm$tuneMethod)*((nExp-1) + tdm$nExperim*(nConf-1));
+    if (nExp<1 | nExp>envT$tdm$nExperim) stop(paste("nExp is not in range {1,...,",envT$tdm$nExperim,"}",sep=""));
+    ind = indTuner + length(envT$tdm$tuneMethod)*((nExp-1) + envT$tdm$nExperim*(nConf-1));
   }
   # envT$getBst: return from the linear list envT$bstGrid the data frame bst for the triple {confFile,nExp,theTuner}
-  envT$getBst <- function(confFile,nExp,theTuner) {
-    ind = envT$getInd(confFile,nExp,theTuner);
+  envT$getBst <- function(envT,confFile,nExp,theTuner) {
+    ind = envT$getInd(envT,confFile,nExp,theTuner);
     lgrid = length(envT$bstGrid);
     if (ind<1 | ind>lgrid) stop(sprintf("Subscript %d is out of bounds for envT$bstGrid (length is %d)",ind,lgrid));
     envT$bstGrid[[ind]];
   }
   # envT$getRes: return from the linear list envT$resGrid the data frame res for the triple {confFile,nExp,theTuner}
-  envT$getRes <- function(confFile,nExp,theTuner) {
-    ind = envT$getInd(confFile,nExp,theTuner);
+  envT$getRes <- function(envT,confFile,nExp,theTuner) {
+    ind = envT$getInd(envT,confFile,nExp,theTuner);
     lgrid = length(envT$resGrid);
     if (ind<1 | ind>lgrid) stop(sprintf("Subscript %d is out of bounds for envT$resGrid (length is %d)",ind,lgrid));
     envT$resGrid[[ind]];
@@ -286,23 +350,4 @@ correctEnvTDir <- function(envT,tdm) {
     }
 }
 
-######################################################################################
-# helper fct for tdmEnvTMakeNew:
-#     Check whether each .roi file in envT$runList contains the same design parameters, otherwise set wP=FALSE and issue a warning 
-checkRoiParams <- function(wP,confFile,sC,envT) {
-      if (wP) {
-        if (confFile==envT$runList[1]) {
-          envT$roiNames1 = rownames(sC$alg.roi);
-        } else {
-          roiNames = rownames(sC$alg.roi);
-          if (length(roiNames)!=length(envT$roiNames1)) {
-            wP=FALSE;
-          } else {
-            if (any(roiNames!=envT$roiNames1)) wP=FALSE;
-          }
-        }
-        if (wP==FALSE) warning("The design parameters in differents ROI files are different --> TDMR sets tdm$withParams to FALSE (no param columns in envT$theFinals)");      
-      }
-      wP;
-}
 

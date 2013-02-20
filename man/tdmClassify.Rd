@@ -16,7 +16,8 @@
   records in d_dis (needed for active learning, see
   ssl_methods.r)}
 
-  \item{d_preproc}{data used for preprocessing (usually all
+  \item{d_preproc}{data used for preprocessing, only
+  relevant for opts$PRE.SFA!="none" (usually all
   non-validation data)}
 
   \item{response.variables}{name of column which carries

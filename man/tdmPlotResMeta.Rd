@@ -85,7 +85,8 @@
 \examples{
 \dontrun{
      ##
-     ## Read previous tuning results 'envT' from demo02sonar/demoSonar.RData (relative to the TDMR package directory).
+     ## Read previous tuning results 'envT' from demo02sonar/demoSonar.RData
+     ## (relative to the TDMR package directory).
      ## Then, tdmPlotResMeta lets you explore interactively the RES data frame(s):
      load(paste(.find.package("TDMR"), "demo02sonar","demoSonar.RData",sep="/"));
      tdmPlotResMeta(envT);

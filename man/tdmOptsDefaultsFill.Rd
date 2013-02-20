@@ -10,18 +10,17 @@
 \value{
   \code{opts}, the extended options, where additional
   elements, if they are not yet def'd, are set as:
-  \item{filesuffix}{the suffix of \code{opts$filename},
-  e.g. \code{".csv"} } \item{TST.COL}{["TST.COL"] }
-  \item{PDFFILE}{["*_pic.pdf"] file for multipage graphics
-  in case \code{opts$GD.DEVICE}="pdf" }
-  \item{GD.PNGDIR}{["PNG*"] directory for .png files in
-  case \code{opts$GD.DEVICE}="png" }
-  \item{LOGFILE}{["*.log"] where to log the output }
-  \item{EVALFILE}{["*_eval.csv"] file with evaluation
-  results allEVAL } \item{SRF.samp}{sample size for SRF,
-  derived from \code{RF.samp} }
-  \item{SRF.cutoff}{[CLS.cutoff] } \item{rgain.string}{ one
-  out of c("RGain","MeanCA","MinCA","RMAE","RMSE"),
+  \item{TST.COL}{["TST.COL"] } \item{PDFFILE}{["*_pic.pdf"]
+  file for multipage graphics in case
+  \code{opts$GD.DEVICE}="pdf" } \item{GD.PNGDIR}{["PNG*"]
+  directory for .png files in case
+  \code{opts$GD.DEVICE}="png" } \item{LOGFILE}{["*.log"]
+  where to log the output } \item{EVALFILE}{["*_eval.csv"]
+  file with evaluation results allEVAL }
+  \item{SRF.samp}{sample size for SRF, derived from
+  \code{RF.samp} } \item{SRF.cutoff}{[opts$CLS.cutoff] }
+  \item{rgain.string}{ one out of
+  c("RGain","MeanCA","MinCA","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe"),
   depending on \code{opts$rgain.type} }
 
   Here * is the stripped part of \code{opts$filename} (w/o

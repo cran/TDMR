@@ -3,7 +3,7 @@
 #*#     a) tdm$parallelCPUs=2
 #*#     b) tdm$parallelFuncs="cpu.postproc".
 #*# The latter is only necessary if main_cpu.r contains extra functions besides tdm$mainFunc="main_cpu",
-#*# in this case "cpu.postproc", which need to be sfExport'ed to the cluster nodes
+#*# in this case "cpu.postproc", which need to be clusterExport'ed to the cluster nodes
 
 ## load package and set working directory
 require(TDMR);
@@ -14,7 +14,7 @@ oldwd <- getwd();  setwd(path);
 source(paste(path,"main_cpu.r",sep=""));
 
 ## preliminary settings for TDMR
-tdm <- list(    mainFunction="main_cpu"
+tdm <- list(    mainFunc="main_cpu"
 #              , path=path
               , umode=c("RSUB","CV")    # ["CV" | "RSUB" | "TST"]
               , tuneMethod=c("spot","lhd")

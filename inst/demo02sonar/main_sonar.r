@@ -7,24 +7,7 @@
 #
 main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {          
 
-    if (is.null(opts)) {
-      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See ?tdmOptsDefaultsSet
-                                      # for the list of those elements and many explanatory comments                                                                                                         
-      opts$filename = "sonar.txt"
-      opts$filesuffix = ".txt"
-      opts$READ.CMD = "read.csv2(file=paste(opts$dir.data, filename, sep=\"\"), dec=\".\", sep=\",\",header=FALSE)"
-      opts$data.title <- "Sonar Data"
-
-      opts$SRF.kind = "xperc"         # no variable ranking, no variable selection
-      opts$MOD.method="RF";           # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in tdmClassifyLoop
-      
-      # Activate the following four lines to run the RF.default-(main_sonar.r)-experiment in Benchmark-Datasets.doc:
-      opts$GD.DEVICE = "pdf";
-      opts$TST.kind <- "cv"           # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$TST.NFOLD =  3             # number of CV-folds (only for TST.kind=="cv")
-      opts$NRUN =  1                  # how many CV-runs, if opts$TST.kind <- "cv"
-      #opts$rgain.type="arROC"
-    }
+    if (is.null(opts)) source("sonar_00.apd", local=TRUE);
     opts <- tdmOptsDefaultsSet(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     
     gdObj <- tdmGraAndLogInitialize(opts);     # init graphics and log file
@@ -52,7 +35,7 @@ main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {
     #===============================================
     # PART 2 - 6
     #===============================================
-    result <- tdmClassifyLoop(dset,response.variable,input.variables,opts);
+    result <- tdmClassifyLoop(dset,response.variable,input.variables,opts,tset);
 
     # print summary output and attach certain columns (here: y,sd.y,dset) to list result:
     result <- tdmClassifySummary(result,opts,dset);
@@ -60,6 +43,10 @@ main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {
     tdmGraAndLogFinalize(opts,gdObj);      # close graphics and log file
     
     result;  
+}
+
+readCmdSonar <- function(filename,opts) {
+  read.csv2(file=paste(opts$dir.data, filename, sep=""), dec=".", sep=",", nrow=opts$READ.NROW,header=FALSE);
 }
 
 #result = main_sonar() 

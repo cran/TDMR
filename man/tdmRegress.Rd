@@ -2,13 +2,17 @@
 \alias{tdmRegress}
 \title{Core regression function of TDMR.}
 \usage{
-  tdmRegress(d_train, d_test, response.variables,
-    input.variables, opts)
+  tdmRegress(d_train, d_test, d_preproc,
+    response.variables, input.variables, opts)
 }
 \arguments{
   \item{d_train}{training set}
 
   \item{d_test}{test set, same columns as training set}
+
+  \item{d_preproc}{data used for preprocessing, only
+  relevant for opts$PRE.SFA!="none" (usually all
+  non-validation data)}
 
   \item{response.variables}{name of column which carries
   the target variable - or - vector of names specifying

@@ -13,7 +13,6 @@ opts$READ.CMD = "readSonar(filename,opts)";
 #"read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW, header=FALSE)"; 
 opts$READ.INI = TRUE 
 opts$TST.kind = "rand"
-opts$TST.testFrac = 0.20
 opts$TST.valiFrac = 0.25      # 25% of the 80% train-vali-set data are 20% of all data (!)
 #opts$TST.trnFrac is set via tdm$TST.trnFrac
 #opts$DO.GRAPHICS = F

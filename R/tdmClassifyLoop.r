@@ -4,13 +4,13 @@
 #'    Core classification double loop of TDMR returning a \code{\link{TDMclassifier}} object. 
 #'    
 #'    tdmClassifyLoop contains a double loop (opts$NRUN and CV-folds)
-#'    and calls \code{\link{tdmClassify}}. It is called  by all R-functions main_*. \cr
+#'    and calls \code{\link{tdmClassify}}. It is called  by all classification R-functions main_*. \cr
 #'    It returns an object of class \code{\link{TDMclassifier}}.
 #'
 #'
-#'   @param dset    the data frame for which cvi is needed
-#'   @param tset    [NULL] optional validation data set. If NULL, the validation set is build from
-#'                  \code{dset} according to the procedure prescribed in \code{opts$TST.*}. 
+#'   @param dset    the data frame containing training and validation data.
+#'   @param tset    [NULL] If not NULL, this is the validation data set. If NULL, the validation data 
+#'                  set is build from \code{dset} according to the procedure prescribed in \code{opts$TST.*}. 
 #'   @param response.variables   name of column which carries the target variable - or -
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for evaluation)
@@ -53,10 +53,11 @@
 tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NULL) {
   	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
 #print(.Random.seed[1:6])
-    if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmClass");
+    if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmOpts");
     if (is.null(opts$PRE.PCA.numericV)) opts$PRE.PCA.numericV <- input.variables;
     if (opts$NRUN<=0) stop(sprintf("opts$NRUN has to be positive, but it is %d",opts$NRUN));
-
+    if (opts$PRE.PCA!="none" & opts$PRE.SFA!="none") stop("It is not allowed to activate opts$PRE.PCA and opts$PRE.SFA simultaneously.")
+ 
     #if (opts$READ.TST==TRUE & opts$TST.kind!="col")
     #  warning(sprintf("Are you sure you want opts$READ.TST=TRUE, but opts$TST.kind!='col'? Actual value is opts$TST.kind='%s'.",opts$TST.kind));
 
@@ -106,45 +107,52 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
             opts$k=k;
             opts$the.nfold = nfold;
             cat1(opts,"\n")
-            d_test  <- dset[cvi==k, ]            # validation set
-            d_train <- dset[cvi!=k & cvi>=0, ]   # training set (disregard records with cvi<0)
-            d_dis   <- dset[cvi!=k & cvi==-1, ]  # disregard set (needed for active learning)
-            d_test  <- tdmBindResponse(d_test , "IND.dset", which(cvi==k));
-            d_train <- tdmBindResponse(d_train, "IND.dset", which(cvi!=k & cvi>=0));
-            d_dis   <- tdmBindResponse(d_dis  , "IND.dset", which(cvi!=k & cvi==-1));
-            if (!is.null(tset)) {    # validation set (test set) is passed in from the caller
+            if (any(names(dset)=="IND.dset")) stop("Name clash in dset, which has already a column IND.dset. Please consider renaming it.")            
+            if (is.null(tset)) { 
+              d_test  <- dset[cvi==k, ]            # validation set
+              d_test  <- tdmBindResponse(d_test , "IND.dset", which(cvi==k));
+            } else {    # i.e. if (!is.null(tset))
+              # validation set (or test set) is passed in from the caller
+              if (opts$TST.kind %in% c("cv"))  #,"col"))
+                stop(sprintf("Option opts$TST.kind=\"%s\" together with tset!=NULL is currently not implemented. Consider opts$TST.kind=\"rand\".",opts$TST.kind));
               d_test <- tset;
               d_test  <- tdmBindResponse(d_test , "IND.dset", rep(-1,nrow(tset)));
             }
+            d_train <- dset[cvi!=k & cvi>=0, ]   # training set (disregard records with cvi<0)
+            d_dis   <- dset[cvi!=k & cvi==-1, ]  # disregard set (needed for active learning)
+            d_train <- tdmBindResponse(d_train, "IND.dset", which(cvi!=k & cvi>=0));
+            d_dis   <- tdmBindResponse(d_dis  , "IND.dset", which(cvi!=k & cvi==-1));
             ntst=nrow(d_test);
             ntrn=nrow(d_train);
             #if (nrow(d_train)+nrow(d_test)+nrow(d_dis) != nrow(dset))
             #  stop("Something wrong, the union of d_train, d_test and d_dis does not cover dset");
  
-            if (opts$PRE.PCA.npc>0 | opts$PRE.PCA!="none") {
+            d_preproc <- NULL;                # no preprocessing -> no mem-consumption for d_preproc  (if condition on next line is false)
+            if (opts$PRE.PCA!="none" | opts$PRE.SFA!="none") {
+              if (opts$PRE.allNonVali) {
+                d_preproc <- dset[cvi!=k, ]   # all non-validation-data are used for preproc
+              } else {
+                d_preproc <- d_train 
+              }
+            } 
+            
+            if (opts$PRE.PCA!="none") {
               # a) do PCA on the numeric variables of d_train, if opts$PRE.PCA!="none"
               # b) add monomials of degree 2 for the first opts$PRE.PCA.npc numeric variables
               # c) apply this PCA and monomials to d_test and d_dis in the same way
               other.variables <- setdiff(input.variables,opts$PRE.PCA.numericV);
-              d_preproc <- dset[cvi!=k, ]         # all non-validation-data are used for preproc
               pca <- tdmPrePCA.train(d_preproc,opts);                 # see tdmPreprocUtils.r
               d_train <- tdmPrePCA.apply(d_train,pca$pcaList,opts,d_train)$dset;
               d_test <- tdmPrePCA.apply(d_test,pca$pcaList,opts,d_train)$dset;
               d_dis <- tdmPrePCA.apply(d_dis,pca$pcaList,opts,d_train)$dset;
-
               input.variables <- union(pca$numeric.variables,other.variables);
-              opts$PRE.SFA.numericV <- pca$numeric.variables;
+              #opts$PRE.SFA.numericV <- pca$numeric.variables;        # -- now obsolete, no SFA after PCA allowed --
               if (length(setdiff(input.variables,names(d_train)))>0) 
                   stop("Some elements of input.variables are not columns of d_train");
             }
-            if (opts$PRE.SFA.npc>0 | opts$PRE.SFA!="none") {
-              d_preproc <- dset[cvi!=k, ]         # all non-validation-data are used for preproc
-            } else {
-              d_preproc <- NULL;
-            }
 
             # the SFA preprocessing is now in tdmClassify, inside response.variable for-loop
-            # (because SFA depends on response.variable)
+            # (because SFA (for classification) depends on response.variable)
 
             res <- tdmClassify(d_train,d_test,d_dis,d_preproc,response.variables,input.variables,opts)
 

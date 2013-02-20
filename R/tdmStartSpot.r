@@ -3,9 +3,9 @@
 #
 #' Function called by \code{\link{spot}} to evaluate a DM task during a \code{\link{SPOT}} tuning run.
 #'
-#' This function is called by \code{\link{spot}} for evaluations during a tuning run. It accumulates in 
-#' \code{spotConfig$alg.currentResult} the RES data frame of all evaluations and in 
-#' \code{spotConfig$alg.currentBest} the BST data frame of the so far best solution.
+#' This function is called by \code{\link{spot}} for evaluations during a tuning run. It accumulates \cr 
+#' in \code{spotConfig$alg.currentResult} the RES data frame of all evaluations and \cr  
+#' in \code{spotConfig$alg.currentBest} the BST data frame of the so far best solution.
 #'
 #' \code{\link{spot}} is invoked from \code{\link{spotTuner}} or \code{\link{lhdTuner}}. 
 #' The latter is simply a \link{SPOT}-run with all budget devoted to the initial design. 
@@ -87,6 +87,7 @@ tdmStartSpot <- function(spotConfig) {
   			oldwd = getwd(); 
         if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));    # save & change working dir 		         			
     		result = NULL;     	
+
     		mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
         eval(parse(text=mainCommand));                # execute the command given in string mainCommand
         if (is.null(result$y)) stop("tdm$mainFunc did not return a list 'result' containing an element 'y'");

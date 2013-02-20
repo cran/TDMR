@@ -8,13 +8,12 @@ oldwd <- getwd();
 setwd(path);
 
 tdm=tdmDefaultsFill(mainFile="main_sonar.r");
-tdm <- tdmMapDesLoad(tdm);      # load the mapping from design variables to opts variables
+tdm <- tdmMapDesLoad(tdm);   # load the mapping from design variables to opts variables
 
 source("sonar_01.apd");      # read in settings for opts
 source(tdm$mainFile);
 spotUserConfig = list(tdm=tdm,spot.fileMode=F, opts=opts);
 spotConfig = spot("sonar_01.conf","auto",spotConfig=spotUserConfig);
 
-## restore old working directory
-setwd(oldwd);
+setwd(oldwd);                # restore old working directory
 

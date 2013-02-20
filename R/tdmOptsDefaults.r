@@ -6,7 +6,7 @@
 #'   Set up and return a list \code{opts} with default settings. The list \code{opts} 
 #'   contains all DM-related settings which are needed by main_<TASK>.     
 #'   \cr\cr
-#'   For better readability, the elements of  \code{opts} are arranged in groups:
+#'   For better readability, most elements of  \code{opts} are arranged in groups:
 #'     \tabular{ll}{
 #'      \code{dir.*} \tab  path-related settings  \cr
 #'      \code{READ.*} \tab  data-reading-related settings  \cr
@@ -16,6 +16,7 @@
 #'      \code{MOD.*} \tab  general settings for models and model building  \cr
 #'      \code{RF.*} \tab  several parameters for model RF (Random Forest)    \cr
 #'      \code{SVM.*} \tab  several parameters for model SVM (Support Vector Machines)  \cr
+#'      \code{ADA.*} \tab  several parameters for model ADA (AdaBoost)  \cr
 #'      \code{CLS.*} \tab  classification-related settings  \cr
 #'      \code{GD.*} \tab  settings for the graphic devices  \cr
 #'     }
@@ -26,7 +27,7 @@
 #'
 #' @param opts    (optional) the options already set
 #' @param path    ["./"] the path string to precede all settings \code{opts$dir.*}. 
-#'                If \code{path=="./"} then nothing is preceded to \code{opts$dir.*}.   
+#'                If \code{path=="./"} then nothing is preceeded to \code{opts$dir.*}.   
 #'
 #' @return a list \code{opts}, with defaults set for all options relevant for a DM task, 
 #'    containing the following elements
@@ -35,44 +36,48 @@
 #' 			\item{dir.Rdata}{[<path>/Rdata] -- deprecated, use opts$dir.data -- } 
 #' 			\item{dir.output}{[<path>/Output] where to put output files} 
 #' 			\item{filename}{["default.txt"] the task data} 
-#' 			\item{filetest}{[NULL] the test data, only relevant for READ.TST=T} 
+#' 			\item{filetest}{[NULL] the test data, only relevant for READ.TST=T}
 #' 			\item{fileMode}{[TRUE] if =T, write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file} 
 #' 			\item{data.title}{["Default Data"] title for plots} 
 #' 			\item{READ.TXT}{[T] =T: read data from .csv and save as .Rdata, =F: read from .Rdata}                                                   
 #' 			\item{READ.NROW}{[-1] read this amount of rows or -1 for 'read all rows'} 
 #' 			\item{READ.TST}{[F] =T: read unseen test data from opts$filetest (usually you will do this only for the final model and only with TST.kind="col")} 
-#' 			\item{READ.CMD}{["read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW)"] 
+#' 			\item{READ.CMD}{["\code{\link{tdmReadCmd}(filename,opts)}"] 
 #'                      the command to be passed into \code{\link{tdmReadData}}. It has to contain the placeholder 'filename'. The default 
-#'                      in brackets implies the settings header=T, sep="," and dec="."   } 
+#'                      in brackets implies 'read.csv(file=paste(opts$dir.txt, filename, sep=""), nrow=opts$READ.NROW)' which includes the 
+#'                      further settings header=T, sep="," and dec="."   } 
 #' 			\item{READ.INI}{[TRUE] read the task data initially, i.e. prior to tuning, using \code{\link{tdmReadData}} .  
 #'                      If =FALSE, the data are read anew in each pass through main_TASK, i.e. in each tuning step (deprecated). } 
 #' 			\item{TST.kind}{["rand"] one of the choices from \{"cv","rand","col"\}, see \code{\link{tdmModCreateCVindex}} for details  } 
 #' 			\item{TST.COL}{["TST.COL"] name of column with train/test/disregard-flag} 
 #' 			\item{TST.NFOLD}{[3] number of CV-folds (only for TST.kind=="cv")} 
-#' 			\item{TST.valiFrac}{[0.1] set this fraction of data aside for validation (only for TST.kind=="rand")} 
+#' 			\item{TST.valiFrac}{[0.1] set this fraction of the train-validation data aside for validation (only for TST.kind=="rand")} 
 #' 			\item{TST.testFrac}{[0.1] set prior to tuning this fraction of data aside for testing (if tdm$umode=="SP_T" and opts$READ.INI==TRUE)
 #'                      or set this fraction of data aside for testing after tuning (if tdm$umode=="RSUB" or =="CV") } 
 #'      \item{TST.trnFrac}{[NULL] train set fraction, if NULL then \code{\link{tdmModCreateCVindex}} will set it to 1 - opts$TST.valiFrac. }
 #' 			\item{TST.SEED}{[NULL] a seed for the random test set selection (\code{\link{tdmRandomSeed}}) and random validation set selection. 
 #'            (\code{\link{tdmClassifyLoop}}). If NULL, use \code{\link{tdmRandomSeed}}. } 
-#' 			\item{PRE.PCA}{["none" (default)|"linear"] PCA preprocessing: [don't | normal pca (prcomp) ] } 
-#' 			\item{PRE.PCA.REPLACE}{[T] =T: replace with the PCA columns the original numerical columns, =F: add the PCA columns} 
-#' 			\item{PRE.PCA.npc}{[0] if >0: add monomials of degree 2 for the first PRE.PCA.npc columns (PCs)} 
-#' 			\item{PRE.SFA}{["none" (default)|"2nd"] SFA preprocessing (see package \code{\link{rSFA}}: [don't | ormal SFA with 2nd degree expansion ] } 
+#' 			\item{PRE.PCA}{["none" (default)|"linear"] PCA preprocessing: [don't | do normal PCA (prcomp) ] } 
+#' 			\item{PRE.PCA.REPLACE}{[T] =T: replace with the PCA columns the original numerical columns, =F: add the PCA columns  } 
+#' 			\item{PRE.PCA.npc}{[0] if >0: add monomials of degree 2 from the first PRE.PCA.npc columns (PCs) (only active, if opts$PRE.PCA!="none")} 
+#' 			\item{PRE.SFA}{["none" (default)|"2nd"] SFA preprocessing (see package \code{\link{rSFA}}: [don't | do ormal SFA with 2nd degree expansion ] } 
 #' 			\item{PRE.SFA.REPLACE}{[F] =T: replace the original numerical columns with the SFA columns; =F: add the SFA columns } 
-#' 			\item{PRE.SFA.npc}{[0] if >0: add monomials of degree 2 for the first PRE.SFA.npc columns } 
+#' 			\item{PRE.SFA.npc}{[0] if >0: add monomials of degree 2 from the first PRE.SFA.npc columns (only acitve, if opts$PRE.SFA!="none") } 
 #' 			\item{PRE.SFA.PPRANGE}{[11] number of inputs after SFA preprocessing, only those inputs enter into SFA expansion } 
 #' 			\item{PRE.SFA.ODIM}{[5] number of SFA output dimensions (slowest signals) to return } 
-#' 			\item{PRE.SFA.doPB}{[T] =T/F: do / don't do parametric bootstrap for SFA in case of marginal training data } 
+#' 			\item{PRE.SFA.doPB}{[T] =F|T: don't | do parametric bootstrap for SFA in case of marginal training data } 
 #' 			\item{PRE.SFA.fctPB}{[sfaPBootstrap] the function to call in case of parametric bootstrap, see \code{\link{sfaPBootstrap}} 
 #'                      in package \code{\link{rSFA}} for its interface description } 
+#'      \item{PRE.allNonVali}{[F] if =T, then use all non-validation data in the training-validation set for PCA or SFA preprocessing.
+#'                      If =F, use only the training set for PCA or SFA processing (only relevant if opts$PRE.PCA!="none" or opts$PRE.SFA!="none").  } 
 #' 			\item{PRE.Xpgroup}{[0.99] bind the fraction 1-PRE.Xpgroup in column OTHER (see \code{\link{tdmPreGroupLevels}})  } 
 #' 			\item{PRE.MaxLevel}{[32] bind the N-32+1 least frequent cases in column OTHER (see \code{\link{tdmPreGroupLevels}})  } 
 #' 			\item{SRF.kind}{["xperc" (default) |"ndrop" |"nkeep" |"none" ] the method used for feature selection, see \code{\link{tdmModSortedRFimport}}  } 
-#'      \item{SRF.ndrop}{   [0] how many variables to drop (if SRF.kind=="ndrop")  }
+#'      \item{SRF.ndrop}{   [0] how many variables to drop (only relevant if SRF.kind=="ndrop")  }
+#'      \item{SRF.nkeep}{ [NULL] how many variables to keep, NULL="keep all" (only relevant if SRF.kind=="nkeep") }
 #'      \item{SRF.XPerc}{  [0.95] if >=0, keep that importance percentage, starting with the most important variables (if SRF.kind=="xperc")  }
-#'      \item{SRF.calc}{   [T] =T: calculate importance & save on SRF.file, =F: load from SRF.file
-#'                      (SRF.file = Output/<filename>.SRF.<response.variable>.Rdata) }
+#'      \item{SRF.calc}{   [T] =T: calculate importance & save on SRF.file, =F: load from srfFile
+#'                      (srfFile = Output/<confFile>.SRF.Rdata) }
 #'      \item{SRF.ntree}{  [50] number of RF trees }
 #'      \item{SRF.samp}{    sampsize for RF }
 #'      \item{SRF.verbose}{ [2] }
@@ -88,12 +93,16 @@
 #' 			\item{RF.mtry}{[NULL] } 
 #' 			\item{RF.nodesize}{[1] } 
 #' 			\item{RF.OOB}{[TRUE] if =T, return OOB-training set error as tuning measure; if =F, return validation set error } 
-#' 			\item{RF.p.all}{[FALSE]  } 
-#' 			\item{SVM.cost}{[1.0] } 
-#' 			\item{SVM.C}{[1] needed only for regression} 
-#' 			\item{SVM.epsilon}{[0.005] needed only for regression} 
-#' 			\item{SVM.gamma}{[0.005] } 
-#' 			\item{SVM.tolerance}{[0.008] } 
+#' 			\item{RF.p.all}{[FALSE]  }
+#' 			\item{SVM.kernel}{[3] =1: linear, =2: polynomial, =3: RBF, =4: sigmoid}
+#' 			\item{SVM.epsilon}{[0.005] needed only for regression}
+#' 			\item{SVM.gamma}{[0.005] }
+#' 			\item{SVM.coef0}{[0.0] (needed only for opts$SVM.kernel=="polynomial" or =="sigmoid")}
+#' 			\item{SVM.degree}{[3] (needed only for opts$SVM.kernel=="polynomial")}
+#' 			\item{SVM.tolerance}{[0.008] }
+#' 			\item{ADA.coeflearn}{[1] =1: "Breiman", =2: "Freund", =3: "Zhu" as value for boosting(...,coeflearn,...) (AdaBoost)  }
+#' 			\item{ADA.mfinal}{[10] number of trees in AdaBoost = mfinal boosting(...,mfinal,...)  }
+#' 			\item{ADA.rpart.minsplit}{[20] minimum number of observations in a node in order for a split to be attempted  }
 #' 			\item{CLS.cutoff}{[NULL] vote fractions for the n.class classes. The class i with maximum ratio (\% votes)/CLS.cutoff[i] wins. 
 #'                      If NULL, then each class gets the cutoff 1/n.class (i.e. majority vote wins). 
 #'                      The smaller CLS.cutoff[i], the more likely class i will win. }
@@ -132,8 +141,9 @@
 #' @note  The variables opts$PRE.PCA.numericV and opts$PRE.SFA.numericV (string vectors of numeric input columns to be used for PCA or SFA) 
 #'      are not set by \code{\link{tdmOptsDefaultsSet}} or \code{\link{tdmOptsDefaultsFill}}. Either they are supplied by the user or, 
 #'      if NULL, TDMR will set them to \code{input.variables} in \code{\link{tdmClassifyLoop}}, assuming that all columns are numeric. 
-#'      If PCA is done, its output \code{pca$numeric.variables} will overwrite \code{opts$PRE.SFA.numericV} (because the numeric variables 
-#'      after PCA become the input for SFA).
+#----- now obsolete: ----
+#      If PCA is done, its output \code{pca$numeric.variables} will overwrite \code{opts$PRE.SFA.numericV} (because the numeric variables 
+#      after PCA become the input for SFA).
 #'
 #' @seealso  \code{\link{tdmOptsDefaultsFill}} \code{\link{tdmDefaultsFill}}
 #' @author Wolfgang Konen, FHK, Mar'2011 - Apr'2012
@@ -156,14 +166,12 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$READ.TST = FALSE   # =T: read unseen test data (do this only for the final model and only with TST.kind="col")
                               # and fill column dset[,opts$TST.COL] accordingly (set it to 1 for those test records)
                               # =F: set a part of the train data aside as test data (as prescribed by TST.kind)
-      opts$READ.CMD = "read.csv(file=paste(opts$dir.txt, filename, sep=\"\"), nrow=opts$READ.NROW)";   # includes header=T, sep="," and dec="."
+      opts$READ.CMD = "tdmReadCmd(filename,opts)"; 
       opts$READ.INI = TRUE;   # read in the task data initially, i.e. prior to tuning
       opts$TST.kind <- "rand" # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
       opts$TST.COL ="TST.COL";# column with train/test/disregard-flag
       opts$TST.NFOLD =  3     # number of CV-folds (only for TST.kind=="cv")
       opts$TST.valiFrac = 0.10    # set this fraction of data aside for validation (only for TST.kind=="rand")
-      opts$TST.testFrac = 0.10    # set prior to tuning this fraction of data aside for testing (if tdm$umode=="SP_T" and opts$READ.INI==TRUE)
-                                  # or set this fraction of data aside for testing after tuning (if tdm$umode=="RSUB" or =="CV")
       opts$TST.SEED = NULL    # [NULL] a seed for the random test set selection
       opts$MOD.SEED = NULL    # [NULL] a seed for the random model initialization (if model is non-deterministic)
       
@@ -179,6 +187,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$PRE.SFA.ODIM=5;
       opts$PRE.SFA.doPB=TRUE;
       opts$PRE.SFA.fctPB=sfaPBootstrap;
+      opts$PRE.allNonVali=F;  # [F] =T: use all non-validation data for PCA or SFA preprocessing (only relevant if opts$PRE.PCA!="none" or opts$PRE.SFA!="none")
       opts$PRE.Xpgroup=0.99;
       opts$PRE.MaxLevel=32;
     
@@ -202,11 +211,16 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$RF.nodesize = 1
       opts$RF.OOB = TRUE;     # if =T, return OOB-training set error as tuning measure; if =F, return test set error
       opts$RF.p.all=FALSE;
+      opts$SVM.kernel=3;      # [3] =1: linear, =2: polynomial, =3: RBF, =4: sigmoid
       opts$SVM.cost=1.0;
-      opts$SVM.C=1;           # needed only for regression
       opts$SVM.epsilon=0.005; # needed only for regression
       opts$SVM.gamma=0.005;
-      opts$SVM.tolerance=0.008;   
+      opts$SVM.coef0=0.0;     # needed only for opts$SVM.kernel=="polynomial" or =="sigmoid"
+      opts$SVM.tolerance=0.008;
+      opts$SVM.degree=3;      # needed only for opts$SVM.kernel=="polynomial"
+      opts$ADA.coeflearn=1;   # [1] =1: "Breiman", =2: "Freund", =3: "Zhu" as value for boosting(...,coeflearn,...) (AdaBoost)
+      opts$ADA.mfinal=10;     # [10] number of trees in AdaBoost = mfinal boosting(...,mfinal,...) 
+      opts$ADA.rpart.minsplit=20; # minimum number of observations in a node in order for a split to be attempted  
       opts$CLS.cutoff = NULL  # [NULL] vote fractions for the n.class classes. The class i with
                               # maximum ratio (% votes)/RF.cutoff[i] wins. If NULL, then each
                               # class gets the cutoff 1/n.class (i.e. majority vote wins).
@@ -239,6 +253,9 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$APPLY_TIME=FALSE;                              
       opts$test2.string <- "default cutoff";
       opts$VERBOSE=2;
+
+      opts$srf = list();  # private storage to pass results back/forth from tdmModSortedRFimport
+                          # opts$srf[["resp"]] holds a data frame with results from/for SRF with response variable "resp".
   }  #if (is.null(opts))
   
   if (!is.null(path)) 
@@ -250,6 +267,8 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
         opts$dir.Rdata <- paste(path,opts$dir.Rdata,sep="")
         opts$dir.output <- paste(path,opts$dir.output,sep="")
     }
+    
+
   class(opts) <- c("tdmOpts","TDM")     
 
   tdmOptsDefaultsFill(opts);
@@ -275,15 +294,15 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
 #  -- deprecated -- @param suffix  the suffix of \code{opts$filename}. If NULL, take opts$filesuffix (which, if also NULL, is  
 #  --            --            inferred from opts$filename)
 #' @return \code{opts},  the extended options, where additional elements, if they are not yet def'd,  are set as: 
-#' 			\item{filesuffix}{the suffix of \code{opts$filename}, e.g. \code{".csv"} } 
 #' 			\item{TST.COL}{["TST.COL"] } 
 #' 			\item{PDFFILE}{["*_pic.pdf"] file for multipage graphics in case \code{opts$GD.DEVICE}="pdf" } 
 #' 			\item{GD.PNGDIR}{["PNG*"] directory for .png files in case \code{opts$GD.DEVICE}="png" } 
 #' 			\item{LOGFILE}{["*.log"] where to log the output } 
 #' 			\item{EVALFILE}{["*_eval.csv"] file with evaluation results allEVAL } 
 #' 			\item{SRF.samp}{sample size for SRF, derived from \code{RF.samp} } 
-#' 			\item{SRF.cutoff}{[CLS.cutoff] } 
-#'      \item{rgain.string}{ one out of c("RGain","MeanCA","MinCA","RMAE","RMSE"), depending on \code{opts$rgain.type} }
+#' 			\item{SRF.cutoff}{[opts$CLS.cutoff] } 
+#'      \item{rgain.string}{ one out of c("RGain","MeanCA","MinCA","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe"), 
+#'                          depending on \code{opts$rgain.type} }
 #'
 #' Here * is the stripped part of \code{opts$filename} (w/o suffix).
 #'
@@ -299,18 +318,20 @@ tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
     if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmClass");
 
     filename = opts$filename; 
-    #if (is.null(opts$filesuffix)) {              # WK/05/12: bug fix: set opts$filesuffix *always* as the suffix of opts$filename
-      opts$filesuffix = tail(unlist(strsplit(opts$filename,".",fixed=TRUE)),1);
-      opts$filesuffix = paste(".",opts$filesuffix,sep="");
-    #}
+    ssp = strsplit(filename,".",fixed=TRUE);
+    if (length(ssp[[1]])==1) {                  
+      filename = paste(filename,".suf",sep=""); # filename has no suffix --> add a dummy suffix ".suf"
+      ssp = strsplit(filename,".",fixed=TRUE);
+    }
+    filesuffix = paste(".",tail(unlist(ssp),1),sep="");
 
     if (is.null(opts$TST.COL)) opts$TST.COL="TST.COL";
     # bug fix 05/12: removed the is.null-check from  opts$PDFFILE, $GD.PNGDIR, $LOGFILE, $EVALFILE
     # (otherwise it might happen that opts$LOGFILE = "default.log"):
-    opts$PDFFILE=sub(opts$filesuffix,"_pic.pdf",filename)
-    opts$GD.PNGDIR=paste("PNG",sub(opts$filesuffix,"",filename),"/",sep="");
-    opts$LOGFILE=sub(opts$filesuffix,".log",filename)
-    opts$EVALFILE=sub(opts$filesuffix,"_eval.csv",filename)      # contains evaluation results allEVAL
+    opts$PDFFILE=sub(filesuffix,"_pic.pdf",filename)
+    opts$GD.PNGDIR=paste("PNG",sub(filesuffix,"",filename),"/",sep="");
+    opts$LOGFILE=sub(filesuffix,".log",filename)
+    opts$EVALFILE=sub(filesuffix,"_eval.csv",filename)      # contains evaluation results allEVAL
     
     if (is.null(opts$rgain.type)) opts$rgain.type="rgain";
     #if (is.null(opts$rgain.string)) {

@@ -7,11 +7,11 @@
 #' (via function \code{\link{tdmDispatchTuner}}). After each tuning process perform one or several runs
 #' of \code{tdm$unbiasedFunc} (as many as \code{tdm$umode} has elements). Usually, \code{tdm$unbiasedFunc = \link{unbiasedRun}}. \cr
 #' Each of these experiments is repeated tdm$nEperim times. Thus we have for each tripel \cr
-#'        \code{(confFile,nExp,theTuner)} \cr
-#' a tuning result with \cr
-#'        \code{confFile in tdm$runList} \cr
-#'        \code{nExp in 1,...,tdm$nExperim} \cr
-#'        \code{theTuner in tdm$tuneMethod} \cr
+#'        \code{   (confFile,nExp,theTuner)} \cr
+#' a tuning result. The tripel ranges are: with \cr
+#'        \code{   confFile in tdm$runList} \cr
+#'        \code{   nExp in 1,...,tdm$nExperim} \cr
+#'        \code{   theTuner in tdm$tuneMethod} \cr
 #' 
 #Details:
 #' \code{tdm} refers to \code{envT$tdm}.
@@ -37,7 +37,7 @@
 #'      }
 #'
 #'  @param envT      an environment containing on input at least the element \code{tdm} (a list with general settings for TDMR, 
-#'                   see \code{\link{tdmDefaultsFill}}), which has as extra elements  
+#'                   see \code{\link{tdmDefaultsFill}}), which has at least the elements  
 #'     \describe{
 #'     \item{\code{tdm$runList}}{ vector of \code{.conf} filenames }
 #'     \item{\code{tdm$spotList}}{ \code{[NULL]} vector of \code{.conf} filenames for which spot tuning is done. 
@@ -50,10 +50,10 @@
 #'      \item{res}{ data frame with results from last tuning (one line for each call of \code{tdmStart*})} 
 #'      \item{bst}{ data frame with the best-so-far results from last tuning (one line collected after each (SPO) step)}
 #'      \item{resGrid}{  list with data frames \code{res} from all tuning runs. Use \cr
-#'            \code{envT$getRes(confFile,nExp,theTuner)}  \cr
+#'            \code{envT$getRes(envT,confFile,nExp,theTuner)}  \cr
 #'        to retrieve a specific \code{res}. }
 #'      \item{bstGrid}{  list with data frames \code{bst} from all tuning runs. Use \cr
-#'            \code{envT$getBst(confFile,nExp,theTuner)}  \cr
+#'            \code{envT$getBst(envT,confFile,nExp,theTuner)}  \cr
 #'        to retrieve a specific \code{bst}. }
 #'      \item{theFinals}{ data frame with one line for each triple \code{(confFile,nExp,tuner)}, each line contains summary
 #'        information about the tuning run in the form: \cr
@@ -92,12 +92,12 @@
 #'     \itemize{
 #'         \item \code{envT$theFinals } is written to file \code{tdm$finalFile} and appended to \code{tdm$experFile}
 #'      }
-#'   If \code{tdm$finalFile==NULL}, then it is set to \code{sub(".conf",".fin",runList[1]}.  \cr
+#'   If \code{tdm$finalFile==NULL}, then it is set to \code{sub(".conf",".fin",runList[1])}.  \cr
 #'   If \code{tdm$experFile==NULL}, then nothing is appended to any experiment file.
 #'
-#' Example usages of function \code{tdmBigLoop} are shown with \cr
+#' Example usages of function \code{tdmBigLoop} are shown in \cr
 #' \code{   demo(demo03sonar)},\cr 
-#' \code{   demo(demo03sonar_B)} and \cr
+#' \code{   demo(demo03sonar_B)} \cr
 #' \code{   demo(demo04cpu)} \cr
 #' where the corresponding R-sources are in directory \code{demo}.
 #'
@@ -120,36 +120,39 @@ tdmBigLoop <- function(envT,spotStep="auto") {
   nTuner <- length(tdm$tuneMethod);
   nRunList <- length(tdm$runList);
 
-  # 
-  # if tdm$parallelCPUs>1, set up everything for parallel execution
-  #
-  if (tdm$parallelCPUs>1) prepareParallelExec(tdm);
-
 	# depending on tdm$parallelCPUs, the following lines execute the code either in parallel 
 	# or sequential: For each value of indVec the function bigLoopStep is 
 	# called. The vectors tuneVec, expeVec, confVec contain for each element of indVec the
 	# corresponding value of tuner, experiment number and .conf file, resp.
-	# In case of parallel execution, sfSapply will only return after the last parallel job has finished.
+	# In case of parallel execution, parSapply will only return after the last parallel job has finished.
 	#
 	indVec <- 1:(tdm$nExperim*nTuner*nRunList);
 	tuneVec <- rep(tdm$tuneMethod,tdm$nExperim*nRunList);
 	expeVec <- rep(sort(rep(1:tdm$nExperim,nTuner)),nRunList);
 	confVec <- sort(rep(tdm$runList,tdm$nExperim*nTuner));
 	if (length(indVec)==1 & tdm$parallelCPUs>1) {
-	  warning("There is only one job (length(indVec)==1) --> snowfall would not run, so we set tdm$ParallelCPUs=1");
+	  warning("There is only one job (length(indVec)==1) --> snow would not run, so we set tdm$ParallelCPUs=1");
 	  tdm$parallelCPUs=1;
   }
 
   if (tdm$parallelCPUs>1) {
-    sappResult <- sfSapply(indVec, fun=bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
-  } else {  		
+    cl = prepareParallelExec(tdm);
+    sappResult <- parSapply(cl, indVec, bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
+    stopCluster(cl);
+    #--- old version was:
+    #prepareParallelExec_SF(tdm);   # this is now in deprecated sources
+    #sappResult <- sfSapply(indVec, fun=bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
+  } else {  
 		sappResult <- sapply(indVec, bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
   }
   # populate envT with the results returned in matrix sappResult:
-  populateEnvT(sappResult,envT,tdm);
+  envT <- populateEnvT(sappResult,envT,tdm,spotStep);
   
-  saveEnvT(envT,tdm$runList,tdm$filenameEnvT);
-  
+  if (spotStep != "rep" & spotStep != "report") {
+    saveEnvT(envT,tdm$runList,tdm$filenameEnvT);
+    saveSRFinfo(envT);
+  }
+
   if (nrow(envT$theFinals)>0) {
     print(envT$theFinals);
   } else {
@@ -161,9 +164,10 @@ tdmBigLoop <- function(envT,spotStep="auto") {
 
       ######################################################################################
   		#------------------------------------------------------------------------------------------------------
-      #  bigLoopStep: helper function for tdmBigLoop, called via sapply or sfSapply:
+      #  bigLoopStep: helper function for tdmBigLoop, called via sapply or parSapply:
       #  (ind is an index where confFile varies slowest, nExp varies 2nd-slowest and theTuner varies fastest)
       bigLoopStep <- function(ind,tuneVec,expeVec,confVec,spotList,spotStep,envT,tdm) {
+        if (tdm$parallelCPUs>1) library(TDMR);
         theTuner = tuneVec[ind];
         nExp = expeVec[ind];
         confFile = confVec[ind];
@@ -177,8 +181,8 @@ tdmBigLoop <- function(envT,spotStep="auto") {
         envT$bst <- NULL;
         envT$res <- NULL; 
         if (spotStep=="rep" | spotStep=="report" | !(confFile %in% spotList)) {
-            envT$bst = envT$getBst(confFile,nExp,theTuner);
-            envT$res = envT$getRes(confFile,nExp,theTuner);
+            envT$bst = envT$getBst(envT,confFile,nExp,theTuner);
+            envT$res = envT$getRes(envT,confFile,nExp,theTuner);
         }
 
         if (tdm$fileMode) {  
@@ -189,7 +193,7 @@ tdmBigLoop <- function(envT,spotStep="auto") {
         } 
         # NEW 09/2012: always operate SPOT with spot.fileMode=FALSE (take everything from  envT$spotConfig)
         envT$spotConfig$spot.fileMode=FALSE;
-       
+
         #
         # this is the preferred place to read the data and split them into test data and train/vali data
         #
@@ -221,9 +225,9 @@ tdmBigLoop <- function(envT,spotStep="auto") {
         
         if (is.null(tdm$timeMode)) stop("tdm$timeMode is not set (NULL). Consider 'tdm <- tdmDefaultsFill(tdm)' to set all defaults");
         time.txt = c("Proc", "System", "Elapsed");
-        time.TRN=(proc.time()-ptm)[tdm$timeMode]; opts=list(); opts$VERBOSE=1;  
-        cat1(opts,paste(time.txt[tdm$timeMode], "time for tuning with tdmDispatchTuner:",time.TRN,"sec\n"));     
-     
+        time.TRN=(proc.time()-ptm)[tdm$timeMode]; opts2=list(); opts2$VERBOSE=1;  
+        cat1(opts2,paste(time.txt[tdm$timeMode], "time for tuning with tdmDispatchTuner:",time.TRN,"sec\n"));     
+
         ptm <- proc.time();
         finals <- NULL;
         if (tdm$nrun>0) {
@@ -233,9 +237,12 @@ tdmBigLoop <- function(envT,spotStep="auto") {
             eval(parse(text=cmd));
           }
           time.TST=(proc.time()-ptm)[tdm$timeMode];   
-          cat1(opts,paste(time.txt[tdm$timeMode], "time for",tdm$unbiasedFunc,":",time.TST,"sec\n"));   
+          cat1(opts2,paste(time.txt[tdm$timeMode], "time for",tdm$unbiasedFunc,":",time.TST,"sec\n"));   
           finals <- cbind(finals,Time.TST=time.TST,Time.TRN=time.TRN);  
-          
+
+          # transport back opts$srf (data frame with SRF info in case opts$SRF.calc==TRUE)
+          envT$sCList[[nConf]]$opts$srf = envT$result$lastRes$opts$srf
+
           if (tdm$fileMode) {  
             #removeTmpfiles2(confFile);
             if (!file.exists(dirname(tFinalFile))) {
@@ -273,7 +280,7 @@ tdmBigLoop <- function(envT,spotStep="auto") {
         } # if(tdm$nrun>0)
          
         # we return a *list* with the most important elements from environment envT and not envT itself, because 
-        # sfSapply (parallel execution) can not deal with environments as return values.
+        # parSapply (parallel execution) can not deal with environments as return values.
         list( tunerVal=envT$tunerVal    # last tuning result: spotConfig with extensions       
              ,bst=envT$bst              # last tuning result       
              ,res=envT$res              # last tuning result  
@@ -286,9 +293,10 @@ tdmBigLoop <- function(envT,spotStep="auto") {
 
 ######################################################################################
 # helper fct for tdmBigLoop: 
-#     Populate the global envT after parallel execution  with snowfall (sfSapply with results in sappResult).
+#     Populate the global envT after parallel execution  with 'parallel' (parSapply with results in sappResult).
 #     For simplicity we use it also after sequential execution (sapply with results in sappResult). 
-populateEnvT <- function(sappResult,envT,tdm) {
+populateEnvT <- function(sappResult,envT,tdm,spotStep) {
+    if (spotStep=="auto") {
       nGrid = length(envT$bstGrid);
       for (ind in 1:(tdm$nExperim*length(tdm$tuneMethod)*length(envT$runList))) {
           nGrid = nGrid+1;
@@ -298,13 +306,24 @@ populateEnvT <- function(sappResult,envT,tdm) {
           envT$theFinals <- rbind(envT$theFinals,as.data.frame(sappResult["theFinals",ind][[1]]));
           # "[[1]]" is necessary to avoid prefix "theFinals." in the header names 
       }
-browser()     
       if (!is.null(envT$theFinals)) if(nrow(envT$theFinals)>0)
           rownames(envT$theFinals) <- (1:nrow(envT$theFinals));
       envT$bst <- as.data.frame(sappResult["bst",ncol(sappResult)][[1]]);
       envT$res <- as.data.frame(sappResult["res",ncol(sappResult)][[1]]);
       envT$tunerVal <- sappResult["tunerVal",ncol(sappResult)][[1]];    # last tuning result
       envT$result <- sappResult["result",ncol(sappResult)][[1]];        # last tuning result
+    }
+    else {     # i.e. if spotStep == "rep" or == "report"
+      nGrid = nrow(envT$theFinals);
+      if (ncol(sappResult) > nGrid) stop("There are more columns in sappResult than rows in envT$theFinals");
+      for (ind in 1:ncol(sappResult)) {
+        theFinals <- sappResult["theFinals",ind][[1]]
+        names_finals <-  paste(c(Opts(envT$result)$rgain.string,"sdR"),tdm$umode,sep=".");
+        envT$theFinals[ind,names_finals] <- theFinals[names_finals];
+        envT$theFinals[ind,"Time.TST"] <- theFinals["Time.TST"];
+      }
+    }
+    envT;
 }
 
 ######################################################################################
@@ -344,6 +363,27 @@ saveEnvT <- function(thisEnvT,runList,filenameEnvT=NULL,savePredictions=FALSE) {
 }
 
 ######################################################################################
+# helper fct for tdmBigLoop:
+#     Save the info for SRF (sorted Random Forest) importance on file(s) in case opts$SRF.calc==TRUE
+#     (Nothing is done in case opts$SRF.calc==FALSE.)
+saveSRFinfo <- function(envT) {
+  # function saveSRF saves the field opts$srf (a list with as many data frames as there are response variables)
+  # in case opts$SRF.calc==TRUE to RData file opts$srfFile (filename set by function addSRF in tdmEnvTMakeNew.r)
+  saveSRF <- function(opts) {
+      if (opts$SRF.calc==TRUE) {
+        cat("Saving sorted RF importance info to file", opts$srfFile, ".\n")
+        srf = opts$srf;
+        save(file=opts$srfFile,srf);
+      }
+  }
+  k=0;
+  for (confFile in envT$runList) {
+    k=k+1;
+ 	  saveSRF(envT$sCList[[k]]$opts);
+  }
+}
+
+######################################################################################
 # helper fct for tdmBigLoop 
 removeTmpfiles2 <- function(confFile) {
       #for (suf in c("apd","aroi","bst","conf","des","res","roi"))  {    # old version (removeTmpfiles)
@@ -360,80 +400,21 @@ removeTmpfiles2 <- function(confFile) {
 #
 prepareParallelExec <- function(tdm) 
 {
-    #require(snow)
-    require(snowfall);
+    require(parallel);
 
-    createSourcePath <- function(sourceFileName){
-      normalizePath(paste(tdm$tdmPath,"R",sourceFileName, sep="/"));
-    }
-    
-    parallelCPUs = tdm$parallelCPUs;
-    sfInit(parallel=TRUE, cpus=parallelCPUs, type="SOCK" )
-    sfExport(list=c("tdm"))
+    cl <- makeCluster(tdm$parallelCPUs)
+    clusterExport(cl,c("tdm"))
     
     if (!exists(".Random.seed")) set.seed(42);
-    sfExport(list=".Random.seed");
-    sfExport(list=c(tdm$mainFunc,tdm$parallelFuncs));
+    clusterExport(cl,".Random.seed");
+    clusterExport(cl,c(tdm$mainFunc,tdm$parallelFuncs));
     if (is.null(tdm$tdmPath)) {
-        cat("sfLibrary for installed library TDMR \n");
-        sfLibrary("TDMR",character.only=TRUE);
+        cat("Export installed library TDMR to parallel cluster\n");
+        #library(TDMR);     # this is now done in function bigLoopStep
     } else {
-        cat("Sourcing and sfExport for TDMR from R files in",tdm$tdmPath,"\n");
-        source(paste(tdm$tdmPath,"source.tdm.r",sep="/"),local=TRUE);
-        if (is.null(tdm$theSpotPath)) tdm$theSpotPath <- NA;
-        if (is.null(tdm$theRsfaPath)) tdm$theRsfaPath <- NA;
-        sfLibrary("randomForest",character.only=TRUE);
-        sfLibrary("e1071",character.only=TRUE);        # svm(), Naive Bayes
-        #sfLibrary("matlab",character.only=TRUE);      # repmat() etc., for tdmParaBootstrap.r - now deprecated 12/2011
-        if (is.na(tdm$theSpotPath)) {
-            sfLibrary("SPOT",character.only=TRUE);     # load SPOT from the installed library (package version)
-        } else {
-            oldwd=getwd(); setwd(tdm$theSpotPath);
-            for (f in dir()) sfSource(f);
-            setwd(oldwd);
-        }
-        if (is.na(tdm$theRsfaPath)) {
-            sfLibrary("rSFA",character.only=TRUE);     # load rSFA from the installed library (package version)
-        } else {
-            oldwd=getwd(); setwd(tdm$theRsfaPath);
-            for (f in dir())   sfSource(f);
-            setwd(oldwd);
-        }
-        sfSource(createSourcePath("makeTdmStartOther.r"))
-        sfSource(createSourcePath("makeTdmRandomSeed.r"))
-        sfSource(createSourcePath("printTDMclassifier.r"))
-        sfSource(createSourcePath("printTDMregressor.r"))
-        sfSource(createSourcePath("tdmClassify.r"))
-        sfSource(createSourcePath("tdmClassifyLoop.r"))
-        sfSource(createSourcePath("tdmEmbedDataFrame.r"))
-        sfSource(createSourcePath("tdmGeneralUtils.r"))
-        sfSource(createSourcePath("tdmGraphicUtils.r"))
-        sfSource(createSourcePath("tdmMetacostRf.r"))
-        sfSource(createSourcePath("tdmModelingUtils.r"))    
-        sfSource(createSourcePath("tdmOptsDefaults.r"))
-        sfSource(createSourcePath("tdmParaBootstrap.r"))
-        sfSource(createSourcePath("tdmPreprocUtils.r"))
-        sfSource(createSourcePath("tdmReadData.r"))
-        sfSource(createSourcePath("tdmRegress.r"))
-        sfSource(createSourcePath("tdmRegressLoop.r"))
-    
-        sfSource(createSourcePath("tdmBigLoop.r"))
-        sfSource(createSourcePath("tdmCompleteEval.r"))
-        sfSource(createSourcePath("tdmDefaultsFill.r"))
-        sfSource(createSourcePath("tdmDispatchTuner.r"))
-        sfSource(createSourcePath("tdmEnvTMakeNew.r"))
-        sfSource(createSourcePath("tdmGetObj.r"))
-        sfSource(createSourcePath("tdmMapDesign.r"))
-        sfSource(createSourcePath("tdmPlotResMeta.r"))
-        sfSource(createSourcePath("tdmROCR.r"))
-        sfSource(createSourcePath("tdmSplitTestData.r"))
-        sfSource(createSourcePath("tdmStartSpot.r"))
-        sfSource(createSourcePath("unbiasedRun.r"))
-        sfSource(createSourcePath("unbiasedBestRun_O.r"))
-
-        sfExport(list=c("tdmRandomSeed"));
+        stop("For tdm$parallelCPUs>1 it is required to use the *library* version of TDMR. Consider to set tdm$tdmPath=NULL.")
     }
+    cl;
 } # prepareParallelExec()
-  
   
 

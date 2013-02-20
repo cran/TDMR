@@ -54,13 +54,13 @@
 #+#          plot lift chart for training data set
 #*#
     oldwd=getwd(); setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
-    source("main_sonar.r");
+    source("main_sonar.r");           # in working dir, contains also readCmdSonar()
       
     ## set the elements of list opts. See ?tdmOptsDefaultsSet
     ## for a complete list of all default settings and explanatory comments
     opts = tdmOptsDefaultsSet();    
     opts$filename = "sonar.txt"
-    opts$READ.CMD = "read.csv2(file=paste(opts$dir.data, filename, sep=\\"\\"), dec=\\".\\", sep=\\",\\",header=FALSE)"
+    opts$READ.CMD = "readCmdSonar(filename,opts)"    # def'd in main_sonar.r
     opts$data.title <- "Sonar Data";
     opts$rgain.type <- "arROC";
     result = main_sonar(opts);
