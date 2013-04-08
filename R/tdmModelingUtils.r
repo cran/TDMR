@@ -137,8 +137,18 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
                 stop(sprintf("tdmModCreateCVindex: opts$TST.COL is NULL, but opts$TST.kind=='col'"));
               if (!(opts$TST.COL %in% names(dset)))
                 stop(sprintf("tdmModCreateCVindex: Data frame dset does not contain a column opts$TST.COL named \"%s\"", opts$TST.COL));
-              cat1(opts,opts$filename,": Using training-validation-index from column",opts$TST.COL,"\n")
+              cat1(opts,opts$filename,": Using training-validation-index from column",opts$TST.COL,"\n");
               cvi <- dset[,opts$TST.COL];
+              if (!is.null(opts$TST.trnFrac)) {
+                cat1(opts,opts$filename,": Selecting only ",opts$TST.trnFrac*100,"%% of the available training data for the actual training \n");
+                cat1(opts,opts$filename,": (If you are in unbiased run and want all available training data, set tdm$TST.trnFrac to NULL)\n");
+                # deselect 1-opts$TST.trnFrac of  all training data (set their cvi to -1):
+                idxCviNull <- which(cvi==0);
+                L0 = length(idxCviNull);
+                p <- sample(L0);
+                vfr <- opts$TST.trnFrac*L0;     # index where the training data to use ends
+                if (trunc(vfr)>0) cvi[idxCviNull[p[(vfr+1):L0]]] <- -1;
+              }
             }
         }
 
@@ -296,6 +306,10 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
 #      if (opts$k>1) {
 #        load(file=SRF.file);  # load accum_imp1 as stored from previous CV-fold
 #      }
+      if (opts$SRF.kind=="xperc") {
+        if (opts$SRF.XPerc<0) stop(sprintf("opts$SRF.XPerc < 0 : %f",opts$SRF.XPerc));
+        if (opts$SRF.XPerc>1) stop(sprintf("opts$SRF.XPerc > 1 : %f",opts$SRF.XPerc));
+      }
       
       formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
       to.model <- d_train[,c(response.variable,input.variables)]
@@ -426,7 +440,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
     # what percentage of total importance is in the dropped variables:
     perc <- (1-sum(s_imp2[1:(length(s_imp2)-lsd)])/sum(s_imp2))*100;
     if (opts$SRF.kind=="xperc" & (perc/100>1-opts$SRF.XPerc | perc<0)) {
-        stop(sprintf("Something wrong with perc:",perc,"\n"));
+        stop(sprintf("Something wrong with perc: %f",perc));
     }
 
     if (opts$SRF.verbose>=2) {

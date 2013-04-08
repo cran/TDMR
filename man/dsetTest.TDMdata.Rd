@@ -1,20 +1,20 @@
 \name{dsetTest.TDMdata}
 \alias{dsetTest.TDMdata}
-\title{Return the test part of a \code{TDMdata} object containing the task data.}
+\title{Return the test part of a \code{\link{TDMdata}} object containing the task data.}
 \usage{
   \method{dsetTest}{TDMdata} (x)
 }
 \arguments{
   \item{x}{return value from a prior call to
   \code{\link{tdmSplitTestData}}, an object of class
-  \code{TDMdata}.}
+  \code{\link{TDMdata}}.}
 }
 \value{
   \code{tset}, a data frame with all test records. If there
   are 0 test records, return NULL.
 }
 \description{
-  Return the test part of a \code{TDMdata} object
+  Return the test part of a \code{\link{TDMdata}} object
   containing the task data.
 }
 \author{

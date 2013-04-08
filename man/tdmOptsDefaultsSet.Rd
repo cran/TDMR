@@ -240,7 +240,7 @@
   assuming that all columns are numeric.
 }
 \author{
-  Wolfgang Konen, FHK, Mar'2011 - Apr'2012
+  Wolfgang Konen, FHK, 2011 - 2013
 }
 \seealso{
   \code{\link{tdmOptsDefaultsFill}}

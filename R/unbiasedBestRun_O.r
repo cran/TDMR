@@ -3,7 +3,7 @@
 #
 #'     Perform unbiased runs with best-solution parameters (optimization).
 #'
-#'     Read the best solution of a optimization tuner run (either from envT$bst or from file), 
+#'     Read the best solution of an optimization tuner run (either from envT$bst or from file), 
 #'     perform a re-run  with these best parameters, to see whether the result quality is reproducible on 
 #'     independent test data or on independently trained models.
 #'

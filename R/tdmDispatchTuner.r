@@ -27,7 +27,7 @@
 #'         \item \code{envT$bst  } the BST data frame
 #'      }
 #' @seealso   \code{\link{tdmBigLoop}}
-#' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011
+#' @author Wolfgang Konen, FHK, 2010 - 2013
 #' @export
 #' @keywords internal
 ###########################################################################################
@@ -190,6 +190,9 @@ lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 #' @return the result of CMA-ES tuning, i.e. the list \code{envT$spotConfig}, extended by
 #'    \item{\code{cma}}{ the return value from \code{\link{cma_es}}   }
 #'    \item{\code{cma$count}}{ the number of calls to \code{tdmStartOther}  }
+#'
+#' @note 
+#'    This tuner \code{cmaesTuner} is deprecated. Use instead \code{\link{cma_jTuner}}.
 #' @export
 #' @keywords internal
 ######################################################################################
@@ -209,9 +212,14 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
       if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
     }
 
-    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
-      tdmStartOther = tdm$startOtherFunc;
-
+    fitFunc <- function(x, opts=NULL) {
+      ## tdmStartOther returns the fitness (mean(yres)) and saves other
+      ## diagnostic results in envT$spotConfig, envT$res, envT$bst
+      tdmStartOther(x,tdm,envT,dataObj,opts);
+    }
+    #--- old, deprecated: 
+    #if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
+    #  tdmStartOther = tdm$startOtherFunc;
 
     fncall1 = sC$auto.loop.nevals;
     fncall2 = sC$auto.loop.steps* sC$seq.design.new.size* sC$seq.design.maxRepeats 
@@ -228,7 +236,7 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
     control$diag.sigma=TRUE;
     control$diag.eigen=TRUE;
 
-    cma <- cma_es(param,tdmStartOther,sC$opts,lower=roiLower,upper=roiUpper,control=control);
+    cma <- cma_es(param,fitFunc,sC$opts,lower=roiLower,upper=roiUpper,control=control);
     # cma_es calls tdmStartOther and tdmStartOther appends to data frames envT$res and envT$bst
     # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
     # If tdm$fileMode==TRUE, then tdmStartOther will write envT$res to envT$spotConfig$io.resFileName
@@ -250,107 +258,79 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
 #' Perform CMA-ES tuning (Java version). 
 #' 
 #' Perform a parameter tuning by CMA-ES, using the *Java* 
-#' implementation by Niko Hansen.
+#' implementation by Niko Hansen through the interface package \code{\link{rCMA}}.
 #' 
 #' @param confFile task configuration for tuning algorithm
-#' @param tdm the TDMR object
+#' @param tdm the list with TDMR settings. \cr
+#'    If \code{tdm$CMA.propertyFile} is not NULL, then \code{\link{rCMA}} will read this CMA property file. If NULL, 
+#'    the default file CMAEvolutionStrategy.properties from find.package("rCMA") is taken. \cr
+#'    If \code{tdm$CMA.populationSize} is not NULL, the CMA population size will be set accordingly. If NULL, 
+#'    the default population size \code{4 + 3*log(N)} is taken with \code{N} = number of parameters in .roi file.
 #' @param envT the environment variable
 #' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
 #'
-#' @return the result of CMA-ES tuning, i.e. the list \code{envT$spotConfig}, extended by
-#'    \item{\code{cma$sres}}{ the return return string from the system call "java cma.examples.cmaJava CMAprops.txt"   }
+#' @return the result of CMA-ES tuning, i.e. the list \code{envT$spotConfig}, extended by list \code{cma} with elements
+#'    \item{\code{cma$sres}}{ a string vector with all console output from the optimization run \code{cmaOptimDP} of package \code{\link{rCMA}}  }
 #'    \item{\code{cma$count}}{ the number of calls to \code{tdmStartOther}  }
 #' @export
 #' @keywords internal
 ######################################################################################
 cma_jTuner <- function(confFile,tdm,envT,dataObj)
 {
+    tunerVal <- cma_jInternRCma(tdm,envT,dataObj);
+    #tunerVal <- cma_jInternRJava(tdm,envT,dataObj);    # -- deprecated, now in R-DM-Template-deprecated\
+    #tunerVal <- cma_jIntern__Old(tdm,envT,dataObj);    # -- deprecated, now in R-DM-Template-deprecated\
+}
+# 
+# Internal function for the usage of CMA-ES (Java) from R (based on package rCMA)
+#
+cma_jInternRCma <- function(tdm,envT,dataObj) {
+    require(rCMA);
     envT$spotConfig$alg.currentResult <- NULL;
-    if (tdm$fileMode==FALSE) {
-      envT$spotConfig$spot.fileMode=FALSE;
-    } else {
-      cat("NOTE: It is recommended to use cma_jTuner with the setting tdm$fileMode=FALSE. Otherwise it might not work properly on some OS.");
-    }
     sC <- envT$spotConfig;
     roiLower <- sC$alg.roi[,1];
     roiUpper <- sC$alg.roi[,2];
+    if (!(length(roiLower)==length(roiUpper))) stop("Length of roiLower and roiUpper differ");
     set.seed(sC$spot.seed);
-    param <- runif(length(roiLower),roiLower,roiUpper);#/2;    # start configuration
+    initialX <- runif(length(roiLower),roiLower,roiUpper);#/2;    # initial point (mean for population)
+    stdDevs <- (roiUpper-roiLower)/10;                            # initial standard deviations
 
-    if (tdm$fileMode) {
-      tdm$resFile <-  sC$io.resFileName;   
-      tdm$bstFile <-  sC$io.bstFileName;   
-      if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
-      if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
+    ## we assume that sC$auto.loop.nevals is the limiting factor in SPOT tuning
+    stopMaxFunEvals = sC$auto.loop.nevals/sC$seq.design.maxRepeats;           
+
+    fitFunc <- function(x) {
+        ## tdmStartCma_j (see tdmStartOther.r) returns the fitness (mean(yres)) and 
+        ## saves other diagnostic results in envT$spotConfig, envT$res, envT$bst
+        tdmStartCma_j(x,tdm,envT,dataObj);
+    }
+    isFeasible <- function(x) {
+        if (any(x<roiLower) | any(x>roiUpper)) return(FALSE);
+        return(TRUE);
     }
     
-    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
-      tdmStartOther = tdm$startOtherFunc;
-
-    repeats = min(sC$auto.loop.steps+1, sC$seq.design.maxRepeats);
-    K = max(0,repeats-(sC$init.design.repeats+1));
-    fncall1 = sC$auto.loop.nevals;
-    fncall2 = sC$auto.loop.steps* sC$seq.design.new.size* repeats + 
-              sC$init.design.size* sC$init.design.repeats -
-              (sC$seq.design.new.size-1)*K*(K+1)/2;
-    fncall = min(fncall1,fncall2);              
-
-    #--- this is the normal version for javadir ---
-    if (is.null(tdm$tdmPath)) {
-        javadir=paste(.find.package("TDMR"),"javabin",sep="/");
-    } else {
-        javadir=paste(tdm$tdmPath,"inst","javabin",sep="/");
-    }
-    #--- next line is for the Eclipse developer version only ---
-    #javadir="C:/Dokumente und Einstellungen/wolfgang/Eigene Dateien/ProjectsWK/ReinforceLearn/cmaes_java/cma/bin"
+    cma <- cmaNew(propFile=tdm$CMA.propertyFile);
+    # if tdm$CMA.propertyFile is NULL, the default file CMAEvolutionStrategy.properties from find.package("rCMA") will be loaded
     
-		oldWD = getwd(); setwd(javadir);        # save & change working dir
-    save.image(file="cma_j1.rda")                      # all function objects def'd in .GlobalEnv 
-    save(list=ls(all.names=TRUE),file="cma_j2.rda")    # envT, tdm, tdmStartOther and other local variables
-   
-		write.table(t(c("dimension",length(roiLower))), file="CMAprops.txt"
-                , quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE);
-    s="initialX ="; for (i in 1:length(param)) s=paste(s,param[i]);                
-		write.table(s, file="CMAprops.txt", quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
-    s="initialStandardDeviations ="; for (i in 1:length(roiUpper)) s=paste(s,(roiUpper[i]-roiLower[i])/2);
-		write.table(s, file="CMAprops.txt", quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
-    s="lowerBounds ="; for (i in 1:length(roiLower)) s=paste(s,roiLower[i]);
-		write.table(s, file="CMAprops.txt", quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
-    s="upperBounds ="; for (i in 1:length(roiUpper)) s=paste(s,roiUpper[i]);
-		write.table(s, file="CMAprops.txt", quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
-		write.table(t(c("stopMaxFunEvals",fncall/sC$seq.design.maxRepeats)), file="CMAprops.txt"
-                , quote=FALSE, sep="=", dec=".", row.names=FALSE, col.names=FALSE, append=TRUE)
-		callString = paste("java cma.examples.cmaJava CMAprops.txt");
-		#print(callString);
-		#browser()
-	
-		sres <- system(callString, intern= TRUE);
-		if (length(grep("cma_j.r returned with error status",sres))>0) {
-		  print(sprintf("%s",sres));
-		  stop("Error in cma_jTuner: cma_j.r returned with error status >> check cma_j.err.");
+    if (!is.null(tdm$CMA.populationSize)) {
+      cmaSetPopulationSize(cma,tdm$CMA.populationSize);
     }
-    # cmaJava calls repeatedly "R cma_j.r" which reloads cma_j1.rda, cma_j2.rda and then executes tdmStartOther.
-    # (Be aware that on Windows the path to R.exe must be in the system variable Path.)
-    # tdmStartOther appends to data frames envT$res and envT$bst
-    # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
-    # Finally cma_j.r will save cma_j3.rda (the modified elements res,bst,spotConfig of envT, but not envT itself) 
-    res <- bst <- spotConfig <- NULL;     # just to make 'R CMD check' happy  (and in case that cma_j3.rda has not the content as expected)
-		load("cma_j3.rda");         # load the things modified in envT    (spotConfig, res, bst, as saved by javabin/cma_j.r)
-		if (is.null(res) | is.null(bst) | is.null(spotConfig))
-		  warning(sprintf("%s/cma_j3.rda does not contain all the required objects: res, bst, spotConfig.",javadir));
-    tunerVal = spotConfig;                               # 
-		tunerVal$alg.currentResult <- envT$res <- res;       # bug fix WK /05/12
-		tunerVal$alg.currentBest <- envT$bst <- bst;         # 
-		
-		setwd(oldWD);
+    cmaSetStopMaxFunEvals(cma,stopMaxFunEvals);
+    cmaSetStopFitness(cma,-1e300);  # never stop due to fitness function value
+    cmaInit(cma,seed=sC$spot.seed,dimension=length(initialX),initialX=initialX, initialStandardDeviations=stdDevs);
+    res1 = cmaOptimDP(cma,fitFunc,isFeasible,verbose=2,iterPrint=1);
+    bestSolution=cmaEvalMeanX(cma,fitFunc,isFeasible);
+
+    tunerVal = envT$spotConfig;
+		tunerVal$alg.currentResult <- envT$res;
+		tunerVal$alg.currentBest <- envT$bst;
 		
     tunerVal$cma = list()
-    tunerVal$cma$sres <- sres; 
+    tunerVal$cma$sres <- res1$sMsg; 
     tunerVal$cma$count=nrow(envT$res);
     cat(sprintf("Function calls to tdmStartOther: %d\n",tunerVal$cma$count[1]));
+
     tunerVal;
 }
-
 
 
 ######################################################################################
@@ -396,14 +376,21 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
       if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
     }
   
-    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
-      tdmStartOther = tdm$startOtherFunc;
+    fitFunc <- function(x,opts=NULL) {
+      ## tdmStartOther returns the fitness (mean(yres)) and saves other
+      ## diagnostic results in envT$spotConfig, envT$res, envT$bst
+      tdmStartOther(x,tdm,envT,dataObj,opts);
+    }
+    #--- old, deprecated: 
+    #if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
+    #  tdmStartOther = tdm$startOtherFunc;
+
 
     param <- (roiLower+roiUpper)/2;    # start configuration
   
     maxEvaluations = sC$auto.loop.nevals/sC$seq.design.maxRepeats;
 
-    resPowell <- powell(param, fn=tdmStartOther, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
+    resPowell <- powell(param, fn=fitFunc, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
     # powell calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
     # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
 
@@ -450,15 +437,21 @@ bfgsTuner <- function(confFile,tdm,envT,dataObj){
       if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
     }
   
-    if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
-      tdmStartOther = tdm$startOtherFunc;
+    fitFunc <- function(x, opts=NULL) {
+      ## tdmStartOther returns the fitness (mean(yres)) and saves other
+      ## diagnostic results in envT$spotConfig, envT$res, envT$bst
+      tdmStartOther(x,tdm,envT,dataObj,opts);
+    }
+    #--- old, deprecated: 
+    #if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
+    #  tdmStartOther = tdm$startOtherFunc;
 
     tdm$roi <- sC$alg.roi;
   
     maxEvaluations = sC$auto.loop.nevals/sC$seq.design.maxRepeats;
     maxEvaluations = round(maxEvaluations);
 
-    bfgs <- optim(par=param, fn=tdmStartOther, gr=NULL, method="L-BFGS-B", lower=roiLower, upper=roiUpper, control=list(maxit=maxEvaluations), opts=sC$opts)
+    bfgs <- optim(par=param, fn=fitFunc, gr=NULL, method="L-BFGS-B", lower=roiLower, upper=roiUpper, control=list(maxit=maxEvaluations), opts=sC$opts)
     # optim calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
     # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
   

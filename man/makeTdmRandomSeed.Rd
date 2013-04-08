@@ -2,7 +2,14 @@
 \alias{makeTdmRandomSeed}
 \title{Factory method to make a function generating pseudo-random random number seeds.}
 \usage{
-  makeTdmRandomSeed()
+  makeTdmRandomSeed(ID = 0)
+}
+\arguments{
+  \item{ID}{[0] each random seed genarator with a different
+  ID will generate different seeds.  In this way it is
+  possible that parallel jobs ID=0,1,2,... starting in the
+  same second are initialized with different seeds and thus
+  produce different results.}
 }
 \value{
   A function object which can be invoked without any

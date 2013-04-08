@@ -3,7 +3,7 @@
 
 ## set working directory, load package and load envT
 #require(TDMR);
-path <- paste(.find.package("TDMR"), "demo01cpu",sep="/");
+path <- paste(find.package("TDMR"), "demo01cpu",sep="/");
 #path <- paste("../inst", "demo01cpu",sep="/");
 oldwd <- getwd();   setwd(path);
 load("demoCpu.RData");   # envT as saved by demo04cpu.r 

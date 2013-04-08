@@ -1,0 +1,47 @@
+\name{predict.TDMenvir}
+\alias{predict.TDMclassifier}
+\alias{predict.TDMenvir}
+\alias{predict.TDMregressor}
+\title{Make a prediction using the last model.}
+\usage{
+  \method{predict}{TDMenvir} (object, ...)
+
+  \method{predict}{TDMclassifier} (object, ...)
+
+  \method{predict}{TDMregressor} (object, ...)
+}
+\arguments{
+  \item{object}{an object of class \code{\link{TDMenvir}},
+  \code{\link{TDMclassifier}}, \code{\link{TDMregressor}}
+  containing in element \code{lastModel} the relevant
+  model.}
+
+  \item{...}{arguments passed on to the model's predict
+  function. Usually the first argument of \code{...} should
+  be \code{newdata}, a data frame for which new predictions
+  are desired.}
+}
+\value{
+  a vector with length \code{nrow(newdata)} containing the
+  new predictions.
+}
+\description{
+  Make a prediction with objects of class
+  \code{\link{TDMenvir}}, \code{\link{TDMclassifier}},
+  \code{\link{TDMregressor}}. The prediction is based on
+  the (last) model trained during
+  \code{\link{unbiasedRun}}.
+}
+\examples{
+\dontrun{
+       ## This example requires that demo04cpu.r is executed first (it will write demo04cpu.RData)
+       path <- paste(find.package("TDMR"), "demo01cpu/",sep="/");
+       tdm <- list(  filenameEnvT="demo04cpu.RData" );   # file with environment envT
+       load(paste(path,tdm$filenameEnvT,sep="/"));
+
+       newdata=read.csv2(file=paste(path,"data/cpu.csv", sep=""), dec=".")[1:15,];     # take only the first 15 records
+       z=predict(envT,newdata);
+       print(z);
+   }
+}
+

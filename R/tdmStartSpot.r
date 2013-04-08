@@ -87,7 +87,6 @@ tdmStartSpot <- function(spotConfig) {
   			oldwd = getwd(); 
         if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));    # save & change working dir 		         			
     		result = NULL;     	
-
     		mainCommand <- paste("result <- ", tdm$mainFunc,"(opts,dset=dset)",sep=" ");
         eval(parse(text=mainCommand));                # execute the command given in string mainCommand
         if (is.null(result$y)) stop("tdm$mainFunc did not return a list 'result' containing an element 'y'");

@@ -1,10 +1,10 @@
 ######################################################################################
 # print.TDMclassifier  and print.tdmClass
 #
-#'  Print an overview for a \code{\link{TDMclassifier}} or \code{tdmClass} object.
+#'  Print an overview for a \code{\link{TDMclassifier}} or \code{\link[=tdmClassify]{tdmClass}} object.
 #'
 #'   @method print TDMclassifier
-#'   @param x  an object of class \code{tdmClass}, as returned from a prior call to \code{\link{tdmClassify}}, \cr
+#'   @param x  an object of class \code{\link[=tdmClassify]{tdmClass}}, as returned from a prior call to \code{\link{tdmClassify}}, \cr
 #'          or  an object of class \code{\link{TDMclassifier}}, as returned from a prior call to \code{\link{tdmClassifyLoop}}.
 #'   @param ... e.g. 'type'    which information to print:
 #'      \describe{
@@ -14,8 +14,8 @@
 #'      \item{\code{"?"}}{ help on this method}
 #'      }
 #'
-#' @seealso   \code{\link{tdmClassify}}, \code{\link{TDMclassifier}}
-#' @author Wolfgang Konen, FHK, Oct'2011 - Dec'2011
+#' @seealso   \code{\link{tdmClassify}}, \code{\link{tdmClassifySummary}}, \code{\link{TDMclassifier}}
+#' @author Wolfgang Konen, FHK, 2011 - 2013
 #' @export
 print.TDMclassifier <- function(x,...) {
   internalPrintC <- function(result,type) {
@@ -52,7 +52,7 @@ print.TDMclassifier <- function(x,...) {
 }
 ######################################################################################
 # print.tdmClass
-# Print an overview for a \code{tdmClass} object.
+# Print an overview for a \code{\link[=tdmClassify]{tdmClass}} object.
 #'
 #' @rdname print.TDMclassifier
 #' @method print tdmClass

@@ -49,8 +49,21 @@ tdmReadData <- function(opts) {
         }
         filenameRdata;
     }
+    checkFileNames <- function(f1,f2) {
+        sp1 = strsplit(f1,".",fixed=TRUE);
+        sp2 = strsplit(f2,".",fixed=TRUE);
+        fbase1 = paste(unlist(sp1)[1:(length(sp1)-1)],collapse=".");
+        fbase2 = paste(unlist(sp2)[1:(length(sp2)-1)],collapse=".");
+        if (fbase1==fbase2) return(FALSE);
+        TRUE;
+    }
     
     filename = opts$filename; 
+    if (!is.null(opts$filetest)) 
+      if (!checkFileNames(filename,opts$filetest)) {
+        stop(sprintf("opts$filename=%s and opts$filetest=%s should differ in more than their suffix. Please alter at least one name in the non-suffix-part"
+                    ,opts$filename,opts$filetest));
+    }
     if (opts$READ.TXT) {
       cat1(opts,filename,": Read data from",filename,"...\n")
       cmd <- paste("dset <-",opts$READ.CMD);

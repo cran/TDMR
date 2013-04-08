@@ -1,7 +1,0 @@
-(3,7)-CMA-ES(mu_eff=2.3), Ver="0.99.22", dimension=3, 0 diagonal iter., randomSeed=1352965826953 (Thu Nov 15 08:50:26 CET 2012)
-Iteration,#Fevals: rb Function Value Delta( best ,worst) |idx: Max SD idx: Min SD  | minsigD  sigma Axisratio | time, in eig
-    1( 7),      7: -8.3431950000000000e+01 (+0e+00,2e+01) |  1: 4.3e+00  0: 4.1e-02 | 4.3e-02 4.3e+00 100.00   | 34.8  0.0 
-    1( 7),      8: -8.3431950000000000e+01 (+1e+00,2e+01) |  1: 4.3e+00  0: 4.1e-02 | 4.3e-02 4.3e+00 100.00   | 39.5  0.0 
-Terminated due to
-  MaxFunEvals: maximum number of function evaluations 5 reached (iter=1,eval=7)
-best function value -81.95266 at evaluation 8

@@ -22,25 +22,32 @@
 #'      \item{nExperim}{[1]}
 #'      \item{umode}{["RSUB"], one out of [ "RSUB" | "CV" | "TST" | "SP_T" ], see \code{\link{unbiasedRun}}}
 #'      \item{timeMode}{[1] 1: proc time, 2: system time, 3: elapsed time (columns \code{Time.TST} and \code{Time.TRN} in \code{envT$theFinals}}
-#'      \item{fileMode}{[FALSE]}: see "Note" section in \code{\link{tdmCompleteEval}} and  \code{\link{tdmBigLoop}} 
+#'      \item{fileMode}{[FALSE] see "Note" section in \code{\link{tdmBigLoop}}   }
 #'      \item{finalFile}{[NULL]  filename where to save \code{envT$theFinals}, only relevant for \code{tdm$fileMode==TRUE}}
 #'      \item{experFile}{[NULL] filename where to append \code{envT$theFinals}, only relevant for \code{tdm$fileMode==TRUE}  }
+#'      \item{filenameEnvT}{[NULL] filename where \code{\link{tdmBigLoop}} will save a small version of environment \code{envT}. If NULL, 
+#'                save \code{envT} to \code{sub(".conf",".RData",tdm$runList[1])}. This RData file is written irrespective of \code{fileMode}'s value, 
+#'                but only in case \code{spotStep=="auto"}. }
 #'      \item{theSpotPath}{[NA] use SPOT's package version}
 #'      \item{parallelCPUs}{[1] 1: sequential, >1: parallel execution with this many CPUs (package parallel)  }
 #'      \item{parallelFuncs}{[NULL] in case tdm$parallelCPUs>1: a string vector with functions which are clusterExport'ed in addition
 #'                to tdm$mainFunc.  }
 #'      \item{path}{[getwd()] where to search .conf and .apd file}
+#'      \item{runList}{a list of .conf files}
 #'      \item{stratified}{[NULL] see \code{\link{tdmSplitTestData}}  }
 #'      \item{tdmPath}{[NULL] from where to source the R sources. If NULL load library TDMR instead.  }
 #'      \item{test2.string}{["default cutoff"] }
 #'      \item{optsVerbosity}{[0] the verbosity for the unbiased runs}
 #'      \item{withParams}{[TRUE] list the columns with tuned parameter in final results  }
-#'      \item{nrun}{[5] number of runs for unbiased runs}
+#'      \item{nrun}{[5] number of runs for unbiased run}
+#'      \item{U.saveModel}{[FALSE] if TRUE, save the last model, which is trained in unbiasedRun, onto \code{filenameEnvT}}
 #'      \item{tstCol}{["TST"] opts$TST.COL for unbiased runs (only for umode="TST") }
 #'      \item{nfold}{[10] number of CV-folds for unbiased runs (only for umode="CV") }
 #'      \item{TST.trnFrac}{[NULL] train set fraction (of all train-vali data),OVERWRITES opts$TST.trnFrac if not NULL. }
 #'      \item{TST.valiFrac}{[NULL] validation set fraction (of all train-vali data), OVERWRITES to opts$TST.valiFrac if not NULL. }
 #'      \item{TST.testFrac}{[0.2] test set fraction (of *all* data) for unbiased runs (only for umode="RSUB" or ="SP_T") }
+#'      \item{CMA.propertyFile}{[NULL] (only for CMA-ES Java tuner) see \code{\link{cma_jTuner}}. }
+#'      \item{CMA.populationSize}{[NULL] (only for CMA-ES Java tuner) see \code{\link{cma_jTuner}}. }
 #'
 #' @note 
 #'      The settings \code{tdm$TST.trnFrac} and \code{tdm$TST.valiFrac} allow to set programmatically certain values for
@@ -51,7 +58,7 @@
 #'      The 'system time' is the CPU time charged for execution by the system on behalf of the calling process. 
 #'      The 'elapsed time' is the 'real' (wall-clock) time since the process was started.
 #'
-#' @author Wolfgang Konen, Patrick Koch, Oct'2011
+#' @author Wolfgang Konen, Patrick Koch, 2011 - 2013
 #' @export
 ######################################################################################
 tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL) {
@@ -93,6 +100,7 @@ tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL) {
   if (is.null(tdm$TST.testFrac)) tdm$TST.testFrac=0.2;
   if (is.null(tdm$nfold)) tdm$nfold=10;
   if (is.null(tdm$nrun)) tdm$nrun=5;
+  if (is.null(tdm$U.saveModel)) tdm$U.saveModel=FALSE;
 
   tdm;
 }

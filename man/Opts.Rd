@@ -3,11 +3,14 @@
 \alias{Opts.default}
 \alias{Opts.tdmClass}
 \alias{Opts.TDMclassifier}
+\alias{Opts.TDMenvir}
 \alias{Opts.tdmRegre}
 \alias{Opts.TDMregressor}
 \title{Return the list 'opts'.}
 \usage{
   Opts(x, ...)
+
+  \method{Opts}{TDMenvir} (x, ...)
 
   \method{Opts}{TDMclassifier} (x, ...)
 
@@ -33,7 +36,8 @@
 }
 \description{
   Returns the list \code{opts} from objects of class
-  \code{\link{TDMclassifier}}, \code{\link{TDMregressor}},
+  \code{\link{TDMenvir}}, \code{\link{TDMclassifier}},
+  \code{\link{TDMregressor}},
   \code{\link[=tdmClassify]{tdmClass}} or
   \code{\link[=tdmRegress]{tdmRegre}}.
 }

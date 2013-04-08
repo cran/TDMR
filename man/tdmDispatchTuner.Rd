@@ -43,7 +43,7 @@
   } the BST data frame }
 }
 \author{
-  Wolfgang Konen, FHK, Sep'2010 - Oct'2011
+  Wolfgang Konen, FHK, 2010 - 2013
 }
 \seealso{
   \code{\link{tdmBigLoop}}

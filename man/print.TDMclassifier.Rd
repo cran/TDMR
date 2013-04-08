@@ -1,17 +1,18 @@
 \name{print.TDMclassifier}
 \alias{print.tdmClass}
 \alias{print.TDMclassifier}
-\title{Print an overview for a \code{\link{TDMclassifier}} or \code{tdmClass} object.}
+\title{Print an overview for a \code{\link{TDMclassifier}} or \code{\link[=tdmClassify]{tdmClass}} object.}
 \usage{
   \method{print}{TDMclassifier} (x, ...)
 
   \method{print}{tdmClass} (x, ...)
 }
 \arguments{
-  \item{x}{an object of class \code{tdmClass}, as returned
-  from a prior call to \code{\link{tdmClassify}}, \cr or an
-  object of class \code{\link{TDMclassifier}}, as returned
-  from a prior call to \code{\link{tdmClassifyLoop}}.}
+  \item{x}{an object of class
+  \code{\link[=tdmClassify]{tdmClass}}, as returned from a
+  prior call to \code{\link{tdmClassify}}, \cr or an object
+  of class \code{\link{TDMclassifier}}, as returned from a
+  prior call to \code{\link{tdmClassifyLoop}}.}
 
   \item{...}{e.g. 'type' which information to print:
   \describe{ \item{\code{"overview"}}{ (default) relative
@@ -23,12 +24,14 @@
 }
 \description{
   Print an overview for a \code{\link{TDMclassifier}} or
-  \code{tdmClass} object.
+  \code{\link[=tdmClassify]{tdmClass}} object.
 }
 \author{
-  Wolfgang Konen, FHK, Oct'2011 - Dec'2011
+  Wolfgang Konen, FHK, 2011 - 2013
 }
 \seealso{
-  \code{\link{tdmClassify}}, \code{\link{TDMclassifier}}
+  \code{\link{tdmClassify}},
+  \code{\link{tdmClassifySummary}},
+  \code{\link{TDMclassifier}}
 }
 

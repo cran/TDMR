@@ -85,7 +85,7 @@
 
 ## load package and set working directory
 #require("TDMR");
-path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
+path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();
 setwd(path);

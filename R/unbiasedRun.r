@@ -3,7 +3,7 @@
 #
 #'     Perform unbiased runs with best-solution parameters.
 #'
-#'     Read the best solution of a parameter-tuning run from envT$bst, 
+#'     Read the best solution of a parameter-tuning run from \code{envT$bst}, 
 #'     execute with these best parameters the function \code{tdm$mainFunc} (usually a classification or 
 #'     regression machine learning task), to see 
 #'     whether the result quality is reproducible on independent test data or on independently trained models.
@@ -16,7 +16,8 @@
 #'     \item{\code{theTuner}}{ ["spot"] string}
 #'     \item{\code{spotConfig}}{ [NULL] a list with SPOT settings. If NULL, try to read spotConfig from confFile.} 
 #'     }
-#'   @param dataObj     [NULL] contains the pre-fetched data from which we use here the test-set part
+#'   @param dataObj     [NULL] contains the pre-fetched data from which we use here the test-set part. 
+#'                      If NULL, set it to \code{tdmSplitTestData(opts,tdm)}  
 #'   @param finals      [NULL] a one-row data frame to which new columns with final results are added
 #'   @param umode       [ "RSUB" (default) | "CV" | "TST" | "SP_T" ], how to divide in training and test data for the unbiased runs:
 #'     \describe{
@@ -42,7 +43,8 @@
 #'   @return \code{finals}     a one-row data frame with final results
 #'
 #' @note Side Effects:
-#'    The list \code{result} returned from \code{tdm$mainFunc} is written onto \code{envT$result}. \cr
+#'    The list \code{result}, an object of class \code{\link{TDMclassifier}} or \code{\link{TDMregressor}} as returned 
+#'    from \code{tdm$mainFunc} is written onto \code{envT$result}. \cr
 #'    If  \code{envT$spotConfig} is NULL, it is constructed from confFile. \cr
 #'    If \code{spotConfig$opts} (list with all parameter settings for the DM task) is NULL, we try to read it from  
 #'    \code{spotConfig$io.apdFileName}. This will issue a warning '... might not work in parallel mode', but is perfectly fine for non-parallel mode. 
@@ -56,7 +58,7 @@
 #'    oldwd <- getwd();          
 #'    ## The best results are read from demo02sonar/demoSonar.RData relative to 
 #'    ## the TDMR package directory.
-#'    setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+#'    setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
 #'    load("demoSonar.RData");
 #'    source("main_sonar.r");
 #'    finals <- unbiasedRun("sonar_04.conf",envT,tdm=envT$tdm);
@@ -68,7 +70,7 @@
 #    ## If you do not have 'envT' but only a .bst file from a prior tuning run:
 #    ## The best results are read from demo02sonar/spot/sonar_04.bst relative to the TDMR package directory.
 #    ## (This example is not run automatically, because sonar_04.bst is not in the package distribution) 
-#    setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+#    setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
 #    envT <- new.env();
 #    tdm <- list(mainFunc="main_sonar", tuneMethod="spot");
 #    source("main_sonar.r");
@@ -77,12 +79,12 @@
 #    setwd(oldwd);
 #    }
 #'
-#' @seealso   \code{\link{tdmBigLoop}}
+#' @seealso   \code{\link{tdmBigLoop}}, \code{\link{TDMclassifier}}, \code{\link{TDMregressor}} 
 #' @author Wolfgang Konen, FHK, 2010 - 2013
 #' @export
 #
 ######################################################################################
-unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",withParams=F,tdm=NULL){
+unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",withParams=FALSE,tdm=NULL){
     tdm <- tdmDefaultsFill(tdm);
     if (is.null(envT$spotConfig)) envT$spotConfig <- spotGetOptions(srcPath=tdm$theSpotPath,confFile);
     if (is.null(envT$theTuner)) envT$theTuner <- "spot";

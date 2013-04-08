@@ -4,7 +4,7 @@
 #*# Finally, plot ROC curve for validataion data set and 
 #+#          plot lift chart for training data set
 #*#
-    oldwd=getwd(); setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+    oldwd=getwd(); setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
     source("main_sonar.r");           # in working dir, contains also readCmdSonar()
       
     ## set the elements of list opts. See ?tdmOptsDefaultsSet

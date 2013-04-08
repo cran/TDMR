@@ -6,7 +6,7 @@
 #'    Load the map files \code{"tdmMapDesign.csv"} and optionally 
 #'    also \code{"userMapDesign.csv"} and store them in \code{tdm$map} and \code{tdm$mapUser},
 #'    resp. These maps are used by \code{\link{tdmMapDesApply}}.   \cr
-#'    \code{"tdmMapDesign.csv"} is searched in the TDMR library path \code{.find.package("TDMR")}.
+#'    \code{"tdmMapDesign.csv"} is searched in the TDMR library path \code{find.package("TDMR")}.
 #'    (For the developer version: \code{<tdm$tdmPath>/inst}). \cr
 #'    \code{"userMapDesign.csv"} is searched in tdm$path (which is getwd() if the user did not define tdm$path).
 #'
@@ -16,7 +16,7 @@
 #' @export
 tdmMapDesLoad <- function(tdm=list()) {
       if (is.null(tdm$tdmPath)) {
-        mapPath <- .find.package("TDMR");               # this is for the package version
+        mapPath <- find.package("TDMR");               # this is for the package version
       } else {
         mapPath <- paste(tdm$tdmPath,"inst",sep="/");   # this is for the developer source version
       }
@@ -121,7 +121,7 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 #     nfold         # [10] value for opts$TST.NFOLD during unbiased runs with umode="CV"
 #     tstCol        # ["TST"] value for opts$TST.COL during unbiased runs with umode="TST"
 #     TST.testFrac  # [0.2] value for opts$TST.valiFrac during unbiased runs with umode="RSUB"
-#     TST.trnFrac   # [NULL] value for opts$TST.trnFrac during unbiased runs with umode="SP_T"
+#     U.trnFrac     # [NULL] value for opts$TST.trnFrac during unbiased runs with umode="SP_T"  or umode="TST"
 #     nrun          # [5] value for opts$NRUN during unbiased runs
 #     test2.string  # ["default.cutoff"] value for opts$test2.string during unbiased runs
 #   (the defaults in '[...]' are filled via tdmDefaultsFill, if tdm does not define them.)
@@ -141,6 +141,9 @@ tdmMapOpts <- function(umode,opts,tdm)
       opts$TST.kind <- "col"  # select test set from column TST.COL, see tdmModCreateCVindex in tdmModelingUtils.r
       opts$READ.TST = T       # =T: read in extra unseen test data 
                               # and fill column dset[,opts$TST.COL] accordingly (1 for test records) 
+      if (!is.null(tdm$U.trnFrac)) 
+        opts$TST.trnFrac=tdm$U.trnFrac  # Use only this fraction of the TrainVa-data for training (even when opts$TST.kind="col").
+                                        # If tdm$U.trnFrac is NULL, then tdmModCreateCVindex uses all TrainVa-data for training.
       opts$TST.COL=tdm$tstCol                              
       opts;
     } 
@@ -152,9 +155,9 @@ tdmMapOpts <- function(umode,opts,tdm)
     } 
     setOpts.SP_T <- function(opts) {
       # [we leave opts$TST.kind at its current value]
-      if (!is.null(tdm$TST.trnFrac)) 
-        opts$TST.trnFrac=tdm$TST.trnFrac# Set this fraction of the TrainVa-data aside for training (only for opts$TST.kind="rand").
-                                        # If tdm$TST.trnFrac is NULL, then tdmModCreateCVindex sets opts$TST.trnFrac = 1-opts$TST.valiFrac.
+      if (!is.null(tdm$U.trnFrac)) 
+        opts$TST.trnFrac=tdm$U.trnFrac  # Set this fraction of the TrainVa-data aside for training (only for opts$TST.kind="rand").
+                                        # If tdm$U.trnFrac is NULL, then tdmModCreateCVindex sets opts$TST.trnFrac = 1-opts$TST.valiFrac.
       if (!is.null(tdm$TST.valiFrac)) 
         opts$TST.valiFrac=tdm$TST.valiFrac
       opts$TST.NFOLD = tdm$nfold  # number of CV-folds (only for opts$TST.kind=="cv")

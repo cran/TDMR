@@ -24,7 +24,7 @@
 }
 \examples{
 ## The best results are read from demo02sonar/demoSonar.RData relative to the TDMR package directory.
-   oldwd <- getwd(); setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+   oldwd <- getwd(); setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
    envT = tdmEnvTLoad("demoSonar.RData");    # loads envT
    source("main_sonar.r");
    envT$tdm$nrun=0;       # =0: no unbiasedRun, >0: perform unbiasedRun with opts$NRUN=envT$tdm$nrun

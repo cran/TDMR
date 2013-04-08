@@ -41,7 +41,7 @@ tdmROCR.default <- function(x, ...)  cat("This is tdmROCR.default\n");
 #'
 #' @examples
 #'    \dontrun{
-#'      setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+#'      setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
 #'      source("main_sonar.r");
 #'      result = main_sonar();
 #'      tdmROCR(result);

@@ -1,13 +1,13 @@
 #*# This demo is the same as demo04cpu.r, except that it is executed on 2 cluster nodes in parallel.
 #*# The only differences to demo04cpu.r are:
 #*#     a) tdm$parallelCPUs=2
-#*#     b) tdm$parallelFuncs="cpu.postproc".
+#*#     b) tdm$parallelFuncs=c("readCmdCpu","cpu.postproc")
 #*# The latter is only necessary if main_cpu.r contains extra functions besides tdm$mainFunc="main_cpu",
-#*# in this case "cpu.postproc", which need to be clusterExport'ed to the cluster nodes
+#*# in this case "cpu.postproc" and "readCmdCpu", which need to be clusterExport'ed to the cluster nodes
 
 ## load package and set working directory
 require(TDMR);
-#path <- paste(.find.package("TDMR"), "demo01cpu/",sep="/");
+#path <- paste(find.package("TDMR"), "demo01cpu/",sep="/");
 path <- paste("../../inst", "demo01cpu/",sep="/");
 oldwd <- getwd();  setwd(path);
 #
@@ -16,14 +16,14 @@ source(paste(path,"main_cpu.r",sep=""));
 ## preliminary settings for TDMR
 tdm <- list(    mainFunc="main_cpu"
 #              , path=path
-              , umode=c("RSUB","CV")    # ["CV" | "RSUB" | "TST"]
+              , umode=c("RSUB")    # ["CV" | "RSUB" | "TST"]
               , tuneMethod=c("spot","lhd")
               , filenameEnvT="demo04cpu.RData"   # file to save environment envT (in working dir)
               , finalFile="cpu.fin"     # where to write final results (best solution & unbiased eval for each tuner/.conf-combination)
               , withParams=TRUE         # list the columns with tuned parameter in final results
               , optsVerbosity=0         # the verbosity for the unbiased runs
               , parallelCPUs=2
-              , parallelFuncs="cpu.postproc"
+              , parallelFuncs=c("readCmdCpu","cpu.postproc")
               );
 ## fill in other defaults for list tdm
 tdm <- tdmDefaultsFill(tdm);
@@ -49,8 +49,7 @@ envT <- tdmEnvTMakeNew(tdm);
 ##      b) the sensitivity plot for each parameter in the vicinity of the best solution found
 envT <- tdmBigLoop(envT,spotStep);
 
-## deprecated:
-#envT <- tdmCompleteEval("cpu_01.conf",NULL,spotStep,tdm);
+#deprecated: envT <- tdmCompleteEval("cpu_01.conf",NULL,spotStep,tdm);
 
 ## restore old working directory
 setwd(oldwd);

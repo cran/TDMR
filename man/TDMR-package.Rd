@@ -8,21 +8,25 @@
 }
 \details{
   \tabular{ll}{ Package: \tab TDMR\cr Type: \tab Package\cr
-  Version: \tab 0.3.1\cr Date: \tab 01.06.2012\cr License:
+  Version: \tab 1.0.0\cr Date: \tab 08.04.2013\cr License:
   \tab GPL (>= 2)\cr LazyLoad: \tab yes\cr }
 
   TDMR is a package for tuned data mining (predictive
   analytics, i.e. \bold{classification} and
   \bold{regression}). Its main features are: \cr 1) A
   variety of tuners, with special emphasis on \link{SPOT}
-  (another well-known R package for parameter tuning), but
-  also CMA-ES and other tuning algorithms. \cr 2) Tuning of
-  preprocessing (feature generation) parameters and model
-  building parameters simultaneously.  \cr 3) Support for
-  multiple tuning experiments (different settings,
-  repetitions with different resamplings, ...).  \cr 4)
-  Easy parallelization of those experiments with the help
-  of R packages \code{snow} and \code{\link{parallel}}.
+  (a well-known R package for parameter tuning), but also
+  CMA-ES (package \code{\link{rCMA}}) and other tuning
+  algorithms. \cr 2) Tuning of preprocessing (feature
+  generation) parameters and model building parameters
+  simultaneously.  \cr 3) Support for multiple tuning
+  experiments (different settings, repetitions with
+  different resamplings, ...).  \cr 4) Easy parallelization
+  of those experiments with the help of R packages
+  \code{snow} and \code{\link{parallel}}.  \cr 5)
+  Extensibility: New tuning parameters, new feature
+  preprocessing tools, model builders and even new tuners
+  can be added easily.
 
   The main entry point functions are
   \code{\link{tdmClassifyLoop}},

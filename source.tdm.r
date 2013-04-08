@@ -86,7 +86,6 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
         setwd(oldwd);
     }
     
-    source(createSourcePath("makeTdmStartOther.r"))
     source(createSourcePath("makeTdmRandomSeed.r"))
     source(createSourcePath("printTDMclassifier.r"))
     source(createSourcePath("printTDMregressor.r"))
@@ -105,7 +104,6 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
     source(createSourcePath("tdmRegressLoop.r"))
 
     source(createSourcePath("tdmBigLoop.r"))
-    source(createSourcePath("tdmCompleteEval.r"))
     source(createSourcePath("tdmDefaultsFill.r"))
     source(createSourcePath("tdmDispatchTuner.r"))
     source(createSourcePath("tdmEnvTMakeNew.r"))
@@ -115,6 +113,7 @@ source.tdm <- function(tdmPath, tdmParallelCPUs=1,theSpotPath=NA,theRsfaPath=NA)
     source(createSourcePath("tdmROCR.r"))
     source(createSourcePath("tdmSplitTestData.r"))
     source(createSourcePath("tdmStartSpot.r"))
+    source(createSourcePath("tdmStartOther.r"))
     source(createSourcePath("unbiasedRun.r"))
     source(createSourcePath("unbiasedBestRun_O.r"))
     

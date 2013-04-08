@@ -1,14 +1,14 @@
 ######################################################################################
 # tdmEnvTMakeNew:
 #
-#' Construct a new environment envT.
+#' Construct a new environment envT of class \code{\link{TDMenvir}}.
 #'
-#' Given the general TDMR settings in \code{tdm}, construct an appropriate \code{envT}.
+#' Given the general TDMR settings in \code{tdm}, construct an appropriate environment \code{envT}.
 #' This is needed as input for \code{\link{tdmBigLoop}}.
 #'
 #' @param tdm   a list with general settings for TDMR, see \code{\link{tdmDefaultsFill}}  
 #'
-#' @return Environment \code{envT} containing (among others) the elements
+#' @return Environment \code{envT},  an object of class \code{\link{TDMenvir}},  containing (among others) the elements
 #'      \item{\code{runList}}{ \code{=tdm$runList}  }
 #'      \item{\code{spotList}}{ \code{=tdm$spotList}  }
 #'      \item{\code{tdm}}{ \code{=tdm}  }
@@ -19,6 +19,7 @@
 #'
 #' @seealso   \code{\link{tdmBigLoop}}
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
+#' @aliases TDMenvir 
 #' @export
 ######################################################################################
 tdmEnvTMakeNew <- function(tdm=NULL) {
@@ -131,10 +132,11 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
     if (!is.null(tdm$TST.valiFrac)) opts$TST.valiFrac=tdm$TST.valiFrac;
     if (!is.null(tdm$READ.target)) opts$READ.target=tdm$READ.target;
     if (!is.null(tdm$oFileMode)) opts$fileMode=tdm$oFileMode;
+
     opts=tdmOptsDefaultsSet(opts,path=tdm$path);
     opts=addSRF(confFile,opts);      # add opts$srfFile and add opts$srf from file in case opts$SRF.cacl==FALSE
     checkOpts(opts);
-browser()    
+
     if (tdm$parallelCPUs>1 & opts$fileMode==TRUE)
       warning("With tdm$parallelCPUs>1 the setting opts$fileMode=TRUE might be problematic. Consider to set tdm$oFileMode=FALSE");
     
@@ -143,7 +145,8 @@ browser()
                       confFile,"You will have no validation data!"));
  	  envT$sCList[[k]]$opts=opts;
   }
-
+  class(envT) <- c("TDMenvir","environment");
+  
   envT;
 }
 
@@ -180,6 +183,7 @@ tdmEnvTAddGetters <- function(envT) {
     if (ind<1 | ind>lgrid) stop(sprintf("Subscript %d is out of bounds for envT$resGrid (length is %d)",ind,lgrid));
     envT$resGrid[[ind]];
   }
+  class(envT) <- c("TDMenvir","environment");
   envT;
 }
 
@@ -197,6 +201,7 @@ tdmEnvTAddGetters <- function(envT) {
 tdmEnvTLoad <- function(fileRData) {
   load(fileRData); # loads envT
   envT <- tdmEnvTAddGetters(envT);
+  class(envT) <- c("TDMenvir","environment");
   envT;
 }
 
@@ -227,6 +232,7 @@ tdmEnvTAddBstRes <- function(envT,fileRData) {
   if (!is.null(envT2$runList)) envT$runList = envT2$runList;
   if (!is.null(envT2$nExperim)) envT$nExperim = envT2$nExperim;
   if (!is.null(envT2$tuneMethod)) envT$tuneMethod = envT2$tuneMethod;
+  class(envT) <- c("TDMenvir","environment");
   envT;
 }
 
@@ -245,7 +251,7 @@ tdmEnvTAddBstRes <- function(envT,fileRData) {
 #'          results from the unbiased run
 #' @examples            
 #'    ## The best results are read from demo02sonar/demoSonar.RData relative to the TDMR package directory.
-#'    oldwd <- getwd(); setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+#'    oldwd <- getwd(); setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
 #'    envT = tdmEnvTLoad("demoSonar.RData");    # loads envT
 #'    source("main_sonar.r");
 #'    envT$tdm$nrun=0;       # =0: no unbiasedRun, >0: perform unbiasedRun with opts$NRUN=envT$tdm$nrun
@@ -298,7 +304,7 @@ tdmEnvTSensi <- function(envT,ind) {
       cat(sprintf("*** Starting SENS REPORT for tuner %s, spotStep=%s, on task %s ***\n",theTuner,"rep",confFile));
 
       tdmDispatchTuner(theTuner,confFile,"rep",tdm,envT,dataObj);
-      # If spotStep[i]=="rep" then tdmDispatchTuner expects that envT$bst, envT$res contain already the right data frames 
+      # If spotStep=="rep" then tdmDispatchTuner expects that envT$bst, envT$res contain already the right data frames 
       # and it runs just the reporting step of SPOT.
   
   time.txt = c("Proc", "System", "Elapsed");

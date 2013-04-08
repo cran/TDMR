@@ -18,7 +18,7 @@
   in \code{tdm$map} and \code{tdm$mapUser}, resp. These
   maps are used by \code{\link{tdmMapDesApply}}.  \cr
   \code{"tdmMapDesign.csv"} is searched in the TDMR library
-  path \code{.find.package("TDMR")}.  (For the developer
+  path \code{find.package("TDMR")}.  (For the developer
   version: \code{<tdm$tdmPath>/inst}). \cr
   \code{"userMapDesign.csv"} is searched in tdm$path (which
   is getwd() if the user did not define tdm$path).

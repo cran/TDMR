@@ -17,7 +17,7 @@ tdm <- list(tdmPath= "../../../TDMR" # NULL  #  source R-files for TDMR from thi
 #-- the following 3 lines are only needed if you want to initialize for parallel execution OR if you want to 
 #-- run the developer sources in tdm$tdmPath; otherwise a simple  "require(TDMR);"  will do.
 tdm$theSpotPath <- "USE.SOURCE"; # NA;
-start.tdm.path <- ifelse(is.null(tdm$tdmPath),.find.package("TDMR"),paste(tdm$tdmPath,"inst",sep="/")); 
+start.tdm.path <- ifelse(is.null(tdm$tdmPath),find.package("TDMR"),paste(tdm$tdmPath,"inst",sep="/")); 
 source(paste(start.tdm.path,"start.tdm.r",sep="/"),local=T); 
 #require(TDMR);
 

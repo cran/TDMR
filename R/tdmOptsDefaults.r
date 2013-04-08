@@ -146,7 +146,7 @@
 #      after PCA become the input for SFA).
 #'
 #' @seealso  \code{\link{tdmOptsDefaultsFill}} \code{\link{tdmDefaultsFill}}
-#' @author Wolfgang Konen, FHK, Mar'2011 - Apr'2012
+#' @author Wolfgang Konen, FHK, 2011 - 2013
 #' @export
 ######################################################################################
 tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
@@ -258,15 +258,20 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
                           # opts$srf[["resp"]] holds a data frame with results from/for SRF with response variable "resp".
   }  #if (is.null(opts))
   
-  if (!is.null(path)) 
-    if (!(path=="./" | length(grep(path,opts$dir.data))==1)) {
-        #preceede the following strings with 'path' *only*, if path is not "./" and  
-        #if opts$dir.data not contains 'path' (first pass through tdmOptsDefaulsSet)
-        opts$dir.data <- paste(path,opts$dir.data,sep="")
-        opts$dir.txt  <- paste(path,opts$dir.txt,sep="")
-        opts$dir.Rdata <- paste(path,opts$dir.Rdata,sep="")
-        opts$dir.output <- paste(path,opts$dir.output,sep="")
-    }
+# DON'T!! - saving the absolute path in elements of opts gives problems when envT is saved on .RData and later loaded
+#           (perhaps on another computer where the absolute path does not exist) --> this made the example in unbiasedRun.r
+#           not runnable on CRAN computers, because demoSonar.RData had the path 
+#           dir.data = "C:/Users/wolfgang/Documents/R/win-library/2.15/TDMR/demo02sonar/./data/"
+#
+#  if (!is.null(path)) 
+#    if (!(path=="./" | length(grep(path,opts$dir.data))==1)) {
+#        #preceede the following strings with 'path' *only*, if path is not "./" and  
+#        #if opts$dir.data not contains 'path' (first pass through tdmOptsDefaulsSet)
+#        opts$dir.data <- paste(path,opts$dir.data,sep="")
+#        opts$dir.txt  <- paste(path,opts$dir.txt,sep="")
+#        opts$dir.Rdata <- paste(path,opts$dir.Rdata,sep="")
+#        opts$dir.output <- paste(path,opts$dir.output,sep="")
+#    }
     
 
   class(opts) <- c("tdmOpts","TDM")     

@@ -3,7 +3,7 @@
 \title{Perform unbiased runs with best-solution parameters.}
 \usage{
   unbiasedRun(confFile, envT, dataObj = NULL,
-    finals = NULL, umode = "RSUB", withParams = F,
+    finals = NULL, umode = "RSUB", withParams = FALSE,
     tdm = NULL)
 }
 \arguments{
@@ -19,7 +19,8 @@
   confFile.} }}
 
   \item{dataObj}{[NULL] contains the pre-fetched data from
-  which we use here the test-set part}
+  which we use here the test-set part.  If NULL, set it to
+  \code{tdmSplitTestData(opts,tdm)}}
 
   \item{finals}{[NULL] a one-row data frame to which new
   columns with final results are added}
@@ -62,21 +63,23 @@
 }
 \description{
   Read the best solution of a parameter-tuning run from
-  envT$bst, execute with these best parameters the function
-  \code{tdm$mainFunc} (usually a classification or
+  \code{envT$bst}, execute with these best parameters the
+  function \code{tdm$mainFunc} (usually a classification or
   regression machine learning task), to see whether the
   result quality is reproducible on independent test data
   or on independently trained models.
 }
 \note{
-  Side Effects: The list \code{result} returned from
-  \code{tdm$mainFunc} is written onto \code{envT$result}.
-  \cr If \code{envT$spotConfig} is NULL, it is constructed
-  from confFile. \cr If \code{spotConfig$opts} (list with
-  all parameter settings for the DM task) is NULL, we try
-  to read it from \code{spotConfig$io.apdFileName}. This
-  will issue a warning '... might not work in parallel
-  mode', but is perfectly fine for non-parallel mode.
+  Side Effects: The list \code{result}, an object of class
+  \code{\link{TDMclassifier}} or \code{\link{TDMregressor}}
+  as returned from \code{tdm$mainFunc} is written onto
+  \code{envT$result}. \cr If \code{envT$spotConfig} is
+  NULL, it is constructed from confFile. \cr If
+  \code{spotConfig$opts} (list with all parameter settings
+  for the DM task) is NULL, we try to read it from
+  \code{spotConfig$io.apdFileName}. This will issue a
+  warning '... might not work in parallel mode', but is
+  perfectly fine for non-parallel mode.
 }
 \examples{
 ## Load the best results obtained in a prior tuning for the configuration
@@ -87,7 +90,7 @@
    oldwd <- getwd();
    ## The best results are read from demo02sonar/demoSonar.RData relative to
    ## the TDMR package directory.
-   setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+   setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
    load("demoSonar.RData");
    source("main_sonar.r");
    finals <- unbiasedRun("sonar_04.conf",envT,tdm=envT$tdm);
@@ -98,6 +101,7 @@
   Wolfgang Konen, FHK, 2010 - 2013
 }
 \seealso{
-  \code{\link{tdmBigLoop}}
+  \code{\link{tdmBigLoop}}, \code{\link{TDMclassifier}},
+  \code{\link{TDMregressor}}
 }
 

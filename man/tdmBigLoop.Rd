@@ -15,9 +15,7 @@
   \code{NULL}, then \code{spotList=runList} } }}
 
   \item{spotStep}{\code{["auto"]} which step of SPOT to
-  execute (either \code{"auto"} or \code{"rep"}). Entries
-  in this vector are cyclically recycled if \code{spotStep}
-  is shorter than \code{runList}.}
+  execute (either \code{"auto"} or \code{"rep"}).}
 }
 \value{
   environment \code{envT}, containing the results
@@ -54,21 +52,20 @@
   test data where '*' takes as many values as there are
   elements in \code{tdm$umode} (the possible values are
   explained in \code{\link{unbiasedRun}}).  }
-  \item{result}{ object of class TDMclassifier or
-  TDMregressor. This is a list with results from
-  \code{tdm$mainFunc} as called in the last unbiased
+  \item{result}{ object of class
+  \code{\link{TDMclassifier}} or
+  \code{\link{TDMregressor}}. This is a list with results
+  from \code{tdm$mainFunc} as called in the last unbiased
   evaluation using the best parameters found during tuning.
   Use
   \code{\link[=print.TDMclassifier]{print}(envT$result)} to
-  get more info on such an object of class TDMclassifier.
-  \cr See \code{\link{tdmClassifyLoop}} or
-  \code{\link{tdmRegressLoop}} for further info on
-  TDMclassifier or TDMregressor, resp. } \item{tunerVal}{
-  an object with the return value from the last tuning
+  get more info on such an object of class
+  \code{\link{TDMclassifier}}.  } \item{tunerVal}{ an
+  object with the return value from the last tuning
   process. For every tuner, this is the list
   \code{spotConfig}, containing the SPOT settings plus the
   TDMR settings in elements \code{opts} and \code{tdm}.
-  Every tuner estends this list by
+  Every tuner extends this list by
   \code{tunerVal$alg.currentResult} and
   \code{tunerVal$alg.currentBest}, see
   \code{\link{tdmDispatchTuner}}.  In addition, each tuning
@@ -83,15 +80,15 @@
   tuning algorithms (SPOT, CMA-ES or other) specified in
   \code{tdm$tuneMethod} (via function
   \code{\link{tdmDispatchTuner}}). After each tuning
-  process perform one or several runs of
-  \code{tdm$unbiasedFunc} (as many as \code{tdm$umode} has
-  elements). Usually, \code{tdm$unbiasedFunc =
-  \link{unbiasedRun}}. \cr Each of these experiments is
-  repeated tdm$nEperim times. Thus we have for each tripel
-  \cr \code{ (confFile,nExp,theTuner)} \cr a tuning result.
-  The tripel ranges are: with \cr \code{ confFile in
-  tdm$runList} \cr \code{ nExp in 1,...,tdm$nExperim} \cr
-  \code{ theTuner in tdm$tuneMethod} \cr
+  process perform a run of \code{tdm$unbiasedFunc} (usually
+  \code{\link{unbiasedRun}}). \cr Each of these experiments
+  is repeated tdm$nEperim times. Thus we have for each
+  tripel \cr \tabular{ll}{ \tab \code{
+  (confFile,nExp,theTuner)} \cr } a tuning result. The
+  ranges of the triple elements are: \cr \tabular{ll}{ \tab
+  \code{ confFile in tdm$runList} \cr \tab \code{ nExp in
+  1,...,tdm$nExperim} \cr \tab \code{ theTuner in
+  tdm$tuneMethod} \cr }
 }
 \details{
   \code{tdm} refers to \code{envT$tdm}. \cr\cr Tuning is
@@ -109,41 +106,50 @@
   tuning using a Latin hypercube design (LHD) for obtaining
   best design points. LHD is performed by configuring SPOT
   in such a way that all the budget is used for the initial
-  design (usually LHD). } \item{\code{\link{cmaesTuner}}:
+  design (usually LHD). } \item{\code{\link{cma_jTuner}}:
+  Perform a parameter tuning by CMA-ES, using the *Java*
+  implementation by Niko Hansen through the interface
+  package \code{rCMA}.  } \item{\code{\link{cmaesTuner}}:
   Perform a parameter tuning by CMA-ES, using the
-  *R*-implementation (package \code{cmaes} by Olaf
-  Mersmann).  } \item{\code{\link{cma_jTuner}}: Perform a
-  parameter tuning by CMA-ES, using the *Java*
-  implementation by Niko Hansen.  }
+  *R*-implementation (package
+  \href{http://cran.r-project.org/web/packages/cmaes/}{\code{cmaes}}
+  by Olaf Mersmann) (deprecated, use
+  \code{\link{cma_jTuner}} instead).  }
   \item{\code{\link{bfgsTuner}}: Perform a parameter tuning
   by Broyden, Fletcher, Goldfarb and Shanno (BFGS) method.
   The L-BFGS-B version allowing box constraints is used.  }
   \item{\code{\link{powellTuner}}: Perform a parameter
   tuning by Powell's UObyQA algorithm (unconstrained
-  optimization by quadratic approximation), see R-package
-  \code{powell}.  } }
+  optimization by quadratic approximation), see package
+  \code{\link{powell}}).  } }
 }
 \note{
   Side effects: Irrespective of the value of
   \code{tdm$fileMode}, \itemize{ \item a compressed version
   of \code{envT } is saved to file \code{tdm$filenameEnvT}
   (default: \code{<runList[1]>.RData}), relative to the
-  directory of the \code{.conf} file.  }
+  directory of the \code{.conf} file.  } If
+  \code{tdm$U.saveModel==TRUE}, then
+  \code{envT$result$lastRes$lastModel} (the last trained
+  model) will be saved to \code{tdm$filenameEnvT}.  The
+  default is \code{tdm$U.saveModel==FALSE} (smaller
+  \code{.RData} files).
 
   If \code{tdm$fileMode==TRUE}, more files are written
   relative to the directory of the \code{.conf} file:
   \itemize{ \item \code{envT$theFinals } is written to file
-  \code{tdm$finalFile} and appended to \code{tdm$experFile}
-  } If \code{tdm$finalFile==NULL}, then it is set to
+  \code{tdm$finalFile} \item \code{envT$theFinals } is
+  appended to \code{tdm$experFile} } If
+  \code{tdm$finalFile==NULL}, then it is set to
   \code{sub(".conf",".fin",runList[1])}.  \cr If
   \code{tdm$experFile==NULL}, then nothing is appended to
   any experiment file.
 
   Example usages of function \code{tdmBigLoop} are shown in
-  \cr \code{ demo(demo03sonar)},\cr \code{
-  demo(demo03sonar_B)} \cr \code{ demo(demo04cpu)} \cr
-  where the corresponding R-sources are in directory
-  \code{demo}.
+  \cr \tabular{ll}{ \tab \code{ demo(demo03sonar)} \cr \tab
+  \code{ demo(demo03sonar_B)} \cr \tab \code{
+  demo(demo04cpu)} \cr } where the corresponding R-sources
+  are in directory \code{demo}.
 }
 \examples{
 #*# --------- demo/demo03sonar.r ---------
@@ -160,7 +166,7 @@
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
 #library(TDMR);
-path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
+path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();  setwd(path);
 source("main_sonar.r");    # from working dir
@@ -174,40 +180,30 @@ tdm <- list( mainFunc="main_sonar"
             , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
             , nExperim=1
             , parallelCPUs=1
+            , parallelFuncs=c("readCmdSonar")
             , optsVerbosity = 0       # the verbosity for the unbiased runs
             );
 ## tdm$runList="sonar_04.conf" has the settings for the tuning process (e.g. 
-##    - "auto.loop.steps"=number of SPOT generations       
-##    - "auto.loop.evals"=budget of model building runs and 
+##    - auto.loop.steps = number of SPOT generations       
+##    - auto.loop.evals = budget of model building runs and 
 ##    - io.roiFileName = "sonar_04.roi"
 ## ). tdm$runList could contain other files as well (e.g. 
 ##    c("sonar_01.conf","sonar_02.conf","sonar_03.conf")
 ## ), if desired.
 
 spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or 
-            ## "rep" (make a visual report and an unbiased run on best results)
+                      ## "rep" (make a visual report and an unbiased run on best results)
 
-## construct an initial environment envT from the given TDMR settings in tdm
-## (this contains also the fill-in of other defaults for tdm via
-##      envT$tdm <- tdmDefaultsFill(tdm);
-## )
-envT <- tdmEnvTMakeNew(tdm);
-
-## the call to tdmBigLoop will start the whole TDMR process:
-## - for each file in tdm$runList a complete DM tuning is started with each tuning 
-##   method tdm$tuneMethod  (if spotStep=="auto")
-## - the best result from tuning is fed into an unbiased model build and evaluation run 
-## - results are printed and returned in envT$theFinals 
-## - more detailed results are in other elements of environment envT
-## - two plots: 
-##      a) the progression of the response variable Y and the parameter variables during tuning
-##      b) the sensitivity plot for each parameter in the vicinity of the best solution found 
-envT <- tdmBigLoop(envT,spotStep);
+## construct an initial environment envT from tdm
+## (this contains also tdmDefaultsFill(tdm))
+## then run tdmBigLoop
+envT <- tdmExecSpotStep(tdm,spotStep);
+## see demo03sonar_A.r for an identical version where the contents of tdmExecSpotStep is explicitly shown
 
 setwd(oldwd);               # restore old working directory
 
 ## the resulting tuning surface(s) (the metamodel(s)) can be inspected interactively with
-##      load(paste(path,tdm$filenameEnvT,sep="/");     
+##      load(paste(path,tdm$filenameEnvT,sep="/"));     
 ##      tdmPlotResMeta(envT);
 ## (load(...) is only needed for reloading envT in another R-session)
 }
@@ -216,8 +212,6 @@ setwd(oldwd);               # restore old working directory
   Patrick Koch
 }
 \seealso{
-  \code{\link{tdmCompleteEval}} (older, more complicated
-  version), \code{\link{tdmDispatchTuner}},
-  \code{\link{unbiasedRun}}
+  \code{\link{tdmDispatchTuner}}, \code{\link{unbiasedRun}}
 }
 

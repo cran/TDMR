@@ -26,5 +26,9 @@
   *R*-implementation (package \code{cmaes} by Olaf
   Mersmann).
 }
+\note{
+  This tuner \code{cmaesTuner} is deprecated. Use instead
+  \code{\link{cma_jTuner}}.
+}
 \keyword{internal}
 

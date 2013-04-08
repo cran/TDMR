@@ -4,7 +4,7 @@
     ## umode="RSUB", tdm$nrun=5  and tdm$TST.testFrac=0.2.
     oldwd <- getwd();
     ## The best results are read from demo02sonar/demoSonar.RData relative to the TDMR package directory.
-    setwd(paste(.find.package("TDMR"), "demo02sonar",sep="/"));
+    setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
     load("demoSonar.RData");
     tdm=envT$tdm;
     source("main_sonar.r");

@@ -6,7 +6,7 @@
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
 #library(TDMR);
-path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
+path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();
 setwd(path);
@@ -35,26 +35,14 @@ tdm <- list( mainFunc="main_sonar"
 spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or 
             ## "rep" (make a visual report and an unbiased run on best results)
 
-## construct an initial environment envT from the given TDMR settings in tdm
-## (this contains also the fill-in of other defaults for tdm via
-##      envT$tdm <- tdmDefaultsFill(tdm);
-## )
-envT <- tdmEnvTMakeNew(tdm);
-
-## the call to tdmBigLoop will start the whole TDMR process:
-## - for each file in tdm$runList a complete DM tuning is started with each tuning 
-##   method tdm$tuneMethod  (if spotStep=="auto")
-## - the best result from tuning is fed into an unbiased model build and evaluation run 
-## - results are printed and returned in envT$theFinals 
-## - more detailed results are in other elements of environment envT
-## - two plots: 
-##      a) the progression of the response variable Y and the parameter variables during tuning
-##      b) the sensitivity plot for each parameter in the vicinity of the best solution found 
-envT <- tdmBigLoop(envT,spotStep);
+## construct an initial environment envT from tdm
+## (this contains also tdmDefaultsFill(tdm))
+## then run tdmBigLoop
+envT <- tdmExecSpotStep(tdm,spotStep);
 
 setwd(oldwd);               # restore old working directory
 
 ## the resulting tuning surface (the metamodel) can be inspected interactively with
-##      load(paste(path,tdm$filenameEnvT,sep="/");     
+##      load(paste(path,tdm$filenameEnvT,sep="/"));     
 ##      tdmPlotResMeta(envT);
 ## (load(...) is only needed for reloading envT in another R-session)

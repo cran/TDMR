@@ -795,7 +795,7 @@ check.apply.svm <- function(res.rf,appProb,appPredict,to.data,respVar,opts) {
     if (length(P.alt) != length(respVar)) { cat("NOTE: data frame binding problems 2 ahead!\n"); browser(); }
     x=data.frame(y,mid.diff=abs(0.5-appProb[,1]),P.cl=P.alt,true=respVar,M.prob=appProb[,1]);
     print(x[order(x[,2]),]);
-    browser();     	  
+    #browser();     	  
     #retVal = FALSE;
   }		    
   retVal;

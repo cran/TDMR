@@ -28,17 +28,19 @@
 #'   @param nExp  [0] experiment counter, used to select a reproducible different seed, if tdm$SPLIT.SEED!=NULL
 #'   @param dset  [NULL] if non-NULL, reading of dset is skipped and the given data frame dset is used.
 #'
-#'   @return dataObj, either NULL (if opts$READ.INI==FALSE) or an object of class \code{TDMdata} containing
+#'   @return \code{dataObj}, either NULL (if opts$READ.INI==FALSE) or an object of class \code{\link{TDMdata}} containing
 #'      \item{dset}{ a data frame with the complete data set}
 #'      \item{TST.COL}{ string, the name of the column in \code{dset} which has a 1 for 
 #'                      records belonging to the test set and a 0 for train/vali records. If tdm$umode=="SP_T", then 
 #'                      TST.COL="tdmSplit", else TST.COL=opts$TST.COL. }
 #'      \item{filename}{ \code{opts$filename}, from where the data were read}
-#'
+#'    Use the accessor functions  \code{\link{dsetTrnVa.TDMdata}} and \code{\link{dsetTest.TDMdata}} to extract the train/vali and 
+#'    the test data, resp., from \code{dataObj}.
+#'   
 #'    Known caller: \code{\link{tdmBigLoop}}
 #'
 #' @seealso   \code{\link{dsetTrnVa.TDMdata}}, \code{\link{dsetTest.TDMdata}}, \code{\link{tdmReadData}}, \code{\link{tdmBigLoop}}
-#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Apr'2012 - Nov'2012
+#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), 2012 - 2013
 #' @aliases TDMdata 
 #' @export
 ######################################################################################
@@ -48,14 +50,14 @@ tdmSplitTestData <- function(opts,tdm,nExp=0,dset=NULL) {
 		if (is.null(dset)) {
     		oldwd = getwd();                                              #
         if (!is.null(tdm$mainFile)) setwd(dirname(tdm$mainFile));     # save & change working dir
-    
+
         dset <- tdmReadData(opts);
     
     		setwd(oldwd);       
     }                                          # restore working dir
   	
-		if (tdm$umode[1]=="SP_T") {                         # NOTE: if tdm$umode is a list, its **first** element controls
-        if (is.null(tdm$SPLIT.SEED)) {                  # what is happening here in tdmSplitTestData
+		if (tdm$umode=="SP_T") {              
+        if (is.null(tdm$SPLIT.SEED)) {       
           set.seed(tdmRandomSeed());
         } else {
           newseed=tdm$SPLIT.SEED+nExp;
@@ -102,13 +104,13 @@ tdmSplitTestData <- function(opts,tdm,nExp=0,dset=NULL) {
         if (any(names(dset)==TST.COL)) stop(sprintf("Name clash in dset, which has already a column \"%s\". Please consider renaming it.",TST.COL));            
     		dset[,TST.COL] = cvi;			       # add a new column "tdmSplit" with 1 for test data, 0 else
     		
-		} else if (tdm$umode[1]=="TST") {
+		} else if (tdm$umode=="TST") {
     		TST.COL = opts$TST.COL;          # take the partition delivered by tdmReadData     
         if (!any(names(dset)==TST.COL)) {
           stop(sprintf("Data frame dset does not contain a column opts$TST.COL=\"%s\". \n%s",
                         opts$TST.COL,"This might be due to a missing opts$READ.TST==T when using tdm$umode==\"TST\".")); 
         }
-		} else {  # i.e. if tdm$umode[1]=="RSUB" or =="CV"
+		} else {  # i.e. if tdm$umode=="RSUB" or =="CV"
 		    cvi = rep(0,nrow(dset));         # all data in dset used for training and validation
     		TST.COL = opts$TST.COL;          
         if (any(names(dset)==TST.COL)) stop(sprintf("Name clash in dset, which has already a column \"%s\". Please consider renaming it.",TST.COL));            
@@ -165,10 +167,10 @@ dsetTrnVa.default <- function(x)  stop("Method dsetTrnVa only allowed for object
 ######################################################################################
 # dsetTrnVa.TDMdata
 #
-#'   Return the train-validation part of a \code{TDMdata} object containing the task data.
+#'   Return the train-validation part of a \code{\link{TDMdata}}  object containing the task data.
 #'
 #'   @method dsetTrnVa TDMdata
-#'   @param x  return value from a prior call to \code{\link{tdmSplitTestData}}, an object of class \code{TDMdata}.
+#'   @param x  return value from a prior call to \code{\link{tdmSplitTestData}}, an object of class \code{\link{TDMdata}}.
 #'   @return \code{dset}, a data frame with all train-validation records
 #'
 #' @seealso   \code{\link{dsetTest.TDMdata}} \code{\link{tdmSplitTestData}}
@@ -196,10 +198,10 @@ dsetTest.default <- function(x)  stop("Method dsetTest only allowed for objects 
 ######################################################################################
 # dsetTest.TDMdata
 #
-#'   Return the test part of a \code{TDMdata} object containing the task data.
+#'   Return the test part of a \code{\link{TDMdata}} object containing the task data.
 #'
 #'   @method dsetTest TDMdata
-#'   @param x  return value from a prior call to \code{\link{tdmSplitTestData}}, an object of class \code{TDMdata}.
+#'   @param x  return value from a prior call to \code{\link{tdmSplitTestData}}, an object of class \code{\link{TDMdata}}.
 #'   @return \code{tset}, a data frame with all test records. If there are 0 test records, return NULL.
 #'
 #' @seealso   \code{\link{unbiasedRun}} \code{\link{dsetTrnVa.TDMdata}} 

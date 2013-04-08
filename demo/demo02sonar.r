@@ -2,7 +2,7 @@
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
 #library(TDMR);
-path <- paste(.find.package("TDMR"), "demo02sonar",sep="/");
+path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd(); 
 setwd(path);

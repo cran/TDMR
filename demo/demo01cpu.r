@@ -6,14 +6,13 @@
 
 ## load package and set working directory
 #library(TDMR);
-path <- paste(.find.package("TDMR"), "demo01cpu",sep="/");
+path <- paste(find.package("TDMR"), "demo01cpu",sep="/");
 #path <- paste("../inst", "demo01cpu",sep="/");
 oldwd <- getwd();
 setwd(path);
 source("main_cpu.r");                # contains also readCmdCpu()
 
 source("cpu_00.apd",local=TRUE);     # set opts 
-
 
 result=main_cpu(opts);
 

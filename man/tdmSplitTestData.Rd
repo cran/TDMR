@@ -39,15 +39,18 @@
   skipped and the given data frame dset is used.}
 }
 \value{
-  dataObj, either NULL (if opts$READ.INI==FALSE) or an
-  object of class \code{TDMdata} containing \item{dset}{ a
-  data frame with the complete data set} \item{TST.COL}{
-  string, the name of the column in \code{dset} which has a
-  1 for records belonging to the test set and a 0 for
-  train/vali records. If tdm$umode=="SP_T", then
-  TST.COL="tdmSplit", else TST.COL=opts$TST.COL. }
-  \item{filename}{ \code{opts$filename}, from where the
-  data were read}
+  \code{dataObj}, either NULL (if opts$READ.INI==FALSE) or
+  an object of class \code{\link{TDMdata}} containing
+  \item{dset}{ a data frame with the complete data set}
+  \item{TST.COL}{ string, the name of the column in
+  \code{dset} which has a 1 for records belonging to the
+  test set and a 0 for train/vali records. If
+  tdm$umode=="SP_T", then TST.COL="tdmSplit", else
+  TST.COL=opts$TST.COL. } \item{filename}{
+  \code{opts$filename}, from where the data were read} Use
+  the accessor functions \code{\link{dsetTrnVa.TDMdata}}
+  and \code{\link{dsetTest.TDMdata}} to extract the
+  train/vali and the test data, resp., from \code{dataObj}.
 
   Known caller: \code{\link{tdmBigLoop}}
 }
@@ -57,8 +60,8 @@
   training/validation-part.
 }
 \author{
-  Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), FHK,
-  Apr'2012 - Nov'2012
+  Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), 2012
+  - 2013
 }
 \seealso{
   \code{\link{dsetTrnVa.TDMdata}},
