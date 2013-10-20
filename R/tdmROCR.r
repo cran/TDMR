@@ -26,7 +26,7 @@ tdmROCR.default <- function(x, ...)  cat("This is tdmROCR.default\n");
 #
 #'   Interactive plot of ROC, lift or other charts for a \code{\link{TDMclassifier}} object.
 #'
-#'   Brings up a \code{\link{twiddle}} user interface, where the user may select a part of the dataset
+#'   Brings up a \code{\link[twiddler]{twiddle}} user interface, where the user may select a part of the dataset
 #'   ("training" or "validation"), a run number (if \code{\link{Opts}}(x)$NRUN>1) 
 #'   and a type-of-chart, see \code{\link{tdmROCRbase}} for details. Using \code{\link{tdmROCRbase}}, 
 #'   the appropriate chart is plotted on the current graphics device.
@@ -88,7 +88,7 @@ tdmROCR.TDMclassifier <- function(x,...) {
 #'  @param dataset ["validation"] which part of the data to use, either "training" or "validation"
 #'  @param nRun    [1] if x contains multiple runs, which run to show  (1,...,\code{\link{Opts}}(x)$NRUN)
 #'  @param typ     ["ROC"] which chart type, one out of ("ROC","lift","precRec") for 
-#'                 (ROC, lift, precision-recall)-chart (see \code{\link{performance}} in package ROCR for more details):
+#'                 (ROC, lift, precision-recall)-chart (see \code{\link[ROCR]{performance}} in package ROCR for more details):
 #'    \itemize{
 #'      \item "ROC":      receiver operating curve, TPR vs. FPR, with TPR=TP/(TP+FN)=TP/P and FPR=FP/(FP+TN)=FP/N (true and false positive rate).
 #'      \item "lift":     lift chart, LIFT vs. RPP, with LIFT=TPR/RPR with random positive rate RPR=P/(P+N) and RPP=(TP+FP)/(P+N) (rate of pos. predictions).
@@ -129,7 +129,7 @@ tdmROCRbase  <- function(x,dataset="validation",nRun=1,typ="ROC",noPlot=FALSE,..
     perf <- tdmROCR_calc(ppVal,ymeas[typ==typList],xmeas[typ==typList]);
     areaR <- tdmROCR_area(perf,typ);
     if (!noPlot) { 
-      plot(perf,colorize=T,lwd=2,main=sprintf("%s on %s set [%d]",titList[typ==typList],dataset,length(ll)));
+      plot(perf,colorize=T,lwd=2,main=sprintf("%s on %s set",titList[typ==typList],dataset));
       if (.Devices[[dev.cur()]]=="windows") bringToTop();
     }
     areaR;
@@ -137,6 +137,7 @@ tdmROCRbase  <- function(x,dataset="validation",nRun=1,typ="ROC",noPlot=FALSE,..
 }
 
 tdmROCR_calc <- function(ppVal,ymeasure,xmeasure) {
+  require(ROCR);
     #
     # TODO: extend for multiple response variables
     #    

@@ -4,6 +4,7 @@
 # HELPER FUNCTIONS FOR MODELING
 #
 ######################################################################################
+require(randomForest);
 ######################################################################################
 #
 #
@@ -11,7 +12,7 @@
 # tdmModCreateCVindex:
 #'   Create and return a training-validation-set index vector. 
 #' 
-#'   Depending on the value of TST.kind, the returned index cvi is
+#'   Depending on the value of member TST.kind in list opts, the returned index cvi is
 #'   \enumerate{
 #'   \item TST.kind="cv": a random cross validation index P([111...222...333...]) - or -
 #'   \item TST.kind="rand": a random index with P([00...11...-1-1...]) for training (0), validation (1) and disregard (-1) cases - or -
@@ -287,6 +288,7 @@ tdmModAdjustCutoff.OLD <- function(cutoff,n.class)
 ######################################################################################
 tdmModSortedRFimport <- function(d_train, response.variable, input.variables, opts)
 {
+    require(randomForest);
     opts <- tdmOptsDefaultsSet(opts);
 
     ptm <- proc.time();
@@ -337,9 +339,9 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
 #print(.Random.seed[1:6]);
         flush.console();
         res.SRF <- NULL;      
-        eval(parse(text=paste("res.SRF <- randomForest( formul, data=to.model,",rf.options,")")));
+        eval(parse(text=paste("res.SRF <- randomForest::randomForest( formul, data=to.model,",rf.options,")")));
         # select MeanDecreaseAccuracy-importance (NEW 05/11, together with switch 'importance=TRUE' above)
-        res.SRF$imp1 <- importance(res.SRF, type=1, scale=opts$SRF.scale);      
+        res.SRF$imp1 <- randomForest::importance(res.SRF, type=1, scale=opts$SRF.scale);      
 #print(.Random.seed[1:6]);
         
         # only for debug or in-depth-analysis:
@@ -470,7 +472,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       tdmGraphicCloseWin(opts);
       if (opts$SRF.calc==TRUE & opts$SRF.method=="RFimp") {
         tdmGraphicNewWin(opts)
-        varImpPlot(res.SRF,n.var=maxS)    # NEW: plot both MeanDecreaseAccuracy and MeanDecreaseGini
+        randomForest::varImpPlot(res.SRF,n.var=maxS)    # NEW: plot both MeanDecreaseAccuracy and MeanDecreaseGini
         tdmGraphicCloseWin(opts);
       }
     }
@@ -495,10 +497,10 @@ analyzeImportance <- function(res.SRF,input.variables,opts)  {
     splitVar=NULL;              # the union of all variables which appear ever as a split in a tree of the forest 
     splitLst=NULL;              # the list of all split variables (variables may appear more than once)
     rn=rownames(res.SRF$imp1);
-    for (k in 1:res.SRF$ntree) splitVar=union(splitVar,getTree(res.SRF,k=k,labelVar=T)$"split var")
+    for (k in 1:res.SRF$ntree) splitVar=union(splitVar,randomForest::getTree(res.SRF,k=k,labelVar=T)$"split var")
     splitVar = sort(splitVar); # remove the <NA>
     noSplitVar = sort(setdiff(input.variables,splitVar))
-    for (k in 1:res.SRF$ntree) splitLst=c(splitLst,as.character(getTree(res.SRF,k=k,labelVar=T)$"split var"))
+    for (k in 1:res.SRF$ntree) splitLst=c(splitLst,as.character(randomForest::getTree(res.SRF,k=k,labelVar=T)$"split var"))
     splitLst=sort(splitLst);
     impZeroVar = sort(rn[res.SRF$imp1==0])
     cat(sprintf("%d variables have importance exactly zero\n",length(impZeroVar)));

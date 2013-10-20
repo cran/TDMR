@@ -36,13 +36,14 @@
   optionally PRE.SFA.numericV, if
   \code{opts$PRE.SFA.REPLACE==F}) } \item{sfaList}{ a list
   with the items \code{opts (sfaOpts)}, matrices DSF and SF
-  and many others, as returned from \code{\link{sfaStep}} }
+  and many others, as returned from
+  \code{\link[rSFA]{sfaStep}} }
 }
 \description{
-  tdmPreSFA.train uses package \link{rSFA}. It is assumed
-  that classification for the variable contained in column
-  \code{response.var} is done. SFA seeks features in an
-  expanded function space for which the intra-class
+  tdmPreSFA.train uses package \code{\link[rSFA]{rSFA}}. It
+  is assumed that classification for the variable contained
+  in column \code{response.var} is done. SFA seeks features
+  in an expanded function space for which the intra-class
   variation w.r.t.  \code{response.var} is as low as
   possible.
 }

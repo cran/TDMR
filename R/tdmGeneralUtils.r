@@ -6,15 +6,15 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.0.0\cr
-#' Date: \tab 08.04.2013\cr
+#' Version: \tab 1.0.1\cr
+#' Date: \tab 20.10.2013\cr
 #' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
 #' }
 #'
 #' TDMR is a package for tuned data mining (predictive analytics, i.e. \bold{classification} and \bold{regression}). Its main features are: \cr
 #' 1) A variety of tuners, with special emphasis on \link{SPOT} (a well-known R package for parameter tuning), but also CMA-ES 
-#'    (package \code{\link{rCMA}}) and other tuning algorithms. \cr
+#'    (package \code{\link[rCMA]{rCMA}}) and other tuning algorithms. \cr
 #' 2) Tuning of preprocessing (feature generation) parameters and model building parameters simultaneously.  \cr
 #' 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr
 #' 4) Easy parallelization of those experiments with the help of R packages \code{snow} and \code{\link{parallel}}.  \cr
@@ -154,7 +154,8 @@ print2 <- function(opts, ...) {  if (opts$VERBOSE>=2) print(...); }
 #'        tdm <- list(  filenameEnvT="demo04cpu.RData" );   # file with environment envT 
 #'        load(paste(path,tdm$filenameEnvT,sep="/"));
 #'                   
-#'        newdata=read.csv2(file=paste(path,"data/cpu.csv", sep=""), dec=".")[1:15,];     # take only the first 15 records
+#'        # take only the first 15 records:
+#'        newdata=read.csv2(file=paste(path,"data/cpu.csv", sep=""), dec=".")[1:15,];     
 #'        z=predict(envT,newdata);
 #'        print(z);
 #'    }

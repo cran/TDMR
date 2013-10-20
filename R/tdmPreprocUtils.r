@@ -83,7 +83,7 @@ tdmPreFindConstVar <- function(dset)
 #' @param  colname   name of column to be re-grouped
 #' @param  opts      list, here we need \itemize{
 #'      \item  PRE.Xpgroup   [0.99]
-#'      \item  PRE.MaxLevel  [32]  (32 is the maximum number of levels allowed for \code{\link{randomForest}})
+#'      \item  PRE.MaxLevel  [32]  (32 is the maximum number of levels allowed for \code{\link[randomForest]{randomForest}})
 #'      }
 #' @return \code{dset}, a data frame with \code{dset[,colname]} re-grouped
 #'     
@@ -337,9 +337,9 @@ tdmPrePCA.apply <- function(dset,pcaList,opts,dtrain=NULL)  {
 #
 #'     SFA (Slow Feature Analysis) for numeric columns in a data frame. 
 #'
-#'     tdmPreSFA.train uses package \link{rSFA}. It is assumed that classification for the variable contained in 
-#'     column \code{response.var} is done. SFA seeks features in an expanded function space for which the 
-#'     intra-class variation w.r.t.  \code{response.var} is as low as possible.
+#'     tdmPreSFA.train uses package \code{\link[rSFA]{rSFA}}. It is assumed that classification for the variable 
+#'     contained in column \code{response.var} is done. SFA seeks features in an expanded function space for which  
+#'     the intra-class variation w.r.t.  \code{response.var} is as low as possible.
 #'
 #' @param   dset    the data frame with training (and test) data. 
 #' @param   response.var  the response variable for classification. 
@@ -360,14 +360,14 @@ tdmPrePCA.apply <- function(dset,pcaList,opts,dtrain=NULL)  {
 #'     \item{numeric.variables}{    the new numeric column names of \code{dset}, i.e. SFA components, monomials (and optionally  
 #'                    PRE.SFA.numericV, if \code{opts$PRE.SFA.REPLACE==F}) }
 #'     \item{sfaList}{  a list with the items \code{opts (sfaOpts)}, matrices DSF and SF and many others, as returned from 
-#'                    \code{\link{sfaStep}}  }
+#'                    \code{\link[rSFA]{sfaStep}}  }
 #'
 #' @seealso  \code{\link{tdmPreSFA.apply}}
 #' @author Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 - Feb'2012
 #' @export
 #
 tdmPreSFA.train <- function(dset,response.var,opts)  {
-    require(rSFA);
+    #require(rSFA);
     
     if (is.null(opts$PRE.SFA.numericV))
       stop("Please define opts$PRE.SFA.numericV, the vector of numeric column names, in order to run SFA");

@@ -72,12 +72,16 @@ tdmMapDesApply <- function(des,opts,k,spotConfig,tdm) {
         stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s. Please check spelling or extend tdmMapDesign.csv or userMapDesign.csv!",d));
     }
     
-    for (n in 1:nrow(tdm$map)) {
-      opts <- setMapValue(n,tdm$map,des,opts,k);
+    if (nrow(tdm$map)>0) {
+      for (n in 1:nrow(tdm$map)) {
+        opts <- setMapValue(n,tdm$map,des,opts,k);
+      }
     }
     if (!is.null(tdm$mapUser)) {
-      for (n in 1:nrow(tdm$mapUser)) {
-        opts <- setMapValue(n,tdm$mapUser,des,opts,k);
+      if (nrow(tdm$mapUser)>0) {
+        for (n in 1:nrow(tdm$mapUser)) {
+          opts <- setMapValue(n,tdm$mapUser,des,opts,k);
+        }
       }
     }
     
@@ -194,7 +198,7 @@ tdmMapOpts.OLD <- function(umode,opts,test2.string="no postproc",nfold=10) {
 }
 
 ######################################################################################
-# ---- tdmMapCutoff is deprecated now, all is done in tdmModAdjustCutoff now. ---
+# ---- tdmMapCutoff is deprecated, all is done in tdmModAdjustCutoff now. ---
 # tdmMapCutoff:
 #   helper fct for tdmStart*.r in the classification task case
 #   enforce parameter constraint sum(CUTOFFi)=1 if CUTOFF2,3,4 appears in .des-file.

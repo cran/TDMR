@@ -4,7 +4,7 @@
 #' Interactive plots of RES data frames and their metamodels.
 #'
 #' Makes interactive plots for any of the result data frames contained in \code{envT} together with fitted metamodels.
-#' \code{tdmPlotResMeta} creates a \code{\link{twiddle}} interface which allows to select
+#' \code{tdmPlotResMeta} creates a \code{\link[twiddler]{twiddle}} interface which allows to select
 #'    \itemize{
 #'      \item tuner:      one of the tuners
 #'      \item nExperim:   a knob to select one of the experiments in \code{envT} (only if  \code{envT$tdm$nExperim > 1})

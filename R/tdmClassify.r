@@ -1,3 +1,5 @@
+require(randomForest);
+
 ######################################################################################
 # tdmClassify
 # TODO: make code also applicable if d_test is a 0-row data frame.
@@ -231,23 +233,24 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             # absence of certain options like "mtry" or "cutoff" which are not allowed to be NULL.
             # The individual "eval(...)" on the following lines are for clarity of res.rf$call 
             # (it should read "..., ntree=400, ..." and not "..., ntree=opts$RF.ntree, ...") 
-            # BUT: we cannot use "eval(...)" for the lists cutoff and cwt, therefore we use here
+            # BUT: we cannot use "eval(...)" for the lists cutoff and cwt (and sampsize), therefore we use here
             # the 'non-speaking' variables cwt, opts$CLS.cutoff and add below res.rf$cutoff, res.rf$classwt 
             # for optional later reference or user inspection.
             rf.options = paste(" ntree=",eval(opts$RF.ntree));
-            rf.options = paste(rf.options,paste(" sampsize=",eval(opts$RF.sampsize)),sep=",")
+            rf.options = paste(rf.options," sampsize=opts$RF.sampsize",sep=",")
             rf.options = paste(rf.options," classwt=cwt"," na.action=na.roughfix"," proximity=FALSE",sep=",")
             #if (!is.null(cwt))  paste(rf.options,paste("classwt=",eval(cwt)),sep=",")    # not run
             if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,paste(" mtry=",eval(opts$RF.mtry)),sep=",")
             if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options," cutoff=opts$CLS.cutoff",sep=",")
             if (!is.null(opts$RF.nodesize)) rf.options = paste(rf.options,paste(" nodesize=",eval(opts$RF.nodesize)),sep=",")
             #dbg_chase_cutoff_bug(formul,to.train,d_train,response.variable,rf.options,opts);
-            flush.console();          
-            eval(parse(text=paste("res.rf <- randomForest( formul, data=to.train,",rf.options,")"))); 
+            flush.console();       
+            eval(parse(text=paste("res.rf <- randomForest::randomForest( formul, data=to.train,",rf.options,")"))); 
             res.rf$HasVotes = TRUE; 
             res.rf$HasProbs = TRUE; 
             res.rf$cutoff = opts$CLS.cutoff;
             res.rf$classwt = opts$CLS.CLASSWT;
+            res.rf$sampsize = opts$RF.sampsize;
             res.rf;
         } 
         train.mc.rf <- function(response.variable,to.train,opts) {
@@ -280,7 +283,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             kernelChoices = c("linear","polynomial","radial","sigmoid");
             kernelType = kernelChoices[opts$SVM.kernel];
             cat1(opts,filename,": Train SVM (kernel=",kernelType,") ...\n");
-	          require(e1071)		
+	          #require(e1071)		
             if (!is.null(opts$CLS.CLASSWT)) cat1(opts,"Class weights: ", opts$CLS.CLASSWT,"\n")
             if (!is.null(opts$CLS.cutoff)) cat1(opts,"Cutoff: ", opts$CLS.cutoff,"\n")
             flush.console();

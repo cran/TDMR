@@ -12,7 +12,6 @@ NDROP;      opts$SRF.ndrop;     1
 MTRY;       opts$RF.mtry;       1
 NODESIZE;   opts$RF.nodesize;   1
 NTREE;      opts$RF.ntree;      1
-SAMPSIZE;   opts$RF.samp;       1
 SVMkernel;  opts$SVM.kernel;    1
 SVMdegree;  opts$SVM.degree;    1
 ADAcoeflrn; opts$ADA.coeflearn; 1
@@ -23,6 +22,11 @@ TOLERANCE;  opts$SVM.tolerance; 0
 SIGMA;      opts$SVM.sigma;     0
 COST;       opts$SVM.cost;      0
 COEF0;      opts$SVM.coef0;     0
+SAMPSIZE1;  opts$RF.samp[1];    1
+SAMPSIZE2;  opts$RF.samp[2];    1
+SAMPSIZE3;  opts$RF.samp[3];    1
+SAMPSIZE4;  opts$RF.samp[4];    1
+SAMPSIZE5;  opts$RF.samp[5];    1
 CLASSWT1;   opts$CLS.CLASSWT[1];0
 CLASSWT2;   opts$CLS.CLASSWT[2];0
 CLASSWT3;   opts$CLS.CLASSWT[3];0

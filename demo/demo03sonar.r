@@ -44,7 +44,8 @@ spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or
 ## (this contains also tdmDefaultsFill(tdm))
 ## then run tdmBigLoop
 envT <- tdmExecSpotStep(tdm,spotStep);
-## see demo03sonar_A.r for an identical version where the contents of tdmExecSpotStep is explicitly shown
+## see demo03sonar_A.r for an identical version where the contents of tdmExecSpotStep 
+## is explicitly shown
 
 setwd(oldwd);               # restore old working directory
 

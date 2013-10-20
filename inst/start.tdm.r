@@ -28,7 +28,7 @@ if (is.null(tdm$tdmPath)) {
     #if (tdm$parallelCPUs>1) sfLibrary(TDMR); # --- obsolete now, we load library(TDMR) in bigLoopStep (tdmBigLoop.r)
 } else {
     cat("Sourcing TDMR from R files in",tdm$tdmPath,"\n");
-    source(paste(tdm$tdmPath,"source.tdm.r",sep="/"),local=TRUE);
+    source(paste(tdm$tdmPath,"inst/source.tdm.r",sep="/"),local=TRUE);
     source.tdm(tdm$tdmPath,tdmParallelCPUs=tdm$parallelCPUs,theSpotPath=tdm$theSpotPath,theRsfaPath=tdm$theRsfaPath);
     if (tdm$parallelCPUs>1) {
      stop("For tdm$parallelCPUs>1 it is required to use the *library* version of TDMR. Consider to set tdm$tdmPath=NULL.")

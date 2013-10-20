@@ -146,11 +146,6 @@ p.msochpdefault, li.msochpdefault, div.msochpdefault
 	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
 div.WordSection1
 	{page:WordSection1;}
- /* List Definitions */
- ol
-	{margin-bottom:0cm;}
-ul
-	{margin-bottom:0cm;}
 -->
 </style>
 
@@ -161,6 +156,26 @@ ul
 <div class=WordSection1>
 
 <h1><span lang=EN-US>Changes TDMR package</span></h1>
+
+<h2><span lang=EN-US>V 1.0.1 – 20.10.2013</span></h2>
+
+<p class=MsoNormal><span lang=EN-US>Eliminated .path.package in favor of path.package.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Eliminated an error in tdmROCR.r example reported
+by Brian Ripley which blocked the package build.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Shortened in DESCRIPTION the “Depends” list
+and moved some packages to “Suggests” list (&amp; adapted the cross-references
+in the R documentation accordingly).</span></p>
+
+<p class=MsoNormal><span lang=EN-US>If opts$RF.samp was a vector and not a
+scalar, wrong processing occurred in train.RF (in tdmClassify.r) and in tdmModSortedRFimport
+(in tdmModelingUtils.r). Now corrected.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Changed parameter SAMPSIZE to SAMPSIZE1 in
+tdmMapDesign.csv and added lines with SAMPSIZE2, …, SAMPSIZE5.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
 <h2><span lang=EN-US>V 1.0.0 – 10.04.2013</span></h2>
 
@@ -173,9 +188,9 @@ find.package according to the mail from Brian Ripley.</span></p>
 3.0pt;margin-left:18.0pt;text-indent:-18.0pt;line-height:normal'><span
 lang=EN-US style='font-family:Symbol'>·</span><span lang=EN-US
 style='font-size:7.0pt;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span lang=EN-US>Allow only one parameter for tdm$umode, no longer a
-vector (Why? – Then we do not need a recipe to check the correctness of
-tdm$umode: SP_T may only appear as first element, only RSUB and CV as further
+</span><span lang=EN-US>Allow only one parameter for tdm$umode, no longer a vector
+(Why? – Then we do not need a recipe to check the correctness of tdm$umode:
+SP_T may only appear as first element, only RSUB and CV as further
 elements.&nbsp; Instead it is easier to restart a certain tuning experiment
 with spotStep=“rep”, where the previous tuning result is reused and a new
 unbiased evaluation is done.)</span></p>
@@ -212,7 +227,7 @@ installable). rCMA uses only one .jar file instead of many class files.</span></
 predict.TDMenvir and others in INDEX of TDMR-manual. New parameter
 tdm$U.saveModel.</span></p>
 
-<p class=MsoNormalCxSpMiddle style='margin-bottom:3.0pt;line-height:normal'><span
+<p class=MsoNormal style='margin-bottom:3.0pt;line-height:normal'><span
 lang=EN-US>Added new class <b>TDMenvir</b> for the envT objects. </span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
@@ -259,11 +274,11 @@ code / the workflow (12/2012):</span></p>
 line-height:normal'><span lang=EN-US style='font-family:Symbol'>·</span><span
 lang=EN-US style='font-size:7.0pt;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Simplified the opts-part connected with data file
-reading: (a) make opts$filesuffix obsolete, only local variable filesuffix
-(tdmReadData); (b) make opts$READ.CMD simpler: a string
-“readFunc(filename,opts)”, where readFunc is def’d in main_TASK.r and returns
-dset or tset. A template tdmReadCmd(filename,opts) is def’d in tdmReadData.r.
-(No need for complicated syntax ‘sep=\”;\”,…’ any more.)</span></p>
+reading: (a) make opts$filesuffix obsolete, only local variable filesuffix (tdmReadData);
+(b) make opts$READ.CMD simpler: a string “readFunc(filename,opts)”, where
+readFunc is def’d in main_TASK.r and returns dset or tset. A template
+tdmReadCmd(filename,opts) is def’d in tdmReadData.r. (No need for complicated
+syntax ‘sep=\”;\”,…’ any more.)</span></p>
 
 <p class=MsoListParagraph style='margin-bottom:3.0pt;text-indent:-18.0pt;
 line-height:normal'><span lang=EN-US style='font-family:Symbol'>·</span><span
@@ -312,11 +327,11 @@ return all columns <i><u>except</u></i> x$TST.COL, which is usually “tdmSplit”.<
 not take for granted that lev.resp = levels(d_train[,response.variable]) is
 always the same (in the same ordering) as the column names of app$test.prob in
 apply.SVM! This assumption resulted (sometimes) in very bad performance for
-wdbc-task in case opts$CLS.cutoff=c(0.5,0.5). Now we use colnames(app$test.prob)
-instead of lev.resp, and mostly everything is o.k. now. There are, however,
-still a few cases where the results with app$test.prob and those with standard
-predict are different, see fct. check.apply.SVM in tdmClassify.&nbsp; Unclear
-why this is different.</span></p>
+wdbc-task in case opts$CLS.cutoff=c(0.5,0.5). Now we use
+colnames(app$test.prob) instead of lev.resp, and mostly everything is o.k. now.
+There are, however, still a few cases where the results with app$test.prob and
+those with standard predict are different, see fct. check.apply.SVM in
+tdmClassify.&nbsp; Unclear why this is different.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Improved TDMR workflow by testing it on
 BreastCancer&nbsp; (BC) dataset (has factor variables with many levels, has
@@ -326,8 +341,8 @@ columns with &lt;NA&gt;):</span></p>
 line-height:normal'><span lang=EN-US style='font-family:Symbol'>·</span><span
 lang=EN-US style='font-size:7.0pt;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>New check on NA’s in input variables with
-na_input_check in tdmClassify.r. This will issue a warning each time a NA is found.
-</span></p>
+na_input_check in tdmClassify.r. This will issue a warning each time a NA is
+found. </span></p>
 
 <p class=MsoListParagraph style='margin-bottom:3.0pt;text-indent:-18.0pt;
 line-height:normal'><span lang=EN-US style='font-family:Symbol'>·</span><span
@@ -394,9 +409,8 @@ line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>updated tutorial, lesson 2: no more bst and res-files,
 but now returning spotConfig$alg.currentBest , alg.currentResult.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Bug fix: any open sink’s are now closed in
-tdmGraAndLogInitialize using sink.number. This avoids that *.log grows bigger
-and bigger.</span></p>
+<p class=MsoNormal><span lang=EN-US>Bug fix: any open sink’s are now closed in tdmGraAndLogInitialize
+using sink.number. This avoids that *.log grows bigger and bigger.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Changed the logic for opts$PRE.PCA /
 opts$PRE.PCA.npc and opts$PRE.SFA / opts$PRE.SFA.npc (see docu in
@@ -411,8 +425,8 @@ activated (makes no sense, since SFA has its own PCA-step). </span></p>
 
 <p class=MsoNormal><span lang=EN-US>tdmPrePCA-Bug (too few columns in dset,
 when number of train records too small): The bug happens tdmPreprocUtils.r,
-tdmPrePCA.train, tdmAdjustDSet: If number of records N<sub>r</sub> is smaller
-than number of input vars, then the list of returned PCs will be shorter, thus
+tdmPrePCA.train, tdmAdjustDSet: If number of records N<sub>r</sub> is smaller than
+number of input vars, then the list of returned PCs will be shorter, thus
 leading to a shorter dset. Fix: Introduce d_preproc, the data set for
 preprocessing, which is normally =d_train. Error, if the number of records in
 d_preproc is smaller than the number of numeric vars. The user has the option
@@ -467,8 +481,8 @@ lang=EN-US>envT = tdmBigLoop(envT,spotStep) does (tuning and) unbiased runs.</sp
 <p class=MsoListParagraph style='margin-bottom:3.0pt;text-indent:-18.0pt;
 line-height:normal'><span lang=EN-US style='font-family:Symbol'>·</span><span
 lang=EN-US style='font-size:7.0pt;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><b><span lang=EN-US>tdmBigLoop</span></b><span lang=EN-US> is now the new
-function which should supersede the <u>now deprecated tdmCompleteEval</u>: </span></p>
+</span><b><span lang=EN-US>tdmBigLoop</span></b><span lang=EN-US> is now the
+new function which should supersede the <u>now deprecated tdmCompleteEval</u>: </span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 3.0pt;margin-left:72.0pt;text-indent:-18.0pt;line-height:normal'><span
@@ -500,8 +514,8 @@ are returned / passed via envT </span></p>
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
 style='font-size:7.0pt;font-family:"Times New Roman","serif"'>&nbsp;&nbsp; </span><span
 lang=EN-US>tdm$fileMode=FALSE is now the default. tdm$fileMode=TRUE is
-deprecated and leads only to writing of .fin and .exp files (these files are
-not very necessary, since we store envT with theFinals in .RData file)</span></p>
+deprecated and leads only to writing of .fin and .exp files (these files are not
+very necessary, since we store envT with theFinals in .RData file)</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 3.0pt;margin-left:72.0pt;text-indent:-18.0pt;line-height:normal'><span
@@ -574,9 +588,8 @@ line-height:normal'><span lang=EN-US style='font-family:Symbol'>·</span><span
 lang=EN-US style='font-size:7.0pt;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Renamed “Test2” </span><span lang=EN-US
 style='font-family:Wingdings'>à</span><span lang=EN-US> “Vali2” and other
-naming issues around “Test” and “Validation”. Made variable names more
-meaningful: VALI, if connected with validation data, TST, if connected with
-test data.</span></p>
+naming issues around “Test” and “Validation”. Made variable names more meaningful:
+VALI, if connected with validation data, TST, if connected with test data.</span></p>
 
 <p class=MsoNormal style='margin-top:6.0pt;margin-right:0cm;margin-bottom:0cm;
 margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US>Simplified the code /
@@ -719,8 +732,8 @@ object of class “tdmOpts”. Checks for the right class of opts in central TDMR
 files.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>tdmRegressLoop.r, tdmClassifyLoop.r: More
-accurate averaging of evaluation measures for regression CV case, new variable
-‘result$predictions’. </span></p>
+accurate averaging of evaluation measures for regression CV case, new variable ‘result$predictions’.
+</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Bug fix ‘nfold=max(cvi,1)’ to have not
 nfold=0 in the special case that all records in dset are training cases (zero
@@ -776,10 +789,10 @@ control$maxit is NOT an integer.</span></p>
 things (names in data frame) if you tuned only 1 variable (cpu, roi with only
 XPERC). Now fixed.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Bug fix: cma_es (and other tdmStartOther-tuners)
-had usually in the BST data frame not the inclusion of the last design points
-(which usually are formed after the last time where “des$CONFIG %%
-tdm$spotConfig$seq.design.new.size==0” was TRUE). Now fixed. </span></p>
+<p class=MsoNormal><span lang=EN-US>Bug fix: cma_es (and other
+tdmStartOther-tuners) had usually in the BST data frame not the inclusion of
+the last design points (which usually are formed after the last time where
+“des$CONFIG %% tdm$spotConfig$seq.design.new.size==0” was TRUE). Now fixed. </span></p>
 
 <p class=MsoNormal><span lang=EN-US>Bug fix in tdmDispatchTuner: cma_jTuner did
 not yet return a list of type spotConfig in tunerVal. Consequence: the above
@@ -840,10 +853,10 @@ lang=EN-US>Improved tdmPlotResMeta (confFile, nSkip, chkSkip, xAxis, yAxis).</sp
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
 style='font-size:7.0pt;font-family:"Times New Roman","serif"'>&nbsp;&nbsp; </span><span
-lang=EN-US>Changed opts$fct.postproc: this is now the <i>name</i> of the
-postprocessing function&nbsp; and not the function itself. Reason: If opts
-contains a function, then it contains also its environment and this can be
-pretty big (contains envT, …) and makes the .RData saving of envT big.</span></p>
+lang=EN-US>Changed opts$fct.postproc: this is now the <i>name</i> of the postprocessing
+function&nbsp; and not the function itself. Reason: If opts contains a
+function, then it contains also its environment and this can be pretty big
+(contains envT, …) and makes the .RData saving of envT big.</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt;line-height:normal'><span
@@ -987,9 +1000,9 @@ lang=EN-US>bug fix concerning tdmMapDesign; extension of tdmMapDesign.csv</span>
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
 style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>moved PCA feature generation from main_* into tdmClassifyLoop,
-it uses now only the training data for establishing the PCA rotation (same for
-SFA)</span></p>
+</span><span lang=EN-US>moved PCA feature generation from main_* into
+tdmClassifyLoop, it uses now only the training data for establishing the PCA
+rotation (same for SFA)</span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
@@ -997,8 +1010,8 @@ style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&
 </span><span lang=EN-US>new <b>training / validation / test set</b>
 capabilities, see Section “TDM<a name="TDMR_train_vali_test"></a>R Data Reading
 and Data Split …” in </span><span class=MsoHyperlink><a href="TDM-docu.html"><span
-lang=EN-US>TDM-docu.html</span></a></span><span lang=EN-US> and help(tdmSplitTestData),
-help(tdmReadData).</span></p>
+lang=EN-US>TDM-docu.html</span></a></span><span lang=EN-US> and
+help(tdmSplitTestData), help(tdmReadData).</span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
@@ -1009,8 +1022,8 @@ style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
 style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>new parameter tdm$mainFunc, simpler and more general
-usage (as compared to tdm$mainFile and tdm$mainCommand)</span></p>
+</span><span lang=EN-US>new parameter tdm$mainFunc, simpler and more general usage
+(as compared to tdm$mainFile and tdm$mainCommand)</span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
@@ -1030,8 +1043,8 @@ lang=EN-US>&nbsp;</span></p>
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
 style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>extended documentation (e.g. full docu for
-tdmOptsDefaultsSet and&nbsp; many small other documentation extensions) </span></p>
+</span><span lang=EN-US>extended documentation (e.g. full docu for tdmOptsDefaultsSet
+and&nbsp; many small other documentation extensions) </span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
@@ -1048,8 +1061,8 @@ style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
 style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>merged former functions unbiasedBestRun_C and
-unbiasedBestRun_R into only one function unbiasedRun</span></p>
+</span><span lang=EN-US>merged former functions unbiasedBestRun_C and unbiasedBestRun_R
+into only one function unbiasedRun</span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
@@ -1085,8 +1098,8 @@ style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US
 style='font-size:7.0pt;line-height:115%;font-family:"Times New Roman","serif"'>&nbsp;&nbsp;
-</span><span lang=EN-US>fix in print.TDMclassifier, print.TDMregressor: optional
-argument ‘type’</span></p>
+</span><span lang=EN-US>fix in print.TDMclassifier, print.TDMregressor:
+optional argument ‘type’</span></p>
 
 <p class=MsoListParagraph style='margin-bottom:5.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span lang=EN-US

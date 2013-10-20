@@ -17,7 +17,7 @@
 \value{
   the result of Powell tuning, i.e. the list
   \code{envT$spotConfig}, extended by \item{\code{powell}}{
-  the return value from \code{\link{powell}} }
+  the return value from \code{\link[powell]{powell}} }
   \item{\code{powell$count}}{ the number of calls to
   \code{tdmStartOther} }
 }

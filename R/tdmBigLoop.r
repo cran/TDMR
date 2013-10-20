@@ -31,14 +31,14 @@
 #'            for obtaining best design points. LHD is performed by configuring SPOT 
 #'            in such a way that all the budget is used for the initial design (usually LHD). }
 #'      \item{\code{\link{cma_jTuner}}:  Perform a parameter tuning by CMA-ES, using the *Java* 
-#'            implementation by Niko Hansen through the interface package \code{rCMA}.    }
+#'            implementation by Niko Hansen through the interface package \code{\link[rCMA]{rCMA}}.    }
 #'      \item{\code{\link{cmaesTuner}}:  Perform a parameter tuning by CMA-ES, using the *R*-implementation 
 #'            (package \href{http://cran.r-project.org/web/packages/cmaes/}{\code{cmaes}} by Olaf Mersmann) 
 #'            (deprecated, use \code{\link{cma_jTuner}} instead).  }
 #'      \item{\code{\link{bfgsTuner}}:   Perform a parameter tuning by Broyden, Fletcher, Goldfarb and Shanno (BFGS) method.
 #'            The L-BFGS-B version allowing box constraints is used.  }
 #'      \item{\code{\link{powellTuner}}:  Perform a parameter tuning by Powell's UObyQA algorithm 
-#'            (unconstrained optimization by quadratic approximation), see package \code{\link{powell}}).   } 
+#'            (unconstrained optimization by quadratic approximation), see package \code{\link[powell]{powell}}).   } 
 #'      }
 #'
 #'  @param envT      an environment containing on input at least the element \code{tdm} (a list with general settings for TDMR, 

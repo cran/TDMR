@@ -14,27 +14,28 @@
 \description{
   Makes interactive plots for any of the result data frames
   contained in \code{envT} together with fitted metamodels.
-  \code{tdmPlotResMeta} creates a \code{\link{twiddle}}
-  interface which allows to select \itemize{ \item tuner:
-  one of the tuners \item nExperim: a knob to select one of
-  the experiments in \code{envT} (only if
-  \code{envT$tdm$nExperim > 1}) \item reportFunc: one of
-  \{"spotReport3d", "spotReportContour"\}, see
-  \code{\link{SPOT}} \item modelFit: one of
-  \{"spotPredictGausspr", "spotPredictRandomForest",
-  "spotPredictForrester", "spotPredictMlegp"\}, see
-  \code{\link{SPOT}} \item skipLastSteps: [0] skip the
-  skipLastSteps sequential steps from the selected RES data
-  frame.  \item skipIncomplete: [FALSE] if this checkbox is
-  checked (i.e. skipIncomplete==TRUE), then all CONFIGs
-  having *less* than seq.design.maxRepeats repeats are
-  skipped \item nSkip: [0] skip the nSkip worst CONFIGs
-  \item y10Exp: [0] multiply in the RES data frame the
-  column Y (objective function) by the factor 10^y10Exp.
-  This affects the coloring of the metamodel in case
-  "spotReport3d": A surface in the Y-range [1e-3, 1e-2]
-  would have only a single color, but a surface in the
-  range [10,100] will have a richer color scheme.  }
+  \code{tdmPlotResMeta} creates a
+  \code{\link[twiddler]{twiddle}} interface which allows to
+  select \itemize{ \item tuner: one of the tuners \item
+  nExperim: a knob to select one of the experiments in
+  \code{envT} (only if \code{envT$tdm$nExperim > 1}) \item
+  reportFunc: one of \{"spotReport3d",
+  "spotReportContour"\}, see \code{\link{SPOT}} \item
+  modelFit: one of \{"spotPredictGausspr",
+  "spotPredictRandomForest", "spotPredictForrester",
+  "spotPredictMlegp"\}, see \code{\link{SPOT}} \item
+  skipLastSteps: [0] skip the skipLastSteps sequential
+  steps from the selected RES data frame.  \item
+  skipIncomplete: [FALSE] if this checkbox is checked (i.e.
+  skipIncomplete==TRUE), then all CONFIGs having *less*
+  than seq.design.maxRepeats repeats are skipped \item
+  nSkip: [0] skip the nSkip worst CONFIGs \item y10Exp: [0]
+  multiply in the RES data frame the column Y (objective
+  function) by the factor 10^y10Exp. This affects the
+  coloring of the metamodel in case "spotReport3d": A
+  surface in the Y-range [1e-3, 1e-2] would have only a
+  single color, but a surface in the range [10,100] will
+  have a richer color scheme.  }
 }
 \details{
   In case of "spotReport3d", the plot shows the metamodel

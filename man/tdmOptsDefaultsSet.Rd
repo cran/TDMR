@@ -68,13 +68,13 @@
   monomials of degree 2 from the first PRE.PCA.npc columns
   (PCs) (only active, if opts$PRE.PCA!="none")}
   \item{PRE.SFA}{["none" (default)|"2nd"] SFA preprocessing
-  (see package \code{\link{rSFA}}: [don't | do ormal SFA
-  with 2nd degree expansion ] } \item{PRE.SFA.REPLACE}{[F]
-  =T: replace the original numerical columns with the SFA
-  columns; =F: add the SFA columns } \item{PRE.SFA.npc}{[0]
-  if >0: add monomials of degree 2 from the first
-  PRE.SFA.npc columns (only acitve, if
-  opts$PRE.SFA!="none") } \item{PRE.SFA.PPRANGE}{[11]
+  (see package \code{\link[rSFA]{rSFA}}: [don't | do ormal
+  SFA with 2nd degree expansion ] }
+  \item{PRE.SFA.REPLACE}{[F] =T: replace the original
+  numerical columns with the SFA columns; =F: add the SFA
+  columns } \item{PRE.SFA.npc}{[0] if >0: add monomials of
+  degree 2 from the first PRE.SFA.npc columns (only acitve,
+  if opts$PRE.SFA!="none") } \item{PRE.SFA.PPRANGE}{[11]
   number of inputs after SFA preprocessing, only those
   inputs enter into SFA expansion } \item{PRE.SFA.ODIM}{[5]
   number of SFA output dimensions (slowest signals) to
@@ -82,15 +82,15 @@
   parametric bootstrap for SFA in case of marginal training
   data } \item{PRE.SFA.fctPB}{[sfaPBootstrap] the function
   to call in case of parametric bootstrap, see
-  \code{\link{sfaPBootstrap}} in package \code{\link{rSFA}}
-  for its interface description } \item{PRE.allNonVali}{[F]
-  if =T, then use all non-validation data in the
-  training-validation set for PCA or SFA preprocessing.  If
-  =F, use only the training set for PCA or SFA processing
-  (only relevant if opts$PRE.PCA!="none" or
-  opts$PRE.SFA!="none").  } \item{PRE.Xpgroup}{[0.99] bind
-  the fraction 1-PRE.Xpgroup in column OTHER (see
-  \code{\link{tdmPreGroupLevels}}) }
+  \code{\link[rSFA]{sfaPBootstrap}} in package
+  \code{\link[rSFA]{rSFA}} for its interface description }
+  \item{PRE.allNonVali}{[F] if =T, then use all
+  non-validation data in the training-validation set for
+  PCA or SFA preprocessing.  If =F, use only the training
+  set for PCA or SFA processing (only relevant if
+  opts$PRE.PCA!="none" or opts$PRE.SFA!="none").  }
+  \item{PRE.Xpgroup}{[0.99] bind the fraction 1-PRE.Xpgroup
+  in column OTHER (see \code{\link{tdmPreGroupLevels}}) }
   \item{PRE.MaxLevel}{[32] bind the N-32+1 least frequent
   cases in column OTHER (see
   \code{\link{tdmPreGroupLevels}}) }

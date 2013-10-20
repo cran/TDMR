@@ -39,7 +39,8 @@
        tdm <- list(  filenameEnvT="demo04cpu.RData" );   # file with environment envT
        load(paste(path,tdm$filenameEnvT,sep="/"));
 
-       newdata=read.csv2(file=paste(path,"data/cpu.csv", sep=""), dec=".")[1:15,];     # take only the first 15 records
+       # take only the first 15 records:
+       newdata=read.csv2(file=paste(path,"data/cpu.csv", sep=""), dec=".")[1:15,];
        z=predict(envT,newdata);
        print(z);
    }

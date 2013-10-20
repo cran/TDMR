@@ -1,3 +1,5 @@
+require(randomForest);
+
 ######################################################################################
 # tdmRegress
 #
@@ -196,7 +198,7 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
             if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options,"cutoff=opts$CLS.cutoff",sep=",")
             if (!is.null(opts$RF.nodesize)) rf.options = paste(rf.options,"nodesize=opts$RF.nodesize",sep=",")
 
-            eval(parse(text=paste("res.rf <- randomForest( formula, data=to.model,",rf.options,")"))) 
+            eval(parse(text=paste("res.rf <- randomForest::randomForest( formula, data=to.model,",rf.options,")"))) 
             res.rf$HasVotes = TRUE; 
             res.rf;
         } 

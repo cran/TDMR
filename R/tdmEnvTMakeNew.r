@@ -23,28 +23,10 @@
 #' @export
 ######################################################################################
 tdmEnvTMakeNew <- function(tdm=NULL) {
-  envT <- new.env();
-  envT$bstGrid <- list();
-  envT$resGrid <- list();
-  envT$roiGrid <- list();
-  envT$sCList <- list();
-  envT$theFinals <- NULL;
-  envT$tdm <- tdm <- tdmDefaultsFill(tdm);
-  envT$runList <- tdm$runList;
-  envT$spotList <- tdm$spotList;
-  envT$wP <- ifelse(is.null(tdm$withParams), length(tdm$runList)==1, tdm$withParams)
-  if (is.null(tdm$runList)) stop("tdm$runList is NULL");
-  if (length(unique(tdm$runList)) != length(tdm$runList)) {
-    stop(paste("There are duplicates in tdm$runList. Please remove them:\n   ",paste(tdm$runList,collapse=" ")));
-#    print(tdm$runList);
-#    stop(paste("There are duplicates in tdm$runList. Please remove them."));
-  }
-
-  envT <- tdmEnvTAddGetters(envT);
-
-  firstRoiNames <- NULL;    # private storage for checkRoiParams
   ######################################################################################
-  # checkRoiParams: helper fct for tdmEnvTMakeNew:
+  # helper fcts for tdmEnvTMakeNew:
+  ######################################################################################
+  # checkRoiParams: 
   #     Check whether each .roi file in envT$runList contains the same design parameters, otherwise set wP=FALSE and issue a warning
   checkRoiParams <- function(wP,confFile,sC,envT) {
   #firstRoiNames <<- "test"
@@ -81,26 +63,30 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
       }
       opts;
   }
-  # function checkOpts checks whether there are any new variable names in list opts (e.g. due to misspelling in APD file)
-  # and if so, issues a NOTE and a warning message.
-  checkOpts <- function(opts) {
-    availNames = c("APPLY_TIME","CLS.CLASSWT","CLS.cutoff","CLS.gainmat","data.title","dir.data","dir.output","dir.Rdata"
-                  ,"dir.txt","DO.GRAPHICS","DO.POSTPROC","EVALFILE","fct.postproc","fileMode","filename","filesuffix","filetest"
-                  ,"GD.CLOSE","GD.DEVICE","GD.PNGDIR","GD.RESTART","LOGFILE","MOD.method","MOD.SEED","ncopies","NRUN","PDFFILE"
-                  ,"PRE.allNonVali","PRE.knum","PRE.MaxLevel","PRE.PCA","PRE.PCA.npc","PRE.PCA.REPLACE","PRE.SFA","PRE.SFA.doPB"
-                  ,"PRE.SFA.fctPB","PRE.SFA.npc","PRE.SFA.ODIM","PRE.SFA.PPRANGE","PRE.SFA.REPLACE","PRE.Xpgroup","READ.CMD","READ.INI"
-                  ,"READ.NROW","READ.TST","READ.TXT","rep","RF.mtry","RF.mtry","RF.nodesize","RF.ntree","RF.OOB","RF.p.all","RF.samp"
-                  ,"rgain.string","rgain.type","srf","SRF.calc","SRF.cutoff","SRF.kind","SRF.maxS","SRF.method","SRF.minlsi","SRF.ndrop"
-                  ,"SRF.nkeep","SRF.ntree","SRF.samp","SRF.scale","SRF.verbose","SRF.XPerc","srfFile","SVM.coef0","SVM.cost","SVM.degree","SVM.epsilon"
-                  ,"SVM.gamma","SVM.kernel","SVM.tolerance","ADA.coeflearn","ADA.mfinal","ADA.rpart.minsplit","test2.string"
-                  ,"TST.COL","TST.kind","TST.NFOLD","TST.SEED","TST.trnFrac","TST.valiFrac","VERBOSE");
-    newNames = setdiff(names(opts),availNames);
-    if (length(newNames)>0) {
-      if (length(newNames)==1) cat("NOTE: A new variable has been defined for list opts: ",newNames,".\n");
-      if (length(newNames)>1) cat("NOTE: New variables have been defined for list opts: ",paste(newNames,collapse=", "),".\n");
-      warning(paste("NOTE: New variables have been defined for list opts: ",paste(newNames,collapse=", "),"."))
-    }
+  ######################################################################################
+  # end helper fcts for tdmEnvTMakeNew
+  ######################################################################################
+  
+  envT <- new.env();
+  envT$bstGrid <- list();
+  envT$resGrid <- list();
+  envT$roiGrid <- list();
+  envT$sCList <- list();
+  envT$theFinals <- NULL;
+  envT$tdm <- tdm <- tdmDefaultsFill(tdm);
+  envT$runList <- tdm$runList;
+  envT$spotList <- tdm$spotList;
+  envT$wP <- ifelse(is.null(tdm$withParams), length(tdm$runList)==1, tdm$withParams)
+  if (is.null(tdm$runList)) stop("tdm$runList is NULL");
+  if (length(unique(tdm$runList)) != length(tdm$runList)) {
+    stop(paste("There are duplicates in tdm$runList. Please remove them:\n   ",paste(tdm$runList,collapse=" ")));
+#    print(tdm$runList);
+#    stop(paste("There are duplicates in tdm$runList. Please remove them."));
   }
+
+  envT <- tdmEnvTAddGetters(envT);
+
+  firstRoiNames <- NULL;    # private storage for checkRoiParams
 
   #
   # do all necessary file reading **before**  branching into tdmBigLoop or tdmCompleteEval
@@ -134,7 +120,7 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
     if (!is.null(tdm$oFileMode)) opts$fileMode=tdm$oFileMode;
 
     opts=tdmOptsDefaultsSet(opts,path=tdm$path);
-    opts=addSRF(confFile,opts);      # add opts$srfFile and add opts$srf from file in case opts$SRF.cacl==FALSE
+    opts=addSRF(confFile,opts);      # add opts$srfFile and add opts$srf from file in case opts$SRF.calc==FALSE
     checkOpts(opts);
 
     if (tdm$parallelCPUs>1 & opts$fileMode==TRUE)
@@ -148,6 +134,78 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
   class(envT) <- c("TDMenvir","environment");
   
   envT;
+}
+
+######################################################################################
+# tdmEnvTReadApd:
+#
+#' Re-read APD-files (list opts) for an environment envT of class \code{\link{TDMenvir}}.
+#'
+#' Given an already existing envT with envT$sClist filled, re-read the opts settings from APD files whose filenames 
+#' are specified in envT$sClist[[k]]$io.apdfilename.
+#'
+#' @param envT  an environment of class \code{\link{TDMenvir}}
+#' @param tdm   a list with general settings for TDMR (can be envT$tdm)  
+#'
+#' @return modified environment \code{envT},  an object of class \code{\link{TDMenvir}},  where the items
+#'      \item{\code{sCList[[k]]$opts}}{ \code{=tdm$runList}  }
+#' are modefied        
+#'
+#' @seealso   \code{\link{tdmEnvTMakeNew}}
+#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
+#' @export
+######################################################################################
+tdmEnvTReadApd <- function(envT,tdm) {
+  k=0;
+  for (confFile in envT$runList) {
+    k=k+1;
+    sC <- envT$sCList[[k]]; 
+    pdFile = sC$io.apdFileName;
+  	print(pdFile);
+    pdFile = paste(tdm$path,pdFile,sep="");
+    if (!file.exists(pdFile)) stop(sprintf("Could not find pdFile=%s (current dir=%s)",pdFile,getwd()));
+    opts <- NULL;     # just to make 'R CMD check' happy  (and in case that after sourcing pdFile 'opts' is not there as expected)
+  	source(pdFile,local=TRUE);        # read problem design  (here: all elements of list opts)
+		if (is.null(opts))
+		  stop(sprintf("%s does not define the required object opts.",pdFile));
+    if (class(opts)[1]!="tdmOpts") 
+      warning("Object opts is not of class tdmOpts. Consider constructing opts with tdmOptsDefaultsSet().");
+    if (!is.null(tdm$TST.trnFrac)) opts$TST.trnFrac=tdm$TST.trnFrac;
+    if (!is.null(tdm$TST.valiFrac)) opts$TST.valiFrac=tdm$TST.valiFrac;
+    if (!is.null(tdm$READ.target)) opts$READ.target=tdm$READ.target;
+    if (!is.null(tdm$oFileMode)) opts$fileMode=tdm$oFileMode;
+
+    opts=tdmOptsDefaultsSet(opts,path=tdm$path);
+    checkOpts(opts);
+
+    if (tdm$umode[1]=="TST" & opts$TST.kind=="col" & !(opts$MOD.method %in% c("RF","MC.RF")))
+      warning(sprintf("%s: Do you really want tdm$umode=='TST' and opts$TST.kind=='col' when opts$MOD.method is not based on RF? %s",
+                      confFile,"You will have no validation data!"));
+ 	  envT$sCList[[k]]$opts=opts;
+  }
+  
+  envT; 
+}
+
+# function checkOpts checks whether there are any new variable names in list opts (e.g. due to misspelling in APD file)
+# and if so, issues a NOTE and a warning message.
+checkOpts <- function(opts) {
+  availNames = c("APPLY_TIME","CLS.CLASSWT","CLS.cutoff","CLS.gainmat","data.title","dir.data","dir.output","dir.Rdata"
+                ,"dir.txt","DO.GRAPHICS","DO.POSTPROC","EVALFILE","fct.postproc","fileMode","filename","filesuffix","filetest"
+                ,"GD.CLOSE","GD.DEVICE","GD.PNGDIR","GD.RESTART","LOGFILE","MOD.method","MOD.SEED","ncopies","NRUN","PDFFILE"
+                ,"PRE.allNonVali","PRE.knum","PRE.MaxLevel","PRE.PCA","PRE.PCA.npc","PRE.PCA.REPLACE","PRE.SFA","PRE.SFA.doPB"
+                ,"PRE.SFA.fctPB","PRE.SFA.npc","PRE.SFA.ODIM","PRE.SFA.PPRANGE","PRE.SFA.REPLACE","PRE.Xpgroup","READ.CMD","READ.INI"
+                ,"READ.NROW","READ.TST","READ.TXT","rep","RF.mtry","RF.mtry","RF.nodesize","RF.ntree","RF.OOB","RF.p.all","RF.samp"
+                ,"rgain.string","rgain.type","srf","SRF.calc","SRF.cutoff","SRF.kind","SRF.maxS","SRF.method","SRF.minlsi","SRF.ndrop"
+                ,"SRF.nkeep","SRF.ntree","SRF.samp","SRF.scale","SRF.verbose","SRF.XPerc","srfFile","SVM.coef0","SVM.cost","SVM.degree","SVM.epsilon"
+                ,"SVM.gamma","SVM.kernel","SVM.tolerance","ADA.coeflearn","ADA.mfinal","ADA.rpart.minsplit","test2.string"
+                ,"TST.COL","TST.kind","TST.NFOLD","TST.SEED","TST.trnFrac","TST.valiFrac","VERBOSE");
+  newNames = setdiff(names(opts),availNames);
+  if (length(newNames)>0) {
+    if (length(newNames)==1) cat("NOTE: A new variable has been defined for list opts: ",newNames,".\n");
+    if (length(newNames)>1) cat("NOTE: New variables have been defined for list opts: ",paste(newNames,collapse=", "),".\n");
+    warning(paste("NOTE: New variables have been defined for list opts: ",paste(newNames,collapse=", "),"."))
+  }
 }
 
 ######################################################################################
@@ -250,11 +308,12 @@ tdmEnvTAddBstRes <- function(envT,fileRData) {
 #' @return  \code{finals}, either NULL (no unbiased run) or a one-row data frame with the 
 #'          results from the unbiased run
 #' @examples            
-#'    ## The best results are read from demo02sonar/demoSonar.RData relative to the TDMR package directory.
+#'    ## The best results are read from demo02sonar/demoSonar.RData relative to the TDMR 
+#'    ## package directory.
 #'    oldwd <- getwd(); setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
 #'    envT = tdmEnvTLoad("demoSonar.RData");    # loads envT
 #'    source("main_sonar.r");
-#'    envT$tdm$nrun=0;       # =0: no unbiasedRun, >0: perform unbiasedRun with opts$NRUN=envT$tdm$nrun
+#'    envT$tdm$nrun=0;       # =0: don't, >0: do unbiasedRun with opts$NRUN=envT$tdm$nrun
 #'    finals = tdmEnvTSensi(envT,1);
 #'    if (!is.null(finals)) print(finals);
 #'    setwd(oldwd);

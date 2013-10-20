@@ -45,7 +45,7 @@ tdmMetacostRf <- function(response.variable,to.model,opts)
         # the 'non-speaking' variables cwt, opts$CLS.cutoff and add below res.rf$cutoff, res.rf$classwt 
         # for optional later reference or user inspection.
         rf.options = paste(" ntree=",eval(opts$RF.ntree));
-        rf.options = paste(rf.options,paste(" sampsize=",eval(opts$RF.sampsize)),sep=",")
+        rf.options = paste(rf.options," sampsize=opts$RF.sampsize",sep=",")
         rf.options = paste(rf.options," classwt=cwt"," na.action=na.roughfix"," proximity=F",sep=",")
         #if (!is.null(cwt))  paste(rf.options,paste("classwt=",eval(cwt)),sep=",")    # not run
         if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,paste(" mtry=",eval(opts$RF.mtry)),sep=",")
@@ -72,7 +72,7 @@ tdmMetacostRf <- function(response.variable,to.model,opts)
 	      
 	      res.rf <- NULL;          # just to make "R CMD check" happy 
         # Train an initial RF to label the data in such a way that the structural gain is maximized 
-        eval(parse(text=paste("res.rf <- randomForest( formul, data=to.model,",rf.options,")")))
+        eval(parse(text=paste("res.rf <- randomForest::randomForest( formul, data=to.model,",rf.options,")")))
 
         Pjx = res.rf$votes        # we take the fractions of OOB-votes as an unbiased estimator for P(j|x)
                                   # Pjx is a matrix with #columns = #target labels and #rows = #records in to.model
@@ -126,7 +126,7 @@ tdmMetacostRf <- function(response.variable,to.model,opts)
           flush.console();
         }
 
-        eval(parse(text=paste("res.rf <- randomForest( formul, data=to.model,",rf.options,")")))
+        eval(parse(text=paste("res.rf <- randomForest::randomForest( formul, data=to.model,",rf.options,")")))
 
         res.rf;
 }
@@ -150,7 +150,7 @@ applyMetacostRf <- function(app,res.rf,to.test,opts)
         
         # re-train
         to.test[,response.variable] <- mc.target
-        eval(parse(text=paste("res.rf <- randomForest( formul, data=to.test,",rf.options,")")))
+        eval(parse(text=paste("res.rf <- randomForest::randomForest( formul, data=to.test,",rf.options,")")))
 
         app$test.predict <- predict(res.rf, newdata=to.test)
         app$test.votes <- predict(res.rf, newdata=to.test, type="vote")

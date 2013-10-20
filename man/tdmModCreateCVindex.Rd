@@ -34,25 +34,25 @@
   disregarded)
 }
 \description{
-  Depending on the value of TST.kind, the returned index
-  cvi is \enumerate{ \item TST.kind="cv": a random cross
-  validation index P([111...222...333...]) - or - \item
-  TST.kind="rand": a random index with
-  P([00...11...-1-1...]) for training (0), validation (1)
-  and disregard (-1) cases - or - \item TST.kind="col": the
-  column dset[,opts$TST.COL] contains the training (0),
-  validation (1) and disregard (-1) set division (and all
-  records with a value <0 in column TST.COL are
-  disregarded).  } Here P(.) denotes random permutation of
-  the sequence. \cr The disregard set is optional, i.e. cvi
-  may contain only 0 and 1, if desired. \cr Special case
-  TST.kind="cv" and TST.NFOLD=1: make *every* record a
-  training record, i.e. index [000...]. \cr In case
-  TST.kind="rand" and stratified=TRUE a \emph{stratified}
-  sample is drawn, where the strata in the training case
-  reflect the rel. frequency of each level of the **1st**
-  response variable and are ensured to be at least of size
-  1.
+  Depending on the value of member TST.kind in list opts,
+  the returned index cvi is \enumerate{ \item
+  TST.kind="cv": a random cross validation index
+  P([111...222...333...]) - or - \item TST.kind="rand": a
+  random index with P([00...11...-1-1...]) for training
+  (0), validation (1) and disregard (-1) cases - or - \item
+  TST.kind="col": the column dset[,opts$TST.COL] contains
+  the training (0), validation (1) and disregard (-1) set
+  division (and all records with a value <0 in column
+  TST.COL are disregarded).  } Here P(.) denotes random
+  permutation of the sequence. \cr The disregard set is
+  optional, i.e. cvi may contain only 0 and 1, if desired.
+  \cr Special case TST.kind="cv" and TST.NFOLD=1: make
+  *every* record a training record, i.e. index [000...].
+  \cr In case TST.kind="rand" and stratified=TRUE a
+  \emph{stratified} sample is drawn, where the strata in
+  the training case reflect the rel. frequency of each
+  level of the **1st** response variable and are ensured to
+  be at least of size 1.
 }
 \note{
   Currently stratified sampling in case TST.KIND='rand'

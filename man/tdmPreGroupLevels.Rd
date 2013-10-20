@@ -12,7 +12,7 @@
   \item{opts}{list, here we need \itemize{ \item
   PRE.Xpgroup [0.99] \item PRE.MaxLevel [32] (32 is the
   maximum number of levels allowed for
-  \code{\link{randomForest}}) }}
+  \code{\link[randomForest]{randomForest}}) }}
 }
 \value{
   \code{dset}, a data frame with \code{dset[,colname]}

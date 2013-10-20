@@ -18,16 +18,16 @@
 
   \item{typ}{["ROC"] which chart type, one out of
   ("ROC","lift","precRec") for (ROC, lift,
-  precision-recall)-chart (see \code{\link{performance}} in
-  package ROCR for more details): \itemize{ \item "ROC":
-  receiver operating curve, TPR vs. FPR, with
-  TPR=TP/(TP+FN)=TP/P and FPR=FP/(FP+TN)=FP/N (true and
-  false positive rate).  \item "lift": lift chart, LIFT vs.
-  RPP, with LIFT=TPR/RPR with random positive rate
-  RPR=P/(P+N) and RPP=(TP+FP)/(P+N) (rate of pos.
-  predictions).  \item "precRec": precision-recall-chart,
-  PREC vs. RECALL, with PREC=TP/(TP+FP) and RECALL=TP/P
-  (same as TPR).  }}
+  precision-recall)-chart (see
+  \code{\link[ROCR]{performance}} in package ROCR for more
+  details): \itemize{ \item "ROC": receiver operating
+  curve, TPR vs. FPR, with TPR=TP/(TP+FN)=TP/P and
+  FPR=FP/(FP+TN)=FP/N (true and false positive rate).
+  \item "lift": lift chart, LIFT vs. RPP, with LIFT=TPR/RPR
+  with random positive rate RPR=P/(P+N) and
+  RPP=(TP+FP)/(P+N) (rate of pos. predictions).  \item
+  "precRec": precision-recall-chart, PREC vs. RECALL, with
+  PREC=TP/(TP+FP) and RECALL=TP/P (same as TPR).  }}
 
   \item{noPlot}{[FALSE] if TRUE, suppress the plot, return
   only the area under curve}

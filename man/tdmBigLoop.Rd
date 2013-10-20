@@ -109,9 +109,9 @@
   design (usually LHD). } \item{\code{\link{cma_jTuner}}:
   Perform a parameter tuning by CMA-ES, using the *Java*
   implementation by Niko Hansen through the interface
-  package \code{rCMA}.  } \item{\code{\link{cmaesTuner}}:
-  Perform a parameter tuning by CMA-ES, using the
-  *R*-implementation (package
+  package \code{\link[rCMA]{rCMA}}.  }
+  \item{\code{\link{cmaesTuner}}: Perform a parameter
+  tuning by CMA-ES, using the *R*-implementation (package
   \href{http://cran.r-project.org/web/packages/cmaes/}{\code{cmaes}}
   by Olaf Mersmann) (deprecated, use
   \code{\link{cma_jTuner}} instead).  }
@@ -121,7 +121,7 @@
   \item{\code{\link{powellTuner}}: Perform a parameter
   tuning by Powell's UObyQA algorithm (unconstrained
   optimization by quadratic approximation), see package
-  \code{\link{powell}}).  } }
+  \code{\link[powell]{powell}}).  } }
 }
 \note{
   Side effects: Irrespective of the value of
@@ -198,7 +198,8 @@ spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or
 ## (this contains also tdmDefaultsFill(tdm))
 ## then run tdmBigLoop
 envT <- tdmExecSpotStep(tdm,spotStep);
-## see demo03sonar_A.r for an identical version where the contents of tdmExecSpotStep is explicitly shown
+## see demo03sonar_A.r for an identical version where the contents of tdmExecSpotStep 
+## is explicitly shown
 
 setwd(oldwd);               # restore old working directory
 

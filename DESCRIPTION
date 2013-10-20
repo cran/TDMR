@@ -1,16 +1,17 @@
 Package: TDMR
 Type: Package
 Title: Tuned Data Mining in R
-Version: 1.0.0
-Date: 08.04.2013
+Version: 1.0.1
+Date: 20.10.2013
 Author: Wolfgang Konen <wolfgang.konen@fh-koeln.de>, Patrick Koch
-        <patrick.koch@fh-koeln.de>
+    <patrick.koch@fh-koeln.de>
 Maintainer: Wolfgang Konen <wolfgang.konen@fh-koeln.de>
-Description: Tuned Data Mining in R (TDMR) performs a complete tuning
-        of a data mining task.
+Description: Tuned Data Mining in R (TDMR) performs a complete tuning of a data
+    mining task.
 License: GPL (>= 2)
-Depends: R (>= 2.14.0), SPOT, cmaes, e1071, powell, randomForest, rSFA,
-        rCMA, ROCR, adabag, parallel, twiddler
+Depends: R (>= 2.14.0), SPOT, e1071,
+Suggests: adabag, cmaes, parallel, powell, ROCR, twiddler,
+        randomForest, rCMA, rSFA
 Collate: 'makeTdmRandomSeed.r' 'printTDMclassifier.r'
         'printTDMregressor.r' 'tdmBigLoop.r' 'tdmClassify.r'
         'tdmClassifyLoop.r' 'tdmCompleteEval.r' 'tdmDefaultsFill.r'
@@ -22,7 +23,7 @@ Collate: 'makeTdmRandomSeed.r' 'printTDMclassifier.r'
         'tdmRegressLoop.r' 'tdmSplitTestData.r' 'tdmStartSpot.r'
         'tdmStartOther.r' 'unbiasedBestRun_O.r' 'unbiasedRun.r'
         'tdmExecSpotStep.r'
-Packaged: 2013-04-05 15:07:56 UTC; wolfgang
+Packaged: 2013-10-20 16:53:17 UTC; wolfgang
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-04-05 17:38:33
+Date/Publication: 2013-10-21 00:15:25
