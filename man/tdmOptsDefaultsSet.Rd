@@ -106,13 +106,14 @@
   \item{SRF.calc}{ [T] =T: calculate importance & save on
   SRF.file, =F: load from srfFile (srfFile =
   Output/<confFile>.SRF.Rdata) } \item{SRF.ntree}{ [50]
-  number of RF trees } \item{SRF.samp}{ sampsize for RF }
-  \item{SRF.verbose}{ [2] } \item{SRF.maxS}{ [40] how many
-  variables to show in plot } \item{SRF.minlsi}{ [1] a
-  lower bound for the length of SRF$input.variables }
-  \item{SRF.method}{ ["RFimp"] } \item{SRF.scale}{ [TRUE]
-  option 'scale' for call importance() in
-  \code{\link{tdmModSortedRFimport}} }
+  number of RF trees } \item{SRF.samp}{ sampsize for RF in
+  importance estimation.  See RF.samp for further info on
+  sampsize. } \item{SRF.verbose}{ [2] } \item{SRF.maxS}{
+  [40] how many variables to show in plot }
+  \item{SRF.minlsi}{ [1] a lower bound for the length of
+  SRF$input.variables } \item{SRF.method}{ ["RFimp"] }
+  \item{SRF.scale}{ [TRUE] option 'scale' for call
+  importance() in \code{\link{tdmModSortedRFimport}} }
   \item{MOD.SEED}{[NULL] a seed for the random model
   initialization (if model is non-deterministic). If NULL,
   use \code{\link{tdmRandomSeed}}. }
@@ -121,7 +122,14 @@
   \code{\link{tdmClassify}} \cr ["RF" (default) |"SVM"
   |"LM" ]: use [RF | SVM | linear model ] in
   \code{\link{tdmRegress}} } \item{RF.ntree}{[500] }
-  \item{RF.samp}{[1000] } \item{RF.mtry}{[NULL] }
+  \item{RF.samp}{[NULL] sampsize for RF in model training.
+  If RF.samp is a scalar, then it specifies the total size
+  of the sample. For classification, it can also be a
+  vector of length n.class (= # of levels in response
+  variable), then it specifies the size of each strata. The
+  sum of the vector is the total sample size. If NULL,
+  RF.samp will be replaced by 3000 later in
+  tdmModAdjustSampsize*.  } \item{RF.mtry}{[NULL] }
   \item{RF.nodesize}{[1] } \item{RF.OOB}{[TRUE] if =T,
   return OOB-training set error as tuning measure; if =F,
   return validation set error } \item{RF.p.all}{[FALSE] }
@@ -140,7 +148,8 @@
   \item{ADA.rpart.minsplit}{[20] minimum number of
   observations in a node in order for a split to be
   attempted } \item{CLS.cutoff}{[NULL] vote fractions for
-  the n.class classes. The class i with maximum ratio (\%
+  the classes (vector of length n.class = # of levels in
+  response variable).  The class i with maximum ratio (\%
   votes)/CLS.cutoff[i] wins.  If NULL, then each class gets
   the cutoff 1/n.class (i.e. majority vote wins).  The
   smaller CLS.cutoff[i], the more likely class i will win.
@@ -167,9 +176,10 @@
   \code{\link{tdmModConfmat}}. \cr For regression, the goal
   is to minimize \code{result$R_*} returned from
   \code{\link{tdmRegress}}. In this case, possible values
-  are \code{rgain.type} = ["rmae" (default) |"rmse" ] which
-  stands for [ relative mean absolute error | root mean
-  squared error ].  } \item{ncopies}{[0] if >0, activate
+  are \code{rgain.type} = ["rmae" (default) |"rmse" |
+  "made" ] which stands for [ relative mean absolute error
+  | root mean squared error | mean absolute deviation ].  }
+  \item{ncopies}{[0] if >0, activate
   \code{\link{tdmParaBootstrap}} in
   \code{\link{tdmClassify}} } \item{fct.postproc}{[NULL]
   name of a function with signature \code{(pred, dframe,
@@ -181,13 +191,17 @@
   \code{\link{tdmClassify}} if it is not \code{NULL}.  }
   \item{GD.DEVICE}{["win"] ="win": all graphics to
   (several) windows (\code{windows} or \code{X11} in
-  package \code{grDevices}) \cr ="pdf": all graphics to one
-  multi-page PDF \cr ="png": all graphics in separate PNG
-  files in \code{opts$GD.PNGDIR} \cr ="non": no graphics at
-  all \cr This concerns the TDMR graphics, not the SPOT (or
-  other tuner) graphics } \item{GD.RESTART}{[T] =T: restart
-  the graphics device (i.e. close all 'old' windows or
-  re-open multi-page pdf) in each call to
+  package \code{grDevices}) \cr ="rstudio": same as "win",
+  but all graphics go to the RStudio device \cr ="pdf": all
+  graphics to one multi-page PDF \cr ="png": all graphics
+  in separate PNG files in \code{opts$GD.PNGDIR} \cr
+  ="non": no graphics at all \cr This concerns the TDMR
+  graphics, not the SPOT (or other tuner) graphics.  If
+  running R from RStudio (if there is a device with name
+  "RStudioGD") then the default "win" is changed to
+  "rstudio" automatically.  } \item{GD.RESTART}{[T] =T:
+  restart the graphics device (i.e. close all 'old' windows
+  or re-open multi-page pdf) in each call to
   \code{\link{tdmClassify}} or \code{\link{tdmRegress}},
   resp. \cr =F: leave all windows open (suitable for calls
   from SPOT) or write more pages in same pdf. }
@@ -198,8 +212,9 @@
   \item{NRUN}{[2] how many runs with different train & test
   samples - or - how many CV-runs, if
   \code{opts$TST.kind}="cv" } \item{APPLY_TIME}{[FALSE] }
-  \item{VERBOSE}{[2] =2: print much output, =1: less, =0:
-  none}
+  \item{test2.show}{[FALSE] } \item{test2.string}{["default
+  cutoff"] } \item{VERBOSE}{[2] =2: print much output, =1:
+  less, =0: none}
 }
 \description{
   Set up and return a list \code{opts} with default

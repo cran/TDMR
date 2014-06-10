@@ -4,7 +4,10 @@
 #
 # Use "browser()" if you want to look at the variables inside
 #
-# Author: Wolfgang Konen, FHK, Oct'2009 - Apr'2010
+# Author: Wolfgang Konen, FHK, Oct'2009 - Apr'2014
+#
+# Example usage:
+#       result <- main_cpu();
 #
 main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {           
 
@@ -23,7 +26,7 @@ main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {
     }
 
     # which variable is response variable:
-    response.variables <- "ERP" 
+    response.variables <- c("ERP")  
     ID.variable <- "ID"
     
     #===============================================
@@ -45,7 +48,9 @@ main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {
     #===============================================
     # disregard records which contain extreme values in response.variable (outliers)
     dset <- dset[dset[,response.variables]<opts$OCUT,] 
-    opts$lim = c(min(dset[,response.variables]),max(dset[,response.variables]))
+    opts$lim = c(min(dset[,response.variables],na.rm=T),
+                 max(dset[,response.variables],na.rm=T))
+    
     cat1(opts,opts$filename,":", length(dset[,1]), "records used.\n")
 
     #===============================================

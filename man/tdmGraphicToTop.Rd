@@ -1,18 +1,16 @@
-\name{tdmGraphicCloseDev}
-\alias{tdmGraphicCloseDev}
-\title{Close all open graphic devices.}
+\name{tdmGraphicToTop}
+\alias{tdmGraphicToTop}
+\title{Bring the acitve window to the top}
 \usage{
-  tdmGraphicCloseDev(opts, ...)
+  tdmGraphicToTop(opts)
 }
 \arguments{
   \item{opts}{with \code{opts$GD.DEVICE} one out of [
   \code{"pdf"} | \code{"png"} | \code{"win"} |
   \code{"rstudio"} | \code{"non"} ], see
   \code{\link{tdmGraphicInit}}}
-
-  \item{...}{optional arguments (currently not used)}
 }
 \description{
-  Close all open graphic devices.
+  Only relevant for opts$GD.DEVICE=="win".
 }
 

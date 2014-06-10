@@ -5,8 +5,10 @@
   tdmGraphicCloseWin(opts, ...)
 }
 \arguments{
-  \item{opts}{with \code{opts$GD.DEVICE} one out of
-  [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
+  \item{opts}{with \code{opts$GD.DEVICE} one out of [
+  \code{"pdf"} | \code{"png"} | \code{"win"} |
+  \code{"rstudio"} | \code{"non"} ], see
+  \code{\link{tdmGraphicInit}}}
 
   \item{...}{optional arguments (currently not used)}
 }

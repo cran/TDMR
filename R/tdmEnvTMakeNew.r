@@ -198,7 +198,7 @@ checkOpts <- function(opts) {
                 ,"READ.NROW","READ.TST","READ.TXT","rep","RF.mtry","RF.mtry","RF.nodesize","RF.ntree","RF.OOB","RF.p.all","RF.samp"
                 ,"rgain.string","rgain.type","srf","SRF.calc","SRF.cutoff","SRF.kind","SRF.maxS","SRF.method","SRF.minlsi","SRF.ndrop"
                 ,"SRF.nkeep","SRF.ntree","SRF.samp","SRF.scale","SRF.verbose","SRF.XPerc","srfFile","SVM.coef0","SVM.cost","SVM.degree","SVM.epsilon"
-                ,"SVM.gamma","SVM.kernel","SVM.tolerance","ADA.coeflearn","ADA.mfinal","ADA.rpart.minsplit","test2.string"
+                ,"SVM.gamma","SVM.kernel","SVM.tolerance","ADA.coeflearn","ADA.mfinal","ADA.rpart.minsplit","test2.show","test2.string"
                 ,"TST.COL","TST.kind","TST.NFOLD","TST.SEED","TST.trnFrac","TST.valiFrac","VERBOSE");
   newNames = setdiff(names(opts),availNames);
   if (length(newNames)>0) {

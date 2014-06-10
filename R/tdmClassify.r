@@ -78,7 +78,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
     first <- TRUE; 
     filename <- opts$filename
     saved.input.variables <- input.variables;       # save copy for response.variable loop
-   
+    
     opts <- tdmOptsDefaultsSet(opts);               # be sure that all necessary  defaults are set
 
     if (opts$MOD.method %in% c("RF","MC.RF","SVM")) {
@@ -142,6 +142,10 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         lev.resp <- levels(d_train[,response.variable]);
         n.class <- length(lev.resp);
         if (!is.null(opts$CLS.CLASSWT)) {
+          if (any(is.na(opts$CLS.CLASSWT))) 
+            stop(sprintf("opts$CLS.CLASSWT contains NA's! Consider appropriate lines 'opts$CLS.CLASSWT[i] = ...' in APD file.\n  opts$CLS.CLASSWT = "),
+                 paste(opts$CLS.CLASSWT,collapse=", "))
+          
           if (n.class !=  length(opts$CLS.CLASSWT)) 
             stop("Length of opts$CLS.CLASSWT differs from the number of levels in response variable.");
           if (is.null(names(opts$CLS.CLASSWT))) 
@@ -150,9 +154,9 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         if (length(setdiff(names(opts$CLS.CLASSWT),lev.resp))>0) 
           stop("Names in opts$CLS.CLASSWT differ from the levels of the response variable.");
 
-        opts$CLS.cutoff <- tdmModAdjustCutoff(opts$CLS.cutoff,n.class);
-        opts$SRF.cutoff <- tdmModAdjustCutoff(opts$SRF.cutoff,n.class);
-  
+        opts$CLS.cutoff <- tdmModAdjustCutoff(opts$CLS.cutoff,n.class,text="opts$CLS.cutoff");
+        opts$SRF.cutoff <- tdmModAdjustCutoff(opts$SRF.cutoff,n.class,text="opts$SRF.cutoff");
+        
         if (is.null(opts$CLS.gainmat)) {
           # default (generic) gain matrix:
           opts$CLS.gainmat <- matrix ( diag(n.class),nrow=n.class,ncol=n.class,
@@ -179,7 +183,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         # --- input variables and you do not see the importance of variables ---
         if (opts$SRF.kind!="none") {
           cat1(opts,filename,": Importance check ...\n");
-          opts$RF.sampsize <- tdmModAdjustSampsize(opts$SRF.samp, d_train, response.variable, opts);
+          opts$RF.sampsize <- tdmModAdjustSampsizeC(opts$SRF.samp, d_train, response.variable, opts);
           SRF <- tdmModSortedRFimport(d_train,response.variable,
                                       input.variables,opts)
 
@@ -219,7 +223,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         to.train <- d_train[,c(input.variables,response.variable)]
         to.test <- d_test[,c(input.variables,response.variable)]
         if (opts$MOD.method %in% c("RF","MC.RF"))
-          opts$RF.sampsize <- tdmModAdjustSampsize(opts$RF.samp, to.train, response.variable, opts);
+          opts$RF.sampsize <- tdmModAdjustSampsizeC(opts$RF.samp, to.train, response.variable, opts);
         train.rf <- function(response.variable,to.train,opts) {
             cat1(opts,opts$filename,": Train RF with sampsize =", opts$RF.sampsize,"...\n")
             if (!is.null(opts$CLS.CLASSWT)) {
@@ -236,6 +240,11 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             # BUT: we cannot use "eval(...)" for the lists cutoff and cwt (and sampsize), therefore we use here
             # the 'non-speaking' variables cwt, opts$CLS.cutoff and add below res.rf$cutoff, res.rf$classwt 
             # for optional later reference or user inspection.
+            #
+            # TODO: a simpler alternative could be: 
+            #     rf.options = paste(rf.options," sampsize=c(",paste(opts$RF.samp,collapse=","),"),",sep="")
+            # which writes " sampsize=c(200,300),". TODO: CHECK Validity of this approach
+            #
             rf.options = paste(" ntree=",eval(opts$RF.ntree));
             rf.options = paste(rf.options," sampsize=opts$RF.sampsize",sep=",")
             rf.options = paste(rf.options," classwt=cwt"," na.action=na.roughfix"," proximity=FALSE",sep=",")
@@ -623,7 +632,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
           print1(opts,cm.vali$gain.vector)
           cat1(opts,sprintf("total gain : %7.1f (is %7.3f%% of max. gain = %7.1f)\n", 
                             cm.vali$gain,cm.vali$gain/cm.vali$gainmax*100,cm.vali$gainmax));
-          if (res.rf$HasVotes) {                          
+          if (res.rf$HasVotes && opts$test2.show) {                          
             cat1(opts,"\nVali2 cases [",opts$test2.string,"] (",length(test.predict),"):\n")
             cm.vali2 <- tdmModConfmat(d_test,response.variable,name2.of.prediction,opts,predProb$Val);
             print1(opts,cm.vali2$mat)                      # confusion matrix on test set, test2-prediction
@@ -700,7 +709,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             tdmGraphicNewWin(opts);
             if (nrow(d_test)>0) {
               cmt <- cm.vali$mat;
-              setStr = "test set";
+              setStr = "validation set";
             } else {
               cmt <- cm.train$mat;
               setStr = "train set";

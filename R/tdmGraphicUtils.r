@@ -8,7 +8,10 @@
 #'
 #' The log file is opened in \code{opts$dir.output/opts$LOGFILE}, but only if opts$fileMode==TRUE.
 #'
-#' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
+#' @param opts  with \code{opts$GD.DEVICE} one out of 
+#'              [ \code{"pdf"} | \code{"png"} | \code{"win"} | \code{"rstudio"} | \code{"non"} ],
+#'              see \code{\link{tdmGraphicInit}}
+#'              
 #' @return \code{gdObj}, an object of class TDMgdev. Pass this object on when calling tdmGraAndLogFinalize(opts,gdObj)
 #'         (if not, a warning is issued before the sink-closing-error occurs)
 #' @export
@@ -20,7 +23,7 @@ tdmGraAndLogInitialize <- function(opts) {
       if (!success) stop(sprintf("Could not create dir.output=%s",dir.output));
     }
     if (opts$GD.DEVICE!="non") {
-      if (opts$GD.RESTART==T) graphics.off()          # close all graphics windows
+      if (opts$GD.RESTART==T) tdmGraphicCloseDev(opts);          # close all graphics windows
       tdmGraphicInit(opts);                        
     }  
 
@@ -39,7 +42,10 @@ tdmGraAndLogInitialize <- function(opts) {
 
 #' Finalize graphics and log file
 #'
-#' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
+#' @param opts  with \code{opts$GD.DEVICE} one out of 
+#'              [ \code{"pdf"} | \code{"png"} | \code{"win"} | \code{"rstudio"} | \code{"non"} ],
+#'              see \code{\link{tdmGraphicInit}}
+#'         
 #' @param gdObj object of class TDMgdev, the return value from tdmGraAndLogInitialize, to ensure that tdmGraAndLogInitialize was called before 
 #'              (and the sink on opts$LOGFILE can be closed)
 #' @export
@@ -51,9 +57,19 @@ tdmGraAndLogFinalize <- function(opts,gdObj=NULL) {
 }
 ######################################################################################
 #
-#' Initialize graphic device. Open multipage PDF or (create and) clear opts$GD.PNGDIR.
+#' Initialize graphic device. 
+#' 
+#' Open multipage PDF or (create and) clear opts$GD.PNGDIR.
 #'
-#' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
+#' @param opts  with \code{opts$GD.DEVICE} one out of [ \code{"pdf"} | \code{"png"} | \code{"win"} | \code{"rstudio"} | \code{"non"} ]
+#'     \describe{
+#'     \item{\code{"pdf"}}{ plot everything in one multipage pdf file opts$PDFFILE }
+#'     \item{\code{"png"}}{ each plot goes into a new png file in opts$GD.PNGDIR  }
+#'     \item{\code{"win"}}{ each plot goes into a new window (dev.new())  }
+#'     \item{\code{"rstudio"}}{ plot everything to the RStudio plot device (has a history)  }
+#'     \item{\code{"non"}}{ all plots are suppressed  }
+#'     }
+#'     
 #' @param ...   optional arguments to hand over to \code{\link{pdf}} (the other devices require no further arguments) 
 #' @export
 tdmGraphicInit <- function(opts,...) {
@@ -73,6 +89,7 @@ tdmGraphicInit <- function(opts,...) {
     , "pdf" = pdf(paste(opts$dir.output,opts$PDFFILE,sep=""),onefile=T,paper="a4r",...)
     , "png" = png.init(opts)
     , "win" = {}
+    , "rstudio" = {}
     , "non" = {}
     , "invalid switch"
     );
@@ -82,7 +99,9 @@ tdmGraphicInit <- function(opts,...) {
 #' 
 #' Initialize a new window ("win") / a new file ("png") for current graphic device.
 #'
-#' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
+#' @param opts  with \code{opts$GD.DEVICE} one out of 
+#'              [ \code{"pdf"} | \code{"png"} | \code{"win"} | \code{"rstudio"} | \code{"non"} ],
+#'              see \code{\link{tdmGraphicInit}}
 #' @param ...   optional arguments to hand over to \code{\link{png}} or \code{windows} or \code{X11} in 
 #'              package grDevices (the other devices require no further arguments)
 #' @export
@@ -100,6 +119,7 @@ tdmGraphicNewWin <- function(opts,...) {
     , "pdf" = {}
     , "png" = png.newFile(opts,...)
     , "win" = dev.new(...)   # former:   ifelse(.Platform$OS.type=="windows", {windows(...);1}, {X11(...);1})
+    , "rstudio" = {}
     , "non" = {}
     , "invalid switch"
     );    
@@ -108,15 +128,24 @@ tdmGraphicNewWin <- function(opts,...) {
     # Therefore we now use windows(...) on all Windows platforms, X11(...) for other OS (e.g. Unix, Linux).
     # Or, simpler, we use dev.new(...), which works allways
 }
+
 #
 #
-#
-tdmGraphicToTop <- function(opts,...) {
+#' Bring the acitve window to the top 
+#' 
+#' Only relevant for opts$GD.DEVICE=="win".
+#'
+#' @param opts  with \code{opts$GD.DEVICE} one out of 
+#'              [ \code{"pdf"} | \code{"png"} | \code{"win"} | \code{"rstudio"} | \code{"non"} ],
+#'              see \code{\link{tdmGraphicInit}}
+#' @export
+tdmGraphicToTop <- function(opts) {
   if (is.null(opts$GD.DEVICE)) opts$GD.DEVICE="win";
   switch (opts$GD.DEVICE
     , "pdf" = {}
     , "png" = {}
     , "win" = {bringToTop();}
+    , "rstudio" = {}
     , "non" = {}
     , "invalid switch"
     );
@@ -124,7 +153,9 @@ tdmGraphicToTop <- function(opts,...) {
 #
 #' Close active file ("png").
 #'
-#' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
+#' @param opts  with \code{opts$GD.DEVICE} one out of 
+#'              [ \code{"pdf"} | \code{"png"} | \code{"win"} | \code{"rstudio"} | \code{"non"} ],
+#'              see \code{\link{tdmGraphicInit}}
 #' @param ...   optional arguments (currently not used)
 #' @export
 tdmGraphicCloseWin <- function(opts,...) {
@@ -133,6 +164,7 @@ tdmGraphicCloseWin <- function(opts,...) {
     , "pdf" = {}
     , "png" = dev.off()
     , "win" = {}
+    , "rstudio" = {}
     , "non" = {}
     , "invalid switch"
     );
@@ -140,7 +172,9 @@ tdmGraphicCloseWin <- function(opts,...) {
 #
 #' Close all open graphic devices.
 #'
-#' @param opts  with \code{opts$GD.DEVICE} one out of [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]
+#' @param opts  with \code{opts$GD.DEVICE} one out of 
+#'              [ \code{"pdf"} | \code{"png"} | \code{"win"} | \code{"rstudio"} | \code{"non"} ],
+#'              see \code{\link{tdmGraphicInit}}
 #' @param ...   optional arguments (currently not used)
 #' @export
 tdmGraphicCloseDev <- function(opts,...) {
@@ -152,11 +186,12 @@ tdmGraphicCloseDev <- function(opts,...) {
     pngdev = dev.list()[grep("png",names(dev.list()))]
     if (length(pngdev)>0) for (i in 1:length(pngdev)) dev.off(which=pngdev[i])
   }
-  if (is.null(opts$GD.DEVICE)) opts$GD.DEVICE="win";
+  if (is.null(opts$GD.DEVICE)) opts$GD.ADEVICE="win";
   switch (opts$GD.DEVICE
     , "pdf" = pdf.dev.off() # close all pdf devices
     , "png" = png.dev.off() # close all png devices ('dev.off()[grep("png",names(dev.list())]' has problems, if no png device is open)
     , "win" = graphics.off()# close all devices 
+    , "rstudio" = {} # graphics.off()# clear all plots in the plot window 
     , "non" = {}
     , "invalid switch"
     );

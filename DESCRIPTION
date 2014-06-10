@@ -1,8 +1,8 @@
 Package: TDMR
 Type: Package
 Title: Tuned Data Mining in R
-Version: 1.0.1
-Date: 20.10.2013
+Version: 1.1
+Date: 10.06.2014
 Author: Wolfgang Konen <wolfgang.konen@fh-koeln.de>, Patrick Koch
     <patrick.koch@fh-koeln.de>
 Maintainer: Wolfgang Konen <wolfgang.konen@fh-koeln.de>
@@ -23,7 +23,7 @@ Collate: 'makeTdmRandomSeed.r' 'printTDMclassifier.r'
         'tdmRegressLoop.r' 'tdmSplitTestData.r' 'tdmStartSpot.r'
         'tdmStartOther.r' 'unbiasedBestRun_O.r' 'unbiasedRun.r'
         'tdmExecSpotStep.r'
-Packaged: 2013-10-20 16:53:17 UTC; wolfgang
+Packaged: 2014-06-06 06:54:55 UTC; wolfgang
 NeedsCompilation: no
 Repository: CRAN
-Date/Publication: 2013-10-21 00:15:25
+Date/Publication: 2014-06-06 14:08:47

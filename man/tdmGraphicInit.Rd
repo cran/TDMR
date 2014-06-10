@@ -1,19 +1,26 @@
 \name{tdmGraphicInit}
 \alias{tdmGraphicInit}
-\title{Initialize graphic device. Open multipage PDF or (create and) clear opts$GD.PNGDIR.}
+\title{Initialize graphic device.}
 \usage{
   tdmGraphicInit(opts, ...)
 }
 \arguments{
-  \item{opts}{with \code{opts$GD.DEVICE} one out of
-  [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
+  \item{opts}{with \code{opts$GD.DEVICE} one out of [
+  \code{"pdf"} | \code{"png"} | \code{"win"} |
+  \code{"rstudio"} | \code{"non"} ] \describe{
+  \item{\code{"pdf"}}{ plot everything in one multipage pdf
+  file opts$PDFFILE } \item{\code{"png"}}{ each plot goes
+  into a new png file in opts$GD.PNGDIR }
+  \item{\code{"win"}}{ each plot goes into a new window
+  (dev.new()) } \item{\code{"rstudio"}}{ plot everything to
+  the RStudio plot device (has a history) }
+  \item{\code{"non"}}{ all plots are suppressed } }}
 
   \item{...}{optional arguments to hand over to
   \code{\link{pdf}} (the other devices require no further
   arguments)}
 }
 \description{
-  Initialize graphic device. Open multipage PDF or (create
-  and) clear opts$GD.PNGDIR.
+  Open multipage PDF or (create and) clear opts$GD.PNGDIR.
 }
 

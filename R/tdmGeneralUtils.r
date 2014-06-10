@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.0.1\cr
-#' Date: \tab 20.10.2013\cr
+#' Version: \tab 1.1\cr
+#' Date: \tab 10.06.2014\cr
 #' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
 #' }
@@ -30,6 +30,9 @@
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
 #' @references \url{http://gociop.de/research-projects/tuned-data-mining/}
 #' @keywords package tuning data mining machine learning
+#' @import SPOT
+#' @import e1071
+
 #End of Package Description
 NA #NULL, ends description without hiding first function
 ######################################################################################

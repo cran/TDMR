@@ -29,13 +29,15 @@
   calculate importance & save on SRF.file, =F: load from
   SRF.file (SRF.file =
   Output/<filename>.SRF.<response.variable>.Rdata) \item
-  SRF.ntree: [50] number of RF trees \item SRF.samp:
-  sampsize for RF \item SRF.verbose: [2] \item SRF.maxS:
-  [40] how many variables to show in plot \item SRF.minlsi:
-  [1] a lower bound for the length of SRF$input.variables
-  \item GD.DEVICE: if !="non", then make a bar plot on
-  current graphic device \item CLS.CLASSWT: class weight
-  vector to use in random forest training }}
+  SRF.ntree: [50] number of RF trees \item SRF.verbose: [2]
+  \item SRF.maxS: [40] how many variables to show in plot
+  \item SRF.minlsi: [1] a lower bound for the length of
+  SRF$input.variables \item RF.sampsize: sampsize for RF,
+  set prior to calling this func via
+  tdmModAdjustSampsize(opts$SRF.samp,...)  \item GD.DEVICE:
+  if !="non", then make a bar plot on current graphic
+  device \item CLS.CLASSWT: class weight vector to use in
+  random forest training }}
 }
 \value{
   \code{SRF}, a list with the following elements:

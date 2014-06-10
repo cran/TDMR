@@ -47,7 +47,7 @@
 #' @seealso   \code{\link{print.TDMclassifier}}, \code{\link{tdmClassify}}, \code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Sep'2010 - Jun'2012
 #' @aliases TDMclassifier 
-#' @example demo/demo00sonar.r
+#' @example demo/aaClassify.r
 #' @export
 ######################################################################################
 tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NULL) {
@@ -60,6 +60,11 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
  
     #if (opts$READ.TST==TRUE & opts$TST.kind!="col")
     #  warning(sprintf("Are you sure you want opts$READ.TST=TRUE, but opts$TST.kind!='col'? Actual value is opts$TST.kind='%s'.",opts$TST.kind));
+    
+  	if (!all(response.variables %in% names(dset)))
+  	  stop(sprintf("Not all response.variables are in names(dset)!\n  %s\n  response.variables=%s",
+  	               "Note that response.variables have to be strings (names of columns in dset), not the columns themselves.",
+  	               paste(response.variables,collapse=",")))
 
     predProbList=list();
     C_train <- C_test <- C_test2 <- G_train <- G_test <- NULL # reserve names (dynamic extension of

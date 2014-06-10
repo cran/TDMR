@@ -5,8 +5,10 @@
   tdmGraAndLogFinalize(opts, gdObj = NULL)
 }
 \arguments{
-  \item{opts}{with \code{opts$GD.DEVICE} one out of
-  [\code{"pdf"},\code{"png"},\code{"win"},\code{"non"}]}
+  \item{opts}{with \code{opts$GD.DEVICE} one out of [
+  \code{"pdf"} | \code{"png"} | \code{"win"} |
+  \code{"rstudio"} | \code{"non"} ], see
+  \code{\link{tdmGraphicInit}}}
 
   \item{gdObj}{object of class TDMgdev, the return value
   from tdmGraAndLogInitialize, to ensure that

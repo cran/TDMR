@@ -10,7 +10,8 @@
 #'   @param dset    the data frame for which cvi is needed
 #'   @param response.variables   name of column which carries the target variable - or -
 #'                   vector of names specifying multiple target columns
-#'                   (these columns are not used during prediction, only for evaluation)
+#'                   (these columns are not used during prediction, only for training and
+#'                   for evaluating the predicted result)
 #'   @param input.variables     vector with names of input columns
 #'   @param opts    a list from which we need here the following entries
 #'     \describe{
@@ -39,7 +40,7 @@
 #' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmClassifyLoop}}, \code{\link{tdmClassify}}
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Sep'2010 - Jun'2012
 #' @aliases TDMregressor 
-#' @example demo/demo01cpu.r
+#' @example demo/aaRegression.r
 #' @export
 ######################################################################################
 tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
@@ -48,7 +49,18 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
     if (is.null(opts$PRE.PCA.numericV)) opts$PRE.PCA.numericV <- input.variables;
     if (opts$NRUN<=0) stop(sprintf("opts$NRUN has to be positive, but it is %d",opts$NRUN));
     if (opts$PRE.PCA!="none" & opts$PRE.SFA!="none") stop("It is not allowed to activate opts$PRE.PCA and opts$PRE.SFA simultaneously.")
-
+    rgain.types = c("rmae","rmse","made");
+    if (! (opts$rgain.type %in% rgain.types)) {
+      warning(sprintf("opts$rgain.type='%s' has not one of the values {%s} allowed for regression. TDMR will set it to 'rmae'.",
+                      opts$rgain.type,paste(rgain.types,collapse=",")));
+      opts$rgain.type="rmae";
+    }
+    if (!all(response.variables %in% names(dset)))
+      stop(sprintf("Not all response.variables are in names(dset)!\n  %s\n  response.variables=%s",
+                   "Note that response.variables have to be strings (names of columns in dset), not the columns themselves.",
+                   paste(response.variables,collapse=","))
+           )
+    
     R_train <- R_test <- T_train <- T_test <- NULL       # reserve names (dynamic extension of
     S_train <- S_test <- NULL                            # these vectors at and of for-i-loop)
     Err <- NULL
@@ -123,13 +135,13 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
             alltrn = rbind(alltrn,as.data.frame(list(rmae.trn=res$rmae$train * ntrn
                                                     ,rmse.trn=res$rmse$train * ntrn
                                                     ,made.trn=res$rmae$made.tr * ntrn
-                                                    ,rmae.Theil.trn=res$rmae$Theil.train * ntrn
+                                                    ,rmae.theil.trn=res$rmae$theil.train * ntrn
                                                     ,ntrn=ntrn
                                                     )));
             alltst = rbind(alltst,as.data.frame(list(rmae.tst=res$rmae$test * ntst
                                                     ,rmse.tst=res$rmse$test * ntst
                                                     ,made.tst=res$rmae$made.te * ntst
-                                                    ,rmae.Theil.tst=res$rmae$Theil.test * ntst
+                                                    ,rmae.theil.tst=res$rmae$theil.test * ntst
                                                     ,ntst=ntst
                                                     )));
             predictions[cvi==k,response.variables] <- res$d_test[,paste("pred_",response.variables,sep="")];
@@ -142,7 +154,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
         Err = rbind(Err,c(colSums(alltrn)/sum(alltrn$ntrn),colSums(alltst)/sum(alltst$ntst)));
         Err[i,"ntrn"]=ifelse(opts$TST.kind=="cv",nrow(dset),nrow(d_train));   # the number of distinct cases 
         Err[i,"ntst"]=ifelse(opts$TST.kind=="cv",nrow(dset),nrow(d_test));    # used for this line of measures
-
+        
         col.trn = paste(opts$rgain.type,".trn",sep="");
         col.tst = paste(opts$rgain.type,".tst",sep="");
         cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV",""),opts$rgain.string,"on training set   ",Err[i,col.trn],"\n")
@@ -152,12 +164,12 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
         #if (opts$rgain.type=="rmse") R_train[i] = Err["rmse.trn"];
         #if (opts$rgain.type=="made") R_train[i] = Err["made.trn"];
         S_train[i] = Err[i,"rmse.trn"];
-        T_train[i] = Err[i,"rmae.Theil.trn"];
+        T_train[i] = Err[i,"rmae.theil.trn"];
         R_test[i] = Err[i,col.tst];
         #if (opts$rgain.type=="rmse") R_test[i] = Err["rmse.tst"];
         #if (opts$rgain.type=="made") R_test[i] = Err["made.tst"];
         S_test[i] = Err[i,"rmse.tst"]
-        T_test[i] = Err[i,"rmae.Theil.tst"]
+        T_test[i] = Err[i,"rmae.theil.tst"]
 
         #=============================================
         # PART 5: SOME MORE GRAPHICS

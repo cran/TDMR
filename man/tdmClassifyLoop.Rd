@@ -76,26 +76,20 @@
   returns an object of class \code{\link{TDMclassifier}}.
 }
 \examples{
-#*# --------- demo/demo00sonar.r ---------
-#*# This demo shows a simple data mining process (phase 1 of TDMR) for the classification task
-#*# SONAR (from UCI repository, 
-#*' http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+\%28Sonar,+Mines+vs.+Rocks\%29).
-#*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify.
-#*# with Random Forest as the prediction model. 
+#*# --------- demo/aaClassify.r ---------
+#*# This demo shows a simple data mining process (phase 1 of TDMR) for classification on
+#*# dataset iris.
+#*# The data mining process in tdmClassifyLoop calls randomForest as the prediction model.
+#*# It is called opts$NRUN=2 times with different random train-validation set splits.
+#*#
+opts=tdmOptsDefaultsSet()                       # set all defaults for data mining process
+gdObj <- tdmGraAndLogInitialize(opts);          # init graphics and log file
 
-## load package and set working directory
-#require("TDMR");
-path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
-#path <- paste("../inst", "demo02sonar",sep="/");
-oldwd <- getwd();
-setwd(path);
-source("main_sonar.r");              # contains also readCmdSonar()
+data(iris)
+response.variables="Species"                    # names, not data (!)
+input.variables=setdiff(names(iris),"Species")
 
-source("sonar_00.apd",local=TRUE);   # set opts 
-
-result=main_sonar(opts);
-
-setwd(oldwd);
+result = tdmClassifyLoop(iris,response.variables,input.variables,opts)
 }
 \author{
   Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), FHK,

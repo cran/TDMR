@@ -277,6 +277,7 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
 ######################################################################################
 cma_jTuner <- function(confFile,tdm,envT,dataObj)
 {
+    require(rCMA);
     tunerVal <- cma_jInternRCma(tdm,envT,dataObj);
     #tunerVal <- cma_jInternRJava(tdm,envT,dataObj);    # -- deprecated, now in R-DM-Template-deprecated\
     #tunerVal <- cma_jIntern__Old(tdm,envT,dataObj);    # -- deprecated, now in R-DM-Template-deprecated\

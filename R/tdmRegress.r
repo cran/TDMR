@@ -33,7 +33,7 @@ require(randomForest);
 #'     \item{\code{fct.postproc}}{ [NULL] name of a user-def'd function for postprocessing of predicted output  }
 #'     \item{\code{gr.log}}{ =FALSE (def): make scatter plot as-is, 
 #'                           =TRUE: transform output x with log(x+1) (x should be nonnegative) }
-#'     \item{\code{GRAPHDEV}}{ if !="non", then make a pairs-plot of the 5 most important variables
+#'     \item{\code{GD.DEVICE}}{ if !="non", then make a pairs-plot of the 5 most important variables
 #'                   and make a true-false bar plot }
 #'     \item{\code{VERBOSE}}{ [2] =2: most printed output, =1: less, =0: no output }
 #'     }
@@ -136,7 +136,7 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
         # --- input variables and you do not see the importance of variables ---
         if (opts$SRF.kind!="none") {
           cat1(opts,filename,": Importance check ...\n")
-          opts$RF.sampsize <- tdmModAdjustSampsize(opts$SRF.samp, d_train, response.variable, opts);
+          opts$RF.sampsize <- tdmModAdjustSampsizeR(opts$SRF.samp, d_train, response.variable, opts);
           SRF <- tdmModSortedRFimport(d_train,response.variable,
                                           input.variables,opts)
           input.variables <- as.character(SRF$input.variables);
@@ -188,14 +188,15 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
             cat1(opts,opts$filename,": Train RF ...\n")
             flush.console();
             formula <- formula(paste(response.variable, "~ ."))   # use all possible input variables
-            opts$RF.sampsize <- tdmModAdjustSampsize(opts$RF.samp, to.model, response.variable, opts);
+            opts$RF.sampsize <- tdmModAdjustSampsizeR(opts$RF.samp, to.model, response.variable, opts);
             # we work here with a command text string and eval(...) to allow for the presence or
-            # absence of certain options like "mtry" or "cutoff" which are not allowed to be NULL:
+            # absence of certain options like "mtry" which are not allowed to be NULL:
             rf.options = "ntree=opts$RF.ntree";
             rf.options = paste(rf.options,"sampsize=opts$RF.sampsize",sep=",")
             rf.options = paste(rf.options,"na.action=na.roughfix","proximity=F",sep=",")
             if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,"mtry=opts$RF.mtry",sep=",")
-            if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options,"cutoff=opts$CLS.cutoff",sep=",")
+            #if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options,"cutoff=opts$CLS.cutoff",sep=",")
+            #/WK/2014/05/ 'cutoff' makes no sense for regression!
             if (!is.null(opts$RF.nodesize)) rf.options = paste(rf.options,"nodesize=opts$RF.nodesize",sep=",")
 
             eval(parse(text=paste("res.rf <- randomForest::randomForest( formula, data=to.model,",rf.options,")"))) 
@@ -315,36 +316,36 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
         naive.predict=mean(d_train[,response.variable])
         rmse=list()
         rmse$train <- sqrt(mean((train.predict-d_train[,response.variable])^2)) # this is the OOB-error in case of RF
+        rmse$theil.train <- rmse$train/sqrt(mean((naive.predict-d_train[,response.variable])^2))
         if (opts$MOD.method=="RF") rmse$OOB <- sqrt(res.rf$mse[res.rf$ntree])
         else rmse$OOB <- 0;
-        rmse$Theil.train <- rmse$train/sqrt(mean((naive.predict-d_train[,response.variable])^2))
         #naive.predict2=d_train[,opts$old.response.variable]
         #rmse$Theil2.train <- rmse$train/sqrt(mean((naive.predict2-d_train[,response.variable])^2))
         rmae=list()
         rmae$made.tr <- mean(abs(train.predict-d_train[,response.variable]))
         rmae$ma.train <- mean(abs(d_train[,response.variable]))
         rmae$train <- rmae$made.tr/rmae$ma.train;
-        rmae$Theil.train <- rmae$train/(mean(abs(naive.predict-d_train[,response.variable]))/rmae$ma.train)
+        rmae$theil.train <- rmae$train/(mean(abs(naive.predict-d_train[,response.variable]))/rmae$ma.train)
 
         cat2(opts,"\nTraining cases (",length(train.predict),"):\n")
         cat2(opts,"rmse$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$train, "\n")
         cat2(opts,"RMAE$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmae$train,"\n")
-        cat2(opts,"Theils U1 (train, RMSE):", rmse$Theil.train,"\n")#, U2 (train):",rmse$Theil2.train,"\n")    # <1: better than naive forecast
-        cat2(opts,"Theils U3 (train, RMAE):", rmae$Theil.train,"\n")    # based on RMAE instead of RMSE
+        cat2(opts,"Theils U1 (train, RMSE):", rmse$theil.train,"\n")#, U2 (train):",rmse$Theil2.train,"\n")    # <1: better than naive forecast
+        cat2(opts,"Theils U3 (train, RMAE):", rmae$theil.train,"\n")    # based on RMAE instead of RMSE
  
         rmse$test <- sqrt(mean((test.predict-d_test[,response.variable])^2))
-        rmse$Theil.test <- rmse$test/sqrt(mean((naive.predict-d_test[,response.variable])^2))
+        rmse$theil.test <- rmse$test/sqrt(mean((naive.predict-d_test[,response.variable])^2))
         #naive.predict2=d_test[,opts$old.response.variable]
         #rmse$Theil2.test <- rmse$test/sqrt(mean((naive.predict2-d_test[,response.variable])^2))
         rmae$made.te <- mean(abs(test.predict-d_test[,response.variable]));
         rmae$ma.test <- mean(abs(d_test[,response.variable]))
         rmae$test <- rmae$made.te/rmae$ma.test
-        rmae$Theil.test <- rmae$test/(mean(abs(naive.predict-d_test[,response.variable]))/rmae$ma.test)
+        rmae$theil.test <- rmae$test/(mean(abs(naive.predict-d_test[,response.variable]))/rmae$ma.test)
         cat2(opts,"\nVali cases (",length(test.predict),"):\n")
       	cat2(opts,"rmse$test:", rmse$test, ", rmse$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$train,"\n")
         cat2(opts,"RMAE$test:", rmae$test, "\n")
-        cat2(opts,"Theils U1 (test, RMSE):", rmse$Theil.test,"\n")#, U2 (test):",rmse$Theil2.test,"\n")    # <1: better than naive forecast
-        cat2(opts,"Theils U3 (test, RMAE):", rmae$Theil.test,"\n")    # based on RMAE instead of RMSE
+        cat2(opts,"Theils U1 (test, RMSE):", rmse$theil.test,"\n")#, U2 (test):",rmse$Theil2.test,"\n")    # <1: better than naive forecast
+        cat2(opts,"Theils U3 (test, RMAE):", rmae$theil.test,"\n")    # based on RMAE instead of RMSE
      
         if (!is.na(match("SRF",ls()))) {
         	rmae$SRF.perc = SRF$perc;			               # just to report these
@@ -358,18 +359,27 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
         if (opts$GD.DEVICE!="non") {
           # point plot: true response (x) vs. predicted response (y)
           tdmGraphicNewWin(opts);
+          # helper functions for the plot:
+          #   gr_trans(x,xmin): returns a vector of length which(!is.na(x))
+          #   min_trans: returns a number
+          #
+          # (TODO: can we make this simpler if we defer the optional log-transform with log="xy" to the plot? )
           if (opts$gr.log) {
             gr_trans <- function(x,xmin) { log(x[!is.na(x)]+1-xmin, base=10); }
             min_trans <- function(x) { min(min(x[!is.na(x)]),0); }            
           } else {
             gr_trans <- function(x,xmin) { x; }
-            min_trans <- function(x) { 0; }            
+            min_trans <- function(x) { 0; }          # not used  
           }
           r = c(d_train[,response.variable],d_test[,response.variable]);
+          if (any(is.na(r))) 
+            warning(sprintf("Column %s in dset contains NA! Removing them for the purpose of the plot.",
+                            response.variable))
+          r = r[!is.na(r)];
           rmin = min_trans(r);
           if (is.null(opts$lim)) lim=c(min(r),max(r)) else lim=opts$lim;
           true_out = gr_trans(d_train[,response.variable],rmin)
-
+          
           plot(gr_trans(lim,rmin),gr_trans(lim,rmin),col='blue',type="l"
                ,xlab=ifelse(opts$gr.log,"lg(true_out+1)","true_out")
                ,ylab=ifelse(opts$gr.log,"lg(predict+1)","predict")
@@ -378,9 +388,11 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
                )
           #points(true_out[true_out<opts$OCUT],train.predict[true_out<opts$OCUT],col='green')
           #points(true_out[true_out<opts$OCUT],train.predict[true_out<opts$OCUT],col='blue')
-          points(true_out,gr_trans(train.predict,rmin),col='blue')
+          isNa=is.na(d_train[,response.variable]);
+          points(true_out,gr_trans(train.predict[!isNa],rmin),col='blue')
           true_out = gr_trans(d_test[,response.variable],rmin)
-          points(true_out,gr_trans(test.predict,rmin),col='red')
+          isNa=is.na(d_test[,response.variable]);
+          points(true_out,gr_trans(test.predict[!isNa],rmin),col='red')
           title(response.variable)
           legend("topleft",legend=c("train", "test"),
                  col=c("blue","red"), lty=c(1,1), lwd=c(1,1),

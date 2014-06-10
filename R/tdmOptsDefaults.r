@@ -79,7 +79,8 @@
 #'      \item{SRF.calc}{   [T] =T: calculate importance & save on SRF.file, =F: load from srfFile
 #'                      (srfFile = Output/<confFile>.SRF.Rdata) }
 #'      \item{SRF.ntree}{  [50] number of RF trees }
-#'      \item{SRF.samp}{    sampsize for RF }
+#'      \item{SRF.samp}{    sampsize for RF in importance estimation. 
+#'                          See RF.samp for further info on sampsize. }
 #'      \item{SRF.verbose}{ [2] }
 #'      \item{SRF.maxS}{    [40] how many variables to show in plot }
 #'      \item{SRF.minlsi}{  [1] a lower bound for the length of SRF$input.variables  }
@@ -89,7 +90,11 @@
 #' 			\item{MOD.method}{["RF" (default) |"MC.RF" |"SVM" |"NB" ]: use [RF | MetaCost-RF | SVM | Naive Bayes ] in \code{\link{tdmClassify}}  \cr
 #'                      ["RF" (default) |"SVM" |"LM" ]: use [RF | SVM | linear model ] in \code{\link{tdmRegress}}  } 
 #' 			\item{RF.ntree}{[500] } 
-#' 			\item{RF.samp}{[1000] } 
+#' 			\item{RF.samp}{[NULL] sampsize for RF in model training. If RF.samp is a scalar, then it specifies the 
+#'   		                      total size of the sample. For classification, it can also be a vector of length n.class 
+#'     	                      (= # of levels in response variable), then it specifies the size of each strata. The sum 
+#'                             of the vector is the total sample size. If NULL, RF.samp will be replaced by 3000 later
+#'                             in tdmModAdjustSampsize*.  } 
 #' 			\item{RF.mtry}{[NULL] } 
 #' 			\item{RF.nodesize}{[1] } 
 #' 			\item{RF.OOB}{[TRUE] if =T, return OOB-training set error as tuning measure; if =F, return validation set error } 
@@ -103,7 +108,8 @@
 #' 			\item{ADA.coeflearn}{[1] =1: "Breiman", =2: "Freund", =3: "Zhu" as value for boosting(...,coeflearn,...) (AdaBoost)  }
 #' 			\item{ADA.mfinal}{[10] number of trees in AdaBoost = mfinal boosting(...,mfinal,...)  }
 #' 			\item{ADA.rpart.minsplit}{[20] minimum number of observations in a node in order for a split to be attempted  }
-#' 			\item{CLS.cutoff}{[NULL] vote fractions for the n.class classes. The class i with maximum ratio (\% votes)/CLS.cutoff[i] wins. 
+#' 			\item{CLS.cutoff}{[NULL] vote fractions for the classes (vector of length n.class = # of levels in response variable). 
+#'   		                The class i with maximum ratio (\% votes)/CLS.cutoff[i] wins. 
 #'                      If NULL, then each class gets the cutoff 1/n.class (i.e. majority vote wins). 
 #'                      The smaller CLS.cutoff[i], the more likely class i will win. }
 #'      \item{CLS.CLASSWT}{ [NULL] class weights for the n.class classes, e.g. \cr
@@ -119,23 +125,29 @@
 #'                      For binary classification there are the additional measures [ "arROC" | "arLIFT" | "arPRE" ], see 
 #'                      \code{\link{tdmModConfmat}}. \cr
 #'                      For regression, the goal is to minimize \code{result$R_*} returned from \code{\link{tdmRegress}}. In this case, possible values are 
-#'                      \code{rgain.type} = ["rmae" (default) |"rmse" ] which stands for [ relative mean absolute error | root mean squared error ].  } 
+#'                      \code{rgain.type} = ["rmae" (default) |"rmse"  | "made" ] which stands for 
+#'                      [ relative mean absolute error | root mean squared error | mean absolute deviation ].  } 
 #' 			\item{ncopies}{[0] if >0, activate \code{\link{tdmParaBootstrap}} in \code{\link{tdmClassify}}  } 
 #'      \item{fct.postproc}{[NULL] name of a function with signature \code{(pred, dframe, opts)} where \code{pred} is the prediction of the model on the 
 #'                      data frame \code{dframe} and \code{opts} is this list. This function may do some postprocessing on \code{pred}  and
 #'                      it returns a (potentially modified) \code{pred}. This function will be called in \code{\link{tdmClassify}} if it is not \code{NULL}.  }
 #' 			\item{GD.DEVICE}{["win"] ="win": all graphics to (several) windows (\code{windows} or \code{X11} in package \code{grDevices}) \cr
+#'   		                ="rstudio": same as "win", but all graphics go to the RStudio device \cr
 #'                      ="pdf": all graphics to one multi-page PDF \cr
 #'                      ="png": all graphics in separate PNG files in \code{opts$GD.PNGDIR} \cr
 #'                      ="non": no graphics at all \cr
-#'                      This concerns the TDMR graphics, not the SPOT (or other tuner) graphics    } 
+#'                      This concerns the TDMR graphics, not the SPOT (or other tuner) graphics. 
+#'                      If running R from RStudio (if there is a device with name "RStudioGD")
+#'                      then the default "win" is changed to "rstudio" automatically.    } 
 #' 			\item{GD.RESTART}{[T] =T: restart the graphics device (i.e. close all 'old' windows or re-open 
 #'                      multi-page pdf) in each call to \code{\link{tdmClassify}} or \code{\link{tdmRegress}}, resp. \cr
 #'                      =F: leave all windows open (suitable for calls from SPOT) or write more pages in same pdf. } 
 #' 			\item{GD.CLOSE}{[T] =T: close graphics device "png", "pdf" at the end of main_*.r (suitable for main_*.r solo) or \cr
 #'                      =F: do not close (suitable for call from tdmStartSpot, where all windows should remain open)  } 
 #' 			\item{NRUN}{[2] how many runs with different train & test samples  - or - how many CV-runs, if \code{opts$TST.kind}="cv"  } 
-#' 			\item{APPLY_TIME}{[FALSE]   } 
+#'   		\item{APPLY_TIME}{[FALSE]   } 
+#'   		\item{test2.show}{[FALSE]   } 
+#'     	\item{test2.string}{["default cutoff"]   } 
 #' 			\item{VERBOSE}{[2] =2: print much output, =1: less, =0: none} 
 #'
 #' @note  The variables opts$PRE.PCA.numericV and opts$PRE.SFA.numericV (string vectors of numeric input columns to be used for PCA or SFA) 
@@ -206,7 +218,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
                               # ["RF"|"SVM"|"LM"]: use [RF| SVM| linear model] in tdmRegress
 
       opts$RF.ntree = 500
-      opts$RF.samp = 1000
+      opts$RF.samp = NULL # 1000
       opts$RF.mtry = NULL
       opts$RF.nodesize = 1
       opts$RF.OOB = TRUE;     # if =T, return OOB-training set error as tuning measure; if =F, return test set error
@@ -237,6 +249,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$DO.GRAPHICS=T      # --- deprecated, use opts$GD.DEVICE="non" ---
       opts$GD.DEVICE="win"    # ="pdf": all graphics to one multi-page PDF
                               # ="win": all graphics to (several) windows (X11)
+                              # ="rstudio": all graphics to the *one* RStudio graphics device
                               # ="non": no graphics at all
                               # This concerns the TDMR graphics, not the SPOT graphics
       opts$GD.RESTART=TRUE    # [T] =T: restart the graphics device (i.e. close all 'old' windows
@@ -251,6 +264,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$rep=1;             # the number of the repeat (1,...,spotConfig$max.repeats) in case of repeated evocations from tuner
                               # (needed only internally as private storage for the RNG, see tdmClassify.r
       opts$APPLY_TIME=FALSE;                              
+      opts$test2.show <- FALSE;
       opts$test2.string <- "default cutoff";
       opts$VERBOSE=2;
 
@@ -348,12 +362,21 @@ tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
       opts$rgain.string = rgainStringVals[ind];
     #}
 
-    if (!is.null(opts$DO.GRAPHICS))
+    if (!is.null(opts$DO.GRAPHICS) && is.null(opts$GD.DEVICE))
       if (opts$DO.GRAPHICS==F) opts$GD.DEVICE="non";        # DO.GRAPHICS is now (01/2011) deprecated
 
     if (!is.null(opts$GRAPHDEV) && is.null(opts$GD.DEVICE))
       opts$GD.DEVICE=opts$GRAPHDEV;                         # opts$GRAPHDEV is now (12/2011) deprecated
 
+    #if("rstudio" %in% names(sessionInfo()$loadedOnly)) {      # are we running R from RStudio?
+    #  if (opts$GD.DEVICE=="win") opts$GD.DEVICE="rstudio";    # --- if yes, we have only one graphic device
+    #}    
+    # unfortunately the above if-clause does no longer (with RStudio0.97, R3.0.2) detect  
+    # whether we are running R from RStudio. Use instead:
+    if(Sys.getenv("RSTUDIO") =="1")  {
+      if (opts$GD.DEVICE=="win") opts$GD.DEVICE="rstudio";
+    }
+    
     # code which was previously in tdmClassify. Now we put it here and call tdmOptsDefaultsFill from tdmClassify
     # (cleaner code, less places where opts-values are set)
     #
@@ -364,6 +387,7 @@ tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
     if (is.null(opts$DO.POSTPROC)) opts$DO.POSTPROC=FALSE;    # --- deprecated, use opts$fct.postproc=NULL ---
     if (is.null(opts$GD.RESTART)) opts$GD.RESTART=TRUE;  
     if (is.null(opts$VERBOSE)) opts$VERBOSE=2;
+    if (is.null(opts$test2.show)) opts$test2.show <- FALSE;
     if (is.null(opts$test2.string)) opts$test2.string <- "default cutoff";
     
     # code which was previously in tdmModSortedRFimport. Now we put it here and call tdmOptsDefaultsFill from tdmModSortedRFimport

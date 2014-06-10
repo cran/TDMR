@@ -157,37 +157,76 @@ tdmModCreateCVindex <- function(dset,response.variables,opts,stratified=FALSE) {
 }
 
 ######################################################################################
-# adjust sampsize (RF) to the response.variable's class frequency or the number of training records
-# (take samp, if possible)
+# adjust sampsize (RF) in case of classification: 
+#   - if samp==NULL, set to 3000
+#   - if samp is scalar, clip it to total number of training records
+#   - if samp is vector of length n.class, clip each element to number of training 
+#     records for that class level
 ######################################################################################
-tdmModAdjustSampsize <- function(samp, to.model, response.variable, opts) {
+tdmModAdjustSampsizeC <- function(samp, to.model, response.variable, opts) {
     if (is.null(samp)) samp=3000;
     if (length(samp)==1) newsamp = min(nrow(to.model),samp)
     else {
-      ind = which(samp>as.vector(summary(to.model[,response.variable])));
-      newsamp = samp;
-      newsamp[ind] <- as.vector(summary(to.model[,response.variable]))[ind];
+      newsamp <- as.vector(summary(to.model[,response.variable]));
+      n.class <- length(newsamp);
+      browser()
+      if (length(samp)!=n.class)
+        stop(sprintf("Wrong length of sampsize 'samp'! It must be either a scalar or a vector of length n.class=%d.\n  samp = ",n.class),
+             sprintf("%d ",samp));
+      newsamp <- pmin(newsamp,samp);    # clip any element of samp which is larger than the respective 
+                                        # number of training records (newsamp)
     }
+    
+    if (any(is.na(newsamp))) 
+      stop(sprintf("sampsize 'samp' contains NA's! Consider appropriate lines 'opts$RF.samp[i] = ...' in APD file.\n  samp = "),
+           paste(samp,collapse=", "))
     if (any(samp!=newsamp)) cat1(opts,"Clipping sampsize to ",newsamp,"\n");
     newsamp;
 }
 
 ######################################################################################
-# adjust cutoff (optional parameter for Random Forest and SVM)
-#   a) if length(cutoff)=n.class-1,  add cutoff[n.class] as the remainder to 1.
-#   b) if sum(cutoff) != 1, scale it to 1
-#   c) if sum(cutoff) > 1 by a small amount (<=1e-8), reduce it to 1 or smaller.
+# adjust sampsize (RF) in case of regression: 
+#   - if samp==NULL, set to 3000
+#   - clip it to total number of training records
 ######################################################################################
-tdmModAdjustCutoff <- function(cutoff,n.class)
+tdmModAdjustSampsizeR <- function(samp, to.model, response.variable, opts) {
+  if (is.null(samp)) samp=3000;
+  if (length(samp)==1) newsamp = min(nrow(to.model),samp)
+  else {
+    stop(sprintf("Wrong length of sampsize! It must be a scalar, but it is samp = "),
+         sprintf("%d ",samp));
+  }
+  
+  if (any(samp!=newsamp)) cat1(opts,"Clipping sampsize to ",newsamp,"\n");
+  newsamp;
+}
+
+######################################################################################
+# adjust cutoff (optional parameter for classification with Random Forest or SVM)
+#   a) if length(cutoff)=n.class-1,  add cutoff[n.class] as the remainder to 1.
+#   b) if cutoff[w] < 0 for exactly one w, then set cutoff[w] as the remainder to 1.
+#      (If the others have a sum >= 1, then issue a warning and scale them to sum 0.9.)
+#   c) if sum(cutoff) != 1, scale it to 1
+#   d) if sum(cutoff) > 1 by a small amount (<=1e-8), reduce it to 1 or smaller.
+######################################################################################
+tdmModAdjustCutoff <- function(cutoff,n.class,text="cutoff")
 {
     if (!is.null(cutoff)) {
-      if (length(cutoff)==n.class-1) cutoff=c(cutoff,-1);   # assume that the last element is to adjusted as remainder to 1
+      if (any(is.na(cutoff))) 
+        stop(sprintf("cutoff '%s' contains NA's! Consider appropriate lines '%s[i] = ...' in APD file.\n  %s = ",text,text,text),
+             paste(cutoff,collapse=", "))
+      
+      if (length(cutoff)==n.class-1) cutoff=c(cutoff,-1);   # assume that the last element is to be adjusted as remainder to 1
       if (length(cutoff)!=n.class) stop(sprintf("length(cutoff) differs from n.class=%d. cutoff = ",n.class),sprintf("%7.3f ",cutoff));
       w = which(cutoff<0);
-      if (length(w)>1) stop("cutoff has more than one element < 0. cutoff = ",sprintf("%7.3f ",cutoff));
+      if (length(w)>1) stop("cutoff has more than one element < 0.\n cutoff = ",sprintf("%7.3f ",cutoff));
       if (length(w)==1) {
           s = sum(cutoff[-w]);
-          if (s>=1) cutoff=cutoff/s*(1-1/n.class);
+          if (s>=1) {
+            warning(sprintf("One element of %s is not specified (<0), but the others have a sum>=1, there is no remainder.\n  ",text),
+                    "Reducing the sum of the others to 0.9.")
+            cutoff=cutoff/s*0.9;
+          }
           cutoff[w] = 1-sum(cutoff[-w]);
       }
       if (abs(sum(cutoff)-1)>1e-8) cutoff = cutoff/sum(cutoff);
@@ -198,13 +237,13 @@ tdmModAdjustCutoff <- function(cutoff,n.class)
       # by modifying cutoff as little as possible:
       eps = sum(cutoff)-1;
       if (eps>0) {
-        if (eps>1e-8) stop("Something wrong with eps");
+        if (eps>1e-8) stop("Something wrong with eps");   # this should not happen
         eps = max(1.5*eps,1e-10);
         cutoff = cutoff-eps/n.class;
         if (sum(cutoff)>1) stop("Something wrong, sum(cutoff) is still >1 ");
       }
     }
-
+    
     cutoff;
 }
 
@@ -266,10 +305,10 @@ tdmModAdjustCutoff.OLD <- function(cutoff,n.class)
 #'     \item SRF.calc:    [TRUE] =TRUE: calculate importance & save on SRF.file, =F: load from SRF.file
 #'                   (SRF.file = Output/<filename>.SRF.<response.variable>.Rdata)
 #'     \item SRF.ntree:   [50] number of RF trees
-#'     \item SRF.samp:    sampsize for RF
 #'     \item SRF.verbose: [2]
 #'     \item SRF.maxS:    [40] how many variables to show in plot
 #'     \item SRF.minlsi:  [1] a lower bound for the length of SRF$input.variables
+#'     \item RF.sampsize: sampsize for RF, set prior to calling this func via tdmModAdjustSampsize(opts$SRF.samp,...)
 #'     \item GD.DEVICE:   if !="non", then make a bar plot on current graphic device
 #'     \item CLS.CLASSWT: class weight vector to use in random forest training
 #'    }
@@ -466,9 +505,13 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
     if (opts$GD.DEVICE!="non") {
       maxS <- min(length(s_imp1),opts$SRF.maxS)
       tdmGraphicNewWin(opts)
-      par(mar=c(20,3,2,2)+0.1)
-      barplot(t(s_imp1[1:maxS]), names.arg=s_input[1:maxS], las=3, cex.lab=0.75, col=2, main=paste(filename, response.variable, sep=" : "))
-      par(mar=c(5,4,4,4) + 0.1)   # reset to standard (for multi-page PDF graphic device)
+      oldmar = par()$mar
+      if (opts$GD.DEVICE!="rstudio") {  # some barplots cause an "Error in plot.new() : figure margins too large"
+                                        # on device RStudioGD >> we omit barplot if in RStudio
+        par(mar=c(10,3,2,2)+0.1)
+        barplot(t(s_imp1[1:maxS]), names.arg=s_input[1:maxS], las=3, cex.lab=0.75, col=2, main=paste(filename, response.variable, sep=" : "))
+        par(mar=oldmar)   
+      }
       tdmGraphicCloseWin(opts);
       if (opts$SRF.calc==TRUE & opts$SRF.method=="RFimp") {
         tdmGraphicNewWin(opts)

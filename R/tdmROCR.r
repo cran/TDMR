@@ -49,6 +49,7 @@ tdmROCR.default <- function(x, ...)  cat("This is tdmROCR.default\n");
 #' @seealso   \code{\link{tdmClassifyLoop}}   \code{\link{tdmROCRbase}}
 #' @export
 tdmROCR.TDMclassifier <- function(x,...) {
+  require(twiddler);
   if (length(x$predProbList[[1]]$Val)==1 |
       length(x$predProbList[[1]]$Trn)==1) {
     warning("Object x of class TDMclassifier has no prediction score in 'predProbList' --> can not show a ROC curve");

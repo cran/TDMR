@@ -1,4 +1,6 @@
-demo00sonar	   TDMR, level 1: Simple TDMR classification on task 'Sonar' (one run / no tuning)
+aaClassify     Simple, self-contained classification with tdmClassifyLoop on task 'iris'
+aaRegression   Simple, self-contained regression with tdmRegressLoop on task 'iris'
+demo00sonar    TDMR, level 1: Simple TDMR classification on task 'Sonar' (one run / no tuning)
 demo01cpu      TDMR, level 1: Simple TDMR regression on task 'cpu' (one run / no tuning)
 demo02sonar    TDMR, level 2: SPOT tuning for 'Sonar' 
 demo03sonar    TDMR, level 3: Tuning for TDMR classification task 'Sonar' (multiple runs / short tuning)

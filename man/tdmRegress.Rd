@@ -44,7 +44,7 @@
   function for postprocessing of predicted output }
   \item{\code{gr.log}}{ =FALSE (def): make scatter plot
   as-is, =TRUE: transform output x with log(x+1) (x should
-  be nonnegative) } \item{\code{GRAPHDEV}}{ if !="non",
+  be nonnegative) } \item{\code{GD.DEVICE}}{ if !="non",
   then make a pairs-plot of the 5 most important variables
   and make a true-false bar plot } \item{\code{VERBOSE}}{
   [2] =2: most printed output, =1: less, =0: no output } }}

@@ -12,7 +12,8 @@
   \item{response.variables}{name of column which carries
   the target variable - or - vector of names specifying
   multiple target columns (these columns are not used
-  during prediction, only for evaluation)}
+  during prediction, only for training and for evaluating
+  the predicted result)}
 
   \item{input.variables}{vector with names of input
   columns}
@@ -58,27 +59,21 @@
   object of class \code{\link{TDMregressor}}.
 }
 \examples{
-#*# --------- demo/demo01cpu.r ---------
-#*# This demo shows a simple data mining process (phase 1 of TDMR) for the regression task
-#*# CPU (from UCI repository, http://archive.ics.uci.edu/ml/datasets/Computer+Hardware).
-#*# The data mining process is in main_cpu.r, which calls tdmRegressLoop and tdmRegress
-#*# with Random Forest as the prediction model. 
+#*# --------- demo/aaRegression.r ---------
+#*# This demo shows a simple data mining process (phase 1 of TDMR) for regression on
+#*# dataset iris.
+#*# The data mining process in tdmRegressLoop calls randomForest as the prediction model.
+#*# It is called opts$NRUN=2 times with different random train-validation set splits.
+#*#
+opts=tdmOptsDefaultsSet()                       # set all defaults for data mining process
+gdObj <- tdmGraAndLogInitialize(opts);          # init graphics and log file
 
-## load package and set working directory
-#library(TDMR);
-path <- paste(find.package("TDMR"), "demo01cpu",sep="/");
-#path <- paste("../inst", "demo01cpu",sep="/");
-oldwd <- getwd();
-setwd(path);
-source("main_cpu.r");                # contains also readCmdCpu()
+data(iris)
+response.variables="Petal.Length"                # names, not data (!)
+input.variables=setdiff(names(iris),"Petal.Length")
+opts$rgain.type="rmae"
 
-source("cpu_00.apd",local=TRUE);     # set opts 
-
-result=main_cpu(opts);
-
-## restore old working directory
-setwd(oldwd);
-
+result = tdmRegressLoop(iris,response.variables,input.variables,opts)
 }
 \author{
   Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), FHK,

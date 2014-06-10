@@ -526,9 +526,13 @@ ul
 
 <div class=WordSection1>
 
-<h1 align=center style='text-align:center'><a name="_Toc352859578"></a><a
-name="_Toc315339095"><u><span lang=EN-US>The TDMR Tutorial: <br>
-Examples for Tuned Data Mining in R</span></u></a></h1>
+<div style='border:none;border-bottom:solid #4F81BD 1.0pt;padding:0cm 0cm 4.0pt 0cm'>
+
+<p class=MsoTitle align=center style='text-align:center'><a name="_Toc315339095"><span
+lang=EN-US>The TDMR Tutorial: <br>
+Examples for Tuned Data Mining in R</span></a></p>
+
+</div>
 
 <p class=MsoNormal align=center style='margin-top:18.0pt;text-align:center'><b><span
 lang=EN-US style='font-size:14.0pt;font-family:"Cambria","serif";color:#365F91'><br>
@@ -540,106 +544,115 @@ University of Applied Sciences</span></b></p>
 
 <p class=MsoNormal align=center style='margin-top:18.0pt;text-align:center'><b><span
 lang=EN-US style='font-size:12.0pt;font-family:"Cambria","serif";color:#365F91'>Last
-update: July 2013</span></b></p>
+update: June 2014</span></b></p>
 
 <p class=MsoTocHeading>Contents</p>
 
-<p class=MsoToc1><a href="#_Toc352859578"><span lang=EN-US>The TDMR Tutorial: 
-Examples for Tuned Data Mining in R</span><span style='color:windowtext;
-display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>1</span></a></p>
-
-<p class=MsoToc1><a href="#_Toc352859579"><span lang=EN-US>Tutorial TDMR</span><span
-style='color:windowtext;display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>3</span></a></p>
-
-<p class=MsoToc2><a href="#_Toc352859580"><span lang=EN-US>Overview</span><span
-style='color:windowtext;display:none;text-decoration:none'>.. </span><span
-style='color:windowtext;display:none;text-decoration:none'>3</span></a></p>
-
-<p class=MsoToc2><a href="#_Toc352859581"><span lang=EN-US>Installing TDMR</span><span
-style='color:windowtext;display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>3</span></a></p>
-
-<p class=MsoToc2><a href="#_Toc352859582"><span lang=EN-US>Lessons</span><span
-style='color:windowtext;display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>3</span></a></p>
-
-<p class=MsoToc3><a href="#_Toc352859583"><span lang=EN-US>Lesson 1: DM on task
-SONAR</span><span style='color:windowtext;display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>3</span></a></p>
-
-<p class=MsoToc3><a href="#_Toc352859584"><span lang=EN-US>Lesson 2: SPOT
-tuning on task SONAR</span><span style='color:windowtext;display:none;
+<p class=MsoToc1><span class=MsoHyperlink><a href="#_Toc389633714"><span
+lang=EN-US>Tutorial TDMR</span><span style='color:windowtext;display:none;
 text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>6</span></a></p>
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
 
-<p class=MsoToc3><a href="#_Toc352859585"><span lang=EN-US>Lesson 3: “The Big
-Loop” on task SONAR</span><span style='color:windowtext;display:none;
+<p class=MsoToc2><span class=MsoHyperlink><a href="#_Toc389633715"><span
+lang=EN-US>Overview</span><span style='color:windowtext;display:none;
+text-decoration:none'>.. </span><span
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
+
+<p class=MsoToc2><span class=MsoHyperlink><a href="#_Toc389633716"><span
+lang=EN-US>Installing TDMR</span><span style='color:windowtext;display:none;
 text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>8</span></a></p>
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
 
-<p class=MsoToc3><a href="#_Toc352859586"><span lang=EN-US>Lesson 4: Regression
-Big Loop</span><span style='color:windowtext;display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>10</span></a></p>
-
-<p class=MsoToc3><a href="#_Toc352859587"><span lang=EN-US>Lesson 5:
-Interactive Visualization</span><span style='color:windowtext;display:none;
-text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>10</span></a></p>
-
-<p class=MsoToc3><a href="#_Toc352859588"><span lang=EN-US>Lesson 6:
-Performance Measure Plots</span><span style='color:windowtext;display:none;
-text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>11</span></a></p>
-
-<p class=MsoToc3><a href="#_Toc352859589">Lesson 7: Tuner CMA-ES ( rCMA)<span
-style='color:windowtext;display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>13</span></a></p>
-
-<p class=MsoToc3><a href="#_Toc352859590"><span lang=EN-US>Lesson 8: Parallel
-TDMR</span><span style='color:windowtext;display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>13</span></a></p>
-
-<p class=MsoToc2><a href="#_Toc352859591"><span lang=EN-US>Frequently Asked
-Questions (FAQ)</span><span style='color:windowtext;display:none;text-decoration:
+<p class=MsoToc2><span class=MsoHyperlink><a href="#_Toc389633717"><span
+lang=EN-US>Lessons</span><span style='color:windowtext;display:none;text-decoration:
 none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>13</span></a></p>
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
 
-<p class=MsoToc3><a href="#_Toc352859592"><span lang=EN-US>How can I rerun a
-certain best tuning solution and test it on the same / other data?</span><span
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633718"><span
+lang=EN-US>Lesson 0: A simple TDMR program</span><span style='color:windowtext;
+display:none;text-decoration:none'>.. </span><span
+style='color:windowtext;display:none;text-decoration:none'>3</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633719"><span
+lang=EN-US>Lesson 1: DM on task SONAR</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>4</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633720"><span
+lang=EN-US>Lesson 2: SPOT tuning on task SONAR</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>6</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633721"><span
+lang=EN-US>Lesson 3: “The Big Loop” on task SONAR</span><span style='color:
+windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>9</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633722"><span
+lang=EN-US>Lesson 4: Regression Big Loop</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>10</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633723"><span
+lang=EN-US>Lesson 5: Interactive Visualization</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>10</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633724"><span
+lang=EN-US>Lesson 6: Performance Measure Plots</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>12</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633725">Lesson 7:
+Tuner CMA-ES ( rCMA)<span style='color:windowtext;display:none;text-decoration:
+none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>13</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633726"><span
+lang=EN-US>Lesson 8: Parallel TDMR</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>13</span></a></span></p>
+
+<p class=MsoToc2><span class=MsoHyperlink><a href="#_Toc389633727"><span
+lang=EN-US>Frequently Asked Questions (FAQ)</span><span style='color:windowtext;
+display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>13</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633728"><span
+lang=EN-US>I have already obtained a best tuning solution for some data set.
+How can I rerun and test it on the same / other data?</span><span
+style='color:windowtext;display:none;text-decoration:none'>  </span><span
+style='color:windowtext;display:none;text-decoration:none'>13</span></a></span></p>
+
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633729"><span
+lang=EN-US>How can I make with a trained model new predictions?</span><span
 style='color:windowtext;display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>13</span></a></p>
+style='color:windowtext;display:none;text-decoration:none'>14</span></a></span></p>
 
-<p class=MsoToc3><a href="#_Toc352859593"><span lang=EN-US>How can I make with
-a trained model new predictions?</span><span style='color:windowtext;
-display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>13</span></a></p>
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633730"><span
+lang=EN-US>How can I add a new tuning parameter to TDMR?</span><span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>14</span></a></span></p>
 
-<p class=MsoToc3><a href="#_Toc352859594"><span lang=EN-US>How can I add a new
-tuning parameter to TDMR?</span><span style='color:windowtext;display:none;
-text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>14</span></a></p>
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633731"><span
+lang=EN-US>How can I add a new machine learning algorithm  to TDMR?</span><span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>14</span></a></span></p>
 
-<p class=MsoToc3><a href="#_Toc352859595"><span lang=EN-US>How can I add a new
-machine learning algorithm  to TDMR?</span><span style='color:windowtext;
-display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>14</span></a></p>
+<p class=MsoToc3><span class=MsoHyperlink><a href="#_Toc389633732"><span
+lang=EN-US>How can I add a new tuning algorithm  to TDMR?</span><span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>14</span></a></span></p>
 
-<p class=MsoToc3><a href="#_Toc352859596"><span lang=EN-US>How can I add a new
-tuning algorithm  to TDMR?</span><span style='color:windowtext;display:none;
-text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>14</span></a></p>
-
-<p class=MsoToc1><a href="#_Toc352859597">References<span style='color:windowtext;
-display:none;text-decoration:none'>. </span><span
-style='color:windowtext;display:none;text-decoration:none'>15</span></a></p>
+<p class=MsoToc1><span class=MsoHyperlink><a href="#_Toc389633733">References<span
+style='color:windowtext;display:none;text-decoration:none'>. </span><span
+style='color:windowtext;display:none;text-decoration:none'>15</span></a></span></p>
 
 <p class=MsoNormal>&nbsp;</p>
 
-<h1><a name="_Toc352859579"><u><span lang=EN-US>Tutorial TDMR</span></u></a></h1>
+<h1><a name="_Toc389633714"><u><span lang=EN-US>Tutorial TDMR</span></u></a></h1>
 
-<h2><a name="_Toc352859580"><span lang=EN-US>Overview</span></a></h2>
+<h2><a name="_Toc389633715"><span lang=EN-US>Overview</span></a></h2>
 
 <p class=MsoNormal><span lang=EN-US>The TDMR framework is written in R with the
 aim to facilitate the training, tuning and evaluation of data mining (DM) models.
@@ -647,7 +660,7 @@ It puts special emphasis on tuning these data mining models as well as
 simultaneously tuning certain preprocessing options. </span></p>
 
 <p class=MsoNormal><span lang=EN-US>This document (</span><a
-href="../../../../../Docu.d/TDMR-tutorial.html"><span lang=EN-US>TDMR-tutorial.html</span></a><span
+href="TDMR-tutorial.html"><span lang=EN-US>TDMR-tutorial.html</span></a><span
 lang=EN-US>)</span></p>
 
 <p class=MsoListParagraphCxSpFirst style='text-indent:-18.0pt'><span
@@ -665,7 +678,7 @@ style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nb
 questions)</span></p>
 
 <p class=MsoNormal><span lang=EN-US>This document should be read in conjunction
-with </span><a href="../../../../../Docu.d/TDMR-docu.html"><span lang=EN-US>TDMR-docu.html</span></a><span
+with </span><a href="TDMR-docu.html"><span lang=EN-US>TDMR-docu.html</span></a><span
 lang=EN-US>, which describes more details and software concepts of TDMR.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Both documents concentrate more on the
@@ -681,7 +694,7 @@ lang=EN-US>[Kone12a]</span></a><span lang=EN-US> and </span><a
 href="http://maanvs03.gm.fh-koeln.de/webpub/CIOPReports.d/Kone12b.d/Kone12b.pdf"><span
 lang=EN-US>[Kone12b]</span></a><span lang=EN-US>.</span></p>
 
-<h2><a name="_Toc352859581"><span lang=EN-US>Installing TDMR</span></a></h2>
+<h2><a name="_Toc389633716"><span lang=EN-US>Installing TDMR</span></a></h2>
 
 <p class=MsoNormal><span lang=EN-US>Once you have R (</span><a
 href="http://cran.r-project.org/"><span lang=EN-US>http://cran.r-project.org/</span></a><span
@@ -704,18 +717,102 @@ lang=EN-US>), &gt; 2.14, up and running, simply install TDMR with</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h2><a name="_Toc352859582"></a><a name="_Phase_1:_DM"></a><span lang=EN-US>Lessons</span></h2>
+<h2><a name="_Toc389633717"></a><a name="_Phase_1:_DM"></a><span lang=EN-US>Lessons</span></h2>
 
-<h3><a name="_Toc352859583"><span lang=EN-US>Les</span></a><a name=Lesson01></a><span
-lang=EN-US>son 1: DM on task SONAR</span></h3>
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<p class=MsoNormal><a href="../../../../../demo/demo00sonar.r"><span
-lang=EN-US>demo/demo00sonar.r</span></a><span class=MsoHyperlink><span
-lang=EN-US><br>
-</span></span><a href="../../../../../demo/demo01cpu.r"><span lang=EN-US>demo/demo01cpu.r</span></a><span
+<p class=MsoNormal><b><span lang=EN-US>NOTE</span></b><span lang=EN-US>: Many,
+but not all TDMR demos and functions will run under RStudio. This is due to
+some incompatibilities in RStudio’s graphic device(s). All demos und functions
+will run under RGui.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h3><a name="_Toc389633718"><span lang=EN-US>Lesson 0: A simple TDMR program</span></a></h3>
+
+<p class=MsoNormal><a href="../demo/aaClassify.r"><span lang=EN-US>demo/aaClassify.r</span></a><span
+class=MsoHyperlink><span lang=EN-US><br>
+</span></span><a href="../demo/aaRegression.r"><span lang=EN-US>demo/aaRegression.r</span></a><span
 class=MsoHyperlink><span lang=EN-US><br>
 <br>
 </span></span></p>
+
+<p class=MsoNormal><span lang=EN-US>This demo shows the most simple TDMR
+program. It does not need any external files. </span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<table class=MsoTableGrid border=0 cellspacing=0 cellpadding=0
+ style='margin-left:5.4pt;background:#F2F2F2;border-collapse:collapse;
+ border:none'>
+ <tr>
+  <td width=607 valign=top style='width:455.2pt;padding:0cm 5.4pt 0cm 5.4pt'>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>#*#
+  --------- demo/aaClassify.r ---------</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>opts=tdmOptsDefaultsSet()                      
+   # set all defaults for data mining process</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>gdObj
+  &lt;- tdmGraAndLogInitialize(opts);     # init graphics and log file</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>data(iris)<br>
+  response.variables=&quot;Species&quot;                    # names, not data
+  (!)</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>input.variables=setdiff(names(iris),&quot;Species&quot;)</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
+  <p class=MsoNormal style='margin-bottom:0cm;margin-bottom:.0001pt'><span
+  lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>result
+  = tdmClassifyLoop(iris,response.variables,input.variables,opts)</span></p>
+  </td>
+ </tr>
+</table>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Here, tdmOptsDefaultsSet() will construct a
+default list </span><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>opts</span><span
+lang=EN-US> with all relevant settings. See </span><a
+href="TDMR-docu.html#appendixB_opts"><span lang=EN-US>TDMR-docu, Appendix B</span></a><span
+lang=EN-US> for a complete list of all elements and all defaults for list </span><span
+lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>opts</span><span
+lang=EN-US>. After initializing graphics and log file, the dataset </span><span
+lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>iris</span><span
+lang=EN-US> is loaded  and the target (“Species”) and the input variables (all
+other column namess from </span><span lang=EN-US style='font-size:10.0pt;
+font-family:"Courier New"'>iris</span><span lang=EN-US>) are defined.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>Now the classification DM task is started
+with tdmClassifyLoop: for opts$NRUN=2 times the data set is split randomly in
+90% training and 10% validation data. In each run, based on the training data
+the importance of the input variables is calculated and displayed (using
+randomForest). Then the model (randomForest by default, opts$MOD.method=”RF”)
+is trained on the training data and evaluated on the 10% validation data.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>A similar small sample program exists for
+regression (</span><a href="../demo/aaRegression.r"><span lang=EN-US>demo/aaRegression.r</span></a><span
+lang=EN-US>). </span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h3><a name="_Toc389633719"><span lang=EN-US>Les</span></a><a name=Lesson01></a><span
+lang=EN-US>son 1: DM on task SONAR</span></h3>
+
+<p class=MsoNormal><a href="../demo/demo00sonar.r"><span lang=EN-US>demo/demo00sonar.r</span></a><span
+class=MsoHyperlink><span lang=EN-US><br>
+</span></span><a href="../demo/demo01cpu.r"><span lang=EN-US>demo/demo01cpu.r</span></a><span
+class=MsoHyperlink><span lang=EN-US><br>
+<br>
+</span></span></p>
+
+<p class=MsoNormal><span lang=EN-US>This lesson demonstrates the usage of TDMR
+for a somewhat bigger DM task: data are read from file and the information for controlling
+TDMR are distributed over several files</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Suppose that you have a dataset and want to
 build a DM model for it. To be concrete, we consider the classification dataset
@@ -723,7 +820,7 @@ SONAR (see </span><a
 href="http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+%28Sonar,+Mines+vs.+Rocks%29"><span
 lang=EN-US>UCI repository</span></a><span lang=EN-US> or package mlbench for
 further info on SONAR) with the data file </span><a
-href="../../../../../demo02sonar/data/sonar.txt"><span lang=EN-US>sonar.txt</span></a><span
+href="../demo02sonar/data/sonar.txt"><span lang=EN-US>sonar.txt</span></a><span
 lang=EN-US>. </span></p>
 
 <p class=MsoNormal><span lang=EN-US>If you want to build a DM classification
@@ -786,14 +883,14 @@ lang=EN-US> is either inspected by the user or by the tuning process</span></p>
 <p class=MsoNormal><span lang=EN-US>Here, tdmOptsDefaultsSet() will construct a
 default list </span><span lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>opts</span><span
 lang=EN-US> with all relevant settings. See </span><a
-href="../../../../../Docu.d/TDMR-docu.html#appendixB_opts"><span lang=EN-US>TDMR-docu,
-Appendix B</span></a><span lang=EN-US> for a complete list of all elements and
-all defaults for list </span><span lang=EN-US style='font-size:10.0pt;
-font-family:"Courier New"'>opts</span><span lang=EN-US>. You need to specify
-only those things which differ from tdmOptsDefaultsSet(): in this case most
-importantly the filename and directory of the SONAR dataset and a string </span><span
-lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>opts$READ.CMD</span><span
-lang=EN-US> containing the data-reading command.</span></p>
+href="TDMR-docu.html#appendixB_opts"><span lang=EN-US>TDMR-docu, Appendix B</span></a><span
+lang=EN-US> for a complete list of all elements and all defaults for list </span><span
+lang=EN-US style='font-size:10.0pt;font-family:"Courier New"'>opts</span><span
+lang=EN-US>. You need to specify only those things which differ from
+tdmOptsDefaultsSet(): in this case most importantly the filename and directory of
+the SONAR dataset and a string </span><span lang=EN-US style='font-size:10.0pt;
+font-family:"Courier New"'>opts$READ.CMD</span><span lang=EN-US> containing the
+data-reading command.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -852,13 +949,13 @@ lang=EN-US> containing the data-reading command.</span></p>
   <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
   margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
   10.0pt;font-family:"Arial Narrow","sans-serif"'>names(dset)[61] &lt;-
-  &quot;Class&quot;                    # 60 columns V1,...,V60 with input data,
+  &quot;Class&quot;                    # 60 columns V1,...,V60 with input data,
   one response</span></p>
   <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
   margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
-  10.0pt;font-family:"Arial Narrow","sans-serif"'>                                                               #
-  column &quot;Class&quot; with levels [&quot;M&quot; (metal) | &quot;R&quot;
-  (rock)] </span></p>
+  10.0pt;font-family:"Arial Narrow","sans-serif"'>                                                  
+              # column &quot;Class&quot; with levels [&quot;M&quot; (metal) |
+  &quot;R&quot; (rock)] </span></p>
   <p class=MsoNormal style='margin-top:0cm;margin-right:0cm;margin-bottom:0cm;
   margin-left:35.4pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
   10.0pt;font-family:"Arial Narrow","sans-serif"'>    <br>
@@ -1035,8 +1132,8 @@ font-family:"Courier New"'>result</span><span lang=EN-US>.</span></p>
 lang=EN-US>The object  </span><span lang=EN-US style='font-size:10.0pt;
 font-family:"Courier New"'>result</span><span lang=EN-US> of class
 TDMclassifier is explained in more detail in </span><a
-href="../../../../../Docu.d/TDMR-docu.html#table_important_vars"><span
-lang=EN-US>Table 3 of TDMR-docu</span></a><span lang=EN-US>.</span></p>
+href="TDMR-docu.html#table_important_vars"><span lang=EN-US>Table 3 of
+TDMR-docu</span></a><span lang=EN-US>.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
@@ -1077,21 +1174,20 @@ very reliable, a more reliable test set classification would be obtained with op
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h3><a name="_Toc352859584"></a><a name="_Phase_2:_SPOT"></a><span lang=EN-US>Les<a
+<h3><a name="_Toc389633720"></a><a name="_Phase_2:_SPOT"></a><span lang=EN-US>Les<a
 name=Lesson02></a>son 2: SPOT tuning on task SONAR</span></h3>
 
-<p class=MsoNormal><a href="../../../../../demo/demo02sonar.r"><span
-lang=EN-US>demo/demo02sonar.r</span></a><span class=MsoHyperlink><span
-lang=EN-US><br>
+<p class=MsoNormal><a href="../demo/demo02sonar.r"><span lang=EN-US>demo/demo02sonar.r</span></a><span
+class=MsoHyperlink><span lang=EN-US><br>
 <br>
 </span></span></p>
 
 <p class=MsoNormal><span lang=EN-US>If you want to do a </span><a
 href="http://cran.r-project.org/web/packages/SPOT/index.html"><span lang=EN-US>SPOT</span></a><span
 lang=EN-US> tuning [Bart10e] on task SONAR, you should follow the steps
-described in </span><a href="../../../../../Docu.d/TDMR-docu.docx#TDMR_Level_2"><span
-lang=EN-US>TDMR Workflow, Level 2</span></a><span lang=EN-US> and create in
-addition to main_sonar.r from </span><a href="#Lesson01"><span lang=EN-US>Lesson01</span></a><span
+described in </span><a href="TDMR-docu.docx#TDMR_Level_2"><span lang=EN-US>TDMR
+Workflow, Level 2</span></a><span lang=EN-US> and create in addition to
+main_sonar.r from </span><a href="#Lesson01"><span lang=EN-US>Lesson01</span></a><span
 lang=EN-US> the three small files sonar_01.conf, sonar_01.apd and sonar_01.roi.
 The files’ content may look for example like this: </span></p>
 
@@ -1433,8 +1529,7 @@ sensitive to CUTOFF1.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<p class=MsoNormal><a
-href="../../../../../Docu.d/TDMR-docu.html#details_Lesson02"><i><span
+<p class=MsoNormal><a href="TDMR-docu.html#details_Lesson02"><i><span
 lang=EN-US>See Sec. &quot;Details for Lesson 2&quot; in TDMR-docu for more
 details</span></i></a></p>
 
@@ -1442,15 +1537,14 @@ details</span></i></a></p>
 margin-left:72.0pt;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
 10.0pt'>&nbsp;</span></p>
 
-<h3><a name="_Toc352859585"></a><a name="_Phase_3:_“The_2"></a><span
+<h3><a name="_Toc389633721"></a><a name="_Phase_3:_“The_2"></a><span
 lang=EN-US>Les<a name=Lesson03></a>son 3: “The Big Loop” on task SONAR</span></h3>
 
-<p class=MsoNormal><a href="../../../../../demo/demo03sonar.r"><span
-lang=EN-US>demo/demo03sonar.r</span></a><span class=MsoHyperlink><span
+<p class=MsoNormal><a href="../demo/demo03sonar.r"><span lang=EN-US>demo/demo03sonar.r</span></a><span
+class=MsoHyperlink><span lang=EN-US><br>
+</span></span><a href="../demo/demo03sonar_A.r"><span lang=EN-US>demo/demo03sonar_A.r</span></a><span
 lang=EN-US><br>
-</span></span><a href="../../../../../demo/demo03sonar_A.r"><span lang=EN-US>demo/demo03sonar_A.r</span></a><span
-lang=EN-US><br>
-</span><a href="../../../../../demo/demo03sonar_B.r"><span lang=EN-US>demo/demo03sonar_B.r</span></a></p>
+</span><a href="../demo/demo03sonar_B.r"><span lang=EN-US>demo/demo03sonar_B.r</span></a></p>
 
 <p class=MsoNormal><span lang=EN-US style='font-size:6.0pt'>&nbsp;</span></p>
 
@@ -1638,7 +1732,7 @@ lang=EN-US> contains:</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Here CLASSWT2 and XPERC are the tuning
 parameters, the other columns of the data frame are defined in <b>Table 2</b>
-of </span><a href="../../../../../Docu.d/TDMR-docu.html"><span lang=EN-US>TDMR-docu.html</span></a><span
+of </span><a href="TDMR-docu.html"><span lang=EN-US>TDMR-docu.html</span></a><span
 lang=EN-US>. </span></p>
 
 <p class=MsoNormal><span lang=EN-US>In the case of the example above, the
@@ -1659,24 +1753,22 @@ reliable result might be obtained with tdm$umode=“CV” instead of “RSUB”.</span><
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<p class=MsoNormal><a
-href="../../../../../Docu.d/TDMR-docu.html#details_Lesson03"><i><span
+<p class=MsoNormal><a href="TDMR-docu.html#details_Lesson03"><i><span
 lang=EN-US>See &quot;Details for Lesson 3&quot; in TDMR-docu for more details</span></i></a></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h3><a name="_Toc352859586"></a><a name="_Lesson_4:_Regression"></a><span
+<h3><a name="_Toc389633722"></a><a name="_Lesson_4:_Regression"></a><span
 lang=EN-US>Less<a name=Lesson04></a>on 4: Regression Big Loop</span></h3>
 
-<p class=MsoNormal><a href="../../../../../demo/demo04cpu.r"><span lang=EN-US>demo/demo04cpu.r</span></a></p>
+<p class=MsoNormal><a href="../demo/demo04cpu.r"><span lang=EN-US>demo/demo04cpu.r</span></a></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h3><a name="_Toc352859587"><span lang=EN-US>Less</span></a><a name=Lesson05></a><span
+<h3><a name="_Toc389633723"><span lang=EN-US>Less</span></a><a name=Lesson05></a><span
 lang=EN-US>on 5: Interactive Visualization</span></h3>
 
-<p class=MsoNormal><a href="../../../../../demo/demo05visMeta.r"><span
-lang=EN-US>demo/demo05visMeta.r</span></a></p>
+<p class=MsoNormal><a href="../demo/demo05visMeta.r"><span lang=EN-US>demo/demo05visMeta.r</span></a></p>
 
 <p class=MsoNormal><span lang=EN-US>Once a lesson-3 experiment is completed,
 the return value </span><span lang=EN-US style='font-family:"Courier New"'>envT</span><span
@@ -1822,17 +1914,17 @@ can be selected and saved as PNG images with commands like</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h3><a name="_Toc352859588"><span lang=EN-US>Less</span></a><a name=Lesson06></a><span
+<h3><a name="_Toc389633724"><span lang=EN-US>Less</span></a><a name=Lesson06></a><span
 lang=EN-US>on 6: Performance Measure Plots</span></h3>
 
-<p class=MsoNormal><a href="../../../../../demo/demo06ROCR.r"><span lang=EN-US>demo/demo06ROCR.r</span></a></p>
+<p class=MsoNormal><a href="../demo/demo06ROCR.r"><span lang=EN-US>demo/demo06ROCR.r</span></a></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
 <p class=MsoNormal><span lang=EN-US>With the help of package </span><a
 href="http://cran.r-project.org/web/packages/ROCR/index.html"><span lang=EN-US>ROCR</span></a><span
 lang=EN-US> [Sing05], several area performance measures can be used for binary
-classification. The file </span><a href="../../../../../demo/demo06ROCR.r"><span
+classification. The file </span><a href="../demo/demo06ROCR.r"><span
 lang=EN-US>demo/demo06ROCR.r</span></a><span class=MsoHyperlink><span
 lang=EN-US> </span></span><span lang=EN-US> shows an example:<br>
 <br>
@@ -1938,16 +2030,14 @@ different performance measure plots:</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<p class=MsoNormal><img width=313 height=143
-src="TDMR-tutorial-Dateien/image009.png" align=left hspace=12></p>
-
 <table class=MsoTableGrid border=1 cellspacing=0 cellpadding=0 width=612
  style='width:459.0pt;border-collapse:collapse;border:none'>
  <tr>
   <td width=612 valign=top style='width:459.0pt;border:solid windowtext 1.0pt;
   border-bottom:none;padding:0cm 5.4pt 0cm 5.4pt'>
-  <p class=MsoNormal><img border=0 width=230 height=153 id="Grafik 13"
-  src="TDMR-tutorial-Dateien/image010.jpg"></p>
+  <p class=MsoNormal><img width=313 height=143
+  src="TDMR-tutorial-Dateien/image009.png" align=left hspace=12><img border=0
+  width=230 height=153 id="Grafik 13" src="TDMR-tutorial-Dateien/image010.jpg"></p>
   </td>
  </tr>
  <tr>
@@ -1962,11 +2052,12 @@ src="TDMR-tutorial-Dateien/image009.png" align=left hspace=12></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h3><a name="_Toc352859589">Le</a><a name=Lesson07></a>sson 7: Tuner CMA-ES (
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h3><a name="_Toc389633725">Le</a><a name=Lesson07></a>sson 7: Tuner CMA-ES (
 rCMA)</h3>
 
-<p class=MsoNormal><a href="../../../../../demo/demo07cma_j.r"><span
-lang=EN-US>demo/demo07cma_j.r</span></a></p>
+<p class=MsoNormal><a href="../demo/demo07cma_j.r"><span lang=EN-US>demo/demo07cma_j.r</span></a></p>
 
 <p class=MsoNormal><span lang=EN-US>This demo shows for tuner cma_j (CMA-ES,
 Java version via package rCMA) a complete tuned data mining process (TDMR,
@@ -1975,11 +2066,12 @@ sonar_03.conf as configuration file.<br>
 <br>
 </span></p>
 
-<h3><a name="_Toc352859590"><span lang=EN-US>Le</span></a><a name=Lesson08></a><span
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h3><a name="_Toc389633726"><span lang=EN-US>Le</span></a><a name=Lesson08></a><span
 lang=EN-US>sson 8: Parallel TDMR</span></h3>
 
-<p class=MsoNormal><a href="../../../../../demo/demo08parallel.r"><span
-lang=EN-US>demo/demo08parallel.r</span></a></p>
+<p class=MsoNormal><a href="../demo/demo08parallel.r"><span lang=EN-US>demo/demo08parallel.r</span></a></p>
 
 <p class=MsoNormal><span lang=EN-US>This demo does the same as demo03sonar.r,
 but it runs 4 experiment on 4 parallel cores (if your environment supports
@@ -1987,10 +2079,14 @@ parallel clusters with the R-core package 'parallel').</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h2><a name="_Toc352859591"><span lang=EN-US>Freq</span></a><a name=FAQ></a><span
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h2><a name="_Toc389633727"><span lang=EN-US>Freq</span></a><a name=FAQ></a><span
 lang=EN-US>uently Asked Questions (FAQ)</span></h2>
 
-<h3><a name="_Toc352859592"><span lang=EN-US>I have already obtained a best
+<h3><a name="_Toc389633728"><span lang=EN-US>I have already obtained a best
 tuning solution for some data set. How can I rerun and test it on the same /
 other data?</span></a></h3>
 
@@ -2029,7 +2125,7 @@ in envT are done with the usual test data set.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h3><a name="_Toc352859593"><span lang=EN-US>How can I make with a trained
+<h3><a name="_Toc389633729"><span lang=EN-US>How can I make with a trained
 model new predictions?</span></a></h3>
 
 <p class=MsoNormal><span lang=EN-US>Run your </span><a href="#Lesson03"><span
@@ -2087,13 +2183,13 @@ lang=EN-US>.</span></p>
 <p class=MsoListParagraphCxSpMiddle style='text-indent:-18.0pt'><span
 lang=EN-US style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><span lang=EN-US>See the example in </span><a
-href="../../../../../demo/demo04cpu.r"><span lang=EN-US>demo/demo04cpu.r</span></a><span
+href="../demo/demo04cpu.r"><span lang=EN-US>demo/demo04cpu.r</span></a><span
 lang=EN-US> and in </span><span lang=EN-US style='font-family:"Courier New"'>predict.TDMenvir</span><span
 lang=EN-US>.</span></p>
 
 <p class=MsoListParagraphCxSpLast><span lang=EN-US>&nbsp;</span></p>
 
-<h3><a name="_Toc352859594"><span lang=EN-US>How can I add a new tuning
+<h3><a name="_Toc389633730"><span lang=EN-US>How can I add a new tuning
 parameter to TDMR?</span></a></h3>
 
 <p class=MsoListParagraph style='text-indent:-18.0pt'><span lang=EN-US
@@ -2132,23 +2228,21 @@ style='font-family:Symbol'>·<span style='font:7.0pt "Times New Roman"'>&nbsp;&nb
 opts$Z, add a default-value-line to tdmOptsDefaultsSet(). Then all existing and
 further tasks have this default setting for opts$Z.</span></p>
 
-<h3><a name="_Toc352859595"><span lang=EN-US>How can I add a new machine
+<h3><a name="_Toc389633731"><span lang=EN-US>How can I add a new machine
 learning algorithm  to TDMR?</span></a></h3>
 
 <p class=MsoNormal><span lang=EN-US>see section “</span><a
-href="../../../../../Docu.d/TDMR-docu.html#integrate_new_ML_algo"><span
-lang=EN-US>How to integrate new machine learning algorithms</span></a><span
-lang=EN-US>” in </span><a href="../../../../../Docu.d/TDMR-docu.html"><span
-lang=EN-US>TDMR_docu</span></a><span lang=EN-US>.</span></p>
+href="TDMR-docu.html#integrate_new_ML_algo"><span lang=EN-US>How to integrate
+new machine learning algorithms</span></a><span lang=EN-US>” in </span><a
+href="TDMR-docu.html"><span lang=EN-US>TDMR_docu</span></a><span lang=EN-US>.</span></p>
 
-<h3><a name="_Toc352859596"><span lang=EN-US>How can I add a new tuning
+<h3><a name="_Toc389633732"><span lang=EN-US>How can I add a new tuning
 algorithm  to TDMR?</span></a></h3>
 
 <p class=MsoNormal><span lang=EN-US>See section “</span><a
-href="../../../../../Docu.d/TDMR-docu.html#integrate_new_tuners"><span
-lang=EN-US>How to integrate new tuners</span></a><span lang=EN-US>” in </span><a
-href="../../../../../Docu.d/TDMR-docu.html"><span lang=EN-US>TDMR_docu</span></a><span
-lang=EN-US>.</span></p>
+href="TDMR-docu.html#integrate_new_tuners"><span lang=EN-US>How to integrate
+new tuners</span></a><span lang=EN-US>” in </span><a href="TDMR-docu.html"><span
+lang=EN-US>TDMR_docu</span></a><span lang=EN-US>.</span></p>
 
 <p class=MsoNormal style='margin-top:0cm;margin-right:-21.3pt;margin-bottom:
 0cm;margin-left:0cm;margin-bottom:.0001pt'><a name="_TDMR_Tuner_Concept"></a><span
@@ -2158,7 +2252,7 @@ lang=EN-US style='font-size:10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbs
 0cm;margin-left:0cm;margin-bottom:.0001pt'><span lang=EN-US style='font-size:
 10.0pt;font-family:"Arial Narrow","sans-serif"'>&nbsp;</span></p>
 
-<h1><a name="_Toc352859597"><u>References</u></a></h1>
+<h1><a name="_Toc389633733"><u>References</u></a></h1>
 
 <p class=MsoNormal><span class=citation>[Bart10e] T. Bartz-Beielstein. </span><span
 class=citation><span lang=EN-US>SPOT: An R package for automatic and
@@ -2200,7 +2294,7 @@ lang=EN-US> </span></p>
 class=MsoFootnoteReference><span class=MsoFootnoteReference><span
 style='font-size:10.0pt;font-family:"Calibri","sans-serif"'>[1]</span></span></span></a>
 <span lang=EN-US>Templates for sonar_00.apd and main_sonar.r are available from
-</span><a href="../../../../../Docu.d/TDMR-docu.html#inst"><span lang=EN-US>inst</span></a><span
+</span><a href="TDMR-docu.html#inst"><span lang=EN-US>inst</span></a><span
 lang=EN-US>/demo02sonar.</span></p>
 
 </div>

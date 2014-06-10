@@ -69,7 +69,9 @@ tdmMapDesApply <- function(des,opts,k,spotConfig,tdm) {
     pNames=row.names(spotConfig$alg.roi);
     for (d in pNames) {
       if (length(which(tdm$map$roiValue==d))+length(which(tdm$mapUser$roiValue==d))==0)
-        stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s. Please check spelling or extend tdmMapDesign.csv or userMapDesign.csv!",d));
+        stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s.\n  ",d),
+             sprintf("Please check spelling in ROI file %s %s", spotConfig$io.roiFileName,
+                     "or extend tdmMapDesign.csv or userMapDesign.csv appropriately!"));
     }
     
     if (nrow(tdm$map)>0) {
@@ -100,8 +102,12 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 	if (!is.null(des$MTRY)) des$MTRY <- round(des$MTRY);
 	if (!is.null(des$NTREE)) des$NTREE <- round(des$NTREE);
 	if (!is.null(des$NODESIZE)) des$NODESIZE <- round(des$NODESIZE);
-	if (!is.null(des$SAMPSIZE)) des$SAMPSIZE <- round(des$SAMPSIZE);
-  if (!is.null(des$PRE_NPC)) des$PRE_NPC = round(des$PRE_NPC);
+	if (!is.null(des$SAMPSIZE1)) des$SAMPSIZE1 <- round(des$SAMPSIZE1);
+	if (!is.null(des$SAMPSIZE2)) des$SAMPSIZE2 <- round(des$SAMPSIZE2);
+	if (!is.null(des$SAMPSIZE3)) des$SAMPSIZE3 <- round(des$SAMPSIZE3);
+	if (!is.null(des$SAMPSIZE4)) des$SAMPSIZE4 <- round(des$SAMPSIZE4);
+	if (!is.null(des$SAMPSIZE5)) des$SAMPSIZE5 <- round(des$SAMPSIZE5);
+	if (!is.null(des$PRE_NPC)) des$PRE_NPC = round(des$PRE_NPC);
   #
   # --- TODO: infer the INT columns automatic from spotConfig's ROI
   # --- (when the interface to tdmStart* is clear everywhere)

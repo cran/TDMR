@@ -2,6 +2,10 @@
 # Template for a data mining process (both with or w/o CV)
 # (dataset: Sonar, method: Random Forest)
 #
+# Use "browser()" if you want to look at the variables inside
+#
+# Author: Wolfgang Konen, FHK, Oct'2009 - Apr'2014
+#
 # Example usage:
 #       result <- main_sonar();
 #
@@ -31,7 +35,7 @@ main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {
     
     # which variables are input variables (in this case all others):
     input.variables <- setdiff(names(dset), c(response.variable,ID.variable))
-
+    
     #===============================================
     # PART 2 - 6
     #===============================================

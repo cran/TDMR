@@ -1,4 +1,4 @@
-name low high type                                               
-CUTOFF1 0.1 0.80 FLOAT
+name low high type  
+CUTOFF1 0.0 0.1 FLOAT
 CLASSWT2 5 15 FLOAT
 XPERC 0.50 1.00 FLOAT
