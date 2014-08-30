@@ -1,3 +1,5 @@
+require(SPOT);
+
 ######################################################################################
 # tdmBigLoop:
 #
@@ -49,6 +51,9 @@
 #'                             If \code{NULL}, then \code{spotList=runList} }
 #'     }
 #'  @param spotStep  \code{["auto"]} which step of SPOT to execute (either \code{"auto"} or \code{"rep"}).
+#'  @param dataObj   \code{[NULL]} optional object of class \code{\link{TDMdata}} (the same for all runs in big loop). 
+#'      If it is \code{NULL}, it will be constructed here with the help of \code{\link{tdmSplitTestData}}.
+#'      Then it may be different for each run in the big loop.
 #'
 #'  @return environment \code{envT}, containing  the results
 #'      \item{res}{ data frame with results from last tuning (one line for each call of \code{tdmStart*})} 
@@ -109,21 +114,60 @@
 #' }
 #' where the corresponding R-sources are in directory \code{demo}.
 #'
-#' @example      demo/demo03sonar.r
+#' @examples
+#' #*# This demo shows a complete tuned data mining process (level 3 of TDMR) where 
+#' #*# the data mining task is the classification task SONAR (from UCI repository, 
+#' #*# http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+%28Sonar,+Mines+vs.+Rocks%29).
+#' #*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify
+#' #*# with Random Forest as the prediction model. 
+#' #*# The three parameter to be tuned are CUTOFF1, CLASSWT2 and XPERC, as specified 
+#' #*# in file sonar_04.roi. The tuner used here is LHD.  
+#' #*# Tuning runs are rather short, to make the example run quickly. 
+#' #*# Do not expect good numeric results. 
+#' #*# See demo/demo03sonar_B.r for a somewhat longer tuning run, with two tuners SPOT and LHD.
+#' 
+#' ## set working directory (dir with .apd, .conf and main_*.r file)
+#' path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
+#' source(paste(path,"main_sonar.r",sep="/"));    
+#' 
+#' ## control settings for TDMR
+#' tdm <- list( mainFunc="main_sonar"
+#'            , runList = c("sonar_04.conf")
+#'            , umode="CV"              # { "CV" | "RSUB" | "TST" | "SP_T" }
+#'            , tuneMethod = c("lhd")
+#'            , filenameEnvT="exBigLoop.RData"   # file to save environment envT (in dir 'path')
+#'            , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
+#'            , nExperim=1
+#'            , parallelCPUs=1
+#'            , parallelFuncs=c("readCmdSonar")
+#'            , optsVerbosity = 0       # the verbosity for the unbiased runs
+#'            );
+#' ## Each element of tdm$runList has the settings for one tuning process (e.g. 
+#' ##    - auto.loop.steps = number of SPOT generations       
+#' ##    - auto.loop.evals = budget of model building runs and 
+#' ##    - io.roiFileName = "sonar_04.roi"
+#' ## ). 
+#' 
+#' spotStep = "auto";   
+#' source(paste(path,"start_bigLoop.r",sep="/"),chdir=TRUE);    # change dir to 'path' while sourcing
 #'
 #' @seealso   \code{\link{tdmDispatchTuner}}, \code{\link{unbiasedRun}}
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
 #' @export
 ######################################################################################
-tdmBigLoop <- function(envT,spotStep="auto") {
+tdmBigLoop <- function(envT,spotStep="auto",dataObj=NULL) {
                             # The environment envT is passed by reference into the inner functions
                             # which means that it can be used a) to transport information back from
                             # those inner functions and b) to transport information to and back even 
                             # for functions like tdmStartOther which are not allowed to have envT in 
                             # their argument list
+  
   tdm <- envT$tdm;
   tdm <- tdmMapDesLoad(tdm);
 
+  if (is.null(envT$getBst)) envT <- tdmEnvTAddGetters(envT);
+  # just in case the user loaded envT via load("myFile.Rdata") and not tdmEnvTLoad("myFile.Rdata") 
+      
   if (!is.null(tdm$mainFile)) source(tdm$mainFile);           # deprecated (sourcing main_TASK should be done in caller of tdmBigLoop)
   nTuner <- length(tdm$tuneMethod);
   nRunList <- length(tdm$runList);
@@ -147,13 +191,13 @@ tdmBigLoop <- function(envT,spotStep="auto") {
 
   if (tdm$parallelCPUs>1) {
     cl = prepareParallelExec(tdm);
-    sappResult <- parSapply(cl, indVec, bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
-    stopCluster(cl);
+    sappResult <- parallel::parSapply(cl, indVec, bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,dataObj,envT,tdm);
+    parallel::stopCluster(cl);
     #--- old version was:
     #prepareParallelExec_SF(tdm);   # this is now in deprecated sources
-    #sappResult <- sfSapply(indVec, fun=bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
+    #sappResult <- sfSapply(indVec, fun=bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,dataObj,envT,tdm);
   } else {  
-		sappResult <- sapply(indVec, bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,envT,tdm);
+		sappResult <- sapply(indVec, bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,dataObj,envT,tdm);
   }
   # populate envT with the results returned in matrix sappResult:
   envT <- populateEnvT(sappResult,envT,tdm,spotStep);
@@ -176,7 +220,7 @@ tdmBigLoop <- function(envT,spotStep="auto") {
   		#------------------------------------------------------------------------------------------------------
       #  bigLoopStep: helper function for tdmBigLoop, called via sapply or parSapply:
       #  (ind is an index where confFile varies slowest, nExp varies 2nd-slowest and theTuner varies fastest)
-      bigLoopStep <- function(ind,tuneVec,expeVec,confVec,spotList,spotStep,envT,tdm) {
+      bigLoopStep <- function(ind,tuneVec,expeVec,confVec,spotList,spotStep,dataObj,envT,tdm) {
         if (tdm$parallelCPUs>1) library(TDMR);
         theTuner = tuneVec[ind];
         nExp = expeVec[ind];
@@ -193,8 +237,8 @@ tdmBigLoop <- function(envT,spotStep="auto") {
         envT$bst <- NULL;
         envT$res <- NULL; 
         if (spotStep=="rep" | spotStep=="report" | !(confFile %in% spotList)) {
-            envT$bst = envT$getBst(envT,confFile,nExp,theTuner);
-            envT$res = envT$getRes(envT,confFile,nExp,theTuner);
+          envT$bst = envT$getBst(envT,confFile,nExp,theTuner);
+          envT$res = envT$getRes(envT,confFile,nExp,theTuner);
         }
 
         if (tdm$fileMode) {  
@@ -205,11 +249,11 @@ tdmBigLoop <- function(envT,spotStep="auto") {
         } 
         # NEW 09/2012: always operate SPOT with spot.fileMode=FALSE (take everything from  envT$spotConfig)
         envT$spotConfig$spot.fileMode=FALSE;
-
+        
         #
         # this is the preferred place to read the data and split them into test data and train/vali data
         #
-        dataObj <- tdmSplitTestData(sC$opts,tdm,nExp);
+        if (is.null(dataObj)) dataObj <- tdmSplitTestData(sC$opts,tdm,nExp);
         if (!is.null(dataObj)) envT$spotConfig$opts$TST.COL = dataObj$TST.COL;    # this column has to be subtracted in main_* from the input variables
 
         ptm <- proc.time();
@@ -416,12 +460,12 @@ prepareParallelExec <- function(tdm)
 {
     require(parallel);
 
-    cl <- makeCluster(tdm$parallelCPUs)
-    clusterExport(cl,c("tdm"))
+    cl <- parallel::makeCluster(tdm$parallelCPUs)
+    parallel::clusterExport(cl,c("tdm"))
     
     if (!exists(".Random.seed")) set.seed(42);
-    clusterExport(cl,".Random.seed");
-    clusterExport(cl,c(tdm$mainFunc,tdm$parallelFuncs));
+    parallel::clusterExport(cl,".Random.seed");
+    parallel::clusterExport(cl,c(tdm$mainFunc,tdm$parallelFuncs));
     if (is.null(tdm$tdmPath)) {
         cat("Export installed library TDMR to parallel cluster\n");
         #library(TDMR);     # this is now done in function bigLoopStep

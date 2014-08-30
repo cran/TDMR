@@ -46,11 +46,15 @@
   length NRUN)} \item{T_train}{ Theil's U for RMAE on
   training set (vector of length NRUN)} \item{*_test}{ ---
   similar, with test set instead of training set --- }
-  \item{Err}{ } \item{predictions}{ last run: data frame
-  with dimensions [nrow(dset),length(response.variable)].
-  In case of CV, all validation set predictions (for each
-  record in dset), in other cases mixed validation / train
-  set predictions.  }
+  \item{Err}{ a data frame with as many rows as opts$NRUN
+  and columns = (rmae.trn, rmse.trn made.trn,
+  rmae.theil.trn, ntrn, rmae.tst, rmse.tst, made.tst,
+  rmae.theil.tst, ntst) } \item{predictions}{ last run:
+  data frame with dimensions
+  [nrow(dset),length(response.variable)]. In case of CV,
+  all validation set predictions (for each record in dset),
+  in other cases mixed validation / train set predictions.
+  }
 }
 \description{
   tdmRegressLoop contains a double loop (opts$NRUN and
@@ -59,11 +63,12 @@
   object of class \code{\link{TDMregressor}}.
 }
 \examples{
-#*# --------- demo/aaRegression.r ---------
+#*# --------- demo/demo00-1regress.r ---------
 #*# This demo shows a simple data mining process (phase 1 of TDMR) for regression on
 #*# dataset iris.
 #*# The data mining process in tdmRegressLoop calls randomForest as the prediction model.
 #*# It is called opts$NRUN=2 times with different random train-validation set splits.
+#*# Therefore data frame result$Err has 2 rows.
 #*#
 opts=tdmOptsDefaultsSet()                       # set all defaults for data mining process
 gdObj <- tdmGraAndLogInitialize(opts);          # init graphics and log file
@@ -74,6 +79,8 @@ input.variables=setdiff(names(iris),"Petal.Length")
 opts$rgain.type="rmae"
 
 result = tdmRegressLoop(iris,response.variables,input.variables,opts)
+
+print(result$Err)
 }
 \author{
   Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), FHK,

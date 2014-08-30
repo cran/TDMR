@@ -31,9 +31,10 @@
 #'       \item{C_train}{ classification error on training set}
 #'       \item{G_train}{ gain on training set}
 #'       \item{R_train}{ relative gain on training set (percentage of max. gain on this set)}
-#'       \item{*_test}{ --- similar, with test set instead of training set ---   }
-#'       \item{*_test2}{ --- similar, with test2 set instead of training set ---  }
-#'       \item{Err}{ }
+#'       \item{*_vali}{ --- similar, with vali set instead of training set ---   }
+#'       \item{*_vali2}{ --- similar, with vali2 set instead of training set ---  }
+#'       \item{Err}{ a data frame with as many rows as opts$NRUN and 9 columns corresponding to 
+#' 				the nine variables described above }
 #'       \item{predictions}{ last run: data frame with dimensions [nrow(dset),length(response.variable)]. In case of CV, all 
 #'              CV predictions (for each record in dset), in other cases mixed validation / train set predictions.  }
 #'       \item{predProbList}{ the ith element in this list has data on the prediction probabilities of the ith run. See info on 
@@ -47,7 +48,7 @@
 #' @seealso   \code{\link{print.TDMclassifier}}, \code{\link{tdmClassify}}, \code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Sep'2010 - Jun'2012
 #' @aliases TDMclassifier 
-#' @example demo/aaClassify.r
+#' @example demo/demo00-0classif.r
 #' @export
 ######################################################################################
 tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NULL) {
@@ -67,8 +68,8 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
   	               paste(response.variables,collapse=",")))
 
     predProbList=list();
-    C_train <- C_test <- C_test2 <- G_train <- G_test <- NULL # reserve names (dynamic extension of
-    R_train <- R_test <- R_test2 <- G_test2 <- NULL           # these vectors at and of for-i-loop)
+    C_train <- C_vali <- C_vali2 <- G_train <- G_vali <- NULL # reserve names (dynamic extension of
+    R_train <- R_vali <- R_vali2 <- G_vali2 <- NULL           # these vectors at and of for-i-loop)
     Err <- NULL    
     for (i in 1:opts$NRUN) {
         if (opts$NRUN>1) {
@@ -210,12 +211,12 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
         C_train[i] = Err[i,"cerr.trn"]
         G_train[i] = Err[i,"gain.trn"]
         R_train[i] = Err[i,"rgain.trn"]
-        C_test[i] = Err[i,"cerr.tst"]
-        G_test[i] = Err[i,"gain.tst"]
-        R_test[i] = Err[i,"rgain.tst"]
-        C_test2[i] = Err[i,"cerr.tst2"]
-        G_test2[i] = Err[i,"gain.tst2"]             # for comparision in case of opts$MOD.method="RF": results with
-        R_test2[i] = Err[i,"rgain.tst2"]            # default cutoff 1/n.class instead of opts$CLS.cutoff
+        C_vali[i] = Err[i,"cerr.tst"]
+        G_vali[i] = Err[i,"gain.tst"]
+        R_vali[i] = Err[i,"rgain.tst"]
+        C_vali2[i] = Err[i,"cerr.tst2"]
+        G_vali2[i] = Err[i,"gain.tst2"]             # for comparision in case of opts$MOD.method="RF": results with
+        R_vali2[i] = Err[i,"rgain.tst2"]            # default cutoff 1/n.class instead of opts$CLS.cutoff
 
         #=============================================
         # PART 5: SOME MORE GRAPHICS
@@ -235,23 +236,23 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
         # print output averaged over all NRUN runs "for (i)"
         cat1(opts,"\nAverage over all ",opts$NRUN," runs: \n")
         cat1(opts,sprintf("cerr$train: (%7.5f +- %7.5f)%%\n", mean(C_train)*100, sd(C_train)*100));
-        cat1(opts,sprintf("cerr$test:  (%7.5f +- %7.5f)%%\n", mean(C_test)*100, sd(C_test)*100));
+        cat1(opts,sprintf("cerr$vali:  (%7.5f +- %7.5f)%%\n", mean(C_vali)*100, sd(C_vali)*100));
         cat1(opts,sprintf("gain$train: (%7.2f +- %4.2f)\n", mean(G_train), sd(G_train)));
-        cat1(opts,sprintf("gain$test:  (%7.2f +- %4.2f)\n", mean(G_test), sd(G_test)));
+        cat1(opts,sprintf("gain$vali:  (%7.2f +- %4.2f)\n", mean(G_vali), sd(G_vali)));
         cat1(opts,sprintf("rgain.train: %7.3f%%\n", mean(R_train)));
-        cat1(opts,sprintf("rgain.test:  %7.3f%%\n\n", mean(R_test)));
+        cat1(opts,sprintf("rgain.vali:  %7.3f%%\n\n", mean(R_vali)));
     }
     result = list(lastRes = res     # last run, last fold: result from tdmClassify
                 	#, opts = res$opts   # deprecated (12/2011), use result$lastRes$opts or Opts(result)
                 	, C_train = C_train
                 	, G_train = G_train
                 	, R_train = R_train
-                	, C_test = C_test
-                	, G_test = G_test
-                	, R_test = R_test
-                	, C_test2 = C_test2
-                	, G_test2 = G_test2
-                	, R_test2 = R_test2
+                	, C_vali = C_vali
+                	, G_vali = G_vali
+                	, R_vali = R_vali
+                	, C_vali2 = C_vali2
+                	, G_vali2 = G_vali2
+                	, R_vali2 = R_vali2
                 	, Err = Err
                 	, predictions = predictions     # predictions on dset from the *last* run: all CV predictions in case of CV, 
                                                   # mixed vali-train predictions else
@@ -305,14 +306,14 @@ tdmClassifySummary <- function(result,opts,dset=NULL)
                 ),"\n");
     }
     #print2(opts,res$allEVAL);		      # EVAL for each response variable , but only for lastRes
-    y = mean(result$R_test);
+    y = mean(result$R_vali);
     ytr = mean(result$R_train);
-    maxScore    = result$G_test[1]/(result$R_test[1]/100);
+    maxScore    = result$G_vali[1]/(result$R_vali[1]/100);
     maxScore.tr = result$G_train[1]/(result$R_train[1]/100);
     z=data.frame(TYPE=c("rgain","meanCA","minCA")
                 ,DESC=c("relative gain, i.e. percent of correctly classified records"
                         ,"mean class accuracy, i.e. average over class levels","minimum class accuracy"));
-    cat1(opts,sprintf("\nRelative gain is '%s'",opts$rgain.type));
+    cat1(opts,sprintf("\nRelative gain is \"%s\"",opts$rgain.type));
     cat1(opts,sprintf(" (%s)", z$DESC[which(z$TYPE==opts$rgain.type)]));
     if (opts$MOD.method %in% c("RF","MC.RF") & opts$RF.OOB==TRUE) {
       cat1(opts,sprintf("\n%sTrain OOB relative gain: %7.3f",ifelse(opts$TST.kind=="cv","CV ",""),ytr));
@@ -324,15 +325,15 @@ tdmClassifySummary <- function(result,opts,dset=NULL)
     } else {
       cat1(opts,"\n");
       result$y=-y;             # the score (to be minimized by SPOT) is "minus test score"
-      result$sd.y=sd(result$R_test);
+      result$sd.y=sd(result$R_vali);
     }
     cat1(opts,sprintf("%s  Vali    relative gain: %7.3f",ifelse(opts$TST.kind=="cv","CV ",""),y));
-    cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_test)),""));
+    cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_vali)),""));
     cat1Records(nrow(res$d_test));
 
     cat1(opts,sprintf("%s Vali2    relative gain (predict always with %s): %7.3f"
-                     ,ifelse(opts$TST.kind=="cv","CV ",""), res$allEVAL$test2.string, mean(result$R_test2)));
-    cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_test2)),""));
+                     ,ifelse(opts$TST.kind=="cv","CV ",""), res$allEVAL$test2.string, mean(result$R_vali2)));
+    cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_vali2)),""));
     cat1Records(nrow(res$d_test));
 
     if (!is.null(dset)) result$dset=dset;          # might cost a lot of memory

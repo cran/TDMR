@@ -10,9 +10,10 @@
 
   \item{d_test}{test set, same columns as training set}
 
-  \item{d_preproc}{data used for preprocessing, only
-  relevant for opts$PRE.SFA!="none" (usually all
-  non-validation data)}
+  \item{d_preproc}{data used for preprocessing. May be
+  NULL, if no preprocessing is done (opts$PRE.SFA=="none"
+  and opts$PRE.PCA=="none"). If preprocessing is done, then
+  d_preproc is usually all non-validation data.}
 
   \item{response.variables}{name of column which carries
   the target variable - or - vector of names specifying
@@ -53,19 +54,18 @@
   \code{res}, an object of class \code{tdmRegre}, this is a
   list containing \item{\code{d_train}}{ training set +
   predicted class column(s) } \item{\code{d_test}}{ test
-  set + predicted target output } \item{\code{rmse}}{ root
-  mean square error (on test + train set) + Theil's U (on
-  test + train set) } \item{\code{rmae}}{ relative mean
-  absolute error (on test + train set) + Theil's U (on test
-  + train set).  rmse and rmae are lists. If there is more
-  than one response variable, then rmse and rmae contain
-  the *average* over response.variables for each
-  list-entry. } \item{\code{allRMAE}}{ data frame with
-  columns = list-entries in rmae and rows = response
-  variables } \item{\code{lastModel}}{ the last model built
-  (e.g. the last Random Forest in the case of
-  MOD.method=="RF") } \item{\code{opts}}{ parameter list
-  from input, some default values might have been added }
+  set + predicted target output } \item{\code{allRMAE}}{
+  data frame with columns = (rmae.train, rmae.test,
+  theil.train, theil.test, ...)  and rows = response
+  variables. Here Theil's U is based on RMAE (relative mean
+  absolute errror).  } \item{\code{allRMSE}}{ data frame
+  with columns = (rmse.train, rmse.test, theil.train,
+  theil.test, ...)  and rows = response variables. Here
+  Theil's U is based on RMSE (root mean square error).  }
+  \item{\code{lastModel}}{ the last model built (e.g. the
+  last Random Forest in the case of MOD.method=="RF") }
+  \item{\code{opts}}{ parameter list from input, some
+  default values might have been added }
 
   The item \code{lastModel} is specific for the *last*
   model (the one built for the last response variable in
@@ -78,6 +78,30 @@
   on test set \code{d_test}.  If this function is used for
   tuning, the test set \code{d_test} plays the role of a
   validation set.
+}
+\examples{
+#*# This example shows a simple data mining process (phase 1 of TDMR) for regression on
+#*# dataset iris.
+#*# The data mining process in tdmRegress calls randomForest as the prediction model.
+#*# It is called  for 2 response variables. Therefore, the data frames allRMAE and allRMSE
+#*# have 2 rows.
+#*#
+opts=tdmOptsDefaultsSet()                       # set all defaults for data mining process
+gdObj <- tdmGraAndLogInitialize(opts);          # init graphics and log file
+
+data(iris)
+response.variables=c("Petal.Length","Petal.Width")                # names, not data (!)
+input.variables=setdiff(names(iris),response.variables)
+opts$rgain.type="rmae"
+opts$NRUN=1
+
+idx_train = sample(nrow(iris))[1:110]
+d_train=iris[idx_train,]
+d_vali=iris[-idx_train,]
+res <- tdmRegress(d_train,d_vali,NULL,response.variables,input.variables,opts)
+
+print(res$allRMAE)
+print(res$allRMSE)
 }
 \author{
   Wolfgang Konen, FHK, Sep'2009 - Jun'2012

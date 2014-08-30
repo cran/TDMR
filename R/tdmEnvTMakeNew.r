@@ -11,7 +11,7 @@
 #' @return Environment \code{envT},  an object of class \code{\link{TDMenvir}},  containing (among others) the elements
 #'      \item{\code{runList}}{ \code{=tdm$runList}  }
 #'      \item{\code{spotList}}{ \code{=tdm$spotList}  }
-#'      \item{\code{tdm}}{ \code{=tdm}  }
+#'      \item{\code{tdm}}{ \code{=\link{tdmDefaultsFill}(tdm)}  }
 #'      \item{\code{getBst}}{ accessor function(confFile,nExp,theTuner) into \code{envT$bstGrid}   }
 #'      \item{\code{getRes}}{ accessor function(confFile,nExp,theTuner) into \code{envT$resGrid}   }
 #'      \item{\code{sCList}}{ list of spotConfig-objects, as many as \code{envT$runList} has elements. Each spotConfig object 
@@ -89,20 +89,22 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
   firstRoiNames <- NULL;    # private storage for checkRoiParams
 
   #
-  # do all necessary file reading **before**  branching into tdmBigLoop or tdmCompleteEval
+  # do all necessary file reading **before**  branching into tdmBigLoop 
   # (bigLoopStep in tdmBigLoop.r can be in parallel execution branch, where file access might be not possible)
   #
   k=0;
   for (confFile in envT$runList) {
     k=k+1;
-    pathConfFile = paste(tdm$path,confFile,sep="");
+    lastChar=substr(tdm$path,nchar(tdm$path),nchar(tdm$path))
+    sepChar=ifelse(lastChar=="/","","/")
+    pathConfFile = paste(tdm$path,confFile,sep=sepChar);
     if (!file.exists(pathConfFile)) stop(sprintf("Could not find confFile=%s (current dir=%s)",pathConfFile,getwd()));
     envT$sCList[[k]] <- spotGetOptions(srcPath=tdm$theSpotPath,pathConfFile);
     sC <- envT$sCList[[k]]; print(sC$spot.seed);
     envT$wP <- checkRoiParams(envT$wP,confFile,sC,envT);
     pdFile = sC$io.apdFileName;
   	print(pdFile);
-    pdFile = paste(tdm$path,pdFile,sep="");
+    pdFile = paste(tdm$path,pdFile,sep=sepChar);
     if (!file.exists(pdFile)) stop(sprintf("Could not find pdFile=%s (current dir=%s)",pdFile,getwd()));
     opts <- NULL;     # just to make 'R CMD check' happy  (and in case that after sourcing pdFile 'opts' is not there as expected)
   	source(pdFile,local=TRUE);        # read problem design  (here: all elements of list opts)
@@ -192,7 +194,7 @@ tdmEnvTReadApd <- function(envT,tdm) {
 checkOpts <- function(opts) {
   availNames = c("APPLY_TIME","CLS.CLASSWT","CLS.cutoff","CLS.gainmat","data.title","dir.data","dir.output","dir.Rdata"
                 ,"dir.txt","DO.GRAPHICS","DO.POSTPROC","EVALFILE","fct.postproc","fileMode","filename","filesuffix","filetest"
-                ,"GD.CLOSE","GD.DEVICE","GD.PNGDIR","GD.RESTART","LOGFILE","MOD.method","MOD.SEED","ncopies","NRUN","PDFFILE"
+                ,"GD.CLOSE","GD.DEVICE","GD.PNGDIR","GD.RESTART","LOGFILE","logFile","MOD.method","MOD.SEED","ncopies","NRUN","PDFFILE"
                 ,"PRE.allNonVali","PRE.knum","PRE.MaxLevel","PRE.PCA","PRE.PCA.npc","PRE.PCA.REPLACE","PRE.SFA","PRE.SFA.doPB"
                 ,"PRE.SFA.fctPB","PRE.SFA.npc","PRE.SFA.ODIM","PRE.SFA.PPRANGE","PRE.SFA.REPLACE","PRE.Xpgroup","READ.CMD","READ.INI"
                 ,"READ.NROW","READ.TST","READ.TXT","rep","RF.mtry","RF.mtry","RF.nodesize","RF.ntree","RF.OOB","RF.p.all","RF.samp"

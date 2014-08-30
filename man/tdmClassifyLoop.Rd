@@ -47,9 +47,11 @@
   classification error on training set} \item{G_train}{
   gain on training set} \item{R_train}{ relative gain on
   training set (percentage of max. gain on this set)}
-  \item{*_test}{ --- similar, with test set instead of
-  training set --- } \item{*_test2}{ --- similar, with
-  test2 set instead of training set --- } \item{Err}{ }
+  \item{*_vali}{ --- similar, with vali set instead of
+  training set --- } \item{*_vali2}{ --- similar, with
+  vali2 set instead of training set --- } \item{Err}{ a
+  data frame with as many rows as opts$NRUN and 9 columns
+  corresponding to the nine variables described above }
   \item{predictions}{ last run: data frame with dimensions
   [nrow(dset),length(response.variable)]. In case of CV,
   all CV predictions (for each record in dset), in other
@@ -76,11 +78,12 @@
   returns an object of class \code{\link{TDMclassifier}}.
 }
 \examples{
-#*# --------- demo/aaClassify.r ---------
+#*# --------- demo/demo00-0classif.r ---------
 #*# This demo shows a simple data mining process (phase 1 of TDMR) for classification on
 #*# dataset iris.
 #*# The data mining process in tdmClassifyLoop calls randomForest as the prediction model.
 #*# It is called opts$NRUN=2 times with different random train-validation set splits.
+#*# Therefore data frame result$Err has two rows
 #*#
 opts=tdmOptsDefaultsSet()                       # set all defaults for data mining process
 gdObj <- tdmGraAndLogInitialize(opts);          # init graphics and log file
@@ -90,6 +93,8 @@ response.variables="Species"                    # names, not data (!)
 input.variables=setdiff(names(iris),"Species")
 
 result = tdmClassifyLoop(iris,response.variables,input.variables,opts)
+
+print(result$Err)
 }
 \author{
   Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}), FHK,

@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.1\cr
-#' Date: \tab 10.06.2014\cr
+#' Version: \tab 1.2\cr
+#' Date: \tab 30.08.2014\cr
 #' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
 #' }
@@ -30,8 +30,11 @@
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
 #' @references \url{http://gociop.de/research-projects/tuned-data-mining/}
 #' @keywords package tuning data mining machine learning
-#' @import SPOT
-#' @import e1071
+#' @import SPOT 
+#' @import testit
+#' @import tcltk
+#### no longer needed:  @import e1071     (because e1071 moved from "Depends" to "Suggests" in DESCRIPTION)
+# and @import testit 
 
 #End of Package Description
 NA #NULL, ends description without hiding first function
@@ -245,7 +248,7 @@ Opts.default <- function(x, ...)  cat("This is Opts.default\n");
 RGainTST <- function(result) {
   if (!inherits(result, "TDMclassifier"))
         stop("This function is permitted only for objects of class `TDMclassifier'");
-  mean(result$R_test);
+  mean(result$R_vali);
 }
 
 RGainTRN <- function(result) {

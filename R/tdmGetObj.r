@@ -21,7 +21,7 @@
 #-
 #-   @return envObj
 #-
-#- @seealso \code{\link{unbiasedRun}}, \code{\link{tdmCompleteEval}}
+#- @seealso \code{\link{unbiasedRun}}, \code{\link{tdmBigLoop}}
 #- @export
 ######################################################################################
 tdmGetObj <- function(envObj,objFileName, theTuner,tdm) {

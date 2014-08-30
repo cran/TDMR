@@ -199,7 +199,8 @@ tdmPlotResMeta <- function(envT) {
 ################################################################################
 # configureAxis: 
 #   private helper fct for showMeta
-configureAxis <- function(sC,xAxis,yAxis,iGrid,envT) {        
+configureAxis <- function(sC,xAxis,yAxis,iGrid,envT) {     
+  # NOTE: package tcltk must be in the 'Imports' list in DESCRIPTION (generated via tdmGeneralUtils.r) 
       sC$configureAxisSuccess=FALSE;
       
       # envT$roiGrid is only available since TDMR 0.4.0. If it is there, 
@@ -220,16 +221,16 @@ configureAxis <- function(sC,xAxis,yAxis,iGrid,envT) {
         sC$report.aIndex=which(vars==xAxis); 
         sC$report.bIndex=which(vars==yAxis); 
         if (length(sC$report.aIndex)==0) {
-          ttx <- tktoplevel(); 
-          tkpack(l1<-tklabel(ttx,text=sprintf("There is no tuning param xAxis=%s in envT$bstGrid[[%d]]",xAxis,iGrid)), 
-                 l2<-tkbutton(ttx,text="OK",command=function()tkdestroy(ttx)));
+          ttx <- tcltk::tktoplevel(); 
+          tcltk::tkpack(l1<-tcltk::tklabel(ttx,text=sprintf("There is no tuning param xAxis=%s in envT$bstGrid[[%d]]",xAxis,iGrid)), 
+                 l2<-tcltk::tkbutton(ttx,text="OK",command=function()tcltk::tkdestroy(ttx)));
           sC$configureAxisSuccess=FALSE;
           return(sC);
         }
         if (length(sC$report.bIndex)==0) {
-          tty <- tktoplevel(); 
-          tkpack(l1<-tklabel(tty,text=sprintf("There is no tuning param yAxis=%s in envT$bstGrid[[%d]]",yAxis,iGrid)), 
-                 l2<-tkbutton(tty,text="OK",command=function()tkdestroy(tty)));
+          tty <- tcltk::tktoplevel(); 
+          tcltk::tkpack(l1<-tcltk::tklabel(tty,text=sprintf("There is no tuning param yAxis=%s in envT$bstGrid[[%d]]",yAxis,iGrid)), 
+                 l2<-tcltk::tkbutton(tty,text="OK",command=function()tcltk::tkdestroy(tty)));
           sC$configureAxisSuccess=FALSE;
           return(sC);
         }

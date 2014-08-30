@@ -147,11 +147,11 @@ tdmROCR_calc <- function(ppVal,ymeasure,xmeasure) {
     lo =levels(ll);
     # estimate which class label has the higher average score: order 'lo' in such a way that this label is the last one:
     if ( mean(pp[ll==lo[1]]) > mean(pp[ll==lo[2]]) ) lo = rev(lo);
-    pred = prediction(pp,ll,label.ordering=lo);
-    perf = performance(pred,ymeasure,xmeasure);
+    pred = ROCR::prediction(pp,ll,label.ordering=lo);
+    perf = ROCR::performance(pred,ymeasure,xmeasure);
 }
 tdmROCR_area <- function(perf,typ="ROC") {
-    #cat(sprintf("AUC = %f\n",performance(pred,"auc")@y.values));   # area under curve (always ROC)
+    #cat(sprintf("AUC = %f\n",ROCR::performance(pred,"auc")@y.values));   # area under curve (always ROC)
     #
     # area for ROC, lift of precision-recall chart:
     baseline = ifelse(typ=="lift",1.0,0.0);
@@ -176,8 +176,8 @@ tdmROCR.tdmClass <- function(x,...) {
     lo =levels(ll);
     # estimate which class label has the higher average score: order 'lo' in such a way that this label is the last one:
     if ( mean(pp[ll==lo[1]]) > mean(pp[ll==lo[2]]) ) lo = rev(lo);
-    predTr = prediction(pp,ll,label.ordering=lo);
-    perfTr = performance(predTr,"tpr","fpr");
+    predTr = ROCR::prediction(pp,ll,label.ordering=lo);
+    perfTr = ROCR::performance(predTr,"tpr","fpr");
     plot(perfTr,colorize=T,lwd=2,main="ROC Training Set")
   }
 }

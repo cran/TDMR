@@ -43,8 +43,8 @@
   training-vali data} }}
 
   \item{withParams}{[FALSE] if =TRUE, add columns with best
-  parameters to data frame finals (should be FALSE, if
-  different runs have different parameters)}
+  parameters to data frame \code{finals} (should be FALSE,
+  if different runs have different parameters)}
 
   \item{tdm}{a list with TDM settings from which we use
   here the elements \describe{ \item{mainFunc}{ the

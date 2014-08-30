@@ -1,4 +1,5 @@
 require(randomForest);
+#require(e1071);         # svm(), naiveBayes 
 
 ######################################################################################
 # tdmClassify
@@ -16,7 +17,9 @@ require(randomForest);
 #'   @param d_test      validation set, same columns as training set
 #'   @param d_dis       'disregard set', i.e. everything what is neither train nor test. The model is 
 #'                      applied to all records in d_dis (needed for active learning, see ssl_methods.r)
-#'   @param d_preproc   data used for preprocessing, only relevant for opts$PRE.SFA!="none" (usually all non-validation data)
+#'   @param d_preproc   data used for preprocessing. May be NULL, if no preprocessing is done 
+#'                   (opts$PRE.SFA=="none" and opts$PRE.PCA=="none"). If preprocessing is done, 
+#'                   then d_preproc is usually all non-validation data.
 #'   @param response.variables   name of column which carries the target variable - or - 
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for evaluation)
@@ -70,6 +73,29 @@ require(randomForest);
 #'
 #' @seealso  \code{\link{print.tdmClass}} \code{\link{tdmClassifyLoop}} \code{\link{tdmRegressLoop}}
 #' @author Wolfgang Konen, FHK, Sep'2009 - Jun'2012
+#' @examples
+#' #*# This demo shows a simple data mining process (phase 1 of TDMR) for classification on
+#' #*# dataset iris.
+#' #*# The data mining process in tdmClassify calls randomForest as the prediction model.
+#' #*# It is called opts$NRUN=1 time with one random train-validation set splits.
+#' #*# Therefore data frame res$allEval has one row
+#' #*#
+#' opts=tdmOptsDefaultsSet()                       # set all defaults for data mining process
+#' gdObj <- tdmGraAndLogInitialize(opts);          # init graphics and log file
+#' 
+#' data(iris)
+#' response.variables="Species"                    # names, not data (!)
+#' input.variables=setdiff(names(iris),"Species")
+#' opts$NRUN=1
+#' 
+#' idx_train = sample(nrow(iris))[1:110]
+#' d_train=iris[idx_train,]
+#' d_vali=iris[-idx_train,]
+#' d_dis=iris[numeric(0),]
+#' res <- tdmClassify(d_train,d_vali,d_dis,NULL,response.variables,input.variables,opts)
+#' 
+#' cat("\n")
+#' print(res$allEVAL)
 #'
 #' @export
 ######################################################################################
@@ -90,7 +116,10 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
     if (is.null(opts$PRE.SFA.numericV)) opts$PRE.SFA.numericV <- input.variables;
     if (!is.null(opts$RF.mtry)) opts$RF.mtry=min(length(input.variables),opts$RF.mtry);
     # this is to avoid the "invalid mtry" warning (but it does not eliminate all cases)
-
+    if (is.null(opts$i)) opts$i=1;               
+    if (is.null(opts$k)) opts$k=1;  
+    if (is.null(opts$the.nfold)) opts$the.nfold=1;
+    
     if (opts$i==opts$NRUN & opts$k==opts$the.nfold) {
       if (opts$GD.RESTART) {
         tdmGraphicCloseDev(opts); 
@@ -155,7 +184,9 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
           stop("Names in opts$CLS.CLASSWT differ from the levels of the response variable.");
 
         opts$CLS.cutoff <- tdmModAdjustCutoff(opts$CLS.cutoff,n.class,text="opts$CLS.cutoff");
-        opts$SRF.cutoff <- tdmModAdjustCutoff(opts$SRF.cutoff,n.class,text="opts$SRF.cutoff");
+        opts$SRF.cutoff <- opts$CLS.cutoff; 
+        # --- old  and deprecated (too complicated: ---
+        # opts$SRF.cutoff <- tdmModAdjustCutoff(opts$SRF.cutoff,n.class,text="opts$SRF.cutoff");
         
         if (is.null(opts$CLS.gainmat)) {
           # default (generic) gain matrix:
@@ -226,11 +257,13 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
           opts$RF.sampsize <- tdmModAdjustSampsizeC(opts$RF.samp, to.train, response.variable, opts);
         train.rf <- function(response.variable,to.train,opts) {
             cat1(opts,opts$filename,": Train RF with sampsize =", opts$RF.sampsize,"...\n")
+            testit::assert("Cutoff is bigger than 1",sum(opts$CLS.cutoff)<=1)
             if (!is.null(opts$CLS.CLASSWT)) {
                 cat1(opts,"Class weights: ", opts$CLS.CLASSWT,"\n")
-                cwt = opts$CLS.CLASSWT*1.0;   # strange, but necessary: if we omit '*1' then cwt seems to be a copy-by-reference of
-                                          # opts$CLS.CLASSWT. After randomForest call  cwt is changed and also opts$CLS.CLASSWT would be changed (!)
-            } else { cwt=NULL; }
+                #cwt = opts$CLS.CLASSWT*1.0;  # strange, but necessary: if we omit '*1' then cwt seems to be a copy-by-reference of
+                                              # opts$CLS.CLASSWT. After randomForest call  cwt is changed and also opts$CLS.CLASSWT would be changed (!)
+                cwt = sprintf("classwt=c(%s)",paste(opts$CLS.CLASSWT,collapse=","))
+            } else { cwt="classwt=NULL"; }
             if (!is.null(opts$CLS.cutoff)) cat1(opts,"Cutoff: ", opts$CLS.cutoff,"\n")
             formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
             # we work here with a command text string and eval(parse(...)) to allow for the presence or
@@ -247,7 +280,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             #
             rf.options = paste(" ntree=",eval(opts$RF.ntree));
             rf.options = paste(rf.options," sampsize=opts$RF.sampsize",sep=",")
-            rf.options = paste(rf.options," classwt=cwt"," na.action=na.roughfix"," proximity=FALSE",sep=",")
+            rf.options = paste(rf.options,cwt," na.action=na.roughfix"," proximity=FALSE",sep=",")
             #if (!is.null(cwt))  paste(rf.options,paste("classwt=",eval(cwt)),sep=",")    # not run
             if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,paste(" mtry=",eval(opts$RF.mtry)),sep=",")
             if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options," cutoff=opts$CLS.cutoff",sep=",")
@@ -297,7 +330,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             if (!is.null(opts$CLS.cutoff)) cat1(opts,"Cutoff: ", opts$CLS.cutoff,"\n")
             flush.console();
             formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
-            res.rf <- svm(formul 
+            res.rf <- e1071::svm(formul 
             							, data=to.train 
             							, kernel=kernelType
                           , gamma=opts$SVM.gamma
@@ -320,7 +353,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
 	          require(adabag)
             flush.console();
             formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
-            res.rf <- boosting(formul
+            res.rf <- adabag::boosting(formul
 							               , data=to.train
             							   , mfinal=opts$ADA.mfinal
                              , coeflearn=coefType
@@ -337,7 +370,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             # the same as below in 'predict(res.nb,newdata=..)'. Therefore we need here
             #     to.train=d_train[,c(input.variables,response.variable)]
             # instead of a simple 'data=d_train'
-            res.rf <- naiveBayes(formula=formul, data=to.train)
+            res.rf <- e1071::naiveBayes(formula=formul, data=to.train)
             res.rf$HasVotes = FALSE;                          
             res.rf$HasProbs = FALSE; 
             res.rf;
@@ -601,7 +634,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         d_test <- tdmBindResponse(d_test, name.of.prediction, test.predict)
         d_dis <- tdmBindResponse(d_dis, name.of.prediction, dis.predict)
         if (res.rf$HasVotes) d_test  <- tdmBindResponse(d_test, name2.of.prediction, test2.predict)
-        if (res.rf$HasProbs) {
+        if (res.rf$HasProbs & !is.null(d_train$IND.dset) & !is.null(d_test$IND.dset)) {
           predProb$Trn <- tdmBindResponse(predProb$Trn, response.variable, d_train[,response.variable]);
           predProb$Trn <- tdmBindResponse(predProb$Trn, name.of.prediction, train.predict)
           predProb$Trn <- tdmBindResponse(predProb$Trn, name.of.probability, as.vector(lastProbs$v_train[,1]))
@@ -671,7 +704,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         EVALa$k = opts$k;         
 
         if (first) {
-            avgEVAL=lapply(EVAL,sum);
+            avgEVAL=lapply(EVAL,sum);       # sum here, but with "/length(response.variables)" below effectively a mean
             allEVAL=as.data.frame(EVALa);
             first=FALSE;
         } else {
@@ -763,7 +796,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
                 ,lastProbs = lastProbs  # NULL or list with 3 probability matrices (row:records, col: classes) v_train, v_test, v_dis
                 ,predProb = predProb    # $Trn: data frame (IND.dset, rv1, pred_rv1, prob_rv1, rv2, ...) for training data
                                         # $Val: data frame (IND.dset, rv1, pred_rv1, prob_rv1, rv2, ...) for validation data
-                ,avgEVAL=avgEVAL
+                #,avgEVAL=avgEVAL       # ---deprecated---
                 ,allEVAL=allEVAL
                 ,d_train=d_train
                 ,d_test=d_test 

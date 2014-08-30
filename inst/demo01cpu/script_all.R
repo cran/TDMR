@@ -20,4 +20,3 @@ spotStep = "auto"
 
 envT <- tdmEnvTMakeNew(tdm);
 envT <- tdmBigLoop(envT,spotStep);
-#deprecated: envT <- tdmCompleteEval(runList,spotList,spotStep,tdm);

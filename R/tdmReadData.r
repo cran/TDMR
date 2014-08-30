@@ -24,11 +24,11 @@
 #'  \itemize{
 #'    \item \code{filename}:   string of filename in opts$dir.txt 
 #'    \item \code{filetest}:   string of filename test data in opts$dir.txt (only if READ.TST=T)
-#'    \item \code{READ.TXT}:   =T: read from opts$filename, =F: load from .Rdata file 
+#'    \item \code{READ.TXT}:   [T] if =T: read from opts$filename, =F: load from .Rdata file 
 #'    \item \code{READ.CMD}:   ["tdmReadCmd(filename,opts)"] 
 #'                             string with a file-read-command with placeholder 'filename' 
-#'    \item \code{READ.TST}:   if =T: read also test data from \code{filetest} 
-#'    \item \code{TST.COL}:    string, create a column with the name of this string in \code{dset}, which has 0 for training and 1 for test data 
+#'    \item \code{READ.TST}:   [F] if =T: read also test data from \code{filetest} 
+#'    \item \code{TST.COL}:    ["TST.COL"] string, create a column with the name of this string in \code{dset}, which has 0 for training and 1 for test data 
 #'    \item \code{READ.NROW}:  [-1] read only that many rows from opts$filename. -1 for 'read all rows'.
 #'  }
 #' @return \code{dset},  a data frame with all data read

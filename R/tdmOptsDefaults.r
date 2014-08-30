@@ -38,6 +38,7 @@
 #' 			\item{filename}{["default.txt"] the task data} 
 #' 			\item{filetest}{[NULL] the test data, only relevant for READ.TST=T}
 #' 			\item{fileMode}{[TRUE] if =T, write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file} 
+#'   		\item{logFile}{[TRUE] if =T, and if opts$fileMode=T, write log file to *_train.log } 
 #' 			\item{data.title}{["Default Data"] title for plots} 
 #' 			\item{READ.TXT}{[T] =T: read data from .csv and save as .Rdata, =F: read from .Rdata}                                                   
 #' 			\item{READ.NROW}{[-1] read this amount of rows or -1 for 'read all rows'} 
@@ -172,7 +173,8 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       opts$filename = "default.txt"
       opts$data.title <- "Default Data"
       opts$fileMode = TRUE    # =T: write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file
-
+      opts$logFile = TRUE
+      
       opts$READ.TXT = TRUE    # =T: read data from .csv and save as .Rdata, =F: read from .Rdata
       opts$READ.NROW = -1     # [-1] read this amount of rows or -1 for 'read all rows' 
       opts$READ.TST = FALSE   # =T: read unseen test data (do this only for the final model and only with TST.kind="col")
@@ -319,8 +321,8 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
 #' 			\item{LOGFILE}{["*.log"] where to log the output } 
 #' 			\item{EVALFILE}{["*_eval.csv"] file with evaluation results allEVAL } 
 #' 			\item{SRF.samp}{sample size for SRF, derived from \code{RF.samp} } 
-#' 			\item{SRF.cutoff}{[opts$CLS.cutoff] } 
-#'      \item{rgain.string}{ one out of c("RGain","MeanCA","MinCA","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe"), 
+# 			\item{SRF.cutoff}{[opts$CLS.cutoff] } 
+#'      	\item{rgain.string}{ one out of c("RGain","MeanCA","MinCA","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe"), 
 #'                          depending on \code{opts$rgain.type} }
 #'
 #' Here * is the stripped part of \code{opts$filename} (w/o suffix).

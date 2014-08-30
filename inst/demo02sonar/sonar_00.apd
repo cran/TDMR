@@ -3,21 +3,8 @@
 ## set the basic elements of list opts for task sonar. See ?tdmOptsDefaultsSet
 ## for a complete list of all default settings and many explanatory comments
 
-      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts.
-      
+      opts = tdmOptsDefaultsSet();    
       opts$dir.data <- "data/";
       opts$filename = "sonar.txt"
-      opts$READ.CMD = "readCmdSonar(filename,opts)"     # def'd in main_sonar.r
+      opts$READ.CMD = "readCmdSonar(filename,opts)"     
       opts$data.title <- "Sonar Data"
-
-      opts$SRF.kind = "xperc"         # no variable ranking, no variable selection
-      opts$MOD.method="RF";           # ["RF"|"MC.RF"|"SVM"|"NB"]: use [RF| MetaCost-RF| SVM| Naive Bayes] in tdmClassifyLoop
-      opts$CLS.CLASSWT <- c(10,10);
-
-      # Activate the following four lines to run the RF.default-(main_sonar.r)-experiment in Benchmark-Datasets.doc:
-      opts$GD.DEVICE="win"    # ["pdf"|"win"|"non"]: all graphics to
-                              # [one multi-page PDF | (several) windows (X11) | dev.null]
-      opts$TST.kind <- "cv"           # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$TST.NFOLD =  3             # number of CV-folds (only for TST.kind=="cv")
-      opts$NRUN =  1                  # how many CV-runs, if opts$TST.kind <- "cv"
-      #opts$rgain.type="arROC"

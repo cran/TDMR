@@ -5,12 +5,8 @@
 #*# and with two tuners SPOT and LHD in comparison.
 
 ## load package and set working directory (dir with .apd, .conf and main_*.r file)
-#library(TDMR);
 path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
-oldwd <- getwd();
-setwd(path);
-source("main_sonar.r");    # in working dir
 
 ## preliminary settings for TDMR
 tdm <- list( mainFunc="main_sonar"
@@ -33,16 +29,11 @@ tdm <- list( mainFunc="main_sonar"
 ## ), if desired.
 
 spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or 
-            ## "rep" (make a visual report and an unbiased run on best results)
-
-## construct an initial environment envT from tdm
-## (this contains also tdmDefaultsFill(tdm))
-## then run tdmBigLoop
-envT <- tdmExecSpotStep(tdm,spotStep);
-
-setwd(oldwd);               # restore old working directory
+                      ## "rep" (make a visual report and an unbiased run on best results)
+source(paste(path,tdm$mainFile,sep="/"));    
+source(paste(path,"start_bigLoop.r",sep="/"),chdir=TRUE);    # change dir to 'path' while sourcing
 
 ## the resulting tuning surface (the metamodel) can be inspected interactively with
-##      load(paste(path,tdm$filenameEnvT,sep="/"));     
+##      tdmEnvTLoad(paste(path,tdm$filenameEnvT,sep="/"));     
 ##      tdmPlotResMeta(envT);
-## (load(...) is only needed for reloading envT in another R-session)
+## (tdmEnvTLoad(...) is only needed for reloading envT in another R-session)

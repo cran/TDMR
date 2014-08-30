@@ -1,4 +1,5 @@
 require(randomForest);
+#require(e1071);         # svm()
 
 ######################################################################################
 # tdmRegress
@@ -11,7 +12,9 @@ require(randomForest);
 #'
 #'   @param d_train     training set
 #'   @param d_test      test set, same columns as training set
-#'   @param d_preproc   data used for preprocessing, only relevant for opts$PRE.SFA!="none" (usually all non-validation data)
+#'   @param d_preproc   data used for preprocessing. May be NULL, if no preprocessing is done 
+#'                   (opts$PRE.SFA=="none" and opts$PRE.PCA=="none"). If preprocessing is done, 
+#'                   then d_preproc is usually all non-validation data.
 #'   @param response.variables   name of column which carries the target variable - or - 
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for evaluation)
@@ -41,11 +44,14 @@ require(randomForest);
 #'   @return  \code{res}, an object of class \code{tdmRegre}, this is a list containing
 #'       \item{\code{d_train}}{ training set + predicted class column(s) }
 #'       \item{\code{d_test}}{ test set + predicted target output }
-#'       \item{\code{rmse}}{ root mean square error (on test + train set) + Theil's U (on test + train set) }
-#'       \item{\code{rmae}}{ relative mean absolute error (on test + train set) + Theil's U  (on test + train set).
-#'                   rmse and rmae are lists. If there is more than one response variable, then rmse and rmae 
-#'                   contain the *average* over response.variables for each list-entry. }
-#'       \item{\code{allRMAE}}{ data frame with columns = list-entries in rmae and rows = response variables  }
+#       \item{\code{rmse}}{ ---deprecated--- root mean square error (on test + train set) + Theil's U (on test + train set) }
+#       \item{\code{rmae}}{ ---deprecated--- relative mean absolute error (on test + train set) + Theil's U  (on test + train set).
+#                   rmse and rmae are lists. If there is more than one response variable, then rmse and rmae 
+#                   contain the *average* over response.variables for each list-entry. }
+#'       \item{\code{allRMAE}}{ data frame with columns = (rmae.train, rmae.test, theil.train, theil.test, ...) 
+#'                              and rows = response variables. Here Theil's U is based on RMAE (relative mean absolute errror).  }
+#'       \item{\code{allRMSE}}{ data frame with columns = (rmse.train, rmse.test, theil.train, theil.test, ...) 
+#'                              and rows = response variables. Here Theil's U is based on RMSE (root mean square error).  }
 #'       \item{\code{lastModel}}{       the last model built (e.g. the last Random Forest in the case of MOD.method=="RF") }
 #'       \item{\code{opts}}{ parameter list from input, some default values might have been added }
 #'
@@ -54,6 +60,29 @@ require(randomForest);
 #'
 #' @seealso  \code{\link{print.tdmRegre}} \code{\link{tdmRegressLoop}} \code{\link{tdmClassifyLoop}}
 #' @author Wolfgang Konen, FHK, Sep'2009 - Jun'2012
+#' @examples
+#' #*# This example shows a simple data mining process (phase 1 of TDMR) for regression on
+#' #*# dataset iris.
+#' #*# The data mining process in tdmRegress calls randomForest as the prediction model.
+#' #*# It is called  for 2 response variables. Therefore, the data frames allRMAE and allRMSE 
+#' #*# have 2 rows.
+#' #*#
+#' opts=tdmOptsDefaultsSet()                       # set all defaults for data mining process
+#' gdObj <- tdmGraAndLogInitialize(opts);          # init graphics and log file
+#' 
+#' data(iris)
+#' response.variables=c("Petal.Length","Petal.Width")                # names, not data (!)
+#' input.variables=setdiff(names(iris),response.variables)
+#' opts$rgain.type="rmae"
+#' opts$NRUN=1
+#' 
+#' idx_train = sample(nrow(iris))[1:110]
+#' d_train=iris[idx_train,]
+#' d_vali=iris[-idx_train,]
+#' res <- tdmRegress(d_train,d_vali,NULL,response.variables,input.variables,opts)
+#' 
+#' print(res$allRMAE)
+#' print(res$allRMSE)
 #'
 #' @export
 ######################################################################################
@@ -208,8 +237,8 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
             kernelType = kernelChoices[opts$SVM.kernel];
             cat1(opts,filename,": Train SVM (kernel=",kernelType,") ...\n");
             flush.console();
-            #res.rf <- svm(formula, to.model, kernel="radial", gamma=0.02, epsilon=0.0001, tolerance=0.001, type="eps-regression", cachesize=512)
-            res.rf <- svm(formula, to.model
+            #res.rf <- e1071::svm(formula, to.model, kernel="radial", gamma=0.02, epsilon=0.0001, tolerance=0.001, type="eps-regression", cachesize=512)
+            res.rf <- e1071::svm(formula, to.model
                 							, kernel=kernelType
                               , gamma=opts$SVM.gamma
                               , coef0=opts$SVM.coef0
@@ -315,35 +344,35 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
         cat1(opts,filename,": Calc RMSE ...\n")
         naive.predict=mean(d_train[,response.variable])
         rmse=list()
-        rmse$train <- sqrt(mean((train.predict-d_train[,response.variable])^2)) # this is the OOB-error in case of RF
-        rmse$theil.train <- rmse$train/sqrt(mean((naive.predict-d_train[,response.variable])^2))
+        rmse$rmse.train <- sqrt(mean((train.predict-d_train[,response.variable])^2)) # this is the OOB-error in case of RF
+        rmse$theil.train <- rmse$rmse.train/sqrt(mean((naive.predict-d_train[,response.variable])^2))
         if (opts$MOD.method=="RF") rmse$OOB <- sqrt(res.rf$mse[res.rf$ntree])
         else rmse$OOB <- 0;
         #naive.predict2=d_train[,opts$old.response.variable]
-        #rmse$Theil2.train <- rmse$train/sqrt(mean((naive.predict2-d_train[,response.variable])^2))
+        #rmse$Theil2.train <- rmse$rmse.train/sqrt(mean((naive.predict2-d_train[,response.variable])^2))
         rmae=list()
         rmae$made.tr <- mean(abs(train.predict-d_train[,response.variable]))
         rmae$ma.train <- mean(abs(d_train[,response.variable]))
-        rmae$train <- rmae$made.tr/rmae$ma.train;
-        rmae$theil.train <- rmae$train/(mean(abs(naive.predict-d_train[,response.variable]))/rmae$ma.train)
+        rmae$rmae.train <- rmae$made.tr/rmae$ma.train;
+        rmae$theil.train <- rmae$rmae.train/(mean(abs(naive.predict-d_train[,response.variable]))/rmae$ma.train)
 
         cat2(opts,"\nTraining cases (",length(train.predict),"):\n")
-        cat2(opts,"rmse$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$train, "\n")
-        cat2(opts,"RMAE$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmae$train,"\n")
+        cat2(opts,"rmse.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$rmse.train, "\n")
+        cat2(opts,"rmae.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmae$rmae.train,"\n")
         cat2(opts,"Theils U1 (train, RMSE):", rmse$theil.train,"\n")#, U2 (train):",rmse$Theil2.train,"\n")    # <1: better than naive forecast
         cat2(opts,"Theils U3 (train, RMAE):", rmae$theil.train,"\n")    # based on RMAE instead of RMSE
  
-        rmse$test <- sqrt(mean((test.predict-d_test[,response.variable])^2))
-        rmse$theil.test <- rmse$test/sqrt(mean((naive.predict-d_test[,response.variable])^2))
+        rmse$rmse.test <- sqrt(mean((test.predict-d_test[,response.variable])^2))
+        rmse$theil.test <- rmse$rmse.test/sqrt(mean((naive.predict-d_test[,response.variable])^2))
         #naive.predict2=d_test[,opts$old.response.variable]
-        #rmse$Theil2.test <- rmse$test/sqrt(mean((naive.predict2-d_test[,response.variable])^2))
+        #rmse$Theil2.test <- rmse$rmse.test/sqrt(mean((naive.predict2-d_test[,response.variable])^2))
         rmae$made.te <- mean(abs(test.predict-d_test[,response.variable]));
         rmae$ma.test <- mean(abs(d_test[,response.variable]))
-        rmae$test <- rmae$made.te/rmae$ma.test
-        rmae$theil.test <- rmae$test/(mean(abs(naive.predict-d_test[,response.variable]))/rmae$ma.test)
+        rmae$rmae.test <- rmae$made.te/rmae$ma.test
+        rmae$theil.test <- rmae$rmae.test/(mean(abs(naive.predict-d_test[,response.variable]))/rmae$ma.test)
         cat2(opts,"\nVali cases (",length(test.predict),"):\n")
-      	cat2(opts,"rmse$test:", rmse$test, ", rmse$train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$train,"\n")
-        cat2(opts,"RMAE$test:", rmae$test, "\n")
+      	cat2(opts,"rmse.test:", rmse$rmse.test, ", rmse.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$rmse.train,"\n")
+        cat2(opts,"rmae.test:", rmae$rmae.test, "\n")
         cat2(opts,"Theils U1 (test, RMSE):", rmse$theil.test,"\n")#, U2 (test):",rmse$Theil2.test,"\n")    # <1: better than naive forecast
         cat2(opts,"Theils U3 (test, RMAE):", rmae$theil.test,"\n")    # based on RMAE instead of RMSE
      
@@ -404,8 +433,8 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
         allRMAE <- rbind(allRMAE,as.data.frame(rmae));
         allRMSE <- rbind(allRMSE,as.data.frame(rmse));
         
-        cat1(opts,sprintf("  %s: rmae$test =%8.3f, RMAE$test =%8.3f\n",response.variable,rmae$test,mean(allRMAE$test)));
-        cat1(opts,sprintf("  %s: rmae$train=%8.3f, RMAE$train=%8.3f\n",response.variable,rmae$train,mean(allRMAE$train)));
+        cat1(opts,sprintf("  %s: rmae.test =%8.3f, RMAE.test =%8.3f\n",response.variable,rmae$rmae.test,mean(allRMAE$rmae.test)));
+        cat1(opts,sprintf("  %s: rmae.train=%8.3f, RMAE.train=%8.3f\n",response.variable,rmae$rmae.train,mean(allRMAE$rmae.train)));
 
     } # for (response.variable)
     
@@ -423,9 +452,10 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
     #outfile = paste(opts$dir.output,sub(".csv", "", filename), "_predictions.csv", sep="")
     #write.table(d_test, file=outfile, quote=F, sep=";", dec=".", row.names=F, col.names=TRUE)
 
-    res =   list(rmse=RMSE          # root mean square error, averaged over all response.variables
-                ,rmae=RMAE          # relative mean absolute error, Theil's U and mean abs deviation, averaged over all response.variables
-                ,allRMAE=allRMAE	 	# RMAE, Theil's U and mean abs deviation, separately for each response.variable 
+    res =   list(allRMAE=allRMAE	 	# RMAE, Theil's U and mean abs deviation, separately for each response.variable 
+                ,allRMSE=allRMSE   	# RMAE, Theil's U and mean abs deviation, separately for each response.variable 
+                #,rmse=RMSE          # -- deprecated -- root mean square error, averaged over all response.variables
+                #,rmae=RMAE          # -- deprecated -- relative mean absolute error, Theil's U and mean abs deviation, averaged over all response.variables
                 ,lastModel = res.rf # model from last response.variable 
                 ,d_train=d_train
                 ,d_test=d_test 

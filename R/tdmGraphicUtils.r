@@ -28,11 +28,11 @@ tdmGraAndLogInitialize <- function(opts) {
     }  
 
     if (is.null(opts$fileMode)) opts$fileMode=TRUE;   # this might be necessary for older opts from file
-    
-    if (opts$fileMode) {
-      logFile = paste(dir.output,opts$LOGFILE,sep="/");
+    if (is.null(opts$logFile))  opts$logFile=TRUE;    # this might be necessary for older opts from file
+    if (opts$fileMode && opts$logFile) {
+      theLogFile = paste(dir.output,opts$LOGFILE,sep="/");
       while(sink.number()>0) sink();                  # remove any sinks which might be open from previous (interrupted) runs (prevents logFile from growing big!)
-      sink(logFile,split=T,append=F);	  
+      sink(theLogFile,split=T,append=F);	  
     }
     
     gdObj = list();
@@ -53,7 +53,9 @@ tdmGraAndLogFinalize <- function(opts,gdObj=NULL) {
     if (opts$GD.CLOSE & opts$GD.DEVICE!="win") tdmGraphicCloseDev(opts);
     cat1(opts,sprintf("\n%s: All done.\n\n",opts$filename));
     if (is.null(gdObj)) warning("Deprecated: No gdObj (return value from tdmGraAndLogInitialize) passed"); 
-    if (opts$fileMode) sink();       # close the LOGFILE
+    if (is.null(opts$fileMode)) opts$fileMode=TRUE;   # this might be necessary for older opts from file
+    if (is.null(opts$logFile))  opts$logFile=TRUE;    # this might be necessary for older opts from file
+    if (opts$fileMode && opts$logFile) sink();       # close the LOGFILE
 }
 ######################################################################################
 #

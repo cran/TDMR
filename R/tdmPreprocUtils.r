@@ -391,7 +391,7 @@ tdmPreSFA.train <- function(dset,response.var,opts)  {
       cat1(opts,fname,": SFA 2nd degree with",length(numeric.variables),"numeric variables and PPRANGE =",ppRange,"on ",nrow(dset)," records ...\n");
       x <- dset[,numeric.variables];
     	realclass=dset[,response.var];
-  		sfaList = sfa2Create(ppRange, xpDim(ppRange), "PCA2", "ORD1", 0, sfaOpts)
+  		sfaList = rSFA::sfa2Create(ppRange, rSFA::xpDim(ppRange), "PCA2", "ORD1", 0, sfaOpts)
     	sfaList$deg=2;
     	sfaList$classes=levels(dset[,response.var]);
   	  sfaList$nclass=length(sfaList$classes);
@@ -404,7 +404,7 @@ tdmPreSFA.train <- function(dset,response.var,opts)  {
     		realclass=tmpResult$realclass
   		}
   		# perform the preprocessing step
-  		sfaList=sfaStep(sfaList, x, "preprocessing");
+  		sfaList=rSFA::sfaStep(sfaList, x, "preprocessing");
   		# perform the expansion step 
   		# IMPORTANT: add patterns one class at a time (!)
   		for (nC in 1:sfaList$nclass){
@@ -412,10 +412,10 @@ tdmPreSFA.train <- function(dset,response.var,opts)  {
   		  if (length(idx)<2)               # this check should be later in rSFA also
   		    stop(sprintf("There must be at least 2 training records for each class, but class %s has only %3d record(s)", sfaList$classes[nC],length(idx)));
   		  #cat1(opts,"--- starting expansion for class",sfaList$classes[nC], "with",length(idx),"train records ...\n");  
-  			sfaList=sfaStep(sfaList, x[idx,], "expansion","CLASSIF");
+  			sfaList=rSFA::sfaStep(sfaList, x[idx,], "expansion","CLASSIF");
   		}
-  		sfaList=sfaStep(sfaList, x, "sfa","SVDSFA");     # close the algorithm
-  		y = sfaExecute(sfaList, x);	       # y: matrix with same numbers of rows as x and ODIM columns with column names "V1","V2",...
+  		sfaList=rSFA::sfaStep(sfaList, x, "sfa","SVDSFA");     # close the algorithm
+  		y = rSFA::sfaExecute(sfaList, x);	       # y: matrix with same numbers of rows as x and ODIM columns with column names "V1","V2",...
       sx <- as.data.frame(y[,1:odim]);
       sfaPrefix <- "SF";
       names(sx) <- sub("V",sfaPrefix,names(sx));  
@@ -484,7 +484,7 @@ tdmPreSFA.apply <- function(dset,sfaList,opts,dtrain=NULL)  {
     if (nrow(dset)>0) {
       if (opts$PRE.SFA=="2nd") {
         x <- dset[,numeric.variables];
-    		y <- sfaExecute(sfaList, x);	          # column names are "V1", "V2", ...
+    		y <- rSFA::sfaExecute(sfaList, x);	          # column names are "V1", "V2", ...
     		#odim=ceiling(ncol(y)*opts$PRE.SFA.ODIM)		
       	odim <- opts$PRE.SFA.ODIM;
         sx <- as.data.frame(y[,1:odim]);

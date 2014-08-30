@@ -7,7 +7,9 @@
 #'   When called with \code{tdm = tdmDefaultsFill(mainFile="my.r"}, a new list \code{tdm} is created
 #'   and returned, with the element mainFile set to the specified value.
 #'   When called with \code{tdm = tdmDefaultsFill(tdm)}, an existing list \code{tdm} is filled with further default values.
-#'   If tdm$mainFunc is missing, but tdm$mainFile exists, then tdmDefaultsFill will set tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRUE).
+#'   
+#'   If \code{tdm$mainFunc} is missing, but \code{tdm$mainFile} exists, then \code{tdmDefaultsFill}
+#'   will set \preformatted{tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRUE)}
 #'
 #'   @param tdm         (optional)
 #'   @param mainFile    (optional) if given, create or overwrite tdm$mainFile with this value
@@ -16,7 +18,7 @@
 #'      \item{mainFile}{[NULL] if not NULL, source this file from the current dir. It should contain the definition of tdm$mainFunc.  }
 #'      \item{mainFunc}{\code{sub(".r","",basename(tdm$mainFile),fixed=TRUE)}, if tdm$mainFile is set and tdm$mainFunc is NULL, else \code{"mainFunc"} 
 #'              This is the name of the function called in \code{\link{tdmStartSpot}} and \code{\link{unbiasedRun}}   }
-#      \item{mainCommand}{ deprecated, will be automatically set to \code{"result <- tdm$mainFunc(opts,dset=dset)}"}   }
+#     \item{mainCommand}{ deprecated, will be automatically set to \code{"result <- tdm$mainFunc(opts,dset=dset)}"}   }
 #'      \item{unbiasedFunc}{["unbiasedRun"] which function to call for unbiased evaluation}
 #'      \item{tuneMethod}{["spot"] other choices: "cmaes", "bfgs", ..., see \code{\link{tdmDispatchTuner}} }
 #'      \item{nExperim}{[1]}
@@ -32,8 +34,10 @@
 #'      \item{parallelCPUs}{[1] 1: sequential, >1: parallel execution with this many CPUs (package parallel)  }
 #'      \item{parallelFuncs}{[NULL] in case tdm$parallelCPUs>1: a string vector with functions which are clusterExport'ed in addition
 #'                to tdm$mainFunc.  }
-#'      \item{path}{[getwd()] where to search .conf and .apd file}
-#'      \item{runList}{a list of .conf files}
+#'      \item{path}{[NULL] where to search .conf and .apd file. If it is NULL, path is set 
+#'                to the actual working directory at the time when tdmEnvTMakeNew is executed  }
+#'      \item{runList}{ [NULL] a list of .conf filenames}
+#'      \item{spotList}{[NULL] a list of .conf filenames}
 #'      \item{stratified}{[NULL] see \code{\link{tdmSplitTestData}}  }
 #'      \item{tdmPath}{[NULL] from where to source the R sources. If NULL load library TDMR instead.  }
 #'      \item{test2.string}{["default cutoff"] }

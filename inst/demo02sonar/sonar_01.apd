@@ -12,3 +12,4 @@
                               # [one multi-page PDF | (several) windows (X11) | dev.null]
       opts$GD.RESTART=F;       
       opts$VERBOSE = opts$SRF.verbose = 0;      
+      opts$logFile=FALSE      # no logfile (needed for Sweave/.Rnw only)

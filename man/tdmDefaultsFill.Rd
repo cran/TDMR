@@ -47,9 +47,12 @@
   execution with this many CPUs (package parallel) }
   \item{parallelFuncs}{[NULL] in case tdm$parallelCPUs>1: a
   string vector with functions which are clusterExport'ed
-  in addition to tdm$mainFunc.  } \item{path}{[getwd()]
-  where to search .conf and .apd file} \item{runList}{a
-  list of .conf files} \item{stratified}{[NULL] see
+  in addition to tdm$mainFunc.  } \item{path}{[NULL] where
+  to search .conf and .apd file. If it is NULL, path is set
+  to the actual working directory at the time when
+  tdmEnvTMakeNew is executed } \item{runList}{ [NULL] a
+  list of .conf filenames} \item{spotList}{[NULL] a list of
+  .conf filenames} \item{stratified}{[NULL] see
   \code{\link{tdmSplitTestData}} } \item{tdmPath}{[NULL]
   from where to source the R sources. If NULL load library
   TDMR instead.  } \item{test2.string}{["default cutoff"] }
@@ -80,10 +83,13 @@
   list \code{tdm} is created and returned, with the element
   mainFile set to the specified value.  When called with
   \code{tdm = tdmDefaultsFill(tdm)}, an existing list
-  \code{tdm} is filled with further default values.  If
-  tdm$mainFunc is missing, but tdm$mainFile exists, then
-  tdmDefaultsFill will set
-  tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRUE).
+  \code{tdm} is filled with further default values.
+}
+\details{
+  If \code{tdm$mainFunc} is missing, but
+  \code{tdm$mainFile} exists, then \code{tdmDefaultsFill}
+  will set
+  \preformatted{tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRUE)}
 }
 \note{
   The settings \code{tdm$TST.trnFrac} and

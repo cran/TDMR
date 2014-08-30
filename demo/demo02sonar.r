@@ -1,19 +1,12 @@
-#*# This demo shows a phase-2 example (SPOT tuning on task SONAR)
+#*# This demo shows a level-2 example (SPOT tuning on task SONAR)
 
-## load package and set working directory (dir with .apd, .conf and main_*.r file)
-#library(TDMR);
+## load package and set working directory (dir with .apd, .conf and main_*.r file):
 path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
-oldwd <- getwd(); 
-setwd(path);
 
-tdm=tdmDefaultsFill(mainFile="main_sonar.r");
-tdm <- tdmMapDesLoad(tdm);   # load the mapping from design variables to opts variables
-
-source("sonar_01.apd");      # read in settings for opts
-source(tdm$mainFile);
-spotUserConfig = list(tdm=tdm,spot.fileMode=F, opts=opts);
-spotConfig = spot("sonar_01.conf","auto",spotConfig=spotUserConfig);
-
-setwd(oldwd);                # restore old working directory
-
+tdm=list(mainFile="main_sonar.r"
+        ,runList="sonar_01.conf"
+        );
+spotStep = "auto";    
+source(paste(path,tdm$mainFile,sep="/"));    
+source(paste(path,"start_bigLoop.r",sep="/"),chdir=TRUE);    # change dir to 'path' while sourcing

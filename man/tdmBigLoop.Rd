@@ -2,7 +2,7 @@
 \alias{tdmBigLoop}
 \title{Tuning and unbiased evaluation in a big loop.}
 \usage{
-  tdmBigLoop(envT, spotStep = "auto")
+  tdmBigLoop(envT, spotStep = "auto", dataObj = NULL)
 }
 \arguments{
   \item{envT}{an environment containing on input at least
@@ -16,6 +16,12 @@
 
   \item{spotStep}{\code{["auto"]} which step of SPOT to
   execute (either \code{"auto"} or \code{"rep"}).}
+
+  \item{dataObj}{\code{[NULL]} optional object of class
+  \code{\link{TDMdata}} (the same for all runs in big
+  loop).  If it is \code{NULL}, it will be constructed here
+  with the help of \code{\link{tdmSplitTestData}}.  Then it
+  may be different for each run in the big loop.}
 }
 \value{
   environment \code{envT}, containing the results
@@ -152,61 +158,41 @@
   are in directory \code{demo}.
 }
 \examples{
-#*# --------- demo/demo03sonar.r ---------
-#*# This demo shows a complete tuned data mining process (level 3 of TDMR) where 
-#*# the data mining task is the classification task SONAR (from UCI repository, 
+#*# This demo shows a complete tuned data mining process (level 3 of TDMR) where
+#*# the data mining task is the classification task SONAR (from UCI repository,
 #*# http://archive.ics.uci.edu/ml/datasets/Connectionist+Bench+\%28Sonar,+Mines+vs.+Rocks\%29).
 #*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify
-#*# with Random Forest as the prediction model. 
-#*# The three parameter to be tuned are CUTOFF1, CLASSWT2 and XPERC, as specified 
-#*# in file sonar_04.roi. The tuner used here is LHD.  
-#*# Tuning runs are rather short, to make the example run quickly. 
-#*# Do not expect good numeric results. 
+#*# with Random Forest as the prediction model.
+#*# The three parameter to be tuned are CUTOFF1, CLASSWT2 and XPERC, as specified
+#*# in file sonar_04.roi. The tuner used here is LHD.
+#*# Tuning runs are rather short, to make the example run quickly.
+#*# Do not expect good numeric results.
 #*# See demo/demo03sonar_B.r for a somewhat longer tuning run, with two tuners SPOT and LHD.
 
-## load package and set working directory (dir with .apd, .conf and main_*.r file)
-#library(TDMR);
+## set working directory (dir with .apd, .conf and main_*.r file)
 path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
-#path <- paste("../inst", "demo02sonar",sep="/");
-oldwd <- getwd();  setwd(path);
-source("main_sonar.r");    # from working dir
+source(paste(path,"main_sonar.r",sep="/"));
 
-## preliminary settings for TDMR
+## control settings for TDMR
 tdm <- list( mainFunc="main_sonar"
-            , runList = "sonar_04.conf"
-            , umode=c("CV")           # ["CV" | "RSUB" | "TST" | "SP_T" ]
-            , tuneMethod = c("lhd")   # c("spot","lhd")
-            , filenameEnvT="demo03.RData"   # file to save environment envT (in working dir)
-            , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
-            , nExperim=1
-            , parallelCPUs=1
-            , parallelFuncs=c("readCmdSonar")
-            , optsVerbosity = 0       # the verbosity for the unbiased runs
-            );
-## tdm$runList="sonar_04.conf" has the settings for the tuning process (e.g. 
-##    - auto.loop.steps = number of SPOT generations       
-##    - auto.loop.evals = budget of model building runs and 
+           , runList = c("sonar_04.conf")
+           , umode="CV"              # { "CV" | "RSUB" | "TST" | "SP_T" }
+           , tuneMethod = c("lhd")
+           , filenameEnvT="exBigLoop.RData"   # file to save environment envT (in dir 'path')
+           , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
+           , nExperim=1
+           , parallelCPUs=1
+           , parallelFuncs=c("readCmdSonar")
+           , optsVerbosity = 0       # the verbosity for the unbiased runs
+           );
+## Each element of tdm$runList has the settings for one tuning process (e.g.
+##    - auto.loop.steps = number of SPOT generations
+##    - auto.loop.evals = budget of model building runs and
 ##    - io.roiFileName = "sonar_04.roi"
-## ). tdm$runList could contain other files as well (e.g. 
-##    c("sonar_01.conf","sonar_02.conf","sonar_03.conf")
-## ), if desired.
+## ).
 
-spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or 
-                      ## "rep" (make a visual report and an unbiased run on best results)
-
-## construct an initial environment envT from tdm
-## (this contains also tdmDefaultsFill(tdm))
-## then run tdmBigLoop
-envT <- tdmExecSpotStep(tdm,spotStep);
-## see demo03sonar_A.r for an identical version where the contents of tdmExecSpotStep 
-## is explicitly shown
-
-setwd(oldwd);               # restore old working directory
-
-## the resulting tuning surface(s) (the metamodel(s)) can be inspected interactively with
-##      load(paste(path,tdm$filenameEnvT,sep="/"));     
-##      tdmPlotResMeta(envT);
-## (load(...) is only needed for reloading envT in another R-session)
+spotStep = "auto";
+source(paste(path,"start_bigLoop.r",sep="/"),chdir=TRUE);    # change dir to 'path' while sourcing
 }
 \author{
   Wolfgang Konen (\email{wolfgang.konen@fh-koeln.de}),

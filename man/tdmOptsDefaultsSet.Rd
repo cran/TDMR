@@ -24,13 +24,15 @@
   \item{filetest}{[NULL] the test data, only relevant for
   READ.TST=T} \item{fileMode}{[TRUE] if =T, write
   opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData
-  file and *_train.log file} \item{data.title}{["Default
-  Data"] title for plots} \item{READ.TXT}{[T] =T: read data
-  from .csv and save as .Rdata, =F: read from .Rdata}
-  \item{READ.NROW}{[-1] read this amount of rows or -1 for
-  'read all rows'} \item{READ.TST}{[F] =T: read unseen test
-  data from opts$filetest (usually you will do this only
-  for the final model and only with TST.kind="col")}
+  file and *_train.log file} \item{logFile}{[TRUE] if =T,
+  and if opts$fileMode=T, write log file to *_train.log }
+  \item{data.title}{["Default Data"] title for plots}
+  \item{READ.TXT}{[T] =T: read data from .csv and save as
+  .Rdata, =F: read from .Rdata} \item{READ.NROW}{[-1] read
+  this amount of rows or -1 for 'read all rows'}
+  \item{READ.TST}{[F] =T: read unseen test data from
+  opts$filetest (usually you will do this only for the
+  final model and only with TST.kind="col")}
   \item{READ.CMD}{["\code{\link{tdmReadCmd}(filename,opts)}"]
   the command to be passed into \code{\link{tdmReadData}}.
   It has to contain the placeholder 'filename'. The default

@@ -14,9 +14,10 @@
   \code{\link{TDMenvir}}, containing (among others) the
   elements \item{\code{runList}}{ \code{=tdm$runList} }
   \item{\code{spotList}}{ \code{=tdm$spotList} }
-  \item{\code{tdm}}{ \code{=tdm} } \item{\code{getBst}}{
-  accessor function(confFile,nExp,theTuner) into
-  \code{envT$bstGrid} } \item{\code{getRes}}{ accessor
+  \item{\code{tdm}}{ \code{=\link{tdmDefaultsFill}(tdm)} }
+  \item{\code{getBst}}{ accessor
+  function(confFile,nExp,theTuner) into \code{envT$bstGrid}
+  } \item{\code{getRes}}{ accessor
   function(confFile,nExp,theTuner) into \code{envT$resGrid}
   } \item{\code{sCList}}{ list of spotConfig-objects, as
   many as \code{envT$runList} has elements. Each spotConfig

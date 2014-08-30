@@ -18,8 +18,7 @@
   where to log the output } \item{EVALFILE}{["*_eval.csv"]
   file with evaluation results allEVAL }
   \item{SRF.samp}{sample size for SRF, derived from
-  \code{RF.samp} } \item{SRF.cutoff}{[opts$CLS.cutoff] }
-  \item{rgain.string}{ one out of
+  \code{RF.samp} } \item{rgain.string}{ one out of
   c("RGain","MeanCA","MinCA","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe"),
   depending on \code{opts$rgain.type} }
 

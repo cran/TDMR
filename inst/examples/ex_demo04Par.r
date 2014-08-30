@@ -49,8 +49,6 @@ envT <- tdmEnvTMakeNew(tdm);
 ##      b) the sensitivity plot for each parameter in the vicinity of the best solution found
 envT <- tdmBigLoop(envT,spotStep);
 
-#deprecated: envT <- tdmCompleteEval("cpu_01.conf",NULL,spotStep,tdm);
-
 ## restore old working directory
 setwd(oldwd);
 

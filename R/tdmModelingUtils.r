@@ -169,7 +169,7 @@ tdmModAdjustSampsizeC <- function(samp, to.model, response.variable, opts) {
     else {
       newsamp <- as.vector(summary(to.model[,response.variable]));
       n.class <- length(newsamp);
-      browser()
+      #browser()
       if (length(samp)!=n.class)
         stop(sprintf("Wrong length of sampsize 'samp'! It must be either a scalar or a vector of length n.class=%d.\n  samp = ",n.class),
              sprintf("%d ",samp));
@@ -223,8 +223,10 @@ tdmModAdjustCutoff <- function(cutoff,n.class,text="cutoff")
       if (length(w)==1) {
           s = sum(cutoff[-w]);
           if (s>=1) {
-            warning(sprintf("One element of %s is not specified (<0), but the others have a sum>=1, there is no remainder.\n  ",text),
+            warning(sprintf("One element of %s is not specified (<0), but the others have a sum>=1, there is no remainder.  ",text),
+                    sprintf("%s = c(%s).\n  ",text,paste(cutoff,collapse=",")),
                     "Reducing the sum of the others to 0.9.")
+            browser()
             cutoff=cutoff/s*0.9;
           }
           cutoff[w] = 1-sum(cutoff[-w]);
@@ -341,12 +343,10 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
 #    SRF.file <- paste(paste(dir.output,filename,sep="/"),"SRF",response.variable,"Rdata",sep=".")
     
 
+    ############################################################
+    # PART 1: Calculate SRF importance (or load it from opts)
+    ############################################################
     if (opts$SRF.calc==TRUE) {
-# --- CAUTION: this load may lead to problems with variable input.variables. 
-# --- Is only needed for the experimental variable accum_imp1, so we comment it out (see also below)
-#      if (opts$k>1) {
-#        load(file=SRF.file);  # load accum_imp1 as stored from previous CV-fold
-#      }
       if (opts$SRF.kind=="xperc") {
         if (opts$SRF.XPerc<0) stop(sprintf("opts$SRF.XPerc < 0 : %f",opts$SRF.XPerc));
         if (opts$SRF.XPerc>1) stop(sprintf("opts$SRF.XPerc > 1 : %f",opts$SRF.XPerc));
@@ -357,81 +357,42 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
       cat1(opts,filename,": Train RF (importance, sampsize=", opts$RF.sampsize,") ...\n")
       if (!is.null(opts$CLS.CLASSWT)) {
         cat1(opts,"Class weights: ", opts$CLS.CLASSWT,"\n")
-        cwt = opts$CLS.CLASSWT*1; # strange, but necessary: if we omit '*1' then cwt seems to be a copy-by-reference of
+        #cwt = opts$CLS.CLASSWT*1;# strange, but necessary: if we omit '*1' then cwt seems to be a copy-by-reference of
                                   # opts$CLS.CLASSWT. After randomForest call  cwt is changed and also opts$CLS.CLASSWT would be changed (!)
                                   # (Another way to hinder RF to change the parameter 'classwt' on output is to make this vector a *named*
                                   # vector. This is actually the case, because in tdmClassify we decorate opts$CLS.CLASSWT with the 
                                   # level names of response.variable)
-      } else { cwt=NULL; }
-      if (!is.null(opts$SRF.cutoff)) cat1(opts,"Cutoff: ", opts$SRF.cutoff,"\n")
-
-      fsRfImportance <- function(opts,cwt) {
-        # we work here with a command text string and eval(...) to allow for the presence or
-        # absence of certain options like "mtry" or "cutoff" which are not allowed to be NULL:
-        rf.options = "ntree=opts$SRF.ntree, importance=TRUE";    # NEW: only with 'importance=TRUE' we see MeanDecreaseAccuracy,
-                                                              # otherwise we get only MeanDecreaseGini (faster, but sometimes unreliable)
-        rf.options = paste(rf.options,"sampsize=opts$RF.sampsize",sep=",")
-        rf.options = paste(rf.options,"classwt=cwt","na.action=na.roughfix","proximity=F",sep=",")
-        if (!is.null(opts$SRF.mtry)) rf.options = paste(rf.options,"mtry=opts$SRF.mtry",sep=",")
-        if (!is.null(opts$SRF.cutoff)) rf.options = paste(rf.options,"cutoff=opts$SRF.cutoff",sep=",")
-        #dbg_chase_cutoff_bug(formul,to.model,d_train,response.variable,rf.options,opts);
-#print(.Random.seed[1:6]);
-        flush.console();
-        res.SRF <- NULL;      
-        eval(parse(text=paste("res.SRF <- randomForest::randomForest( formul, data=to.model,",rf.options,")")));
-        # select MeanDecreaseAccuracy-importance (NEW 05/11, together with switch 'importance=TRUE' above)
-        res.SRF$imp1 <- randomForest::importance(res.SRF, type=1, scale=opts$SRF.scale);      
-#print(.Random.seed[1:6]);
-        
-        # only for debug or in-depth-analysis:
-        #analyzeImportance(res.SRF,input.variables,opts);
-        
-        res.SRF;
-      }
-#      fsLasso <- function(opts) {
-#        # *** does not yet work in all cases !!! ***
-#        require(lasso2);
-#        formul <- formula(paste("as.numeric(",response.variable,") ~ ."))   # use all possible input variables
-#        res.SRF <- NULL;
-#        #browser()
-#        eval(parse(text=paste("res.SRF <- l1ce( formul, data=to.model, bound=0.5)")));
-#        res.SRF$imp1 <- as.matrix(res.SRF$coefficients[-1]);
-#        
-#        res.SRF;
-#      }
+        cwt = sprintf("classwt=c(%s)",paste(opts$CLS.CLASSWT,collapse=","))
+      } else { cwt="classwt=NULL"; }
+      if (!is.null(opts$SRF.cutoff)) {
+        cat1(opts,"Cutoff: ", opts$SRF.cutoff,"\n");
+        #cutoff = sprintf("cutoff=c(%s)",paste(opts$SRF.cutoff,collapse=","))  # DON*T!! may lead to "Incorrect cutoff" error due to rounding inaccuracies
+      } else { cutoff=NULL; }
+      
        res.SRF = switch(opts$SRF.method
-        ,"RFimp" = fsRfImportance(opts,cwt)
+        ,"RFimp" = fsRfImportance(opts,formul,to.model,cwt)
         #,"lasso" = fsLasso(opts)
         ,"INVALID"
         ); 
       if (res.SRF[1]=="INVALID1") {
         stop(sprintf("*** Invalid FS method=%s ***\n",opts$SRF.method));
       } 
-      if (is.null(res.SRF)) stop(sprintf("FS method %s did not return a suitable result 'res.SRF'",opts$SRF.method));
+      if (is.null(res.SRF)) 
+        stop(sprintf("FS method %s did not return a suitable result 'res.SRF'",opts$SRF.method));
       
       imp1 <- res.SRF$imp1;
       
-# --- also commented out because of the load()-problems mentioned above
-#      # the following calculation and saving of accum_imp1 is just a test to check whether accumulated
-#      # importance in case of CV (the accumulation is done over all CV-folds) has a stabilizing effect
-#      # on the most important variables. To test it, run accSRF-test.r (2 runs with different seeds)
-#      # --- Currently accum_imp1 has no influence whatsoever on the TDMR-workflow ---
-#      if (opts$k==1) {
-#        accum_imp1 = imp1;
-#      } else { 
-#        accum_imp1 = accum_imp1 + imp1;
-#      }
-      
       s_input <- input.variables[order(imp1,decreasing=TRUE)]  # input.variables sorted by increasing importance
       s_imp1 <- imp1[order(imp1,decreasing=TRUE)]
-      #if (opts$fileMode) {
-      #  cat1(opts,filename,": Saving sorted RF importance to file", SRF.file, "...\n")
-      #  save(file=SRF.file,s_input,s_imp1,input.variables); #,accum_imp1);
-      #}
+      s_imp2 <- pmax(s_imp1,0);
+      # It can happen that unimportant variables have a negative importance s_imp1. This is only a statistical
+      # artefact, the importance is compatible with 0 (see notes_RF.doc for details). Since cumsum below does not  
+      # allow negative values, we make a copy s_imp2 with all negative values clipped to 0.
+      
       cat1(opts,filename,": Saving SRF (sorted RF) importance info on opts ...\n");
-      opts$srf[[response.variable]] = data.frame(inp_var=input.variables
-                                                ,s_input=s_input
+      opts$srf[[response.variable]] = data.frame(s_input=s_input
                                                 ,s_imp1=s_imp1
+                                                ,s_imp2=s_imp2 
                                                 );
     }
     else {   # i.e. if (opts$SRF.calc==F)
@@ -442,18 +403,14 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
         stop(sprintf("list opts$srf contains no data frame named %s. Consider opts$SRF.calc==TRUE.",response.variable));
       s_input=opts$srf[[response.variable]]$s_input;
       s_imp1 =opts$srf[[response.variable]]$s_imp1;
+      s_imp2 <- pmax(s_imp1,0);
     } # if (opts$SRF.calc)
-    if (is.null(s_input) | is.null(s_imp1)) stop("opts$SRF.s_input or opts$SRF.s_imp1 are not available. Consider opts$SRF.calc=TRUE.");
+    if (is.null(s_input) | is.null(s_imp1)) 
+      stop("opts$SRF.s_input or opts$SRF.s_imp1 are not available. Consider opts$SRF.calc=TRUE.");
     
-    # OLD AND WRONG: s_imp2 was a copy of s_imp1, shifted by -min(s_imp1)-0.001 if s_imp1 contains negative values
-    # which is not allowed for cumsum (MeanDecreaseAccuracy can be negative)
-    #s_imp2 <- s_imp1 - min(0,min(s_imp1)-0.001);
-    #
-    # NEW (May 2012): negative values in s_imp1 are artefacts of a slightly negative res.SRF$importance (is compatible with 0)
-    # and a division with a small res.SRF$importanceSD --> we clip them to 0: 
-    s_imp2 <- s_imp1;
-    s_imp2[s_imp1<0] <- 0;
-
+    ############################################################
+    # PART 2: Select important variables
+    ############################################################
     if (opts$SRF.kind=="ndrop") {
         # remove the SRF.ndrop input variables which have the lowest importance
         # (but keep at least one):
@@ -464,8 +421,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
           opts$SRF.nkeep <- lsi <- min(opts$SRF.nkeep,length(s_input));
         } else {    # i.e. opts$SRF.kind=="xperc"
           # keep the minimal number of those most important input variables which
-          # sum up together to more than the fraction opts$SRF.XPerc of the sum of
-          # all importances
+          # sum up together to more than opts$SRF.XPerc * (sum of all importances)
           w = which(cumsum(s_imp2)/sum(s_imp2)<=opts$SRF.XPerc)
           lsi <- max(w)+1;
           lsi <- min(lsi,length(s_imp1)); # for the case SRF.XPerc==1: lsi may not be larger than #input.variables
@@ -501,7 +457,9 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
         cat(sprintf("Proc time: %5.2f\n",(proc.time()-ptm)[1]));
     }
 
-    # plot it:
+    ############################################################
+    # PART 3: Plot the importance
+    ############################################################
     if (opts$GD.DEVICE!="non") {
       maxS <- min(length(s_imp1),opts$SRF.maxS)
       tdmGraphicNewWin(opts)
@@ -527,11 +485,55 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
               , s_dropped=s_dropped   # vector with name of dropped variables
               , lsd=lsd               # length of s_dropped
       	      , perc=perc             # the percentage of total importance which is in the dropped variables
-      	      , opts=opts             # some defaults might have been added
+      	      , opts=opts             # some elements might have been added
               );
 }
 
-# helper for fsRfImportance in tdmModSortedRFimport
+# fsRfImportance: helper for tdmModSortedRFimport
+fsRfImportance <- function(opts,formul, to.model, cwt) {
+  require(randomForest);   # for 'na.roughfix' 
+  testit::assert("Cutoff is bigger than 1",sum(opts$SRF.cutoff)<=1)
+  
+  # we work here with a command text string and eval(...) to allow for the presence or
+  # absence of certain options like "mtry" or "cutoff" which are not allowed to be NULL:
+  rf.options = "ntree=opts$SRF.ntree, importance=TRUE"; # NEW: only with 'importance=TRUE' we see MeanDecreaseAccuracy,
+  # otherwise we get only MeanDecreaseGini (faster, but sometimes unreliable)
+  rf.options = paste(rf.options,"sampsize=opts$RF.sampsize",sep=",")
+  rf.options = paste(rf.options,cwt,"na.action=na.roughfix","proximity=F",sep=",")
+  if (!is.null(opts$SRF.mtry)) rf.options = paste(rf.options,"mtry=opts$SRF.mtry",sep=",")
+  if (!is.null(opts$SRF.cutoff)) rf.options = paste(rf.options,"cutoff=opts$SRF.cutoff",sep=",")
+  #
+  #if (!is.null(opts$SRF.cutoff)) rf.options = paste(rf.options,cutoff,sep=",")  # DON'T!! this may lead to "Incorrect cutoff" error due to rounding!
+  #
+  #dbg_chase_cutoff_bug(formul,to.model,d_train,response.variable,rf.options,opts);
+  #print(.Random.seed[1:6]);
+  flush.console();
+  res.SRF <- NULL;      
+  #browser()
+  eval(parse(text=paste("res.SRF <- randomForest::randomForest( formul, data=to.model,",rf.options,")")));
+  # select MeanDecreaseAccuracy-importance (NEW 05/11, together with switch 'importance=TRUE' above)
+  res.SRF$imp1 <- randomForest::importance(res.SRF, type=1, scale=opts$SRF.scale);      
+  #print(.Random.seed[1:6]);
+  
+  # only for debug or in-depth-analysis:
+  #analyzeImportance(res.SRF,input.variables,opts);
+  
+  res.SRF;
+}
+
+#      fsLasso <- function(opts) {
+#        # *** does not yet work in all cases !!! ***
+#        require(lasso2);
+#        formul <- formula(paste("as.numeric(",response.variable,") ~ ."))   # use all possible input variables
+#        res.SRF <- NULL;
+#        #browser()
+#        eval(parse(text=paste("res.SRF <- l1ce( formul, data=to.model, bound=0.5)")));
+#        res.SRF$imp1 <- as.matrix(res.SRF$coefficients[-1]);
+#        
+#        res.SRF;
+#      }
+
+# helper for fsRfImportance 
 # (only for debug or in-depth-analysis of the importance)
 analyzeImportance <- function(res.SRF,input.variables,opts)  {
     #

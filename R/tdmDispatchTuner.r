@@ -1,3 +1,4 @@
+require(SPOT);
 #-------- MIES part temporarily moved to ../tdmDispatch_miesPart.r
 
 ###########################################################################################
@@ -236,7 +237,7 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
     control$diag.sigma=TRUE;
     control$diag.eigen=TRUE;
 
-    cma <- cma_es(param,fitFunc,sC$opts,lower=roiLower,upper=roiUpper,control=control);
+    cma <- cmaes::cma_es(param,fitFunc,sC$opts,lower=roiLower,upper=roiUpper,control=control);
     # cma_es calls tdmStartOther and tdmStartOther appends to data frames envT$res and envT$bst
     # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
     # If tdm$fileMode==TRUE, then tdmStartOther will write envT$res to envT$spotConfig$io.resFileName
@@ -309,17 +310,17 @@ cma_jInternRCma <- function(tdm,envT,dataObj) {
         return(TRUE);
     }
     
-    cma <- cmaNew(propFile=tdm$CMA.propertyFile);
+    cma <- rCMA::cmaNew(propFile=tdm$CMA.propertyFile);
     # if tdm$CMA.propertyFile is NULL, the default file CMAEvolutionStrategy.properties from find.package("rCMA") will be loaded
     
     if (!is.null(tdm$CMA.populationSize)) {
-      cmaSetPopulationSize(cma,tdm$CMA.populationSize);
+      rCMA::cmaSetPopulationSize(cma,tdm$CMA.populationSize);
     }
-    cmaSetStopMaxFunEvals(cma,stopMaxFunEvals);
-    cmaSetStopFitness(cma,-1e300);  # never stop due to fitness function value
-    cmaInit(cma,seed=sC$spot.seed,dimension=length(initialX),initialX=initialX, initialStandardDeviations=stdDevs);
-    res1 = cmaOptimDP(cma,fitFunc,isFeasible,verbose=2,iterPrint=1);
-    bestSolution=cmaEvalMeanX(cma,fitFunc,isFeasible);
+    rCMA::cmaSetStopMaxFunEvals(cma,stopMaxFunEvals);
+    rCMA::cmaSetStopFitness(cma,-1e300);  # never stop due to fitness function value
+    rCMA::cmaInit(cma,seed=sC$spot.seed,dimension=length(initialX),initialX=initialX, initialStandardDeviations=stdDevs);
+    res1 = rCMA::cmaOptimDP(cma,fitFunc,isFeasible,verbose=2,iterPrint=1);
+    bestSolution=rCMA::cmaEvalMeanX(cma,fitFunc,isFeasible);
 
     tunerVal = envT$spotConfig;
 		tunerVal$alg.currentResult <- envT$res;
@@ -391,7 +392,7 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
   
     maxEvaluations = sC$auto.loop.nevals/sC$seq.design.maxRepeats;
 
-    resPowell <- powell(param, fn=fitFunc, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
+    resPowell <- powell::powell(param, fn=fitFunc, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
     # powell calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
     # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
 

@@ -32,7 +32,9 @@
 #'       \item{S_train}{ RMSE on training set (vector of length NRUN)}
 #'       \item{T_train}{ Theil's U for RMAE on training set (vector of length NRUN)}
 #'       \item{*_test}{ --- similar, with test set instead of training set ---  }
-#'       \item{Err}{ }
+#'       \item{Err}{ a data frame with as many rows as opts$NRUN and columns = (rmae.trn, rmse.trn
+#'                   made.trn, rmae.theil.trn, ntrn, rmae.tst, rmse.tst, made.tst, rmae.theil.tst,
+#'                   ntst) }
 #'       \item{predictions}{ last run: data frame with dimensions [nrow(dset),length(response.variable)]. In case of CV, all 
 #'              validation set predictions (for each record in dset), in other cases mixed validation / train set predictions.  }
 #    }
@@ -40,7 +42,7 @@
 #' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmClassifyLoop}}, \code{\link{tdmClassify}}
 #' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Sep'2010 - Jun'2012
 #' @aliases TDMregressor 
-#' @example demo/aaRegression.r
+#' @example demo/demo00-1regress.r
 #' @export
 ######################################################################################
 tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
@@ -61,7 +63,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
                    paste(response.variables,collapse=","))
            )
     
-    R_train <- R_test <- T_train <- T_test <- NULL       # reserve names (dynamic extension of
+    R_train <- R_vali <- T_train <- T_test <- NULL       # reserve names (dynamic extension of
     S_train <- S_test <- NULL                            # these vectors at and of for-i-loop)
     Err <- NULL
     for (i in 1:opts$NRUN) {
@@ -131,17 +133,19 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
             res <- tdmRegress(d_train,d_test,d_preproc,response.variables,input.variables,opts)
             #res <- regress_lm(d_train,d_test,response.variables,input.variables,opts)
 
-            cat1(opts,sprintf("k=%d  res$rmae$train=%7.5f  res$rmae$test=%7.5f\n",k,res$rmae$train,res$rmae$test))
-            alltrn = rbind(alltrn,as.data.frame(list(rmae.trn=res$rmae$train * ntrn
-                                                    ,rmse.trn=res$rmse$train * ntrn
-                                                    ,made.trn=res$rmae$made.tr * ntrn
-                                                    ,rmae.theil.trn=res$rmae$theil.train * ntrn
+            avgRMAE = as.data.frame(t(colSums(res$allRMAE)))/nrow(res$allRMAE)
+            avgRMSE = as.data.frame(t(colSums(res$allRMSE)))/nrow(res$allRMSE)
+            cat1(opts,sprintf("k=%d  RMAE_train=%7.5f  RMAE_test=%7.5f\n",k,avgRMAE$train,avgRMAE$test))
+            alltrn = rbind(alltrn,as.data.frame(list(rmae.trn=avgRMAE$rmae.train * ntrn
+                                                    ,rmse.trn=avgRMSE$rmse.train * ntrn
+                                                    ,made.trn=avgRMAE$made.tr * ntrn
+                                                    ,rmae.theil.trn=avgRMAE$theil.train * ntrn
                                                     ,ntrn=ntrn
                                                     )));
-            alltst = rbind(alltst,as.data.frame(list(rmae.tst=res$rmae$test * ntst
-                                                    ,rmse.tst=res$rmse$test * ntst
-                                                    ,made.tst=res$rmae$made.te * ntst
-                                                    ,rmae.theil.tst=res$rmae$theil.test * ntst
+            alltst = rbind(alltst,as.data.frame(list(rmae.tst=avgRMAE$rmae.test * ntst
+                                                    ,rmse.tst=avgRMSE$rmse.test * ntst
+                                                    ,made.tst=avgRMAE$made.te * ntst
+                                                    ,rmae.theil.tst=avgRMAE$theil.test * ntst
                                                     ,ntst=ntst
                                                     )));
             predictions[cvi==k,response.variables] <- res$d_test[,paste("pred_",response.variables,sep="")];
@@ -165,9 +169,9 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
         #if (opts$rgain.type=="made") R_train[i] = Err["made.trn"];
         S_train[i] = Err[i,"rmse.trn"];
         T_train[i] = Err[i,"rmae.theil.trn"];
-        R_test[i] = Err[i,col.tst];
-        #if (opts$rgain.type=="rmse") R_test[i] = Err["rmse.tst"];
-        #if (opts$rgain.type=="made") R_test[i] = Err["made.tst"];
+        R_vali[i] = Err[i,col.tst];
+        #if (opts$rgain.type=="rmse") R_vali[i] = Err["rmse.tst"];
+        #if (opts$rgain.type=="made") R_vali[i] = Err["made.tst"];
         S_test[i] = Err[i,"rmse.tst"]
         T_test[i] = Err[i,"rmae.theil.tst"]
 
@@ -188,7 +192,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
         # Expected result: rmse$test & rmse$train should approach same value
         cat1(opts,"\nAverage over all ",opts$NRUN," runs: \n")
         cat1(opts,sprintf("RMAE.trn: (%7.5f +- %7.5f)%%\n", mean(R_train)*100, sd(R_train)*100));
-        cat1(opts,sprintf("RMAE.tst: (%7.5f +- %7.5f)%%\n", mean(R_test)*100, sd(R_test)*100));
+        cat1(opts,sprintf("RMAE.tst: (%7.5f +- %7.5f)%%\n", mean(R_vali)*100, sd(R_vali)*100));
         cat1(opts,sprintf("Theil.train: (%7.2f +- %4.2f)%%\n", mean(T_train), sd(T_train)));
         cat1(opts,sprintf("Theil.test: (%7.2f +- %4.2f)%%\n", mean(T_test), sd(T_test)));
         cat1(opts,sprintf("RMSE.train: (%7.2f +- %4.2f)%%\n", mean(S_train), sd(S_train)));
@@ -198,7 +202,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
     result = list(lastRes = res     # last run, last fold: result from tdmRegress
               	#, opts = res$opts    # deprecated (12/2011), use result$lastRes$opts or Opts(result)
               	, R_train = R_train
-              	, R_test = R_test
+              	, R_vali = R_vali
               	, T_train = T_train
               	, T_test = T_test
               	, S_train = S_train
@@ -250,7 +254,7 @@ tdmRegressSummary <- function(result,opts,dset=NULL)
                 ),"\n");
     }
     #print2(opts,res$allRMAE);		   # RMAE for each response variable , but only for lastRes
-    y = mean(result$R_test);       # RMAE, average of opts$NRUN runs
+    y = mean(result$R_vali);       # RMAE, average of opts$NRUN runs
     ytr = mean(result$R_train);
     if (opts$MOD.method %in% c("RF","MC.RF")) {
       cat1(opts,sprintf("\n%sTrain OOB RMAE: %7.3f",ifelse(opts$TST.kind=="cv","CV ",""),ytr));
@@ -260,10 +264,10 @@ tdmRegressSummary <- function(result,opts,dset=NULL)
       result$sd.y=sd(result$R_train);
     } else {
       result$y=y;             # the score (to be minimized by SPOT) is "RMAE test set"
-      result$sd.y=sd(result$R_test);
+      result$sd.y=sd(result$R_vali);
     }
     cat1(opts,sprintf("%s  Vali    RMAE: %7.3f",ifelse(opts$TST.kind=="cv","CV ",""),y));
-    cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_test)),""));
+    cat1(opts,ifelse(opts$NRUN>1,sprintf(" +-%7.3f",sd(result$R_vali)),""));
     cat1Records(nrow(res$d_test));
 
     if (!is.null(dset)) result$dset=dset;          # might cost a lot of memory

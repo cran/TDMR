@@ -29,7 +29,7 @@
 #'                  Now we use column "tdmSplit" to select the test data for unbiased evaluation. Training during unbiased evaluation
 #'                  is done on a fraction tdm$TST.trnFrac of the training-vali data}
 #'     }
-#'   @param withParams  [FALSE] if =TRUE, add columns with best parameters to data frame finals
+#'   @param withParams  [FALSE] if =TRUE, add columns with best parameters to data frame \code{finals}
 #'                      (should be FALSE, if different runs have different parameters)
 #'   @param tdm         a list with TDM settings from which we use here the elements
 #'     \describe{
@@ -91,6 +91,7 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     if (is.null(envT$nExp)) envT$nExp <- 1;
     if (is.null(tdm$map)) tdm <- tdmMapDesLoad(tdm); 
     #if (is.null(envT$map)) tdmMapDesLoad(envT,tdm); 
+    
 
     if (is.null(envT$spotConfig$opts)) {
       if (is.null(envT$sCList[[1]]$opts)) {
@@ -106,7 +107,7 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
       opts <- envT$spotConfig$opts;
     }
   	opts$ALG.SEED <- envT$spotConfig$alg.seed;
-  	
+
     envT$tdm <- tdm;    # just as information to the caller of this function
 
     writeLines(paste("start unbiased run for function \"", tdm$mainFunc,"\" ...",sep=""), con=stderr());
@@ -198,7 +199,7 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     } # if(is.null(finals))
       
     # add results on test set from unbiased runs (two columns for each value of umode):
-    add.finals <- data.frame(mean(result$R_test),sd(result$R_test));
+    add.finals <- data.frame(mean(result$R_vali),sd(result$R_vali));
     names(add.finals) <-  paste(c(tdmOpts$rgain.string,"sdR"),umode,sep=".");
     finals <- cbind(finals,add.finals);
 
