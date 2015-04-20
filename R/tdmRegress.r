@@ -1,5 +1,5 @@
-require(randomForest);
-#require(e1071);         # svm()
+# require(randomForest);  # now via direct call 'randomForest::'
+# require(e1071);         # svm()
 
 ######################################################################################
 # tdmRegress
@@ -222,7 +222,7 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
             # absence of certain options like "mtry" which are not allowed to be NULL:
             rf.options = "ntree=opts$RF.ntree";
             rf.options = paste(rf.options,"sampsize=opts$RF.sampsize",sep=",")
-            rf.options = paste(rf.options,"na.action=na.roughfix","proximity=F",sep=",")
+            rf.options = paste(rf.options,"na.action=randomForest::na.roughfix","proximity=F",sep=",")
             if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,"mtry=opts$RF.mtry",sep=",")
             #if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options,"cutoff=opts$CLS.cutoff",sep=",")
             #/WK/2014/05/ 'cutoff' makes no sense for regression!

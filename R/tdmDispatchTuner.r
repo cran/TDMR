@@ -199,7 +199,7 @@ lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 ######################################################################################
 cmaesTuner <- function(confFile,tdm,envT,dataObj)
 {
-    require(cmaes)
+    # require(cmaes)      # now via direct call 'cmaes::' 
     envT$spotConfig$alg.currentResult <- NULL;    
     sC <- envT$spotConfig;
     roiLower <- sC$alg.roi[,1];
@@ -278,7 +278,7 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
 ######################################################################################
 cma_jTuner <- function(confFile,tdm,envT,dataObj)
 {
-    require(rCMA);
+    #require(rCMA);         # now via direct call 'rCMA::' 
     tunerVal <- cma_jInternRCma(tdm,envT,dataObj);
     #tunerVal <- cma_jInternRJava(tdm,envT,dataObj);    # -- deprecated, now in R-DM-Template-deprecated\
     #tunerVal <- cma_jIntern__Old(tdm,envT,dataObj);    # -- deprecated, now in R-DM-Template-deprecated\
@@ -287,7 +287,7 @@ cma_jTuner <- function(confFile,tdm,envT,dataObj)
 # Internal function for the usage of CMA-ES (Java) from R (based on package rCMA)
 #
 cma_jInternRCma <- function(tdm,envT,dataObj) {
-    #require(rCMA);   # deprecated, rCMA should already be there because it is in DESCRIPTION's "Depends"
+    #require(rCMA);         # now via direct call 'rCMA::'
     envT$spotConfig$alg.currentResult <- NULL;
     sC <- envT$spotConfig;
     roiLower <- sC$alg.roi[,1];
@@ -296,7 +296,7 @@ cma_jInternRCma <- function(tdm,envT,dataObj) {
     set.seed(sC$spot.seed);
     initialX <- runif(length(roiLower),roiLower,roiUpper);#/2;    # initial point (mean for population)
     stdDevs <- (roiUpper-roiLower)/10;                            # initial standard deviations
-
+    
     ## we assume that sC$auto.loop.nevals is the limiting factor in SPOT tuning
     stopMaxFunEvals = sC$auto.loop.nevals/sC$seq.design.maxRepeats;           
 
@@ -353,7 +353,7 @@ cma_jInternRCma <- function(tdm,envT,dataObj) {
 #' @keywords internal
 ######################################################################################
 powellTuner <- function(confFile,tdm,envT,dataObj){
-    require(powell)
+    # require(powell)       # now via direct call 'powell::'
   
     #function to fix constraint violating steps:
     tdm$constraintFnc <- function(x,tdm) {

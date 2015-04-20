@@ -49,7 +49,10 @@ tdmROCR.default <- function(x, ...)  cat("This is tdmROCR.default\n");
 #' @seealso   \code{\link{tdmClassifyLoop}}   \code{\link{tdmROCRbase}}
 #' @export
 tdmROCR.TDMclassifier <- function(x,...) {
-  require(twiddler);
+  #require(twiddler);   # Not needed anymore, because we have twiddler now in 'Depends'.
+                        # We need to load library twiddler (via 'Depends' or via 'require'), 
+                        # because it calls internally the function tcltk::tktoplevel, 
+                        # which cannot be resolved otherwise.
   if (length(x$predProbList[[1]]$Val)==1 |
       length(x$predProbList[[1]]$Trn)==1) {
     warning("Object x of class TDMclassifier has no prediction score in 'predProbList' --> can not show a ROC curve");
@@ -130,7 +133,7 @@ tdmROCRbase  <- function(x,dataset="validation",nRun=1,typ="ROC",noPlot=FALSE,..
     perf <- tdmROCR_calc(ppVal,ymeas[typ==typList],xmeas[typ==typList]);
     areaR <- tdmROCR_area(perf,typ);
     if (!noPlot) { 
-      plot(perf,colorize=T,lwd=2,main=sprintf("%s on %s set",titList[typ==typList],dataset));
+      ROCR::plot(perf,colorize=T,lwd=2,main=sprintf("%s on %s set",titList[typ==typList],dataset));
       if (.Devices[[dev.cur()]]=="windows") bringToTop();
     }
     areaR;
@@ -138,7 +141,7 @@ tdmROCRbase  <- function(x,dataset="validation",nRun=1,typ="ROC",noPlot=FALSE,..
 }
 
 tdmROCR_calc <- function(ppVal,ymeasure,xmeasure) {
-  require(ROCR);
+    #require(ROCR);  # now via direct call 'ROCR::'
     #
     # TODO: extend for multiple response variables
     #    
@@ -166,7 +169,7 @@ tdmROCR_area <- function(perf,typ="ROC") {
 # --- experimental, not yet ready for export
 #
 tdmROCR.tdmClass <- function(x,...) {
-  require(ROCR);
+  #require(ROCR);  # now specific call with 'ROCR::'
   if (is.null(x$d_train$votes)) {
     warning("Object of class tdmClass has no prediction score d_train$votes --> can not show a ROC curve");
   } else {
@@ -178,7 +181,7 @@ tdmROCR.tdmClass <- function(x,...) {
     if ( mean(pp[ll==lo[1]]) > mean(pp[ll==lo[2]]) ) lo = rev(lo);
     predTr = ROCR::prediction(pp,ll,label.ordering=lo);
     perfTr = ROCR::performance(predTr,"tpr","fpr");
-    plot(perfTr,colorize=T,lwd=2,main="ROC Training Set")
+    ROCR::plot(perfTr,colorize=T,lwd=2,main="ROC Training Set")
   }
 }
 

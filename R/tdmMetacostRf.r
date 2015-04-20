@@ -46,7 +46,7 @@ tdmMetacostRf <- function(response.variable,to.model,opts)
         # for optional later reference or user inspection.
         rf.options = paste(" ntree=",eval(opts$RF.ntree));
         rf.options = paste(rf.options," sampsize=opts$RF.sampsize",sep=",")
-        rf.options = paste(rf.options," classwt=cwt"," na.action=na.roughfix"," proximity=F",sep=",")
+        rf.options = paste(rf.options," classwt=cwt"," na.action=randomForest::na.roughfix"," proximity=F",sep=",")
         #if (!is.null(cwt))  paste(rf.options,paste("classwt=",eval(cwt)),sep=",")    # not run
         if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,paste(" mtry=",eval(opts$RF.mtry)),sep=",")
         if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options," cutoff=opts$CLS.cutoff",sep=",")
@@ -141,7 +141,7 @@ applyMetacostRf <- function(app,res.rf,to.test,opts)
         # absence of certain options like "mtry" which are not allowed to be NULL:
         rf.options = "ntree=opts$RF.ntree";
         rf.options = paste(rf.options,"sampsize=opts$RF.sampsize",sep=",")
-        rf.options = paste(rf.options,"na.action=na.roughfix","proximity=F",sep=",")
+        rf.options = paste(rf.options,"na.action=randomForest::na.roughfix","proximity=F",sep=",")
         if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,"mtry=opts$RF.mtry",sep=",")
 
         app$test.votes <- predict(res.rf, newdata=to.test, type="vote")

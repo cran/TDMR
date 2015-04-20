@@ -6,7 +6,7 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.2\cr
+#' Version: \tab 1.3\cr
 #' Date: \tab 30.08.2014\cr
 #' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
@@ -31,10 +31,12 @@
 #' @references \url{http://gociop.de/research-projects/tuned-data-mining/}
 #' @keywords package tuning data mining machine learning
 #' @import SPOT 
+#' @import twiddler 
 #' @import testit
 #' @import tcltk
+#### @import adabag
 #### no longer needed:  @import e1071     (because e1071 moved from "Depends" to "Suggests" in DESCRIPTION)
-# and @import testit 
+
 
 #End of Package Description
 NA #NULL, ends description without hiding first function

@@ -14,6 +14,7 @@
     opts$READ.CMD = "readCmdSonar(filename,opts)"    # def'd in main_sonar.r
     opts$data.title <- "Sonar Data";
     opts$rgain.type <- "arROC";
+
     source(paste(path,"start_sonar.r",sep="/"),chdir=TRUE);  # contains: result=main_sonar(opts);
     
     tdmGraphicNewWin(opts);

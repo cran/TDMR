@@ -1,9 +1,10 @@
-
       opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
                                       # for the list of those elements and many explanatory comments                                                                                                         
+      opts$dir.data <- "data/";
       opts$filename = "sonar.txt"
       opts$READ.CMD = "readCmdSonar(filename,opts)"    # def'd in main_sonar.r
       opts$data.title <- "Sonar Data"
+
       opts$RF.mtry = 4
       opts$TST.SEED = 124;    # reproducible output
       opts$MOD.SEED = 124;
@@ -12,6 +13,6 @@
       opts$GD.DEVICE="non"    # ["pdf"|"win"|"non"]: all graphics to 
                               # [one multi-page PDF | (several) windows (X11) | dev.null]
       opts$GD.RESTART=F;       
-      opts$VERBOSE=0;      
-      opts$SRF.verbose = opts$VERBOSE; #
+      opts$VERBOSE = opts$SRF.verbose = 0;      
+      opts$logFile=FALSE      # no logfile (needed for Sweave/.Rnw only)
 

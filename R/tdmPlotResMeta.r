@@ -63,7 +63,7 @@
 #' @export
 ######################################################################################
 tdmPlotResMeta <- function(envT) {
-  require(twiddler)
+  #require(twiddler);     # now specific call with 'twiddler::'
 
   ################################################################################
   showMeta <- function( theTuner,nExp,confFile,reportFunc,modelFit,
@@ -128,7 +128,7 @@ tdmPlotResMeta <- function(envT) {
     #maxstep = 0;              # use this setting to disable slider 'skipLastSteps'
     maxstep = max(res$STEP);  # experimental, yields slider 'skipLastSteps'. 
                               # CAUTION: maxstep only valid, if envT$resGrid[[1]] contains as many STEPs as all other RES data frames in envT
-    twiddleCmd <- paste("twiddle(showMeta(tuner,nExp",sep="");
+    twiddleCmd <- paste("twiddler::twiddle(showMeta(tuner,nExp",sep="");
     if (tne==1)   twiddleCmd <- paste(twiddleCmd,"=1",sep="");
     twiddleCmd <- paste(twiddleCmd,",confFile",sep="");
     if (tce==1)   twiddleCmd <- paste(twiddleCmd,"=envT$runList[1]",sep="");

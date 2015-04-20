@@ -261,7 +261,6 @@ tdmBigLoop <- function(envT,spotStep="auto",dataObj=NULL) {
             # this is for the case spotStep=="rep":
             envT$spotConfig$alg.currentResult <- envT$res;
             envT$spotConfig$alg.currentBest <- envT$bst;	
-            
             cat(sprintf("*** Starting TUNER %s, spotStep=%s, on task %s ***\n",theTuner,spotStep,confFile));
             tdmDispatchTuner(theTuner,confFile,spotStep,tdm,envT,dataObj);
             # If spotStep=="auto" then tdmDispatchTuner runs the tuning process, puts its results in envT$bst, envT$res 
@@ -458,7 +457,7 @@ removeTmpfiles2 <- function(confFile) {
 #
 prepareParallelExec <- function(tdm) 
 {
-    require(parallel);
+    # require(parallel);     # now via direct call 'parallel::' 
 
     cl <- parallel::makeCluster(tdm$parallelCPUs)
     parallel::clusterExport(cl,c("tdm"))

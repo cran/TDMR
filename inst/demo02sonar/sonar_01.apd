@@ -6,6 +6,8 @@
       opts$data.title <- "Sonar Data"
       
       opts$RF.mtry = 4
+
+
       opts$NRUN =  1          # how many runs with different train & test samples  - or - 
                               # how many CV-runs, if TST.kind="cv"
       opts$GD.DEVICE="non"    # ["pdf"|"win"|"non"]: all graphics to 

@@ -3,8 +3,8 @@
 #*# Other settings are the same as in demo03sonar.r, except that we use sonar_03.conf as configuration file.
 #*# 
 
-## load package and set working directory (dir with .apd, .conf and main_*.r file)
-#library(TDMR);
+require(rJava);     # this is needed since we have rCMA only on the Suggest list
+
 path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 oldwd <- getwd();
@@ -15,7 +15,7 @@ source("main_sonar.r");    # in working dir
 tdm <- list(  mainFunc="main_sonar"
             , runList = "sonar_03.conf"
             , umode=c("RSUB")           # ["CV" | "RSUB" | "TST" | "SP_T" ]
-            , tuneMethod = c("cma_j")       # ,"spot"
+            , tuneMethod = c("cma_j")       # "cma_j","spot"
             , filenameEnvT="demoSonarCma_j.RData"   # file to save environment envT (in working dir)
             , fileMode=FALSE
             , nrun=5, nfold=2         # repeats and CV-folds for the unbiased runs

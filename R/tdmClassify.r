@@ -1,5 +1,5 @@
-require(randomForest);
-#require(e1071);         # svm(), naiveBayes 
+# require(randomForest);  # now via direct call 'randomForest::'
+# require(e1071);         # svm(), naiveBayes 
 
 ######################################################################################
 # tdmClassify
@@ -280,7 +280,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             #
             rf.options = paste(" ntree=",eval(opts$RF.ntree));
             rf.options = paste(rf.options," sampsize=opts$RF.sampsize",sep=",")
-            rf.options = paste(rf.options,cwt," na.action=na.roughfix"," proximity=FALSE",sep=",")
+            rf.options = paste(rf.options,cwt," na.action=randomForest::na.roughfix"," proximity=FALSE",sep=",")
             #if (!is.null(cwt))  paste(rf.options,paste("classwt=",eval(cwt)),sep=",")    # not run
             if (!is.null(opts$RF.mtry)) rf.options = paste(rf.options,paste(" mtry=",eval(opts$RF.mtry)),sep=",")
             if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options," cutoff=opts$CLS.cutoff",sep=",")
@@ -350,14 +350,21 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             coefChoices = c("Breiman","Freund","Zhu");
             coefType = coefChoices[opts$ADA.coeflearn];
             cat1(opts,filename,": Train AdaBoost ( mfinal =",opts$ADA.mfinal,", coeflearn =",coefType,") ...\n");
-	          require(adabag)
             flush.console();
             formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
-            res.rf <- adabag::boosting(formul
-							               , data=to.train
-            							   , mfinal=opts$ADA.mfinal
-                             , coeflearn=coefType
-                              );
+            
+            
+            #require(adabag)
+            if (requireNamespace("adabag", quietly = TRUE)) {
+              res.rf <- adabag::boosting(formul
+                                         , data=to.train
+                                         , mfinal=opts$ADA.mfinal
+                                         , coeflearn=coefType
+              );
+            } else {
+              stop("Package adabag is not available on this platform")
+            }
+            
             res.rf$HasVotes = FALSE;
             res.rf$HasProbs = TRUE;
       			res.rf;
@@ -648,7 +655,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         # PART 4.6: EVAL: CALC CONFUSION MATRIX + GAIN
         #=============================================
         cat1(opts,filename,": Calc confusion matrix + gain ...\n")
-            
+        
         cat1(opts,"\nTraining cases (",length(train.predict),"):\n")
         cm.train <- tdmModConfmat(d_train,response.variable,name.of.prediction,opts,predProb$Trn);
         # the contents of cm.train$rgain depends on opts$rgain.type
@@ -758,7 +765,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
                     main=paste("True/false classification on",setStr));
             tdmGraphicCloseWin(opts);
         } # if (opts$GD.DEVICE!="non")
- 
+        
     } # for (response.variable)
     avgEVAL <- lapply(avgEVAL, function(x) {x/length(response.variables)} );
     

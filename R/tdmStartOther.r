@@ -92,7 +92,7 @@ tdmStartOther <-  function(x,tdm,envT,dataObj,opts=NULL) {
     	mergedData <- spotPrepareData(envT$spotConfig)
       envT$spotConfig <- spotWriteBest(mergedData, envT$spotConfig);	# appends the best solution to envT$spotConfig$alg.currentBest
       #envT$spotConfig$alg.currentResult <- res       # needed by spotPlotBst for column STEP
-  		spotPlotBst(envT$spotConfig);  
+    	if (envT$spotConfig$io.verbosity>1) spotPlotBst(envT$spotConfig);  
   		envT$bst <- envT$spotConfig$alg.currentBest;  
   		#browser()
     }
@@ -173,7 +173,7 @@ tdmStartCma_j <- function(x,tdm,envT,dataObj) {
     	mergedData <- spotPrepareData(envT$spotConfig)
       envT$spotConfig <- spotWriteBest(mergedData, envT$spotConfig);	# appends the best solution to envT$spotConfig$alg.currentBest
       #envT$spotConfig$alg.currentResult <- res       # needed by spotPlotBst for column STEP
-  		spotPlotBst(envT$spotConfig);  
+  		if (envT$spotConfig$io.verbosity>1) spotPlotBst(envT$spotConfig);  
   		envT$bst <- envT$spotConfig$alg.currentBest;  
   		#browser()
     }

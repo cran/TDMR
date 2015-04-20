@@ -4,7 +4,7 @@
 # HELPER FUNCTIONS FOR MODELING
 #
 ######################################################################################
-require(randomForest);
+# require(randomForest);    # now via direct call 'randomForest::'
 ######################################################################################
 #
 #
@@ -329,7 +329,7 @@ tdmModAdjustCutoff.OLD <- function(cutoff,n.class)
 ######################################################################################
 tdmModSortedRFimport <- function(d_train, response.variable, input.variables, opts)
 {
-    require(randomForest);
+    # require(randomForest);    # now via direct call 'randomForest::'
     opts <- tdmOptsDefaultsSet(opts);
 
     ptm <- proc.time();
@@ -491,7 +491,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
 
 # fsRfImportance: helper for tdmModSortedRFimport
 fsRfImportance <- function(opts,formul, to.model, cwt) {
-  require(randomForest);   # for 'na.roughfix' 
+  # require(randomForest);    # for 'na.roughfix', now via direct call 'randomForest::'
   testit::assert("Cutoff is bigger than 1",sum(opts$SRF.cutoff)<=1)
   
   # we work here with a command text string and eval(...) to allow for the presence or
@@ -499,7 +499,7 @@ fsRfImportance <- function(opts,formul, to.model, cwt) {
   rf.options = "ntree=opts$SRF.ntree, importance=TRUE"; # NEW: only with 'importance=TRUE' we see MeanDecreaseAccuracy,
   # otherwise we get only MeanDecreaseGini (faster, but sometimes unreliable)
   rf.options = paste(rf.options,"sampsize=opts$RF.sampsize",sep=",")
-  rf.options = paste(rf.options,cwt,"na.action=na.roughfix","proximity=F",sep=",")
+  rf.options = paste(rf.options,cwt,"na.action=randomForest::na.roughfix","proximity=F",sep=",")
   if (!is.null(opts$SRF.mtry)) rf.options = paste(rf.options,"mtry=opts$SRF.mtry",sep=",")
   if (!is.null(opts$SRF.cutoff)) rf.options = paste(rf.options,"cutoff=opts$SRF.cutoff",sep=",")
   #

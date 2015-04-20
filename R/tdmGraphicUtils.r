@@ -188,7 +188,7 @@ tdmGraphicCloseDev <- function(opts,...) {
     pngdev = dev.list()[grep("png",names(dev.list()))]
     if (length(pngdev)>0) for (i in 1:length(pngdev)) dev.off(which=pngdev[i])
   }
-  if (is.null(opts$GD.DEVICE)) opts$GD.ADEVICE="win";
+  if (is.null(opts$GD.DEVICE)) opts$GD.DEVICE="win";
   switch (opts$GD.DEVICE
     , "pdf" = pdf.dev.off() # close all pdf devices
     , "png" = png.dev.off() # close all png devices ('dev.off()[grep("png",names(dev.list())]' has problems, if no png device is open)
