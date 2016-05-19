@@ -1,7 +1,9 @@
-require(SPOT);
+#require(SPOT);
 
 ######################################################################################
-# tdmExecSpotStep:
+# tdmExecSpotStep 
+# -- Remark: This function is no longer needed really, we have tdmTuneIt and 
+# -- start_bigLoop in appropriate subdirs of ../inst
 #
 #' Execute the tuning process with the given \code{spotStep}
 #'
@@ -13,6 +15,9 @@ require(SPOT);
 #'
 #' @param tdm       a list with general settings for TDMR, see \code{\link{tdmDefaultsFill}}
 #' @param spotStep  a string, either "auto", "rep" or "report"
+#' @param dataObj   \code{[NULL]} optional object of class \code{\link{TDMdata}} (the same for all runs in big loop). 
+#'      If it is \code{NULL}, it will be constructed here with the help of \code{\link{tdmSplitTestData}}.
+#'      Then it can be different for each .conf file in the big loop.
 #'
 #' @return Environment \code{envT} containing (among others) the elements
 #'      \item{\code{runList}}{ \code{=tdm$runList}  }
@@ -24,10 +29,10 @@ require(SPOT);
 #'          \code{sCList[[k]]} contains a list \code{opts} as element, which is read from .apd file specified in \code{envT$runList[k]}.  }
 #'
 #' @seealso   \code{\link{tdmBigLoop}}, \code{\link{tdmEnvTMakeNew}}
-#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de})
-#' @export
+#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de})
+#' @keywords internal
 ######################################################################################
-tdmExecSpotStep <- function(tdm,spotStep) {
+tdmExecSpotStep <- function(tdm,spotStep,dataObj=NULL) {
     if (spotStep == "auto") {
       #
       # perform a complete tuning + unbiased eval
@@ -48,7 +53,7 @@ tdmExecSpotStep <- function(tdm,spotStep) {
       ## - two plots:
       ##      a) the progression of the response variable Y and the parameter variables during tuning
       ##      b) the sensitivity plot for each parameter in the vicinity of the best solution found
-      envT <- tdmBigLoop(envT,spotStep);
+      envT <- tdmBigLoop(envT,spotStep,dataObj=dataObj);
     }
     else        # i.e. spotStep == "rep" or == "report"
     {
@@ -58,7 +63,7 @@ tdmExecSpotStep <- function(tdm,spotStep) {
       #
       if (is.null(tdm$filenameEnvT)) tdm$filenameEnvT=sub(".conf",".RData",tdm$runList[1],fixed=TRUE);
       envT <- tdmEnvTLoad(tdm$filenameEnvT);
-      envT <- tdmBigLoop(envT,"rep");
+      envT <- tdmBigLoop(envT,"rep",dataObj=dataObj);
     }
     envT;
 }

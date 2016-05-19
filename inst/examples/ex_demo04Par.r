@@ -16,7 +16,8 @@ source(paste(path,"main_cpu.r",sep=""));
 ## preliminary settings for TDMR
 tdm <- list(    mainFunc="main_cpu"
 #              , path=path
-              , umode=c("RSUB")    # ["CV" | "RSUB" | "TST"]
+              , runList="cpu_01.conf"
+              , umode="RSUB"    # ["CV" | "RSUB" | "TST" | "SP_T" ]
               , tuneMethod=c("spot","lhd")
               , filenameEnvT="demo04cpu.RData"   # file to save environment envT (in working dir)
               , finalFile="cpu.fin"     # where to write final results (best solution & unbiased eval for each tuner/.conf-combination)

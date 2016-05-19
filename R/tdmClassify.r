@@ -13,18 +13,18 @@
 #'
 #' Currently  d_dis is allowed to be a 0-row data frame, but d_train and d_test must have at least one record. \cr
 #'
-#'   @param d_train     training set
-#'   @param d_test      validation set, same columns as training set
-#'   @param d_dis       'disregard set', i.e. everything what is neither train nor test. The model is 
+#' @param d_train     training set
+#' @param d_test      validation set, same columns as training set
+#' @param d_dis       'disregard set', i.e. everything what is neither train nor test. The model is 
 #'                      applied to all records in d_dis (needed for active learning, see ssl_methods.r)
-#'   @param d_preproc   data used for preprocessing. May be NULL, if no preprocessing is done 
+#' @param d_preproc   data used for preprocessing. May be NULL, if no preprocessing is done 
 #'                   (opts$PRE.SFA=="none" and opts$PRE.PCA=="none"). If preprocessing is done, 
 #'                   then d_preproc is usually all non-validation data.
-#'   @param response.variables   name of column which carries the target variable - or - 
+#' @param response.variables   name of column which carries the target variable - or - 
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for evaluation)
-#'   @param input.variables     vector with names of input columns 
-#'   @param opts     additional parameters [defaults in brackets]
+#' @param input.variables     vector with names of input columns 
+#' @param opts     additional parameters [defaults in brackets]
 #'     \describe{
 #'     \item{\code{SRF.*}}{ several parameters for \code{\link{tdmModSortedRFimport}} }
 #'     \item{\code{RF.*}}{ several parameters for RF (Random Forest, defaults are set, if omitted)  }
@@ -44,8 +44,9 @@
 #'                   and make a true-false bar plot }
 #'     \item{\code{VERBOSE}}{ [2] =2: most printed output, =1: less, =0: no output }
 #'     }
+#' @param tsetStr [c("Validation", "validation")] 
 #'         
-#'   @return  \code{res}, an object of class \code{tdmClass}, this is a list containing
+#' @return  \code{res}, an object of class \code{tdmClass}, this is a list containing
 #'       \item{\code{d_train}}{ training set + predicted class column(s) }
 #'       \item{\code{d_test}}{ test set + predicted class column(s) }
 #'       \item{\code{d_dis}}{  disregard set + predicted class column(s)  }
@@ -99,7 +100,8 @@
 #'
 #' @export
 ######################################################################################
-tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.variables,opts)
+tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.variables,opts,
+                        tsetStr=c("Validation", "validation"))
 {
     first <- TRUE; 
     filename <- opts$filename
@@ -176,7 +178,8 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
                  paste(opts$CLS.CLASSWT,collapse=", "))
           
           if (n.class !=  length(opts$CLS.CLASSWT)) 
-            stop("Length of opts$CLS.CLASSWT differs from the number of levels in response variable.");
+            stop(sprintf("Length of opts$CLS.CLASSWT (%d) differs from the number of levels in response variable (%d).",
+                         length(opts$CLS.CLASSWT),n.class));
           if (is.null(names(opts$CLS.CLASSWT))) 
             names(opts$CLS.CLASSWT) <- lev.resp;    # RF needs a *named* vector for option 'classwt', otherwise it will change (!) this vector 
         }
@@ -286,8 +289,11 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             if (!is.null(opts$CLS.cutoff)) rf.options = paste(rf.options," cutoff=opts$CLS.cutoff",sep=",")
             if (!is.null(opts$RF.nodesize)) rf.options = paste(rf.options,paste(" nodesize=",eval(opts$RF.nodesize)),sep=",")
             #dbg_chase_cutoff_bug(formul,to.train,d_train,response.variable,rf.options,opts);
-            flush.console();       
+            flush.console();    
             eval(parse(text=paste("res.rf <- randomForest::randomForest( formul, data=to.train,",rf.options,")"))); 
+            if (res.rf$type!="classification") {
+              warning("tdmClassify builds a random forest with type != 'classification'!");
+            }
             res.rf$HasVotes = TRUE; 
             res.rf$HasProbs = TRUE; 
             res.rf$cutoff = opts$CLS.cutoff;
@@ -666,7 +672,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
                           cm.train$gain,cm.train$gain/cm.train$gainmax*100,cm.train$gainmax));
 
         if (nrow(d_test)>0) {
-          cat1(opts,"\nValidation cases (",length(test.predict),"):\n")
+          cat1(opts,paste0("\n",tsetStr[1]," cases (",length(test.predict),"):\n"));
           cm.vali <- tdmModConfmat(d_test,response.variable,name.of.prediction,opts,predProb$Val);
           print1(opts,cm.vali$mat)                      # confusion matrix on test set
           print1(opts,cm.vali$gain.vector)
@@ -749,7 +755,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
             tdmGraphicNewWin(opts);
             if (nrow(d_test)>0) {
               cmt <- cm.vali$mat;
-              setStr = "validation set";
+              setStr = paste(tsetStr[1],"set");
             } else {
               cmt <- cm.train$mat;
               setStr = "train set";

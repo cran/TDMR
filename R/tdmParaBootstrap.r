@@ -8,11 +8,11 @@
 #'   is filled at random with levels with the same relative frequency as in \code{dset[,resp]}. 
 #'   Other columns of dset are filled by copying the entries from the first row of dset.
 #'
-#'   @param dset     data frame with training set
-#'   @param resp     name of column in dset which carries the target variable
-#'   @param input.variables     vector with names of input columns 
-#'   @param opts        additional parameters [defaults in brackets]
-#'     \describe{
+#' @param dset     data frame with training set
+#' @param resp     name of column in dset which carries the target variable
+#' @param input.variables     vector with names of input columns 
+#' @param opts        additional parameters [defaults in brackets]
+#'   \describe{
 #'     \item{\code{ncopies}}{ how many noisy copies to add }
 #'     \item{\code{ncsigma}}{ [1.0] multiplicative factor for each std.dev. }
 #'     \item{\code{ncmethod}}{ [3] which method to use for parametric bootstrap\cr
@@ -23,9 +23,9 @@
 #'              all records from the same class  (*recommended*)
 #'         }
 #'     \item{\code{TST.COL}}{ (optional) name of column in dset where each PB record is marked with a 0}
-#'     }
+#'   }
 #'         
-#'   @return  data frame \code{dset} with the new parametric bootstrap records added as last rows.
+#' @return  data frame \code{dset} with the new parametric bootstrap records added as last rows.
 #'
 #' @seealso   \code{\link{tdmClassify}}
 #' @author Wolfgang Konen, FHK, Nov'2011-Dec'2011

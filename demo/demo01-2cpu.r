@@ -8,14 +8,10 @@
 #library(TDMR);
 path <- paste(find.package("TDMR"), "demo01cpu",sep="/");
 #path <- paste("../inst", "demo01cpu",sep="/");
-oldwd <- getwd();
-setwd(path);
-source("main_cpu.r");                # contains also readCmdCpu()
 
-source("cpu_00.apd",local=TRUE);     # set opts 
+source(paste(path,"main_cpu.r",sep="/"));     # needed to define readCmdCpu
+source(paste(path,"cpu_00.apd",sep="/"),local=TRUE);   # set opts, needs readCmdCpu 
+source(paste(path,"start_cpu.r",sep="/"),chdir=TRUE,print.eval=TRUE);  # contains: result<-main_sonar(opts);
 
-result=main_cpu(opts);
 
-## restore old working directory
-setwd(oldwd);
 

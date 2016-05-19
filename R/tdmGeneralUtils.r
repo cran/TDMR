@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.3\cr
-#' Date: \tab 30.08.2014\cr
+#' Version: \tab 1.4\cr
+#' Date: \tab 19.05.2016\cr
 #' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
 #' }
@@ -17,23 +17,32 @@
 #'    (package \code{\link[rCMA]{rCMA}}) and other tuning algorithms. \cr
 #' 2) Tuning of preprocessing (feature generation) parameters and model building parameters simultaneously.  \cr
 #' 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr
-#' 4) Easy parallelization of those experiments with the help of R packages \code{snow} and \code{\link{parallel}}.  \cr
+#' 4) Easy parallelization of those experiments with the help of R package \code{\link{parallel}}.  \cr
 #' 5) Extensibility: New tuning parameters, new feature preprocessing tools, model builders and even new tuners can be added easily.
 #' 
-#' The main entry point functions are \code{\link{tdmClassifyLoop}}, \code{\link{tdmRegressLoop}} and \code{\link{tdmBigLoop}}. 
+#' The main entry point functions are \code{\link{tdmClassifyLoop}}, \code{\link{tdmRegressLoop}},
+#' \code{\link{tdmTuneIt}}, and \code{\link{tdmBigLoop}}. 
 #' See \code{\link{tdmOptsDefaultsSet}} and \code{\link{tdmDefaultsFill}} for an overview of adjustable TDMR-parameters.
 #'                                                
 #' @name TDMR-package
 #' @aliases TDMR
 #' @docType package
 #' @title Tuned Data Mining in R
-#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
-#' @references \url{http://gociop.de/research-projects/tuned-data-mining/}
+#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), Patrick Koch
+#' @references \url{http://lwibs01.gm.fh-koeln.de/blogs/ciop/research/tuned-data-mining/}
 #' @keywords package tuning data mining machine learning
 #' @import SPOT 
 #' @import twiddler 
 #' @import testit
 #' @import tcltk
+# @import grDevices
+# @import graphics
+# @import stats
+# @import utils
+#' @importFrom "grDevices" "colors" "dev.cur" "dev.list" "dev.new" "dev.off" "graphics.off" "pdf" "png"
+#' @importFrom "graphics" "barplot" "legend" "pairs" "par" "plot" "points" "title"
+#' @importFrom "stats" "embed" "formula" "lm" "median.default" "na.omit" "optim" "prcomp" "predict" "rnorm" "runif" "sd"
+#' @importFrom "utils" "flush.console" "head" "read.csv" "read.table" "tail" "write.table"
 #### @import adabag
 #### no longer needed:  @import e1071     (because e1071 moved from "Depends" to "Suggests" in DESCRIPTION)
 
@@ -149,11 +158,11 @@ print2 <- function(opts, ...) {  if (opts$VERBOSE>=2) print(...); }
 #' \code{\link{TDMregressor}}. The prediction is based on the (last) model trained during 
 #' \code{\link{unbiasedRun}}.
 #'
-#'   @param object  an object of class \code{\link{TDMenvir}}, \code{\link{TDMclassifier}},
-#'      \code{\link{TDMregressor}} containing in element \code{lastModel} the relevant model.
-#'   @param ... arguments passed on to the model's predict function. Usually the first argument of \code{...} should be 
-#'        \code{newdata}, a data frame for which new predictions are desired.
-#'   @return a vector with length \code{nrow(newdata)} containing the new predictions.
+#' @param object  an object of class \code{\link{TDMenvir}}, \code{\link{TDMclassifier}},
+#'    \code{\link{TDMregressor}} containing in element \code{lastModel} the relevant model.
+#' @param ... arguments passed on to the model's predict function. Usually the first argument of \code{...} should be 
+#'      \code{newdata}, a data frame for which new predictions are desired.
+#' @return a vector with length \code{nrow(newdata)} containing the new predictions.
 #' @method predict TDMenvir
 #' @examples
 #'    \dontrun{
@@ -196,10 +205,10 @@ predict.TDMregressor <- function(object,...) {
 #'
 #' Returns the list \code{opts} from objects of class \code{\link{TDMenvir}}, \code{\link{TDMclassifier}},
 #'                  \code{\link{TDMregressor}}, \code{\link[=tdmClassify]{tdmClass}} or \code{\link[=tdmRegress]{tdmRegre}}.
-#'   @param x  an object of class \code{\link{TDMclassifier}}, \code{\link[=tdmClassify]{tdmClass}}, 
+#' @param x  an object of class \code{\link{TDMclassifier}}, \code{\link[=tdmClassify]{tdmClass}}, 
 #'                                \code{\link{TDMregressor}} or \code{\link[=tdmRegress]{tdmRegre}}.
-#'   @param ... -- currently not used -- 
-#'   @return the list \code{opts} with DM-specific settings contained in the specified object
+#' @param ... -- currently not used -- 
+#' @return the list \code{opts} with DM-specific settings contained in the specified object
 #' @export
 Opts <- function(x, ...)  UseMethod("Opts");
 

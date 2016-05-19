@@ -1,11 +1,15 @@
       opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts. See tdmOptsDefaults.r
                                       # for the list of those elements and many explanatory comments                                                                                                         
       opts$dir.data <- "data/";
-      opts$filename = "sonar.txt"
-      opts$READ.CMD = "readCmdSonar(filename,opts)"    # def'd in main_sonar.r
+      opts$filename <- "sonar.txt"
+      opts$READ.TrnFn <- readTrnSonar    # defined in main_sonar.r
       opts$data.title <- "Sonar Data"
+      opts$TST.SEED <- 999;
+      opts$MOD.SEED <- 999;
       
       opts$RF.mtry = 4
+      opts$CLS.cutoff = c(0.5,-1)
+      opts$CLS.CLASSWT = c(10,10)
 
 
       opts$NRUN =  1          # how many runs with different train & test samples  - or - 

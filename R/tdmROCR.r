@@ -1,11 +1,13 @@
 ######################################################################################
 # tdmROCR
 #
-#'   Interactive plot of ROC, lift or other charts for a \code{\link{TDMclassifier}} object.
-#'   See \code{\link{tdmROCR.TDMclassifier}} for details
+#' Interactive plot of ROC charts
 #'
-#'   @param x  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{\link{TDMclassifier}}.
-#'   @param ... -- currently not used --
+#' Interactive plot of ROC, lift or other charts for a \code{\link{TDMclassifier}} object.
+#' See \code{\link{tdmROCR.TDMclassifier}} for details.
+#'
+#' @param x  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{\link{TDMclassifier}}.
+#' @param ... -- currently not used --
 #' 
 #' @seealso   \code{\link{tdmROCR.TDMclassifier}}   \code{\link{tdmROCRbase}}
 #' @export
@@ -24,20 +26,20 @@ tdmROCR.default <- function(x, ...)  cat("This is tdmROCR.default\n");
 ######################################################################################
 # tdmROCR.TDMclassifier
 #
-#'   Interactive plot of ROC, lift or other charts for a \code{\link{TDMclassifier}} object.
+#' Interactive plot of ROC, lift or other charts for a \code{\link{TDMclassifier}} object.
 #'
-#'   Brings up a \code{\link[twiddler]{twiddle}} user interface, where the user may select a part of the dataset
-#'   ("training" or "validation"), a run number (if \code{\link{Opts}}(x)$NRUN>1) 
-#'   and a type-of-chart, see \code{\link{tdmROCRbase}} for details. Using \code{\link{tdmROCRbase}}, 
-#'   the appropriate chart is plotted on the current graphics device.
+#' Brings up a \code{\link[twiddler]{twiddle}} user interface, where the user may select a part of the dataset
+#' ("training" or "validation"), a run number (if \code{\link{Opts}}(x)$NRUN>1) 
+#' and a type-of-chart, see \code{\link{tdmROCRbase}} for details. Using \code{\link{tdmROCRbase}}, 
+#' the appropriate chart is plotted on the current graphics device.
 #'
-#'   @method tdmROCR TDMclassifier
-#'   @param x  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{\link{TDMclassifier}}.
-#'   @param ... -- currently not used --
-#' 
-#'   @return The area under the curve plotted most recently.
+#' @method tdmROCR TDMclassifier
+#' @param x  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{\link{TDMclassifier}}.
+#' @param ... -- currently not used --
 #'
-#'   @note Side effect: Ror each chart, calculate and print the area between the curve and the bottom line (y=1.0 for \code{typ=="lift"}, y=0.0 else).
+#' @return The area under the curve plotted most recently.
+#'
+#' @note Side effect: Ror each chart, calculate and print the area between the curve and the bottom line (y=1.0 for \code{typ=="lift"}, y=0.0 else).
 #'
 #' @examples
 #'    \dontrun{
@@ -85,28 +87,28 @@ tdmROCR.TDMclassifier <- function(x,...) {
 ######################################################################################
 # tdmROCRbase
 #
-#'   Single plot of ROC, lift or other chart for a \code{\link{TDMclassifier}} object.
+#' Single plot of ROC, lift or other chart for a \code{\link{TDMclassifier}} object.
 #'
 #  @method tdmROCR TDMclassifier
-#'  @param x  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{\link{TDMclassifier}}.
-#'  @param dataset ["validation"] which part of the data to use, either "training" or "validation"
-#'  @param nRun    [1] if x contains multiple runs, which run to show  (1,...,\code{\link{Opts}}(x)$NRUN)
-#'  @param typ     ["ROC"] which chart type, one out of ("ROC","lift","precRec") for 
+#' @param x  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{\link{TDMclassifier}}.
+#' @param dataset ["validation"] which part of the data to use, either "training" or "validation"
+#' @param nRun    [1] if x contains multiple runs, which run to show  (1,...,\code{\link{Opts}}(x)$NRUN)
+#' @param typ     ["ROC"] which chart type, one out of ("ROC","lift","precRec") for 
 #'                 (ROC, lift, precision-recall)-chart (see \code{\link[ROCR]{performance}} in package ROCR for more details):
 #'    \itemize{
 #'      \item "ROC":      receiver operating curve, TPR vs. FPR, with TPR=TP/(TP+FN)=TP/P and FPR=FP/(FP+TN)=FP/N (true and false positive rate).
 #'      \item "lift":     lift chart, LIFT vs. RPP, with LIFT=TPR/RPR with random positive rate RPR=P/(P+N) and RPP=(TP+FP)/(P+N) (rate of pos. predictions).
 #'      \item "precRec":  precision-recall-chart, PREC vs. RECALL, with PREC=TP/(TP+FP) and RECALL=TP/P (same as TPR).
 #'     } 
-#'  @param noPlot   [FALSE] if TRUE, suppress the plot, return only the area under curve
-#'  @param ...      currently not used
+#' @param noPlot   [FALSE] if TRUE, suppress the plot, return only the area under curve
+#' @param ...      currently not used
 #'
-#'  @return The area between the curve and the bottom line y=0.0 in the case of \code{typ=="ROC" | typ=="precRec"} \cr
+#' @return The area between the curve and the bottom line y=0.0 in the case of \code{typ=="ROC" | typ=="precRec"} \cr
 #'      or  the area between the curve and the bottom line y=1.0 in the case of \code{typ=="lift"}. \cr
 #'      If object \code{x} does not contain a prediction score, a warning is issued and the return value is NULL.
 #'
-#'  @example  demo/demo06ROCR.r
-#'  
+#' @example  demo/demo06ROCR.r
+#'
 #' @seealso   \code{\link{tdmClassifyLoop}}   \code{\link{tdmROCR.TDMclassifier}}
 #' @export
 tdmROCRbase  <- function(x,dataset="validation",nRun=1,typ="ROC",noPlot=FALSE,...) {
@@ -134,7 +136,7 @@ tdmROCRbase  <- function(x,dataset="validation",nRun=1,typ="ROC",noPlot=FALSE,..
     areaR <- tdmROCR_area(perf,typ);
     if (!noPlot) { 
       ROCR::plot(perf,colorize=T,lwd=2,main=sprintf("%s on %s set",titList[typ==typList],dataset));
-      if (.Devices[[dev.cur()]]=="windows") bringToTop();
+      if (.Devices[[dev.cur()]]=="windows") grDevices::bringToTop();
     }
     areaR;
   }

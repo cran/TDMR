@@ -16,13 +16,13 @@ main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {
     opts <- tdmOptsDefaultsSet(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     
     gdObj <- tdmGraAndLogInitialize(opts);     # init graphics and log file
-        
+    
     #===============================================
     # PART 1: READ DATA
     #===============================================
     if (is.null(dset)) {
       cat1(opts,opts$filename,": Read data ...\n")
-      dset <- tdmReadData(opts);
+      dset <- tdmReadData2(opts);
     }
 
     # which variable is response variable:
@@ -48,6 +48,7 @@ main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {
     #===============================================
     # disregard records which contain extreme values in response.variable (outliers)
     dset <- dset[dset[,response.variables]<opts$OCUT,] 
+    #tset <- tset[tset[,response.variables]<opts$OCUT,] 
     opts$lim = c(min(dset[,response.variables],na.rm=T),
                  max(dset[,response.variables],na.rm=T))
     
@@ -56,7 +57,7 @@ main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {
     #===============================================
     # PART 3 - 6
     #===============================================
-    result <- tdmRegressLoop(dset,response.variables,input.variables,opts);
+    result <- tdmRegressLoop(dset,response.variables,input.variables,opts,tset);
 
     # print summary output and attach certain columns (here: y,sd.y,dset) to list result:
     result <- tdmRegressSummary(result,opts,dset);
@@ -69,6 +70,10 @@ main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {
 
 readCmdCpu <- function(filename,opts) {
   read.csv2(file=paste(opts$dir.data, filename, sep=""), dec=".", na.string="-1",nrow=opts$READ.NROW);
+}
+
+readTrnCpu <- function(opts) {
+  readCmdCpu(opts$filename,opts)
 }
 
 cpu.postproc <- function(x,d,opts) { 

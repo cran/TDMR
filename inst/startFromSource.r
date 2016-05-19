@@ -4,7 +4,7 @@
 #
 tdm <- list(tdmPath="../../TDMR"  # NULL or source TDMR-files from the R subdir of this dir. If NULL, load instead the TDMR library.
         , theSpotPath=NULL # "USE.SOURCE"  # NULL or source R-files for SPOT from the dir def'd in source.tdm.r. If NULL, load SPOT library.
-        , theRsfaPath="USE.SOURCE"  # NULL or source R-files for rSFA from the dir def'd in source.tdm.r. If NULL, load rSFA library.
+        , theRsfaPath=NULL # "USE.SOURCE"  # NULL or source R-files for rSFA from the dir def'd in source.tdm.r. If NULL, load rSFA library.
         , parallelCPUs=1
         );
 

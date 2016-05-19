@@ -38,6 +38,9 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
     if (spotStep=="auto") {
       #if (is.null(tdm$mainFile)) stop("Element tdm$mainFile is missing, but this is required for spotStep='auto'");
       if (is.null(tdm$mainFunc)) stop("Element tdm$mainFunc is missing, but this is required for spotStep='auto'");
+      sC <- envT$spotConfig
+      testit::assert(sprintf("ROI file %s does not exist.",sC$io.roiFileName),
+                     if (any(is.na(sC$alg.roi))) {file.exists(sC$io.roiFileName)} else {TRUE} )
     }   
     if (!is.null(envT$spotConfig$alg.currentBest)) {
       # Fix for upgading older BST data frames to the new SPOT version (V1.0.2662): 
@@ -419,7 +422,7 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
 #' @return the result of BFGS tuning, i.e. the list \code{envT$spotConfig}, extended by
 #'    \item{\code{bfgs}}{ the return value from \code{optim(...,method="L-BFGS-B")}   }
 #'    \item{\code{bfgs$count}}{ the number of calls to \code{tdmStartOther}  }
-#' @author Wolfgang Konen \email{wolfgang.konen@@fh-koeln.de}, Patrick Koch 
+#' @author Wolfgang Konen \email{wolfgang.konen@@Th-koeln.de}, Patrick Koch 
 #' @export
 #' @keywords internal
 ######################################################################################

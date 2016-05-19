@@ -5,17 +5,19 @@
 #'    
 #'    tdmClassifyLoop contains a double loop (opts$NRUN and CV-folds)
 #'    and calls \code{\link{tdmClassify}}. It is called  by all classification R-functions main_*. \cr
+#'    It splits - if \code{tset} is NULL - the data in \code{dset} into training and validation
+#'    data according to \code{opts$TST.kind}.\cr
 #'    It returns an object of class \code{\link{TDMclassifier}}.
 #'
 #'
-#'   @param dset    the data frame containing training and validation data.
-#'   @param tset    [NULL] If not NULL, this is the validation data set. If NULL, the validation data 
+#' @param dset    the data frame containing training and validation data.
+#' @param tset    [NULL] If not NULL, this is the test data set. If NULL, we are in tuning and the validation data 
 #'                  set is build from \code{dset} according to the procedure prescribed in \code{opts$TST.*}. 
-#'   @param response.variables   name of column which carries the target variable - or -
+#' @param response.variables   name of column which carries the target variable - or -
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for evaluation)
-#'   @param input.variables     vector with names of input columns
-#'   @param opts    a list from which we need here the following entries
+#' @param input.variables     vector with names of input columns
+#' @param opts    a list from which we need here the following entries
 #'     \describe{
 #'       \item{\code{NRUN}}{ number of runs (outer loop)}
 #'       \item{\code{TST.SEED}}{ =NULL: get a new random number seed with \code{\link{tdmRandomSeed}}. =any value: set the random number seed
@@ -26,7 +28,7 @@
 #'       \item{\code{GD.DEVICE}}{ ["non"|"win"|"pdf"|"png"]}
 #'     }
 #'
-#'   @return \code{result},  an object of class \code{\link{TDMclassifier}}, this is a list with results, containing
+#' @return \code{result},  an object of class \code{\link{TDMclassifier}}, this is a list with results, containing
 #'       \item{lastRes}{ last run, last fold: result from \code{\link{tdmClassify}}}
 #'       \item{C_train}{ classification error on training set}
 #'       \item{G_train}{ gain on training set}
@@ -37,6 +39,7 @@
 #' 				the nine variables described above }
 #'       \item{predictions}{ last run: data frame with dimensions [nrow(dset),length(response.variable)]. In case of CV, all 
 #'              CV predictions (for each record in dset), in other cases mixed validation / train set predictions.  }
+#'       \item{predictTest}{ predictions on the test set \code{tset} (NULL if \code{tset==NULL} )}
 #'       \item{predProbList}{ the ith element in this list has data on the prediction probabilities of the ith run. See info on 
 #'              \code{predProb} in \code{\link{tdmClassify}}. }
 #'
@@ -46,14 +49,18 @@
 #'    In the case of cross validation, for each performance measure an additional averaging over all folds is done.
 #'
 #' @seealso   \code{\link{print.TDMclassifier}}, \code{\link{tdmClassify}}, \code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}
-#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Sep'2010 - Jun'2012
+#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), THK
 #' @aliases TDMclassifier 
 #' @example demo/demo00-0classif.r
 #' @export
 ######################################################################################
 tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NULL) {
   	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
-#print(.Random.seed[1:6])
+    if (is.null(tset)) {
+      tsetStr = c("Validation", "validation");
+    } else {
+      tsetStr = c("Test",       "      test");
+    } 
     if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmOpts");
     if (is.null(opts$PRE.PCA.numericV)) opts$PRE.PCA.numericV <- input.variables;
     if (opts$NRUN<=0) stop(sprintf("opts$NRUN has to be positive, but it is %d",opts$NRUN));
@@ -79,7 +86,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
         opts$i = i;
 
         #=============================================================================
-        # PART 3: CREATE NFOLD CROSSVALIDATION INDEX  OR DIVIDE IN TRAINING / TEST SET
+        # PART 3: CREATE NFOLD CROSSVALIDATION INDEX  OR DIVIDE IN TRAINING / VALI SET
         #=============================================================================
         if (is.null(opts$TST.SEED)) {
           # NEW: when called via SPOT, the RNG might be at (different but) fixed seed in each call.
@@ -94,14 +101,12 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
           newseed=opts$TST.SEED+(opts$i-1)+opts$NRUN*(opts$rep-1);
           set.seed(newseed);  # if you want reproducably the same training/test sets,
         }                     # but different for each run i and each repeat (opts$rep)
-#print(.Random.seed[1:6])
+        #print(.Random.seed[1:6])
 
         cvi <- tdmModCreateCVindex(dset,response.variables,opts,stratified=TRUE);    
         nfold = max(cvi,1);     # Why ',1'? - In the special case where all records belong to train sample (max(cvi)=0), we want 
                                 # to have exactly one fold  (one pass through k-loop) and NOT k in { 1, 0 }
-
-#print(cvi[1:20])
-#browser();
+        
         #=============================================
         # PART 4: MODELING, EVALUATION, VISUALIZATION
         #=============================================
@@ -160,7 +165,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
             # the SFA preprocessing is now in tdmClassify, inside response.variable for-loop
             # (because SFA (for classification) depends on response.variable)
 
-            res <- tdmClassify(d_train,d_test,d_dis,d_preproc,response.variables,input.variables,opts)
+            res <- tdmClassify(d_train,d_test,d_dis,d_preproc,response.variables,input.variables,opts,tsetStr)
 
             # predProb$Val: bind the different folds of CV (cross validation) together. If no CV, then nfold=1 ->> only results from one vali set.
             predProb$Val = rbind(predProb$Val,res$predProb$Val);
@@ -205,7 +210,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
         predProbList[[i]]$Trn <- predProb$Trn;
 
         cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV",""),"Relative gain on   training set   ",Err[i,"rgain.trn"],"%\n")
-        cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV",""),"Relative gain on validation set   ",Err[i,"rgain.tst"],"%\n\n")
+        cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV",""),paste0("Relative gain on ",tsetStr[2]," set   "),Err[i,"rgain.tst"],"%\n\n")
 
         #opts$name.of.prediction <- paste("pred_", response.variable, sep="")
         C_train[i] = Err[i,"cerr.trn"]
@@ -279,17 +284,17 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
 #'   \code{result$y} is "minus rgain" on test set (=validation set) for all other methods.
 #'   \code{result$y} is the quantity which the tuner seeks to minimize.
 #'
-#'   @param result  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{TDMclassifier}.
-#'   @param opts    a list from which we need here the following entries
+#' @param result  return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{TDMclassifier}.
+#' @param opts    a list from which we need here the following entries
 #'     \describe{
 #'       \item{\code{NRUN}}{ number of runs (outer loop)}
 #'       \item{\code{method}}{}
 #'       \item{\code{VERBOSE}}{}
 #'       \item{\code{dset}}{ [NULL] if !=NULL, attach it to result}
 #'     }
-#'   @param dset    [NULL] if not NULL, add this data frame to the return value (may cost a lot of memory!)
+#' @param dset    [NULL] if not NULL, add this data frame to the return value (may cost a lot of memory!)
 #'
-#'   @return \code{result},  an object of class \code{TDMclassifier}, with \code{result$y}, \code{result$sd.y}
+#' @return \code{result},  an object of class \code{TDMclassifier}, with \code{result$y}, \code{result$sd.y}
 #'          (and optionally also \code{result$dset}) added
 #'
 #' @seealso   \code{\link{tdmClassify}}, \code{\link{tdmClassifyLoop}}, \code{\link{print.TDMclassifier}}, \code{\link{tdmRegressSummary}}

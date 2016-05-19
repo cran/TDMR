@@ -26,10 +26,10 @@
 #'   training case reflect the rel. frequency of each level of the **1st** response variable
 #'   and are ensured to be at least of size 1.
 #'
-#'  @param dset    the data frame for which cvi is needed
-#'  @param response.variables  issue a warning if \code{length(response.variables)>1}. Use the first
+#' @param dset    the data frame for which cvi is needed
+#' @param response.variables  issue a warning if \code{length(response.variables)>1}. Use the first
 #'      response variable for determining strata size.
-#'  @param opts    a list from which we need here the following entries
+#' @param opts    a list from which we need here the following entries
 #'    \itemize{
 #'      \item TST.kind:  ["cv"|"rand"|"col"]
 #'      \item TST.NFOLD: number of CV folds (only relevant in case TST.kind=="cv")
@@ -38,10 +38,10 @@
 #'      \item TST.valiFrac:  fraction of records to set aside for validation (only relevant in case TST.kind=="rand")
 #'      \item TST.trnFrac:  [1-opts$TST.valiFrac] fraction of records to use for training (only relevant in case TST.kind=="rand")
 #'    }
-#'  @param stratified [F] do stratified sampling for TST.kind="rand" with at least one training 
+#' @param stratified [F] do stratified sampling for TST.kind="rand" with at least one training 
 #'         record for each response variable level (classification)
 #'
-#'  @return cvi  training-validation-set (0/>0) index vector
+#' @return cvi  training-validation-set (0/>0) index vector
 #'               (all records with cvi<0, e.g. from column TST.COL, are disregarded)
 #'
 #' @note Currently stratified sampling in case TST.KIND='rand' does only work correctly for \emph{one} response variable.  
@@ -217,7 +217,9 @@ tdmModAdjustCutoff <- function(cutoff,n.class,text="cutoff")
              paste(cutoff,collapse=", "))
       
       if (length(cutoff)==n.class-1) cutoff=c(cutoff,-1);   # assume that the last element is to be adjusted as remainder to 1
-      if (length(cutoff)!=n.class) stop(sprintf("length(cutoff) differs from n.class=%d. cutoff = ",n.class),sprintf("%7.3f ",cutoff));
+      if (length(cutoff)!=n.class) stop(sprintf("length(cutoff)=%d differs from n.class=%d. cutoff = "
+                                                ,length(cutoff),n.class)
+                                        ,sprintf("%7.3f ",cutoff));
       w = which(cutoff<0);
       if (length(w)>1) stop("cutoff has more than one element < 0.\n cutoff = ",sprintf("%7.3f ",cutoff));
       if (length(w)==1) {
@@ -226,7 +228,7 @@ tdmModAdjustCutoff <- function(cutoff,n.class,text="cutoff")
             warning(sprintf("One element of %s is not specified (<0), but the others have a sum>=1, there is no remainder.  ",text),
                     sprintf("%s = c(%s).\n  ",text,paste(cutoff,collapse=",")),
                     "Reducing the sum of the others to 0.9.")
-            browser()
+            #browser()
             cutoff=cutoff/s*0.9;
           }
           cutoff[w] = 1-sum(cutoff[-w]);
@@ -291,10 +293,10 @@ tdmModAdjustCutoff.OLD <- function(cutoff,n.class)
 #'       Use na.roughfix for missing value replacement.
 #'       Decide which input variables to keep and return them in SRF$input.variables
 #'
-#'   @param d_train   training set
-#'   @param response.variable   the target column from \code{d_train} to use for the RF-model
-#'   @param input.variables   the input columns from \code{d_train} to use for the RF-model
-#'   @param opts options, here we use the elements [defaults in brackets]:
+#' @param d_train   training set
+#' @param response.variable   the target column from \code{d_train} to use for the RF-model
+#' @param input.variables   the input columns from \code{d_train} to use for the RF-model
+#' @param opts options, here we use the elements [defaults in brackets]:
 #'    \itemize{
 #'     \item SRF.kind:  \cr
 #'          ="xperc": keep a certain importance percentage, starting from the most important variable \cr
@@ -324,7 +326,7 @@ tdmModAdjustCutoff.OLD <- function(cutoff,n.class)
 #'     \item{perc}{   the percentage of total importance which is in the dropped variables}
 #'     \item{opts}{   some defaults might have been added}
 #'
-#' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@fh-koeln.de}
+#' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@th-koeln.de}
 #' @export
 ######################################################################################
 tdmModSortedRFimport <- function(d_train, response.variable, input.variables, opts)
@@ -351,7 +353,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
         if (opts$SRF.XPerc<0) stop(sprintf("opts$SRF.XPerc < 0 : %f",opts$SRF.XPerc));
         if (opts$SRF.XPerc>1) stop(sprintf("opts$SRF.XPerc > 1 : %f",opts$SRF.XPerc));
       }
-      
+
       formul <- formula(paste(response.variable, "~ ."))   # use all possible input variables
       to.model <- d_train[,c(response.variable,input.variables)]
       cat1(opts,filename,": Train RF (importance, sampsize=", opts$RF.sampsize,") ...\n")
@@ -423,6 +425,7 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
           # keep the minimal number of those most important input variables which
           # sum up together to more than opts$SRF.XPerc * (sum of all importances)
           w = which(cumsum(s_imp2)/sum(s_imp2)<=opts$SRF.XPerc)
+          if (length(w)==0) w=0;   # for the pathological case that s_imp2 is all-zero beyond the first element -> w is empty
           lsi <- max(w)+1;
           lsi <- min(lsi,length(s_imp1)); # for the case SRF.XPerc==1: lsi may not be larger than #input.variables
         }
@@ -614,7 +617,7 @@ analyzeImportance <- function(res.SRF,input.variables,opts)  {
 #'    \item{pCorr}{ fraction of correct predictions}
 #'    \item{pR}{    fraction of true 1-cases}
 #'
-#' @author Wolfgang Konen \email{wolfgang.konen@@fh-koeln.de}
+#' @author Wolfgang Konen \email{wolfgang.konen@@th-koeln.de}
 #' @export
 ######################################################################################
 tdmModVote2Target <- function(vote0,pred,target) {
@@ -642,20 +645,20 @@ tdmModVote2Target <- function(vote0,pred,target) {
 #
 #'     Calculate confusion matrix, gain and RGain measure. 
 #'
-#'  @param  d 		      data frame
-#'  @param  colreal     name of column in d which contains the real class
-#'  @param  colpred 		name of column in d which contains the predicted class
-#'  @param  opts        a list from which we use the elements: \itemize{
+#' @param  d 		      data frame
+#' @param  colreal     name of column in d which contains the real class
+#' @param  colpred 		name of column in d which contains the predicted class
+#' @param  opts        a list from which we use the elements: \itemize{
 #'     \item \code{gainmat}:   the gain matrix for each possible outcome, same size as \code{cm$mat} (see below). \cr
 #'               \code{gainmat[R1,P2]} is the gain associated with a record of real class R1 which we
 #'               predict as class P2. (gain matrix = - cost matrix)
 #'     \item \code{rgain.type}: one out of \{"rgain" | "meanCA" | "minCA" | "arROC" | "arLIFT" | "arPRE" \},
 #'               affects output \code{cm$mat} and \code{cm$rgain}, see below.
 #'    }
-#'  @param  predProb    if not NULL, a data frame with as many rows as data frame \code{d}, containing columns 
+#' @param  predProb    if not NULL, a data frame with as many rows as data frame \code{d}, containing columns 
 #'               (index, true label, predicted label, prediction score). Is only needed for \code{opts$rgain.type=="ar*"}.
 #'
-#'  @return \code{cm}, a list containing: 
+#' @return \code{cm}, a list containing: 
 #'     \item{mat}{ matrix with real class levels as rows, predicted class levels columns.  \cr
 #'               \code{mat[R1,P2]} is the number of records with real class R1
 #'               predicted as class P2, if opts$rgain.type=="rgain".
@@ -678,7 +681,7 @@ tdmModVote2Target <- function(vote0,pred,target) {
 #'               area under precision-recall curve (a number in [0,1]), if \code{opts$rgain.type=="arPRE"}; \cr
 #'               } 
 #' 
-#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch 
+#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), Patrick Koch 
 #' @seealso  \code{\link{tdmClassify}}    \code{\link{tdmROCRbase}}
 #' @export
 ######################################################################################

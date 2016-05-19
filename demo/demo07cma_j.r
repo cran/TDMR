@@ -39,11 +39,14 @@ spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or
 ## construct an initial environment envT from tdm
 ## (this contains also tdmDefaultsFill(tdm))
 ## then run tdmBigLoop
-envT <- tdmExecSpotStep(tdm,spotStep);
+envT <- tdmEnvTMakeNew(tdm);
+opts <- tdmEnvTGetOpts(envT);
+dataObj <- tdmSplitTestData(opts,tdm);
+envT <- tdmBigLoop(envT,spotStep,dataObj);
 
 setwd(oldwd);         ## restore old working directory
 
 ## the resulting tuning surface (the metamodel) can be inspected interactively with
-##      load(paste(path,tdm$filenameEnvT,sep="/"));     
+##      envT <- tdmEnvTLoad(paste(path,tdm$filenameEnvT,sep="/"));     
 ##      tdmPlotResMeta(envT);
-## (load(...) is only needed for reloading envT in another R-session)
+## (tdmEnvTLoad(...) is only needed for reloading envT in another R-session) 

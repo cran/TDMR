@@ -1,19 +1,21 @@
 ######################################################################################
 # tdmRegressLoop
 #
-#'    Core regression double loop of TDMR returning a \code{\link{TDMregressor}} object. 
+#' Core regression double loop of TDMR returning a \code{\link{TDMregressor}} object. 
 #'
-#'    tdmRegressLoop contains a double loop (opts$NRUN and CV-folds)
-#'    and calls \code{\link{tdmRegress}}. It is called  by all R-functions main_*. \cr
-#'    It returns an object of class \code{\link{TDMregressor}}.
+#' tdmRegressLoop contains a double loop (opts$NRUN and CV-folds)
+#' and calls \code{\link{tdmRegress}}. It is called  by all R-functions main_*. \cr
+#' It returns an object of class \code{\link{TDMregressor}}.
 #'
-#'   @param dset    the data frame for which cvi is needed
-#'   @param response.variables   name of column which carries the target variable - or -
+#' @param dset    the data frame for which cvi is needed
+#' @param tset    [NULL] If not NULL, this is the test data set. If NULL, we are in tuning and the validation data 
+#'                  set is build from \code{dset} according to the procedure prescribed in \code{opts$TST.*}. 
+#' @param response.variables   name of column which carries the target variable - or -
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for training and
 #'                   for evaluating the predicted result)
-#'   @param input.variables     vector with names of input columns
-#'   @param opts    a list from which we need here the following entries
+#' @param input.variables     vector with names of input columns
+#' @param opts    a list from which we need here the following entries
 #'     \describe{
 #'       \item{\code{NRUN}}{ number of runs (outer loop)}
 #'       \item{\code{TST.SEED}}{ =NULL: leave the random number seed as it is. =any value: set the random number seed
@@ -24,7 +26,7 @@
 #'       \item{\code{GRAPHDEV}}{ ["non"| other ]}
 #'     }
 #'
-#'   @return \code{result},  an object of class \code{\link{TDMregressor}}, this is a list with results, containing
+#' @return \code{result},  an object of class \code{\link{TDMregressor}}, this is a list with results, containing
 #     \describe{
 #'       \item{opts}{ the res$opts from \code{\link{tdmRegress}}}
 #'       \item{lastRes}{ last run, last fold: result from \code{\link{tdmRegress}}}
@@ -37,17 +39,23 @@
 #'                   ntst) }
 #'       \item{predictions}{ last run: data frame with dimensions [nrow(dset),length(response.variable)]. In case of CV, all 
 #'              validation set predictions (for each record in dset), in other cases mixed validation / train set predictions.  }
+#'       \item{predictTest}{ predictions on the test set \code{tset} (NULL if \code{tset==NULL} )}
 #    }
 #'
 #' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmClassifyLoop}}, \code{\link{tdmClassify}}
-#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), FHK, Sep'2010 - Jun'2012
+#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), THK
 #' @aliases TDMregressor 
 #' @example demo/demo00-1regress.r
 #' @export
 ######################################################################################
-tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
-  	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
-    if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmOpts");
+tdmRegressLoop <- function(dset,response.variables,input.variables,opts,tset=NULL) {
+  if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
+  	if (is.null(tset)) {
+  	  tsetStr = c("Validation", "validation",".vali");
+  	} else {
+  	  tsetStr = c("Test",       "      test",".test");
+  	} 
+  	if (class(opts)[1] != "tdmOpts")  stop("Class of object opts is not tdmOpts");
     if (is.null(opts$PRE.PCA.numericV)) opts$PRE.PCA.numericV <- input.variables;
     if (opts$NRUN<=0) stop(sprintf("opts$NRUN has to be positive, but it is %d",opts$NRUN));
     if (opts$PRE.PCA!="none" & opts$PRE.SFA!="none") stop("It is not allowed to activate opts$PRE.PCA and opts$PRE.SFA simultaneously.")
@@ -101,8 +109,18 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
         for (k in 1:nfold) {
             opts$k=k;
             opts$the.nfold = nfold;
-            d_test  <- dset[cvi==k, ];             # validation set
-            d_train <- dset[cvi!=k & cvi>=0, ];    # training set (disregard records with cvi<0)
+            if (any(names(dset)=="IND.dset")) stop("Name clash in dset, which has already a column IND.dset. Please consider renaming it.")            
+            if (is.null(tset)) { 
+              d_test  <- dset[cvi==k, ]            # validation set
+              d_test  <- tdmBindResponse(d_test , "IND.dset", which(cvi==k));
+            } else {    # i.e. if (!is.null(tset))
+              # validation set (or test set) is passed in from the caller
+              if (opts$TST.kind %in% c("cv"))  #,"col"))
+                stop(sprintf("Option opts$TST.kind=\"%s\" together with tset!=NULL is currently not implemented. Consider opts$TST.kind=\"rand\".",opts$TST.kind));
+              d_test <- tset;
+              d_test  <- tdmBindResponse(d_test , "IND.dset", rep(-1,nrow(tset)));
+            }
+            d_train <- dset[cvi!=k & cvi>=0, ]   # training set (disregard records with cvi<0)
             ntst=nrow(d_test);
             ntrn=nrow(d_train);
 
@@ -130,7 +148,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
                   stop("Some elements of input.variables are not columns of d_train");
             }
 
-            res <- tdmRegress(d_train,d_test,d_preproc,response.variables,input.variables,opts)
+            res <- tdmRegress(d_train,d_test,d_preproc,response.variables,input.variables,opts,tsetStr)
             #res <- regress_lm(d_train,d_test,response.variables,input.variables,opts)
 
             avgRMAE = as.data.frame(t(colSums(res$allRMAE)))/nrow(res$allRMAE)
@@ -148,7 +166,12 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
                                                     ,rmae.theil.tst=avgRMAE$theil.test * ntst
                                                     ,ntst=ntst
                                                     )));
-            predictions[cvi==k,response.variables] <- res$d_test[,paste("pred_",response.variables,sep="")];
+            if (is.null(tset)) { 
+              predictions[cvi==k,response.variables] <- res$d_test[,paste("pred_",response.variables,sep="")];
+              predictTest = NULL;
+            } else {
+              predictTest = res$d_test[,paste("pred_",response.variables,sep="")];
+            }
             if (!(opts$TST.kind=="cv")) {
               predictions[cvi!=k & cvi>=0,response.variables] <- res$d_train[,paste("pred_",response.variables,sep="")];
             } 
@@ -161,8 +184,8 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
         
         col.trn = paste(opts$rgain.type,".trn",sep="");
         col.tst = paste(opts$rgain.type,".tst",sep="");
-        cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV",""),opts$rgain.string,"on training set   ",Err[i,col.trn],"\n")
-        cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV",""),opts$rgain.string,"on     test set   ",Err[i,col.tst],"\n\n")
+        cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV",""),opts$rgain.string,"on   training set: ",Err[i,col.trn],"\n")
+        cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV",""),paste0(opts$rgain.string," on ",tsetStr[2]," set: "),Err[i,col.tst],"\n\n")
 
         R_train[i] = Err[i,col.trn];
         #if (opts$rgain.type=="rmse") R_train[i] = Err["rmse.trn"];
@@ -209,6 +232,7 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
               	, S_test = S_test
               	, Err = Err
               	, predictions = predictions
+                , predictTest = predictTest
               	);
     class(result) <- c("TDMregressor", "TDM")     # this causes > result; or > print(result);
                                                   # NOT to print out the whole list (might be very long!!)
@@ -221,24 +245,24 @@ tdmRegressLoop <- function(dset,response.variables,input.variables,opts) {
 ######################################################################################
 # tdmRegressSummary
 #
-#'   Print summary output for \code{result} from \code{tdmRegressLoop} and add \code{result$y}.
+#' Print summary output for \code{result} from \code{tdmRegressLoop} and add \code{result$y}.
 #'
-#'   \code{result$y} is "OOB RMAE" on training set for methods RF or MC.RF.
-#'   \code{result$y} is "RMAE" on test set (=validation set) for all other methods.
-#'   \code{result$y} is the quantity which the tuner seeks to minimize.
+#' \code{result$y} is "OOB RMAE" on training set for methods RF or MC.RF.
+#' \code{result$y} is "RMAE" on test set (=validation set) for all other methods.
+#' \code{result$y} is the quantity which the tuner seeks to minimize.
 #'
-#'   @param result  return value from a prior call to \code{\link{tdmRegressLoop}}, an object of class \code{TDMregressor}.
-#'   @param opts    a list from which we need here the following entries
-#'     \describe{
+#' @param result  return value from a prior call to \code{\link{tdmRegressLoop}}, an object of class \code{TDMregressor}.
+#' @param opts    a list from which we need here the following entries
+#'   \describe{
 #'       \item{\code{NRUN}}{ number of runs (outer loop)}
 #'       \item{\code{method}}{}
 #'       \item{\code{VERBOSE}}{}
 #'       \item{\code{dset}}{ [NULL] if !=NULL, attach it to result}
-#'     }
-#'   @param dset    [NULL] if not NULL, add this data frame to the return value (may cost a lot of memory!)
+#'   }
+#' @param dset    [NULL] if not NULL, add this data frame to the return value (may cost a lot of memory!)
 #'
-#'   @return \code{result},  an object of class \code{TDMregressor}, with \code{result$y}, \code{result$sd.y}
-#'          (and optionally also \code{result$dset}) added
+#' @return \code{result},  an object of class \code{TDMregressor}, with \code{result$y}, \code{result$sd.y}
+#'        (and optionally also \code{result$dset}) added
 #'
 #' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmRegressLoop}}, \code{\link{tdmClassifySummary}}
 #' @author Wolfgang Konen, FHK, Sep'2010 - Oct'2011

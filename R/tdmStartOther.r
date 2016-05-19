@@ -31,7 +31,7 @@ tdmStartOther <-  function(x,tdm,envT,dataObj,opts=NULL) {
     if (is.null(opts)) opts <- envT$spotConfig$opts;
     if (!is.null(tdm$constraintFnc)) x <- tdm$constraintFnc(x,tdm);        # needed for Powell tuner
     dset <- NULL;
-    if(!is.null(dataObj)) dset<-dsetTrnVa(dataObj);
+    if(!is.null(dataObj)) dset<-dsetTrnVa(dataObj,envT$nExp);
     # If dset is not NULL, this has an effect on mainCommand (see below) which contains "...,dset=dset".
     # If dset is NULL, the reading of the data is deferred to main_TASK (deprecated).
   
@@ -118,11 +118,12 @@ tdmStartCma_j <- function(x,tdm,envT,dataObj) {
     if (!is.list(tdm)) stop("tdm must be a list!");
     if (!is.environment(envT)) stop("envT must be an environment!");
     if (is.null(envT$spotConfig$opts)) stop("Error: envT$spotConfig does not contain an element 'opts'");
-  
+    if (is.null(envT$nExp)) envT$nExp <- 1;
+    
   	if (exists(".Random.seed")) SAVESEED<-.Random.seed	   #save the Random Number Generator RNG status
     opts <- envT$spotConfig$opts;
     dset <- NULL;
-    if(!is.null(dataObj)) dset<-dsetTrnVa(dataObj);
+    if(!is.null(dataObj)) dset<-dsetTrnVa(dataObj,envT$nExp);
     # If dset is not NULL, this has an effect on mainCommand (see below) which contains "...,dset=dset".
     # If dset is NULL, the reading of the data is deferred to main_TASK (deprecated).
   

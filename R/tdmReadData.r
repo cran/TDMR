@@ -1,8 +1,12 @@
 ######################################################################################
 # tdmReadData:
+#    ---- DEPRECATED: USE NOW tdmReadData2.r ----
 #
 #'   Read the data accoroding to the settings in \code{opts}.
 #'
+#'   NOTE: \code{tdmReadData} is deprecated, it uses the old \code{opts$READ.CMD}. It is 
+#'   recommended to use \code{\link{tdmReadData2}} which builds upon \code{opts$READ.TrnFn}. 
+#'   \cr
 #'   Side effect: Data are saved on .Rdata file if opts$READ.TXT=TRUE (for quicker next-time access).
 #'	 Next-time access: Data are re-loaded from .Rdata if opts$READ.TXT=FALSE.
 #'

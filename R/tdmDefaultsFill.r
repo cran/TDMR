@@ -1,22 +1,23 @@
 ######################################################################################
 # tdmDefaultsFill
 #
-#'   Default values for list \code{tdm}.  This list controls the tuning and unbiased evaluation phase.
+#' Default values for list \code{tdm}.  
 #'
-#'   When called with \code{tdm = tdmDefaultsFill()}, a new list \code{tdm} is created and returned.
-#'   When called with \code{tdm = tdmDefaultsFill(mainFile="my.r"}, a new list \code{tdm} is created
-#'   and returned, with the element mainFile set to the specified value.
-#'   When called with \code{tdm = tdmDefaultsFill(tdm)}, an existing list \code{tdm} is filled with further default values.
-#'   
-#'   If \code{tdm$mainFunc} is missing, but \code{tdm$mainFile} exists, then \code{tdmDefaultsFill}
-#'   will set \preformatted{tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRUE)}
+#' This list controls the tuning and unbiased evaluation phase.
+#' When called with \code{tdm = tdmDefaultsFill()}, a new list \code{tdm} is created and returned.
+#' When called with \code{tdm = tdmDefaultsFill(mainFile="my.r"}, a new list \code{tdm} is created
+#' and returned, with the element mainFile set to the specified value.
+#' When called with \code{tdm = tdmDefaultsFill(tdm)}, an existing list \code{tdm} is filled with further default values.
 #'
-#'   @param tdm         (optional)
-#'   @param mainFile    (optional) if given, create or overwrite tdm$mainFile with this value
-#   @param mainCommand (deprecated) if given, create or overwrite tdm$mainCommand with this value
-#'   @return \code{tdm}     the new / extended list,  where additional elements, if they are not yet def'd,  are set as: 
+#' If \code{tdm$mainFunc} is missing, but \code{tdm$mainFile} exists, then \code{tdmDefaultsFill}
+#' will set \preformatted{tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRUE)}
+#'
+#' @param tdm         (optional)
+#' @param mainFile    (optional) if given, create or overwrite tdm$mainFile with this value
+#  @param mainCommand (deprecated) if given, create or overwrite tdm$mainCommand with this value
+#' @return \code{tdm}     the new / extended list,  where additional elements, if they are not yet def'd,  are set as: 
 #'      \item{mainFile}{[NULL] if not NULL, source this file from the current dir. It should contain the definition of tdm$mainFunc.  }
-#'      \item{mainFunc}{\code{sub(".r","",basename(tdm$mainFile),fixed=TRUE)}, if tdm$mainFile is set and tdm$mainFunc is NULL, else \code{"mainFunc"} 
+#'      \item{mainFunc}{\code{sub(".r","",basename(tdm$mainFile),fixed=TRUE)}, if \code{tdm$mainFile} is set and \code{tdm$mainFunc} is NULL, else \code{"mainFunc"} 
 #'              This is the name of the function called in \code{\link{tdmStartSpot}} and \code{\link{unbiasedRun}}   }
 #     \item{mainCommand}{ deprecated, will be automatically set to \code{"result <- tdm$mainFunc(opts,dset=dset)}"}   }
 #'      \item{unbiasedFunc}{["unbiasedRun"] which function to call for unbiased evaluation}
@@ -27,11 +28,11 @@
 #'      \item{fileMode}{[FALSE] see "Note" section in \code{\link{tdmBigLoop}}   }
 #'      \item{finalFile}{[NULL]  filename where to save \code{envT$theFinals}, only relevant for \code{tdm$fileMode==TRUE}}
 #'      \item{experFile}{[NULL] filename where to append \code{envT$theFinals}, only relevant for \code{tdm$fileMode==TRUE}  }
-#'      \item{filenameEnvT}{[NULL] filename where \code{\link{tdmBigLoop}} will save a small version of environment \code{envT}. If NULL, 
-#'                save \code{envT} to \code{sub(".conf",".RData",tdm$runList[1])}. This RData file is written irrespective of \code{fileMode}'s value, 
-#'                but only in case \code{spotStep=="auto"}. }
+#'      \item{filenameEnvT}{filename where \code{\link{tdmBigLoop}} will save a small version of environment \code{envT}. If NULL, 
+#'                it is set to \code{sub(".conf",".RData",tdm$runList[1])}. This RData file is written irrespective of 
+#'                \code{fileMode}'s value, but only in case \code{spotStep=="auto"}. }
 #'      \item{theSpotPath}{[NA] use SPOT's package version}
-#'      \item{parallelCPUs}{[1] 1: sequential, >1: parallel execution with this many CPUs (package parallel)  }
+#'      \item{parallelCPUs}{[1] 1: sequential, >1: parallel execution with this many CPUs (package \code{\link{parallel}})  }
 #'      \item{parallelFuncs}{[NULL] in case tdm$parallelCPUs>1: a string vector with functions which are clusterExport'ed in addition
 #'                to tdm$mainFunc.  }
 #'      \item{path}{[NULL] where to search .conf and .apd file. If it is NULL, path is set 
@@ -44,7 +45,7 @@
 #'      \item{optsVerbosity}{[0] the verbosity for the unbiased runs}
 #'      \item{withParams}{[TRUE] list the columns with tuned parameter in final results  }
 #'      \item{nrun}{[5] number of runs for unbiased run}
-#'      \item{U.saveModel}{[FALSE] if TRUE, save the last model, which is trained in unbiasedRun, onto \code{filenameEnvT}}
+#'      \item{U.saveModel}{[TRUE] if TRUE, save the last model, which is trained in unbiasedRun, onto \code{filenameEnvT}}
 #'      \item{tstCol}{["TST"] opts$TST.COL for unbiased runs (only for umode="TST") }
 #'      \item{nfold}{[10] number of CV-folds for unbiased runs (only for umode="CV") }
 #'      \item{TST.trnFrac}{[NULL] train set fraction (of all train-vali data),OVERWRITES opts$TST.trnFrac if not NULL. }
@@ -62,7 +63,7 @@
 #'      The 'system time' is the CPU time charged for execution by the system on behalf of the calling process. 
 #'      The 'elapsed time' is the 'real' (wall-clock) time since the process was started.
 #'
-#' @author Wolfgang Konen, Patrick Koch, 2011 - 2013
+#' @author Wolfgang Konen, Patrick Koch, THK
 #' @export
 ######################################################################################
 tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL) {
@@ -89,8 +90,9 @@ tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL) {
   if (is.null(tdm$path)) tdm$path <- paste(getwd(),"/",sep="");
   if (!is.null(tdm$runList)) {
     if (is.null(tdm$spotList)) tdm$spotList <- tdm$runList;
-    if (is.null(tdm$filenameEnvT)) tdm$filenameEnvT=sub(".conf",".RData",tdm$runList[1],fixed=TRUE);
-  }  
+  } else {
+    stop("The required element tdm$runList is missing.")
+  } 
   
   # code which was previously in unbiasedRun. Now we put it here and call tdmDefaultsFill from unbiasedRun
   # (cleaner code, less places where tdm values are set)
@@ -104,7 +106,9 @@ tdmDefaultsFill <- function(tdm=NULL,mainFile=NULL) {
   if (is.null(tdm$TST.testFrac)) tdm$TST.testFrac=0.2;
   if (is.null(tdm$nfold)) tdm$nfold=10;
   if (is.null(tdm$nrun)) tdm$nrun=5;
-  if (is.null(tdm$U.saveModel)) tdm$U.saveModel=FALSE;
+  if (is.null(tdm$U.saveModel)) tdm$U.saveModel=TRUE;
+  if (is.null(tdm$filenameEnvT)) tdm$filenameEnvT=sub(".conf",".RData",tdm$runList[1],fixed=TRUE);
+  
 
   tdm;
 }

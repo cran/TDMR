@@ -9,6 +9,8 @@
 path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 
-source(paste(path,"sonar_00.apd",sep="/"),local=TRUE);   # set opts 
-source(paste(path,"start_sonar.r",sep="/"),chdir=TRUE,print.eval=TRUE);  # contains: result=main_sonar(opts);
+source(paste(path,"main_sonar.r",sep="/"));     # needed to define readTrnSonar
+source(paste(path,"sonar_00.apd",sep="/"),local=TRUE);   # set opts, needs readTrnSonar 
+source(paste(path,"start_sonar.r",sep="/"),chdir=TRUE,print.eval=TRUE);  # contains: result<-main_sonar(opts);
+
 

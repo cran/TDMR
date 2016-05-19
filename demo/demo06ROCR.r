@@ -7,11 +7,13 @@
     path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
     #path <- paste("../inst", "demo02sonar",sep="/");
 
+    source(paste(path,"main_sonar.r",sep="/"));    # defines readTrnSonar
+
     ## set the elements of list opts. See ?tdmOptsDefaultsSet
     ## for a complete list of all default settings and explanatory comments
     opts = tdmOptsDefaultsSet();    
     opts$filename = "sonar.txt"
-    opts$READ.CMD = "readCmdSonar(filename,opts)"    # def'd in main_sonar.r
+    opts$READ.TrnFn = readTrnSonar      # def'd in main_sonar.r
     opts$data.title <- "Sonar Data";
     opts$rgain.type <- "arROC";
 

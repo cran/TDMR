@@ -1,19 +1,22 @@
 ######################################################################################
 # print.TDMregressor     and print.tdmRegre
 #
-#'   Print an overview for a \code{\link{TDMregressor}} or \code{\link[=tdmRegress]{tdmRegre}} object.
+#' Print an overview for a \code{\link{TDMregressor}} object.
 #'
-#'   @method print TDMregressor
-#'   @param x  an object of class \code{\link[=tdmRegress]{tdmRegre}}, as returned from a prior call to \code{\link{tdmRegress}}, \cr
-#'          or  an object of class \code{\link{TDMregressor}}, as returned from a prior call to \code{\link{tdmRegressLoop}}.
-#'   @param ... e.g. 'type'    which information to print:
-#'      \describe{
+#' Print an overview for a \code{\link{TDMregressor}} or \code{\link[=tdmRegress]{tdmRegre}} object.
+#'
+#' @method print TDMregressor
+#' @param x  an object of class \code{\link[=tdmRegress]{tdmRegre}}, as returned from a prior call to \code{\link{tdmRegress}}, \cr
+#'        or  an object of class \code{\link{TDMregressor}}, as returned from a prior call to \code{\link{tdmRegressLoop}}.
+#' @param ... e.g. 'type'    which information to print:
+#'    \describe{
 #'      \item{\code{"overview"}}{ (def.) RMAE on training/test set, number of records, see \code{\link{tdmRegressSummary}}}
 #'      \item{\code{"..."}}{ ... other choices, TODO ...}
 #'      \item{\code{"?"}}{ help on this method}
-#'      }
+#'    }
 #' @seealso   \code{\link{tdmRegress}}, \code{\link{tdmRegressSummary}}, \code{\link{TDMregressor}}
 #' @export
+#' @author Wolfgang Konen, THK
 ######################################################################################
 print.TDMregressor <- function(x,...) {
   internalPrintR <- function(result,type) {
@@ -45,7 +48,7 @@ print.TDMregressor <- function(x,...) {
 ######################################################################################
 # print.tdmRegre
 # Print an overview for a \code{\link[=tdmRegress]{tdmRegre}} object.
-#'
+#
 #' @rdname print.TDMregressor
 #' @method print tdmRegre
 #' @export

@@ -23,7 +23,8 @@ tdm <- list( mainFile="main_sonar.r"
             , nrun=3, nfold=2         # repeats and CV-folds for the unbiased runs
             , nExperim=1
             , parallelCPUs=1
-            , parallelFuncs=c("readCmdSonar")
+            , parallelFuncs=c("readTrnSonar")
+#            , U.saveModel=F
             , optsVerbosity = 3       # the verbosity for the unbiased runs
             );
 ## Each element of tdm$runList has the settings for one tuning process (e.g. 
@@ -31,6 +32,8 @@ tdm <- list( mainFile="main_sonar.r"
 ##    - auto.loop.evals = budget of model building runs and 
 ##    - io.roiFileName = "sonar_04.roi"
 ## ). 
+
+#tdm = tdmDefaultsFill(tdm);
 
 spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or 
                       ## "rep" (make a visual report and an unbiased run on best results)
@@ -40,4 +43,4 @@ source(paste(path,"start_bigLoop.r",sep="/"),chdir=TRUE);    # change dir to 'pa
 ## the resulting tuning surface (the metamodel) can be inspected interactively with
 ##      envT <- tdmEnvTLoad(paste(path,tdm$filenameEnvT,sep="/"));     
 ##      tdmPlotResMeta(envT);
-## (tdmEnvTLoad(...) is only needed for reloading envT in another R-session)
+## (tdmEnvTLoad(...) is only needed for reloading envT in another R-session) 

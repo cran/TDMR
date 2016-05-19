@@ -2,7 +2,7 @@
                                       # for the list of those elements and many explanatory comments                                                                                                         
       opts$dir.data <- "data/";
       opts$filename = "sonar.txt"
-      opts$READ.CMD = "readCmdSonar(filename,opts)"    # def'd in main_sonar.r
+      opts$READ.TrnFn = readTrnSonar
       opts$data.title <- "Sonar Data"
 
       opts$RF.mtry = 4

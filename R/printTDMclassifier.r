@@ -1,22 +1,23 @@
 ######################################################################################
 # print.TDMclassifier  and print.tdmClass
 #
-#'  Print an overview for a \code{\link{TDMclassifier}} or \code{\link[=tdmClassify]{tdmClass}} object.
+#' Print an overview for a \code{\link{TDMclassifier}} object.
 #'
-#'   @method print TDMclassifier
-#'   @param x  an object of class \code{\link[=tdmClassify]{tdmClass}}, as returned from a prior call to \code{\link{tdmClassify}}, \cr
-#'          or  an object of class \code{\link{TDMclassifier}}, as returned from a prior call to \code{\link{tdmClassifyLoop}}.
-#'   @param ... e.g. 'type'    which information to print:
-#'      \describe{
+#' Print an overview for a \code{\link{TDMclassifier}} or \code{\link[=tdmClassify]{tdmClass}} object.
+#' 
+#' @method print TDMclassifier
+#' @param x  an object of class \code{\link[=tdmClassify]{tdmClass}}, as returned from a prior call to \code{\link{tdmClassify}}, \cr
+#'        or  an object of class \code{\link{TDMclassifier}}, as returned from a prior call to \code{\link{tdmClassifyLoop}}.
+#' @param ... e.g. 'type'    which information to print:
+#'    \describe{
 #'      \item{\code{"overview"}}{ (default) relative gain on training/test set, number of records, see \code{\link{tdmClassifySummary}}}
 #'      \item{\code{"cm.train"}}{ confusion matrix on train set}
 #'      \item{\code{"cm.vali"}}{ confusion matrix on test set}
 #'      \item{\code{"?"}}{ help on this method}
-#'      }
-#'
+#'    }
 #' @seealso   \code{\link{tdmClassify}}, \code{\link{tdmClassifySummary}}, \code{\link{TDMclassifier}}
-#' @author Wolfgang Konen, FHK, 2011 - 2013
 #' @export
+#' @author Wolfgang Konen, THK
 print.TDMclassifier <- function(x,...) {
   internalPrintC <- function(result,type) {
     opts = result$lastRes$opts;

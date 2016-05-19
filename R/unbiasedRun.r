@@ -1,46 +1,51 @@
 ######################################################################################
 # unbiasedRun
 #
-#'     Perform unbiased runs with best-solution parameters.
+#' Perform unbiased runs with best-solution parameters.
 #'
-#'     Read the best solution of a parameter-tuning run from \code{envT$bst}, 
-#'     execute with these best parameters the function \code{tdm$mainFunc} (usually a classification or 
-#'     regression machine learning task), to see 
-#'     whether the result quality is reproducible on independent test data or on independently trained models.
+#' Read the best solution of a parameter-tuning run from \code{envT$bst}, 
+#' execute with these best parameters the function \code{tdm$mainFunc} (usually a classification or 
+#' regression machine learning task), to see 
+#' whether the result quality is reproducible on independent test data or on independently trained models.
 #'
-#'   @param confFile    the .conf filename, e.g. "appAcid_02.conf"
-#'   @param envT        environment, from which we need the objects
-#'     \describe{
+#' @param confFile    the .conf filename, e.g. "appAcid_02.conf"
+#' @param envT        environment, from which we need the objects
+#'   \describe{
 #'     \item{\code{bst}}{ data frame containing best results (merged over repeats)}
 #'     \item{\code{res}}{ data frame containing all results}
 #'     \item{\code{theTuner}}{ ["spot"] string}
 #'     \item{\code{spotConfig}}{ [NULL] a list with SPOT settings. If NULL, try to read spotConfig from confFile.} 
-#'     }
-#'   @param dataObj     [NULL] contains the pre-fetched data from which we use here the test-set part. 
-#'                      If NULL, set it to \code{tdmSplitTestData(opts,tdm)}  
-#'   @param finals      [NULL] a one-row data frame to which new columns with final results are added
-#'   @param umode       [ "RSUB" (default) | "CV" | "TST" | "SP_T" ], how to divide in training and test data for the unbiased runs:
-#'     \describe{
+#'   }
+#' @param dataObj     [NULL] contains the pre-fetched data with training-set and test-set part. 
+#'                    If NULL, set it to \code{tdmSplitTestData(opts,tdm)}. \cr
+#'                    It is now \strong{deprecated} to have dataObj==NULL.  
+#' @param finals      [NULL] a one-row data frame to which new columns with final results are added
+#' @param umode       --- deprecated as argument to unbiasedRun --- , use the division provided 
+#'                    in \code{dataObj = tdmSplitTestData(opts,tdm)} which makes use of \code{tdm$umode}.\cr
+#'                    For downward compatibility only (if \code{dataObj==NULL} :\cr
+#'                    [ "RSUB" (default) | "CV" | "TST" | "SP_T" ], how to divide in training and test data for the unbiased runs:
+#'   \describe{
 #'     \item{\code{"RSUB"}}{ random subsampling into (1-tdm$TST.testFrac)\% training and tdm$TST.testFrac\% test data}
 #'     \item{\code{"CV"}}{ cross validation (CV) with tdm$nrun folds}
-#'     \item{\code{"TST"}}{ all data in opts$filename are used for training, all data in opts$filetest for testing}
+#'     \item{\code{"TST"}}{ all data in opts$filename (or dsetTrnVa(dataObj)) are used for training, 
+#'                  all data in opts$filetest (or dsetTest(dataObj) are used for testing}
 #'     \item{\code{"SP_T"}}{ 'split_test': prior to tuning, the data set was split by random subsampling into tdm$TST.testFrac\% test and
 #'                  (1-tdm$TST.testFrac)\% training-vali data, tagged via column "tdmSplit". Tuning was done on training-vali data.
 #'                  Now we use column "tdmSplit" to select the test data for unbiased evaluation. Training during unbiased evaluation
 #'                  is done on a fraction tdm$TST.trnFrac of the training-vali data}
-#'     }
-#'   @param withParams  [FALSE] if =TRUE, add columns with best parameters to data frame \code{finals}
-#'                      (should be FALSE, if different runs have different parameters)
-#'   @param tdm         a list with TDM settings from which we use here the elements
-#'     \describe{
+#'   }
+#' @param withParams  [FALSE] if =TRUE, add columns with best parameters to data frame \code{finals}
+#'                    (should be FALSE, if different runs have different parameters)
+#' @param tdm         a list with TDM settings from which we use here the elements
+#'   \describe{
 #'     \item{mainFunc}{ the function to be called for unbiased evaluations}
 #'     \item{mainFile}{ change to the directory of mainFile before starting mainFunc}
 #'     \item{nrun}{ [5] how often to call the unbiased evaluation}
 #'     \item{nfold}{ [10] how many folds in CV (only relevant for umode="CV") }
 #'     \item{TST.testFrac}{ [0.2] test set fraction (only relevant for umode="RSUB" or ="SP_T") }
-#'     }
-#'     The defaults in '[...]' are set by  \code{\link{tdmDefaultsFill}}, if they are not defined on input.
-#'   @return \code{finals}     a one-row data frame with final results
+#'   }
+#'   The defaults in '[...]' are set by  \code{\link{tdmDefaultsFill}}, if they are not defined on input.
+#' @return \code{finals}     a one-row data frame with final results
 #'
 #' @note Side Effects:
 #'    The list \code{result}, an object of class \code{\link{TDMclassifier}} or \code{\link{TDMregressor}} as returned 
@@ -50,41 +55,31 @@
 #'    \code{spotConfig$io.apdFileName}. This will issue a warning '... might not work in parallel mode', but is perfectly fine for non-parallel mode. 
 #'
 #' @examples
-#'    ## Load the best results obtained in a prior tuning for the configuration 
-#'    ## "sonar_04.conf" with tuning method "spot". The result envT from a prior  
-#'    ## run of tdmBigLoop with this .conf is read from demo02sonar/demoSonar.RData.
-#'    ## Run task main_sonar again with these best parameters, using the default 
-#'    ## settings from tdmDefaultsFill: umode="RSUB", tdm$nrun=5  and tdm$TST.testFrac=0.2.
-#'    oldwd <- getwd();          
-#'    ## The best results are read from demo02sonar/demoSonar.RData relative to 
-#'    ## the TDMR package directory.
+#'    ## Load the best results obtained in a prior tuning for the configuration "sonar_04.conf"
+#'    ## with tuning method "spot". The result envT from a prior run of tdmBigLoop with this .conf
+#'    ## is read from demo02sonar/demoSonar.RData.
+#'    ## Run task main_sonar again with these best parameters, using the default settings from 
+#'    ## tdmDefaultsFill: umode="RSUB", tdm$nrun=5  and tdm$TST.testFrac=0.2.
+#'    oldwd <- getwd();
 #'    setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
+#'    ## The best results are read from demo02sonar/demoSonar.RData 
+#'    ## (relative to the TDMR package directory):
 #'    load("demoSonar.RData");
+#'    opts <- tdmEnvTGetOpts(envT,1);
+#'    envT$tdm$optsVerbosity=0;
+#'    dataObj <- tdmSplitTestData(opts,envT$tdm);
 #'    source("main_sonar.r");
-#'    finals <- unbiasedRun("sonar_04.conf",envT,tdm=envT$tdm);
+#'    finals <- unbiasedRun("sonar_04.conf",envT,dataObj,tdm=envT$tdm);
 #'    print(finals);
 #'    setwd(oldwd);
-#'    
-#    --- This example is now deprecated, because we do not support .bst-files any longer ----
-#    \dontrun{
-#    ## If you do not have 'envT' but only a .bst file from a prior tuning run:
-#    ## The best results are read from demo02sonar/spot/sonar_04.bst relative to the TDMR package directory.
-#    ## (This example is not run automatically, because sonar_04.bst is not in the package distribution) 
-#    setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
-#    envT <- new.env();
-#    tdm <- list(mainFunc="main_sonar", tuneMethod="spot");
-#    source("main_sonar.r");
-#    finals <- unbiasedRun("sonar_04.conf",envT,tdm=tdm);
-#    print(finals);
-#    setwd(oldwd);
-#    }
 #'
 #' @seealso   \code{\link{tdmBigLoop}}, \code{\link{TDMclassifier}}, \code{\link{TDMregressor}} 
-#' @author Wolfgang Konen, FHK, 2010 - 2013
 #' @export
-#
+#' @author Wolfgang Konen, FHK, 2010 - 2013
+#' 
 ######################################################################################
-unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",withParams=FALSE,tdm=NULL){
+unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",
+                        withParams=FALSE,tdm=NULL){
     tdm <- tdmDefaultsFill(tdm);
     if (is.null(envT$spotConfig)) envT$spotConfig <- spotGetOptions(srcPath=tdm$theSpotPath,confFile);
     if (is.null(envT$theTuner)) envT$theTuner <- "spot";
@@ -92,16 +87,15 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     if (is.null(tdm$map)) tdm <- tdmMapDesLoad(tdm); 
     #if (is.null(envT$map)) tdmMapDesLoad(envT,tdm); 
     
-
     if (is.null(envT$spotConfig$opts)) {
-      if (is.null(envT$sCList[[1]]$opts)) {
+      if (is.null(tdmEnvTGetOpts(envT,1))) {
         pdFile = envT$spotConfig$io.apdFileName;
         warning(paste("List envT$spotConfig does not have the required variable 'opts'."
                      ,"We try to construct it from",pdFile,"(might not work in parallel mode!)")); 
         source(pdFile,local=TRUE);
         opts=tdmOptsDefaultsSet(opts);
       } else {
-        opts <- envT$sCList[[1]]$opts;
+        opts <- tdmEnvTGetOpts(envT,1);
       }
     } else {
       opts <- envT$spotConfig$opts;
@@ -118,10 +112,11 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
 
   	if (opts$READ.INI) {
   	  if (is.null(dataObj)) dataObj <- tdmSplitTestData(opts,tdm);
-      tdm$tstCol=dataObj$TST.COL;  # needed for tdmMapOpts
-      #dset <- dataObj$dset;    
-      dset <- dsetTrnVa(dataObj);
-      tset <- dsetTest(dataObj);       # returns NULL in case of (tdm$umode %in% c("RSUB","CV")
+      tdm$umode="RSUB"  # this is the only allowed case for umode, if dataObj is given.
+                        # Then tdmMapOpts will set opts$TST.kind="rand"
+      #tdm$tstCol=dataObj$TST.COL;  # needed for tdmMapOpts (only in case tdm$umode==TST)
+      dset <- dsetTrnVa(dataObj,envT$nExp);
+      tset <- dsetTest(dataObj,envT$nExp);       # returns NULL in case of (tdm$umode %in% c("RSUB","CV")
     } else {
       # this branch is deprecated 
       if (is.null(dataObj))
@@ -129,10 +124,9 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
       dset <- NULL;
       tset <- NULL;
     }
-    # set certain elements of opts which control selection of training & test data 
-    # (depending on switch tdm$umode, see tdmMapDesign.r)
-  	tdmOpts <- tdmMapOpts(umode,opts,tdm);           # sets opts$NRUN = tdm$nrun
 
+  	tdmOpts <- tdmMapOpts(umode,opts,tdm);           # sets opts$NRUN = tdm$nrun
+  	
     # tdmGetObj is deprecated, only for downward compatibility. For actual runs, a simple
     #   bst <- envT$bst
     #   res <- envT$res
@@ -171,7 +165,12 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
 		setwd(oldwd);                                                  # restore working dir
     envT$result <- result;
 
+    # experimental (problematic: can result in a 39 MB file)
+    #saveEnvT(envT,tdm$runList,saveModel=tdm$U.saveModel);
+
     if (is.null(finals)) {
+      # add results from tuning:
+      #
       # create a data frame with one line of results:
       finals <- data.frame(list(CONF=sub(".conf","",confFile,fixed=TRUE),TUNER=envT$theTuner,NEXP=envT$nExp));
       namFinals <- names(finals);
@@ -180,25 +179,30 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
         finals <- cbind(finals,bst[k,pNames]);    # bug fix 05/12: this way it works for length(pNames)==1 and for >1    
         names(finals) <- c(namFinals,pNames);     #
       } 
-      finals <- cbind(finals
-                     , NRUN=tdmOpts$NRUN
-                     , NEVAL=nrow(res)
-                      );                      
+      finals <- cbind(finals, NEVAL=nrow(res));
+      
       sgn <- ifelse(class(envT$result)[1]=="TDMregressor",+1,-1);   # minus sign only for classification
       add.finals        <- data.frame(sgn*as.numeric(bst[k,1]),sgn*mean(res$Y));
       names(add.finals) <- paste(tdmOpts$rgain.string,c(".bst",".avg"),sep="");
       finals <- cbind(finals,add.finals);
+      finals <- cbind(finals,Time.TRN=envT$time.TRN);  
       #
-      # add once the results on the training set from unbiased runs:                      
-      suf = ifelse(tdmOpts$MOD.method %in% c("RF","MC.RF"),".OOB",".TRN");
-      add.finals <-  data.frame( mean(result$R_train)
-                               , sd(result$R_train)
-                               );
-      names(add.finals) <- paste(c(tdmOpts$rgain.string,"sdR"),suf,sep="");
-      finals <- cbind(finals,add.finals);
     } # if(is.null(finals))
       
-    # add results on test set from unbiased runs (two columns for each value of umode):
+		# add results frum unbiased runs:
+		#
+		finals <- cbind(finals, NRUN=tdmOpts$NRUN);                      
+		# add results on the training set from unbiased runs:                      
+		add.finals <-  data.frame( mean(result$R_train)
+		                           , sd(result$R_train)
+		);
+		names(add.finals) <- paste(c(tdmOpts$rgain.string,"sdR"),".TRN",sep="");
+		### older version, too complicated
+		#suf = ifelse(tdmOpts$MOD.method %in% c("RF","MC.RF"),".OOB",".TRN");
+		#names(add.finals) <- paste(c(tdmOpts$rgain.string,"sdR"),suf,sep="");
+		finals <- cbind(finals,add.finals);
+		#
+		# add results on test set from unbiased runs:
     add.finals <- data.frame(mean(result$R_vali),sd(result$R_vali));
     names(add.finals) <-  paste(c(tdmOpts$rgain.string,"sdR"),umode,sep=".");
     finals <- cbind(finals,add.finals);
@@ -206,3 +210,27 @@ unbiasedRun <- function(confFile,envT,dataObj=NULL,finals=NULL,umode="RSUB",with
     finals;
 }
 
+######################################################################################
+# zzz
+#
+#' just to make example check happy
+#'
+#' If we do not have this little dummy function with the plot command in the example, 
+#' then 'R CMD check' in buildTDMR.r will fail when the examples are checked. 
+#' The reason: The file TDMR.Rcheck/TDMR-Ex.R contains a footer which tries to 
+#' close a graphics device with grDevices::dev.off(). But if there is no graphics device
+#' from the previous example, dev.off() tries to operate on the null device and this
+#' produces an error. 
+#'
+#' @return \code{dummy}     zero
+#'
+#' @examples
+#'    plot(1:10);
+#'    
+#'
+#' @keywords internal
+#' @author Wolfgang Konen, FHK, 2010 - 2013
+#' 
+zzz <- function() {
+  return(0)
+}

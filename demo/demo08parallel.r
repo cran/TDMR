@@ -1,5 +1,5 @@
 #*# --------- demo/demo08parallel.r ---------
-#*# This demo does the same as demo03sonar.r, but it runs 4 experiment on 4 parallel cores
+#*# This demo does the same as demo03sonar.r, but it runs 8 experiments on 4 parallel cores
 #*# (if your environment supports parallel clusters with the R-core package 'parallel'). 
 #*#
 #*# Note on your task manager, how for a short time 4 processes are active (usually 'RScript').
@@ -20,11 +20,11 @@ tdm <- list( mainFunc="main_sonar"
             , runList = "sonar_04.conf"
             , umode=c("CV")           # ["CV" | "RSUB" | "TST" | "SP_T" ]
             , tuneMethod =  c("spot","lhd") # c("lhd")   #
-            , filenameEnvT="demo03.RData"   # file to save environment envT (in working dir)
+            , filenameEnvT="demo03p.RData"   # file to save environment envT (in working dir)
             , nrun=2, nfold=2         # repeats and CV-folds for the unbiased runs
-            , nExperim=2
+            , nExperim=8
             , parallelCPUs=4
-            , parallelFuncs=c("readCmdSonar")
+            , parallelFuncs=c("readTrnSonar")
             , optsVerbosity = 0       # the verbosity for the unbiased runs
             , oFileMode = FALSE       # set opts$fileMode==FALSE
             );
@@ -42,11 +42,15 @@ spotStep = "auto";    ## spotStep can be either "auto" (do automatic tuning) or
 ## construct an initial environment envT from tdm
 ## (this contains also tdmDefaultsFill(tdm))
 ## then run tdmBigLoop
-envT <- tdmExecSpotStep(tdm,spotStep);
+envT <- tdmEnvTMakeNew(tdm);
+opts <- tdmEnvTGetOpts(envT);
+dataObj <- tdmSplitTestData(opts,tdm);
+envT <- tdmBigLoop(envT,spotStep,dataObj);
 
 setwd(oldwd);               # restore old working directory
 
 ## the resulting tuning surface(s) (the metamodel(s)) can be inspected interactively with
-##      load(paste(path,tdm$filenameEnvT,sep="/"));     
+##      envT <- tdmEnvTLoad(paste(path,tdm$filenameEnvT,sep="/"));     
 ##      tdmPlotResMeta(envT);
-## (load(...) is only needed for reloading envT in another R-session)
+## (tdmEnvTLoad(...) is only needed for reloading envT in another R-session) 
+

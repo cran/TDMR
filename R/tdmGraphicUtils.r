@@ -146,7 +146,7 @@ tdmGraphicToTop <- function(opts) {
   switch (opts$GD.DEVICE
     , "pdf" = {}
     , "png" = {}
-    , "win" = {bringToTop();}
+    , "win" = {grDevices::bringToTop();}
     , "rstudio" = {}
     , "non" = {}
     , "invalid switch"

@@ -5,7 +5,8 @@ path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
 #path <- paste("../inst", "demo02sonar",sep="/");
 
 tdm=list(mainFile="main_sonar.r"
-        ,runList="sonar_01.conf"
+        ,runList="sonar_01.conf"    # somar_01.conf contains APD and ROI filename
+        ,umode="SP_T"
         );
 spotStep = "auto";    
 source(paste(path,tdm$mainFile,sep="/"));    

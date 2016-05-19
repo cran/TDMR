@@ -6,6 +6,8 @@
 #*# Therefore data frame result$Err has two rows
 #*#
 opts=tdmOptsDefaultsSet()                       # set all defaults for data mining process
+opts$TST.SEED=5                                 # reproducible results
+#opts$VERBOSE <- opts$SRF.verbose <- 0          # no printed outut    
 gdObj <- tdmGraAndLogInitialize(opts);          # init graphics and log file
 
 data(iris)

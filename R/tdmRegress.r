@@ -10,16 +10,16 @@
 #'  It trains a model on training set \code{d_train} and evaluates it on test set \code{d_test}.
 #'  If this function is used for tuning, the test set \code{d_test} plays the role of a validation set.
 #'
-#'   @param d_train     training set
-#'   @param d_test      test set, same columns as training set
-#'   @param d_preproc   data used for preprocessing. May be NULL, if no preprocessing is done 
+#' @param d_train     training set
+#' @param d_test      test set, same columns as training set
+#' @param d_preproc   data used for preprocessing. May be NULL, if no preprocessing is done 
 #'                   (opts$PRE.SFA=="none" and opts$PRE.PCA=="none"). If preprocessing is done, 
 #'                   then d_preproc is usually all non-validation data.
-#'   @param response.variables   name of column which carries the target variable - or - 
+#' @param response.variables   name of column which carries the target variable - or - 
 #'                   vector of names specifying multiple target columns
 #'                   (these columns are not used during prediction, only for evaluation)
-#'   @param input.variables     vector with names of input columns 
-#'   @param opts        additional parameters [defaults in brackets]
+#' @param input.variables     vector with names of input columns 
+#' @param opts        additional parameters [defaults in brackets]
 #'     \describe{
 #'     \item{\code{SRF.*}}{ several parameters for sorted_rf_importance (see tdmModelingUtils.r) }
 #'     \item{\code{RF.*}}{ several parameters for RF (Random Forest, defaults are set, if omitted)  }
@@ -40,8 +40,9 @@
 #'                   and make a true-false bar plot }
 #'     \item{\code{VERBOSE}}{ [2] =2: most printed output, =1: less, =0: no output }
 #'     }
+#' @param tsetStr [c("Validation", "validation",".vali")] 
 #'         
-#'   @return  \code{res}, an object of class \code{tdmRegre}, this is a list containing
+#' @return  \code{res}, an object of class \code{tdmRegre}, this is a list containing
 #'       \item{\code{d_train}}{ training set + predicted class column(s) }
 #'       \item{\code{d_test}}{ test set + predicted target output }
 #       \item{\code{rmse}}{ ---deprecated--- root mean square error (on test + train set) + Theil's U (on test + train set) }
@@ -86,7 +87,8 @@
 #'
 #' @export
 ######################################################################################
-tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variables,opts)
+tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variables,opts,
+                       tsetStr=c("Validation", "validation",".vali"))
 {    
     filename <- opts$filename;
     saved.input.variables <- input.variables;      # save copy for response.variable loop
@@ -356,12 +358,12 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
         rmae$rmae.train <- rmae$made.tr/rmae$ma.train;
         rmae$theil.train <- rmae$rmae.train/(mean(abs(naive.predict-d_train[,response.variable]))/rmae$ma.train)
 
-        cat2(opts,"\nTraining cases (",length(train.predict),"):\n")
-        cat2(opts,"rmse.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$rmse.train, "\n")
-        cat2(opts,"rmae.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmae$rmae.train,"\n")
-        cat2(opts,"Theils U1 (train, RMSE):", rmse$theil.train,"\n")#, U2 (train):",rmse$Theil2.train,"\n")    # <1: better than naive forecast
-        cat2(opts,"Theils U3 (train, RMAE):", rmae$theil.train,"\n")    # based on RMAE instead of RMSE
- 
+        cat1(opts,"\nTraining cases (",length(train.predict),"):\n")
+        cat1(opts,"rmse.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$rmse.train, "\n")
+        cat1(opts,"rmae.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmae$rmae.train,"\n")
+        cat1(opts,"Theils U1 (train, RMSE):", rmse$theil.train,"\n")#, U2 (train):",rmse$Theil2.train,"\n")    # <1: better than naive forecast
+        cat1(opts,"Theils U3 (train, RMAE):", rmae$theil.train,"\n")    # based on RMAE instead of RMSE
+
         rmse$rmse.test <- sqrt(mean((test.predict-d_test[,response.variable])^2))
         rmse$theil.test <- rmse$rmse.test/sqrt(mean((naive.predict-d_test[,response.variable])^2))
         #naive.predict2=d_test[,opts$old.response.variable]
@@ -370,11 +372,11 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
         rmae$ma.test <- mean(abs(d_test[,response.variable]))
         rmae$rmae.test <- rmae$made.te/rmae$ma.test
         rmae$theil.test <- rmae$rmae.test/(mean(abs(naive.predict-d_test[,response.variable]))/rmae$ma.test)
-        cat2(opts,"\nVali cases (",length(test.predict),"):\n")
-      	cat2(opts,"rmse.test:", rmse$rmse.test, ", rmse.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$rmse.train,"\n")
-        cat2(opts,"rmae.test:", rmae$rmae.test, "\n")
-        cat2(opts,"Theils U1 (test, RMSE):", rmse$theil.test,"\n")#, U2 (test):",rmse$Theil2.test,"\n")    # <1: better than naive forecast
-        cat2(opts,"Theils U3 (test, RMAE):", rmae$theil.test,"\n")    # based on RMAE instead of RMSE
+    		cat1(opts,paste0("\n",tsetStr[1]," cases (",length(test.predict),"):\n"));
+      	cat1(opts,"rmse.test:", rmse$rmse.test, ", rmse.train", ifelse(opts$MOD.method=="RF","(OOB)",""),":", rmse$rmse.train,"\n")
+        cat1(opts,"rmae.test:", rmae$rmae.test, "\n")
+        cat1(opts,"Theils U1 (test, RMSE):", rmse$theil.test,"\n")#, U2 (test):",rmse$Theil2.test,"\n")    # <1: better than naive forecast
+        cat1(opts,"Theils U3 (test, RMAE):", rmae$theil.test,"\n")    # based on RMAE instead of RMSE
      
         if (!is.na(match("SRF",ls()))) {
         	rmae$SRF.perc = SRF$perc;			               # just to report these
@@ -433,7 +435,7 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
         allRMAE <- rbind(allRMAE,as.data.frame(rmae));
         allRMSE <- rbind(allRMSE,as.data.frame(rmse));
         
-        cat1(opts,sprintf("  %s: rmae.test =%8.3f, RMAE.test =%8.3f\n",response.variable,rmae$rmae.test,mean(allRMAE$rmae.test)));
+        cat1(opts,sprintf("  %s: rmae%s =%8.3f, RMAE%s =%8.3f\n",response.variable,tsetStr[3],rmae$rmae.test,tsetStr[3],mean(allRMAE$rmae.test)));
         cat1(opts,sprintf("  %s: rmae.train=%8.3f, RMAE.train=%8.3f\n",response.variable,rmae$rmae.train,mean(allRMAE$rmae.train)));
 
     } # for (response.variable)

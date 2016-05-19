@@ -36,18 +36,17 @@
 #' 			\item{dir.Rdata}{[<path>/Rdata] -- deprecated, use opts$dir.data -- } 
 #' 			\item{dir.output}{[<path>/Output] where to put output files} 
 #' 			\item{filename}{["default.txt"] the task data} 
-#' 			\item{filetest}{[NULL] the test data, only relevant for READ.TST=T}
+#' 			\item{filetest}{[NULL] the test data, only relevant for READ.TstFn!=NULL}
 #' 			\item{fileMode}{[TRUE] if =T, write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file} 
 #'   		\item{logFile}{[TRUE] if =T, and if opts$fileMode=T, write log file to *_train.log } 
 #' 			\item{data.title}{["Default Data"] title for plots} 
 #' 			\item{READ.TXT}{[T] =T: read data from .csv and save as .Rdata, =F: read from .Rdata}                                                   
 #' 			\item{READ.NROW}{[-1] read this amount of rows or -1 for 'read all rows'} 
-#' 			\item{READ.TST}{[F] =T: read unseen test data from opts$filetest (usually you will do this only for the final model and only with TST.kind="col")} 
-#' 			\item{READ.CMD}{["\code{\link{tdmReadCmd}(filename,opts)}"] 
-#'                      the command to be passed into \code{\link{tdmReadData}}. It has to contain the placeholder 'filename'. The default 
-#'                      in brackets implies 'read.csv(file=paste(opts$dir.txt, filename, sep=""), nrow=opts$READ.NROW)' which includes the 
-#'                      further settings header=T, sep="," and dec="."   } 
-#' 			\item{READ.INI}{[TRUE] read the task data initially, i.e. prior to tuning, using \code{\link{tdmReadData}} .  
+#'   		\item{READ.TrnFn}{ function to be passed into \code{\link{tdmReadData2}}. Signature: function(opts)  
+#'     	                returning a data frame. It reads the train-validation data.   } 
+#'     	\item{READ.TstFn}{ [NULL] function to be passed into \code{\link{tdmReadData2}}. Signature: function(opts)  
+#'     	                returning a data frame. It reads a separate test data file. If NULL, this reading step is skipped.   } 
+#' 			\item{READ.INI}{[TRUE] read the task data initially, i.e. prior to tuning, using \code{\link{tdmReadData2}} .  
 #'                      If =FALSE, the data are read anew in each pass through main_TASK, i.e. in each tuning step (deprecated). } 
 #' 			\item{TST.kind}{["rand"] one of the choices from \{"cv","rand","col"\}, see \code{\link{tdmModCreateCVindex}} for details  } 
 #' 			\item{TST.COL}{["TST.COL"] name of column with train/test/disregard-flag} 
@@ -177,10 +176,6 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
       
       opts$READ.TXT = TRUE    # =T: read data from .csv and save as .Rdata, =F: read from .Rdata
       opts$READ.NROW = -1     # [-1] read this amount of rows or -1 for 'read all rows' 
-      opts$READ.TST = FALSE   # =T: read unseen test data (do this only for the final model and only with TST.kind="col")
-                              # and fill column dset[,opts$TST.COL] accordingly (set it to 1 for those test records)
-                              # =F: set a part of the train data aside as test data (as prescribed by TST.kind)
-      opts$READ.CMD = "tdmReadCmd(filename,opts)"; 
       opts$READ.INI = TRUE;   # read in the task data initially, i.e. prior to tuning
       opts$TST.kind <- "rand" # ["cv"|"rand"|"col"] see tdmModCreateCVindex in tdmModelingUtils.r
       opts$TST.COL ="TST.COL";# column with train/test/disregard-flag
@@ -306,15 +301,15 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
 #'   parameters if they are not yet defined. The defaults may depend on previously 
 #'   defined elements of \code{opts} (e.g. \code{opts$filename}). 
 #'
-#'   What is the difference between \code{\link{tdmOptsDefaultsSet}} and \code{\link{tdmOptsDefaultsFill}}? 
-#'   \code{tdmOptsDefaultsSet} is for all parameters that do NOT depend on previously def'd elements of \code{opts}.
+#'   What is the difference between \code{\link{tdmOptsDefaultsSet}} and \code{\link{tdmOptsDefaultsFill}}? --
+#'   \code{tdmOptsDefaultsSet} is used for all parameters that do NOT depend on previously defined elements of \code{opts}.
 #'   \code{tdmOptsDefaultsFill} is used to fill in further \code{opts} elements, if not yet defined, depending on 
-#'   previous settings (e. g. opts$LOGFILE is derived from opts$filename).
+#'   previous settings (e. g. \code{opts$LOGFILE} is derived from \code{opts$filename}).
 #'
 #' @param opts    the options 
 #  -- deprecated -- @param suffix  the suffix of \code{opts$filename}. If NULL, take opts$filesuffix (which, if also NULL, is  
 #  --            --            inferred from opts$filename)
-#' @return \code{opts},  the extended options, where additional elements, if they are not yet def'd,  are set as: 
+#' @return \code{opts},  the extended options, where additional elements, if they are not yet defined,  are set as: 
 #' 			\item{TST.COL}{["TST.COL"] } 
 #' 			\item{PDFFILE}{["*_pic.pdf"] file for multipage graphics in case \code{opts$GD.DEVICE}="pdf" } 
 #' 			\item{GD.PNGDIR}{["PNG*"] directory for .png files in case \code{opts$GD.DEVICE}="png" } 
@@ -322,7 +317,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
 #' 			\item{EVALFILE}{["*_eval.csv"] file with evaluation results allEVAL } 
 #' 			\item{SRF.samp}{sample size for SRF, derived from \code{RF.samp} } 
 # 			\item{SRF.cutoff}{[opts$CLS.cutoff] } 
-#'      	\item{rgain.string}{ one out of c("RGain","MeanCA","MinCA","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe"), 
+#'      	\item{rgain.string}{ one out of c("RGain", "MeanCA", "MinCA", "RMAE","RMSE", "MADE", "AreaROC", "AreaLift", "AreaPrRe"), 
 #'                          depending on \code{opts$rgain.type} }
 #'
 #' Here * is the stripped part of \code{opts$filename} (w/o suffix).
@@ -330,7 +325,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
 #' All files and directories in the above settings are relative to dir  \code{opts$dir.output}.
 #'
 #' @seealso  \code{\link{tdmOptsDefaultsSet}}
-#' @author Wolfgang Konen, FHK, Mar'2011 - May'2012
+#' @author Wolfgang Konen, THK
 #' @keywords internal
 #' @export
 ######################################################################################

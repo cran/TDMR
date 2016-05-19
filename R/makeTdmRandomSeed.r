@@ -22,7 +22,7 @@
 #' for (i in 1:10) print(c(as.integer(Sys.time()), tdmRandomSeed()));
 #'
 #' @seealso \code{\link{tdmRandomSeed}}
-#' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@fh-koeln.de}
+#' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@th-koeln.de}
 #' @export
 #' @keywords internal
 makeTdmRandomSeed <- function(ID=0) {
@@ -61,7 +61,7 @@ makeTdmRandomSeed <- function(ID=0) {
 #' for (i in 1:10) print(c(as.integer(Sys.time()), tdmRandomSeed()));
 #'
 #' @seealso \code{\link{makeTdmRandomSeed}}
-#' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@fh-koeln.de}
+#' @author Wolfgang Konen, Patrick Koch \email{wolfgang.konen@@th-koeln.de}
 #' @export
 #
 tdmRandomSeed <- makeTdmRandomSeed();

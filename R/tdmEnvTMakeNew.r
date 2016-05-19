@@ -18,11 +18,12 @@
 #'          sCList[[k]] contains a list \code{opts} as element, which is read from .apd file specified in \code{envT$runList[k]}.  }
 #'
 #' @seealso   \code{\link{tdmBigLoop}}
-#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
+#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), Patrick Koch
 #' @aliases TDMenvir 
 #' @export
 ######################################################################################
 tdmEnvTMakeNew <- function(tdm=NULL) {
+  #tdm$optsPath=tdm$path
   ######################################################################################
   # helper fcts for tdmEnvTMakeNew:
   ######################################################################################
@@ -78,6 +79,7 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
   envT$spotList <- tdm$spotList;
   envT$wP <- ifelse(is.null(tdm$withParams), length(tdm$runList)==1, tdm$withParams)
   if (is.null(tdm$runList)) stop("tdm$runList is NULL");
+  if (is.null(tdm$optsPath)) tdm$optsPath="./"
   if (length(unique(tdm$runList)) != length(tdm$runList)) {
     stop(paste("There are duplicates in tdm$runList. Please remove them:\n   ",paste(tdm$runList,collapse=" ")));
 #    print(tdm$runList);
@@ -112,6 +114,7 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
 		  stop(sprintf("%s does not define the required object opts.",pdFile));
     if (class(opts)[1]!="tdmOpts") 
       warning("Object opts is not of class tdmOpts. Consider constructing opts with tdmOptsDefaultsSet().");
+    #opts$path=tdm$optsPath;
     #if (tdm$parallelCPUs>1 & sC$spot.fileMode) {
     #  warning(sprintf("%s: Should not have spot.fileMode==TRUE in parallel execution. spot.fileMode is set to FALSE.",confFile));
     #  envT$sCList[[k]]$spot.fileMode=FALSE;
@@ -150,12 +153,12 @@ tdmEnvTMakeNew <- function(tdm=NULL) {
 #' @param tdm   a list with general settings for TDMR (can be envT$tdm)  
 #'
 #' @return modified environment \code{envT},  an object of class \code{\link{TDMenvir}},  where the items
-#'      \item{\code{sCList[[k]]$opts}}{ \code{=tdm$runList}  }
-#' are modefied        
+#'      \code{envT$sCList[[k]]$opts} are modified for all \code{k}        
 #'
 #' @seealso   \code{\link{tdmEnvTMakeNew}}
-#' @author Wolfgang Konen (\email{wolfgang.konen@@fh-koeln.de}), Patrick Koch
+#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), Patrick Koch
 #' @export
+#' @keywords internal
 ######################################################################################
 tdmEnvTReadApd <- function(envT,tdm) {
   k=0;
@@ -194,10 +197,10 @@ tdmEnvTReadApd <- function(envT,tdm) {
 checkOpts <- function(opts) {
   availNames = c("APPLY_TIME","CLS.CLASSWT","CLS.cutoff","CLS.gainmat","data.title","dir.data","dir.output","dir.Rdata"
                 ,"dir.txt","DO.GRAPHICS","DO.POSTPROC","EVALFILE","fct.postproc","fileMode","filename","filesuffix","filetest"
-                ,"GD.CLOSE","GD.DEVICE","GD.PNGDIR","GD.RESTART","LOGFILE","logFile","MOD.method","MOD.SEED","ncopies","NRUN","PDFFILE"
+                ,"GD.CLOSE","GD.DEVICE","GD.PNGDIR","GD.RESTART","gr.log","LOGFILE","logFile","MOD.method","MOD.SEED","ncopies","NRUN","OCUT","PDFFILE"
                 ,"PRE.allNonVali","PRE.knum","PRE.MaxLevel","PRE.PCA","PRE.PCA.npc","PRE.PCA.REPLACE","PRE.SFA","PRE.SFA.doPB"
-                ,"PRE.SFA.fctPB","PRE.SFA.npc","PRE.SFA.ODIM","PRE.SFA.PPRANGE","PRE.SFA.REPLACE","PRE.Xpgroup","READ.CMD","READ.INI"
-                ,"READ.NROW","READ.TST","READ.TXT","rep","RF.mtry","RF.mtry","RF.nodesize","RF.ntree","RF.OOB","RF.p.all","RF.samp"
+                ,"PRE.SFA.fctPB","PRE.SFA.npc","PRE.SFA.ODIM","PRE.SFA.PPRANGE","PRE.SFA.REPLACE","PRE.Xpgroup","READ.INI"
+                ,"READ.NROW","READ.TXT","READ.TrnFn","READ.TstFn","rep","RF.mtry","RF.mtry","RF.nodesize","RF.ntree","RF.OOB","RF.p.all","RF.samp"
                 ,"rgain.string","rgain.type","srf","SRF.calc","SRF.cutoff","SRF.kind","SRF.maxS","SRF.method","SRF.minlsi","SRF.ndrop"
                 ,"SRF.nkeep","SRF.ntree","SRF.samp","SRF.scale","SRF.verbose","SRF.XPerc","srfFile","SVM.coef0","SVM.cost","SVM.degree","SVM.epsilon"
                 ,"SVM.gamma","SVM.kernel","SVM.tolerance","ADA.coeflearn","ADA.mfinal","ADA.rpart.minsplit","test2.show","test2.string"
@@ -262,6 +265,34 @@ tdmEnvTLoad <- function(fileRData) {
   load(fileRData); # loads envT
   envT <- tdmEnvTAddGetters(envT);
   class(envT) <- c("TDMenvir","environment");
+  envT;
+}
+
+######################################################################################
+#  tdmEnvTGetOpts:
+#' Return list opts from the \code{k}-th \code{.conf}-file
+#'
+#' @param   envT environment TDMR
+#' @param   k    [1] index 1,...,length(envT$runList)
+#' @return  opts
+#' @export
+######################################################################################
+tdmEnvTGetOpts <- function(envT,k=1) {
+  envT$sCList[[k]]$opts;
+}
+
+######################################################################################
+#  tdmEnvTSetOpts:
+#' Set list opts for the \code{k}-th \code{.conf}-file
+#'
+#' @param   envT environment TDMR
+#' @param   opts list of options
+#' @param   k    [1] index 1,...,length(envT$runList)
+#' @return  envT
+#' @export
+######################################################################################
+tdmEnvTSetOpts <- function(envT,opts,k=1) {
+  envT$sCList[[k]]$opts <- opts;
   envT;
 }
 
@@ -370,8 +401,8 @@ tdmEnvTSensi <- function(envT,ind) {
   
   time.txt = c("Proc", "System", "Elapsed");
   if (is.null(tdm$timeMode)) stop("tdm$timeMode is not set (NULL). Consider 'tdm <- tdmDefaultsFill(tdm)' to set all defaults");
-  time.TRN=(proc.time()-ptm)[tdm$timeMode]; opts=list(); opts$VERBOSE=1;  
-  cat1(opts,paste(time.txt[tdm$timeMode], "time for tuning with tdmDispatchTuner:",time.TRN,"sec\n"));     
+  envT$time.TRN=(proc.time()-ptm)[tdm$timeMode]; opts=list(); opts$VERBOSE=1;  
+  cat1(opts,paste(time.txt[tdm$timeMode], "time for tuning with tdmDispatchTuner:",envT$time.TRN,"sec\n"));     
 
   ptm <- proc.time();
   finals <- NULL;
@@ -393,7 +424,7 @@ tdmEnvTSensi <- function(envT,ind) {
       }
       time.TST=(proc.time()-ptm)[tdm$timeMode];   
       cat1(opts,paste(time.txt[tdm$timeMode], "time for",tdm$unbiasedFunc,":",time.TST,"sec\n"));   
-      finals <- cbind(finals,Time.TST=time.TST,Time.TRN=time.TRN);        
+      finals <- cbind(finals,Time.TST=time.TST);        
       flush.console(); 
   } # if(tdm$nrun>0)
    

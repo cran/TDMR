@@ -9,6 +9,13 @@
 # Example usage:
 #       result <- main_sonar();
 #
+readCmdSonar <- function(filename,opts) {
+  read.csv2(file=paste(opts$dir.data, filename, sep=""), dec=".", sep=",", nrow=opts$READ.NROW,header=FALSE);
+}
+readTrnSonar <- function(opts) {
+  read.csv2(file=paste(opts$dir.data, opts$filename, sep=""), dec=".", sep=",", nrow=opts$READ.NROW,header=FALSE);
+}
+
 main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {          
 
     if (is.null(opts)) source("sonar_00.apd", local=TRUE);
@@ -21,10 +28,11 @@ main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {
     #===============================================
     if (is.null(dset)) {
       cat1(opts,opts$filename,": Read data ...\n")
-      dset <- tdmReadData(opts);
+      dset <- tdmReadData2(opts);
     }
     names(dset)[61] <- "Class"
-
+    if (!is.null(tset)) names(tset)[61] <- "Class"
+    
     # alternative way (but this requires mlbench):
     #require(mlbench); data(Sonar);      # 60 columns V1,...,V60 with input data, 
     #dset <- Sonar;                      # one response column "Class" with levels ["M" (metal) | "R" (rock)] 
@@ -47,10 +55,6 @@ main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {
     tdmGraAndLogFinalize(opts,gdObj);      # close graphics and log file
     
     result;  
-}
-
-readCmdSonar <- function(filename,opts) {
-  read.csv2(file=paste(opts$dir.data, filename, sep=""), dec=".", sep=",", nrow=opts$READ.NROW,header=FALSE);
 }
 
 #result = main_sonar() 

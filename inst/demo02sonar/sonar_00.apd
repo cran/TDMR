@@ -5,6 +5,7 @@
 
       opts = tdmOptsDefaultsSet();    
       opts$dir.data <- "data/";
-      opts$filename = "sonar.txt"
-      opts$READ.CMD = "readCmdSonar(filename,opts)"     
+      opts$filename <- "sonar.txt"
+      opts$READ.TrnFn <- readTrnSonar
+      opts$NRUN <- 1
       opts$data.title <- "Sonar Data"

@@ -142,6 +142,9 @@ tdmMapOpts <- function(umode,opts,tdm)
 {
     tdm <- tdmDefaultsFill(tdm);      # fill in default values if they are not yet set
     
+    # Now (July'2015) only branch setOpts.RSUB should be used.
+    # The others are deprecated (only for downward compatibility)
+    
     setOpts.RSUB <- function(opts) {
       opts$TST.kind <- "rand" # select test set by random subsampling, see tdmModCreateCVindex in tdmModelingUtils.r
       opts$TST.valiFrac=tdm$TST.testFrac # set this fraction of data aside for testing 
@@ -149,8 +152,6 @@ tdmMapOpts <- function(umode,opts,tdm)
     } 
     setOpts.TST <- function(opts) {
       opts$TST.kind <- "col"  # select test set from column TST.COL, see tdmModCreateCVindex in tdmModelingUtils.r
-      opts$READ.TST = T       # =T: read in extra unseen test data 
-                              # and fill column dset[,opts$TST.COL] accordingly (1 for test records) 
       if (!is.null(tdm$U.trnFrac)) 
         opts$TST.trnFrac=tdm$U.trnFrac  # Use only this fraction of the TrainVa-data for training (even when opts$TST.kind="col").
                                         # If tdm$U.trnFrac is NULL, then tdmModCreateCVindex uses all TrainVa-data for training.
@@ -160,7 +161,6 @@ tdmMapOpts <- function(umode,opts,tdm)
     setOpts.CV <- function(opts) {
       opts$TST.kind <- "cv"       # select test data by CV, see tdmModCreateCVindex in tdmModelingUtils.r
       opts$TST.NFOLD = tdm$nfold  # number of CV-folds 
-      opts$READ.TST = F           # =F: do not read in extra unseen test data 
       opts;
     } 
     setOpts.SP_T <- function(opts) {

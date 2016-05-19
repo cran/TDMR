@@ -33,15 +33,18 @@ tdmStartSpot <- function(spotConfig) {
     if (!is.list(spotConfig)) stop("Error: spotConfig is not a list");
     if (is.null(spotConfig$opts)) stop("Error: spotConfig does not contain an element 'opts'");
     if (is.null(spotConfig$tdm)) stop("Error: spotConfig does not contain an element 'tdm'");
-    if (is.null(spotConfig$tdm$fileMode)) spotConfig$tdm$fileMode <- TRUE;
+  	if (is.null(spotConfig$tdm$fileMode)) spotConfig$tdm$fileMode <- TRUE;
         # This default setting is useful to allow a simpler TDM-Phase-2 call (with tdm$fileMode not def'd).
         # However, tdm has to specify the mandatory setting tdm$mainFunc (optionally: tdm$mainFile)
-    tdm <- spotConfig$tdm;
+  	if (is.null(spotConfig$nExp)) spotConfig$nExp <- 1;
+  	tdm <- spotConfig$tdm;
     opts <- spotConfig$opts;
 
 #f <- function() {browser()    }; f();   # make a browser stop w/o printing the whole spotConfig on console
 
-    dset <- switch(as.character(is.null(spotConfig$dataObj)),"TRUE"=NULL,"FALSE"=dsetTrnVa(spotConfig$dataObj));    
+    dset <- switch(as.character(is.null(spotConfig$dataObj))
+                   ,"TRUE"=NULL
+                   ,"FALSE"=dsetTrnVa(spotConfig$dataObj,spotConfig$nExp));    
     # If dset is not NULL, this has an effect on mainCommand which contains "...,dset=dset".
     # If dset is NULL, the data reading is deferred to main_TASK (deprecated).
 

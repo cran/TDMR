@@ -3,13 +3,13 @@
 ## set the basic elements of list opts for task cpu. See ?tdmOptsDefaultsSet
 ## for a complete list of all default settings and many explanatory comments
 
-      opts = tdmOptsDefaultsSet();         # set initial defaults for many elements of opts.
+      opts = tdmOptsDefaultsSet();    # set initial defaults for many elements of opts.
       
       directory <- "./"
       opts$dir.data <- paste(directory, "data/", sep="")
       opts$dir.output <- paste(directory, "Output/", sep="")
       opts$filename = "cpu.csv"
-      opts$READ.CMD = "readCmdCpu(filename,opts)"         # def'd in main_cpu.r
+      opts$READ.TrnFn = readTrnCpu    # def'd in main_cpu.r
       opts$TST.valiFrac=0.2   # set this fraction of data aside for validation (only for DO.CV=F)
       opts$TST.SEED = NULL    # [NULL] a seed for the random test set selection
       opts$SRF.kind = "ndrop"
