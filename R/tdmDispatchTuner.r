@@ -10,8 +10,8 @@ require(SPOT);
 #'     See the 'Details' section of \code{\link{tdmBigLoop}} for a list of available tuners.
 #'
 #' @param tuneMethod the tuning algorithm given as a string. Possible values are \{ "spot" | "lhd" | "cmaes" | "cma_j" | "bfgs" | "powell" \}.
-#' @param confFile the configuration file.
-#' @param spotStep which step to execute for \link{SPOT} . Values "rep" ("report") and "auto" are supported by TDMR.
+#' @param confFile the configuration name.
+#' @param spotStep --DEPRECATED-- SPOT 2.0 supports only spotStep="auto".
 #' @param tdm the TDMR object
 #' @param envT the environment variable
 #' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
@@ -28,20 +28,18 @@ require(SPOT);
 #'         \item \code{envT$bst  } the BST data frame
 #'      }
 #' @seealso   \code{\link{tdmBigLoop}}
-#' @author Wolfgang Konen, FHK, 2010 - 2013
+#' @author Wolfgang Konen, THK, 2018
 #' @export
 #' @keywords internal
 ###########################################################################################
 tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
 {
     theSpotPath=tdm$theSpotPath
-    if (spotStep=="auto") {
+    #if (spotStep=="auto") {
       #if (is.null(tdm$mainFile)) stop("Element tdm$mainFile is missing, but this is required for spotStep='auto'");
       if (is.null(tdm$mainFunc)) stop("Element tdm$mainFunc is missing, but this is required for spotStep='auto'");
       sC <- envT$spotConfig
-      testit::assert(sprintf("ROI file %s does not exist.",sC$io.roiFileName),
-                     if (any(is.na(sC$alg.roi))) {file.exists(sC$io.roiFileName)} else {TRUE} )
-    }   
+    #}   
     if (!is.null(envT$spotConfig$alg.currentBest)) {
       # Fix for upgading older BST data frames to the new SPOT version (V1.0.2662): 
       # A BST data frame now has to have a column STEP, otherwise a crash in spotWriteBest (spotHelpFunctions.R) will occur.  
@@ -50,13 +48,14 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
         envT$spotConfig$alg.currentBest <- cbind(envT$spotConfig$alg.currentBest,STEP=(1:nrow(envT$spotConfig$alg.currentBest)));
       }
     }
-    if (tdm$fileMode==FALSE) confFile="NULL";      # everything is passed to spot() via envT$spotConfig
+    #if (tdm$fileMode==FALSE) 
+      confFile="NULL";      # everything is passed to spot() via envT$spotConfig
     
     tunerVal = switch(spotStep
-      ,"rep"=,"report"= spot(confFile,spotStep,theSpotPath,envT$spotConfig)
+      #,"rep"=,"report"= spot(confFile,spotStep,theSpotPath,envT$spotConfig)
       ,"auto"= switch(tuneMethod
-                ,"spot" = spotTuner(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
-                ,"lhd" = lhdTuner(confFile,spotStep,theSpotPath,tdm,envT,dataObj) 
+                ,"spot" = spotTuner(confFile,theSpotPath,tdm,envT,dataObj)
+                ,"lhd" = lhdTuner(confFile,theSpotPath,tdm,envT,dataObj) 
                 ,"cmaes" = cmaesTuner(confFile,tdm,envT,dataObj)
                 #,"mies" = miesTuner(confFile,tdm,envT,dataObj)  
                 ,"cma_j" = cma_jTuner(confFile,tdm,envT,dataObj) 
@@ -75,16 +74,18 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
     }
     tunerVal$dataObj = NULL;     # delete this potential voluminous element
 
-    if (!(tuneMethod %in% c("spot","lhd"))) {
-      # Bug fix 05/12:        
-      # When tuning via tdmStartOther terminates, there might have been last calls to tdmStartOther which have not
-      # yet been processed for the BST data frame (or this data frame may not have been constructed yet).
-      # So we compute again, based on tunerVal$alg.currentResult, the so far best solution (merge repeats), 
-      # and write a line to the BST data frame tunerVal$alg.currentBest.
-    	mergedData <- spotPrepareData(tunerVal)
-      tunerVal <- spotWriteBest(mergedData, tunerVal);	# appends the best solution to tunerVal$alg.currentBest
-  		envT$bst <- tunerVal$alg.currentBest;  
-    }
+    #--- WK/01/2018: questionable if we need this still with SPOT 2.0
+  #   if (!(tuneMethod %in% c("spot","lhd"))) {
+  #     # Bug fix 05/12:        
+  #     # When tuning via tdmStartOther terminates, there might have been last calls to tdmStartOther which have not
+  #     # yet been processed for the BST data frame (or this data frame may not have been constructed yet).
+  #     # So we compute again, based on tunerVal$alg.currentResult, the so far best solution (merge repeats), 
+  #     # and write a line to the BST data frame tunerVal$alg.currentBest.
+  #     tunerVal <- tdmPrepareData(tunerVal);	# appends the best solution to tunerVal$alg.currentBest
+  #     #mergedData <- spotPrepareData(tunerVal)              # old version TDMR 1.0
+  #     #tunerVal <- spotWriteBest(mergedData, tunerVal);	
+  # 		envT$bst <- tunerVal$alg.currentBest;  
+  #   }
 
     envT$tunerVal = tunerVal;
     tunerVal;
@@ -96,7 +97,6 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
 #' \code{spotTuner} calls \code{\link{spot}} and write the necessary information on environment \code{envT}.
 #'
 #' @param confFile task configuration for tuning algorithm
-#' @param spotStep needed for spot
 #' @param theSpotPath needed for spot
 #' @param tdm the TDMR object
 #' @param envT the environment variable
@@ -110,22 +110,25 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
 #' @export
 #' @keywords internal
 ######################################################################################
-spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
+spotTuner <- function(confFile,theSpotPath,tdm,envT,dataObj)
 {
     sC <- envT$spotConfig;
-    #sC$alg.func <- "tdmStartSpot";
     #sC$spot.fileMode = TRUE; 
     sC$tdm <- tdm;              # needed for tdm$mainFile, tdm$mainFunc, tdm$fileMode
     sC$alg.currentResult <- NULL;
     sC$dataObj <- dataObj;
+    roiLower <- sC$alg.roi[,1];
+    roiUpper <- sC$alg.roi[,2];
+    
+    spotControl <- mapConf2Ctrl(sC);
+    
+    spotRes <- spot(,tdmStartSpot2,roiLower,roiUpper,control=spotControl,tdm,envT,dataObj);
+    # spot calls tdmStartSpot2 and tdmStartSpot2 appends to data frames 
+    # envT$spotConfig$alg.currentResult, ...$alg.mergedData and ...$alg.currentBest .
+    envT$res <- sC$alg.currentResult <- envT$spotConfig$alg.currentResult;
+    envT$bst <- sC$alg.currentBest <- envT$spotConfig$alg.currentBest;
+    envT$spotRes <- spotRes;
 
-    sC <- spot(confFile,spotStep,theSpotPath,sC);
-    # spot calls tdmStartSpot. 
-    # tdmStartSpot reads opts from sC$opts, dataObj from sC$dataObj (it takes only the train-validation part), 
-    # and writes sC$alg.currentResult
-
-    envT$res <- sC$alg.currentResult;
-    envT$bst <- sC$alg.currentBest;	
     sC;
 }
 
@@ -137,7 +140,6 @@ spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 #' in such a way that all the budget is used for the initial design (usually LHD).
 #' 
 #' @param confFile task configuration for tuning algorithm
-#' @param spotStep needed for spot
 #' @param theSpotPath needed for spot
 #' @param tdm the TDMR object
 #' @param envT the environment variable
@@ -148,7 +150,7 @@ spotTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
 #' @export
 #' @keywords internal
 ######################################################################################
-lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
+lhdTuner <- function(confFile,theSpotPath,tdm,envT,dataObj)
 {
     #if (tdm$fileMode==FALSE) {
     #  envT$spotConfig$spot.fileMode=FALSE;
@@ -158,27 +160,70 @@ lhdTuner <- function(confFile,spotStep,theSpotPath,tdm,envT,dataObj)
     sC <- envT$spotConfig;
     sC$tdm <- tdm;              # needed for tdm$mainFile, tdm$mainFunc, tdm$fileMode
     sC$alg.currentResult <- NULL;
+    #sC$seq.design.maxRepeats <- sC$replicates;
+    roiLower <- sC$alg.roi[,1];
+    roiUpper <- sC$alg.roi[,2];
+    
+    fncall1 = sC$funEvals;
+    # fncall2 = sC$auto.loop.steps* sC$seq.design.new.size* sC$seq.design.maxRepeats +
+    #           sC$init.design.size* sC$init.design.repeats  +
+    #          (sC$seq.design.maxRepeats- sC$init.design.repeats);
+    # new.nevals = min(fncall1,fncall2); 
+    new.nevals = fncall1;
+    #sC$auto.loop.steps = 0;
+    sC$designControl.size = round(new.nevals/sC$designControl.replicates) - 1;
+            ## Why "- 1"? - spot needs to run at least once through the modelling part, 
+            ## otherwise an error will occur
+    #sC$init.design.repeats = sC$seq.design.maxRepeats;
+    #sC$dataObj <- dataObj;
 
-    fncall1 = sC$auto.loop.nevals;
-    fncall2 = sC$auto.loop.steps* sC$seq.design.new.size* sC$seq.design.maxRepeats +
-              sC$init.design.size* sC$init.design.repeats  +
-             (sC$seq.design.maxRepeats- sC$init.design.repeats);
-    new.nevals = min(fncall1,fncall2); 
-    #sC$alg.func = "tdmStartSpot";
-    sC$auto.loop.steps = 0;
-    sC$init.design.size = round(new.nevals/sC$seq.design.maxRepeats);
-    sC$init.design.repeats = sC$seq.design.maxRepeats;
-    sC$dataObj <- dataObj;
+    spotControl <- mapConf2Ctrl(sC);
+    
+    spotRes <- spot(,tdmStartSpot2,roiLower,roiUpper,control=spotControl,tdm,envT,dataObj);
+    # spot calls tdmStartSpot2 and tdmStartSpot2 appends to data frames 
+    # envT$spotConfig$alg.currentResult, ...$alg.mergedData and ...$alg.currentBest .
+    envT$res <- sC$alg.currentResult <- envT$spotConfig$alg.currentResult;
+    envT$bst <- sC$alg.currentBest <- envT$spotConfig$alg.currentBest;
+    envT$spotRes <- spotRes;
 
-    sC <- spot(confFile,spotStep,theSpotPath,sC);
-    # spot calls tdmStartSpot. 
-    # tdmStartSpot reads opts from sC$opts, dataObj from sC$dataObj, and writes sC$alg.currentResult
-
-    envT$res <- sC$alg.currentResult;
-    envT$bst <- sC$alg.currentBest;	
     sC;
 }
 
+# Map the spotConfig object to the control object needed by SPOT 2.0
+mapConf2Ctrl <- function(sC) {
+  d=data.frame(replace=c("numeric","integer","factor"),
+               name=c("FLOAT","INT","FACTOR"))
+  control <- list();
+  control$types = as.vector(d$replace[match(sC$alg.roi$type, d$name)] )
+  control$funEvals = sC$funEvals;
+  control$replicates = sC$replicates;
+  control$OCBA = sC$OCBA;
+  control$seedSPOT = sC$seedSPOT;
+  control$noise = sC$noise;
+  control$plots = sC$plots;
+  control$design = sC$design;
+  control$designControl = list(
+    size = sC$designControl.size,
+    replicates = sC$designControl.replicates
+  );
+  control$model = sC$model;     
+  control$modelControl <- list(
+    useLambda = sC$modelControl.useLambda
+  );
+  control$optimizerControl <- list(
+    funEvals = sC$optimizerControl.funEvals,
+    retries = sC$optimizerControl.retries
+  );
+  
+  if (!control$noise && control$replicates>1)
+    warning(sprintf("control$noise==FALSE, but control$replicates>1.         \n  %s ",
+                    "Consider to set noise==TRUE if you want more than one replicate to be effective.\n"));
+  if (control$replicates != control$designControl$replicates)
+    warning(sprintf("control$replicates(%d) != control$designControl$replicates(%d). \n  %s ",
+                     control$replicates, control$designControl$replicates,
+                    "Consider to set designControl$replicates to the same value as replicates.\n"));
+  control;
+}
 
 ######################################################################################
 #' Perform CMA-ES tuning (R version). 
@@ -205,16 +250,17 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
     # require(cmaes)      # now via direct call 'cmaes::' 
     envT$spotConfig$alg.currentResult <- NULL;    
     sC <- envT$spotConfig;
+    #sC$seq.design.maxRepeats <- sC$replicates;
     roiLower <- sC$alg.roi[,1];
     roiUpper <- sC$alg.roi[,2];
-    set.seed(sC$spot.seed);
+    set.seed(sC$seedSPOT);
     param <- runif(length(roiLower),roiLower,roiUpper);#/2;    # start configuration
-    if (tdm$fileMode) {
-      tdm$resFile <-  sC$io.resFileName;   
-      tdm$bstFile <-  sC$io.bstFileName;   
-      if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
-      if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
-    }
+    # if (tdm$fileMode) {
+    #   tdm$resFile <-  sC$io.resFileName;   
+    #   tdm$bstFile <-  sC$io.bstFileName;   
+    #   if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
+    #   if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
+    # }
 
     fitFunc <- function(x, opts=NULL) {
       ## tdmStartOther returns the fitness (mean(yres)) and saves other
@@ -225,12 +271,14 @@ cmaesTuner <- function(confFile,tdm,envT,dataObj)
     #if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
     #  tdmStartOther = tdm$startOtherFunc;
 
-    fncall1 = sC$auto.loop.nevals;
-    fncall2 = sC$auto.loop.steps* sC$seq.design.new.size* sC$seq.design.maxRepeats 
-            + sC$init.design.size* sC$init.design.repeats;
-            + (sC$seq.design.maxRepeats- sC$init.design.repeats);
+    fncall1 = sC$funEvals;
+    # fncall2 = sC$auto.loop.steps* sC$seq.design.new.size* sC$seq.design.maxRepeats 
+    #         + sC$init.design.size* sC$init.design.repeats;
+    #         + (sC$seq.design.maxRepeats- sC$init.design.repeats);
+    # new.nevals = min(fncall1,fncall2); 
+    new.nevals = fncall1;
     control = list(mu=4,lambda=4);
-    control$maxit=min(fncall1,fncall2)/sC$seq.design.maxRepeats/control$lambda;
+    control$maxit=new.nevals/sC$replicates/control$lambda;
     # Be aware, that control$lambda (# of offsprings) controls the # of fct calls, 
     # NOT control$mu. The number of calls to tdmStartOther will be N=ceiling(control$maxit)*control$lambda, 
     # the number of calls to the DM training fct main_TASK will be N*sC$seq.design.maxRepeats.
@@ -296,12 +344,12 @@ cma_jInternRCma <- function(tdm,envT,dataObj) {
     roiLower <- sC$alg.roi[,1];
     roiUpper <- sC$alg.roi[,2];
     if (!(length(roiLower)==length(roiUpper))) stop("Length of roiLower and roiUpper differ");
-    set.seed(sC$spot.seed);
+    set.seed(sC$seedSPOT);
     initialX <- runif(length(roiLower),roiLower,roiUpper);#/2;    # initial point (mean for population)
     stdDevs <- (roiUpper-roiLower)/10;                            # initial standard deviations
     
-    ## we assume that sC$auto.loop.nevals is the limiting factor in SPOT tuning
-    stopMaxFunEvals = sC$auto.loop.nevals/sC$seq.design.maxRepeats;           
+    ## we assume that sC$funEvals is the limiting factor in SPOT tuning
+    stopMaxFunEvals = sC$funEvals/sC$replicates;           
 
     fitFunc <- function(x) {
         ## tdmStartCma_j (see tdmStartOther.r) returns the fitness (mean(yres)) and 
@@ -321,7 +369,7 @@ cma_jInternRCma <- function(tdm,envT,dataObj) {
     }
     rCMA::cmaSetStopMaxFunEvals(cma,stopMaxFunEvals);
     rCMA::cmaSetStopFitness(cma,-1e300);  # never stop due to fitness function value
-    rCMA::cmaInit(cma,seed=sC$spot.seed,dimension=length(initialX),initialX=initialX, initialStandardDeviations=stdDevs);
+    rCMA::cmaInit(cma,seed=sC$seedSPOT,dimension=length(initialX),initialX=initialX, initialStandardDeviations=stdDevs);
     res1 = rCMA::cmaOptimDP(cma,fitFunc,isFeasible,verbose=2,iterPrint=1);
     bestSolution=rCMA::cmaEvalMeanX(cma,fitFunc,isFeasible);
 
@@ -374,12 +422,12 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
     roiLower <- sC$alg.roi[,1];
     roiUpper <- sC$alg.roi[,2];
   
-    if (tdm$fileMode) {
-      tdm$resFile <-  sC$io.resFileName;   
-      tdm$bstFile <-  sC$io.bstFileName;   
-      if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
-      if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
-    }
+    # if (tdm$fileMode) {
+    #   tdm$resFile <-  sC$io.resFileName;   
+    #   tdm$bstFile <-  sC$io.bstFileName;   
+    #   if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
+    #   if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
+    # }
   
     fitFunc <- function(x,opts=NULL) {
       ## tdmStartOther returns the fitness (mean(yres)) and saves other
@@ -393,7 +441,7 @@ powellTuner <- function(confFile,tdm,envT,dataObj){
 
     param <- (roiLower+roiUpper)/2;    # start configuration
   
-    maxEvaluations = sC$auto.loop.nevals/sC$seq.design.maxRepeats;
+    maxEvaluations = sC$funEvals/sC$replicates;
 
     resPowell <- powell::powell(param, fn=fitFunc, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
     # powell calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
@@ -435,12 +483,12 @@ bfgsTuner <- function(confFile,tdm,envT,dataObj){
     roiUpper <- sC$alg.roi[,2];
     param <- runif(length(roiLower), min=roiLower, max=roiUpper) # create start vector generating uniformly randomized vector
      
-    if (tdm$fileMode) {
-      tdm$resFile <-  sC$io.resFileName;   
-      tdm$bstFile <-  sC$io.bstFileName;   
-      if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
-      if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
-    }
+    # if (tdm$fileMode) {
+    #   tdm$resFile <-  sC$io.resFileName;   
+    #   tdm$bstFile <-  sC$io.bstFileName;   
+    #   if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
+    #   if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
+    # }
   
     fitFunc <- function(x, opts=NULL) {
       ## tdmStartOther returns the fitness (mean(yres)) and saves other
@@ -453,7 +501,7 @@ bfgsTuner <- function(confFile,tdm,envT,dataObj){
 
     tdm$roi <- sC$alg.roi;
   
-    maxEvaluations = sC$auto.loop.nevals/sC$seq.design.maxRepeats;
+    maxEvaluations = sC$funEvals/sC$replicates;
     maxEvaluations = round(maxEvaluations);
 
     bfgs <- optim(par=param, fn=fitFunc, gr=NULL, method="L-BFGS-B", lower=roiLower, upper=roiUpper, control=list(maxit=maxEvaluations), opts=sC$opts)
@@ -469,6 +517,21 @@ bfgsTuner <- function(confFile,tdm,envT,dataObj){
     tunerVal$bfgs = bfgs;
     tunerVal$bfgs$count=nrow(envT$res);
     tunerVal;  
+}
+
+######################################################################################
+# tdmPrepareData is the new replacement for spotPrepareData + spotWriteBest 
+tdmPrepareData <- function(spotConfig) {
+  rawData=spotConfig$alg.currentResult;
+  # remove the columns which change over replicates:
+  rawData=rawData[,setdiff(names(rawData),c("REP","SEED"))];
+  mergedData <- stats::aggregate(Y~.,data=rawData,FUN=spotConfig$seq.merge.func);
+  ## here comes the former spotWriteBest part
+  C <- data.frame(mergedData[order(mergedData$Y,decreasing=FALSE),,drop=FALSE]);
+  best <-  C[1,,drop=FALSE];
+  spotConfig$alg.currentBest=rbind(spotConfig$alg.currentBest,best); 
+  spotConfig$alg.mergedData <- mergedData;
+  spotConfig;
 }
 
 

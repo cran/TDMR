@@ -4,12 +4,10 @@
 \alias{lhdTuner}
 \title{Perform LHD tuning.}
 \usage{
-lhdTuner(confFile, spotStep, theSpotPath, tdm, envT, dataObj)
+lhdTuner(confFile, theSpotPath, tdm, envT, dataObj)
 }
 \arguments{
 \item{confFile}{task configuration for tuning algorithm}
-
-\item{spotStep}{needed for spot}
 
 \item{theSpotPath}{needed for spot}
 
@@ -28,4 +26,3 @@ for obtaining best design points. LHD is performed by configuring SPOT
 in such a way that all the budget is used for the initial design (usually LHD).
 }
 \keyword{internal}
-

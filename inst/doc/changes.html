@@ -1,41 +1,114 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN">
 <html>
 
 <head>
+<meta http-equiv=Content-Type content="text/html; charset=us-ascii">
+<meta name=Generator content="Microsoft Word 15 (filtered)">
 <title>Changes TDMR</title>
+<style>
+<!--
+ /* Font Definitions */
+ @font-face
+	{font-family:"Cambria Math";
+	panose-1:2 4 5 3 5 4 6 3 2 4;}
+ /* Style Definitions */
+ p.MsoNormal, li.MsoNormal, div.MsoNormal
+	{margin:0cm;
+	margin-bottom:.0001pt;
+	font-size:12.0pt;
+	font-family:"Times New Roman",serif;}
+h1
+	{mso-style-link:"\00DCberschrift 1 Zchn";
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:24.0pt;
+	font-family:"Times New Roman",serif;}
+h2
+	{mso-style-link:"\00DCberschrift 2 Zchn";
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:18.0pt;
+	font-family:"Times New Roman",serif;}
+a:visited, span.MsoHyperlinkFollowed
+	{color:purple;
+	text-decoration:underline;}
+p.MsoListParagraph, li.MsoListParagraph, div.MsoListParagraph
+	{margin-right:0cm;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Times New Roman",serif;}
+p.msonormal0, li.msonormal0, div.msonormal0
+	{mso-style-name:msonormal;
+	margin-right:0cm;
+	margin-left:0cm;
+	font-size:12.0pt;
+	font-family:"Times New Roman",serif;}
+span.berschrift1Zchn
+	{mso-style-name:"\00DCberschrift 1 Zchn";
+	mso-style-link:"\00DCberschrift 1";
+	font-family:"Calibri Light",sans-serif;
+	color:#2E74B5;}
+span.berschrift2Zchn
+	{mso-style-name:"\00DCberschrift 2 Zchn";
+	mso-style-link:"\00DCberschrift 2";
+	font-family:"Calibri Light",sans-serif;
+	color:#2E74B5;}
+.MsoChpDefault
+	{font-size:10.0pt;}
+@page WordSection1
+	{size:595.3pt 841.9pt;
+	margin:70.85pt 70.85pt 2.0cm 70.85pt;}
+div.WordSection1
+	{page:WordSection1;}
+-->
+</style>
+
 </head>
 
-<body lang=EN-US>
+<body lang=DE link="#000000" vlink=purple>
 
 <div class=WordSection1>
 
 <h1><span lang=EN-US>Changes TDMR package</span></h1>
 
-<h2><span lang=EN-US>V 1.4 – 22.05.2016</span></h2>
+<h2><span lang=EN-US>V 2.0 - 01.05.2018</span></h2>
 
-<p class=MsoNormal><span lang=EN-US>TDMR-docu and TDMR-tutorial improved: many items
-formulated less complicate, new figures and updated tables.</span></p>
+<p class=MsoNormal><span lang=EN-US>TDMR completely redesigned to be simpler
+and work together with SPOT 2.0. Removed spotStep, finalFile, experFile.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>TDMR-tutorial: new 
-Lesson 9 on how to tune with fewer data, and finally re-train with 
-the full data set.</span></p>
+<p class=MsoNormal><span lang=EN-US>All files of type .apd, .conf, .roi are now
+obsolete, we have now everything packed in functions controlDM, controlSC in
+source code. New Appendix D in TDMR-docu on elements of ctrlSC.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>TDMR-docu and TDMR-tutorial completely rewritten
+and simplified. Former Lesson 6 (tdmPlotResMeta) removed, since the appropriate
+functions are no longer in SPOT 2.0. </span></p>
+
+<p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
+
+<h2><span lang=EN-US>V 1.4 - 22.05.2016</span></h2>
+
+<p class=MsoNormal><span lang=EN-US>TDMR-docu and TDMR-tutorial improved: many
+items formulated less complicate, new figures and updated tables.</span></p>
+
+<p class=MsoNormal><span lang=EN-US>TDMR-tutorial: new Lesson 9 on how to tune
+with fewer data, and finally re-train with the full data set.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Made data flow more straightforward. New
 function tdmTuneIt.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Simplified data-reading logic: Eliminated opts$READ.CMD
-and opts$READ.TST in favor of opts$READ.TrnFn and opts$ReadTstFn.</span></p>
+<p class=MsoNormal><span lang=EN-US>Simplified data-reading logic: Eliminated
+opts$READ.CMD and opts$READ.TST in favor of opts$READ.TrnFn and opts$ReadTstFn.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Improved docu on tdmSplitTestData and simplified
-data-splitting logic.</span></p>
+<p class=MsoNormal><span lang=EN-US>Improved docu on tdmSplitTestData and
+simplified data-splitting logic.</span></p>
 
-<h2><span lang=EN-US>V 1.3 – 20.04.2015</span></h2>
+<h2><span lang=EN-US>V 1.3 - 20.04.2015</span></h2>
 
 <p class=MsoNormal><span lang=EN-US>TDMR-docu and TDMR-tutorial improved: fix
 of hyperlinks, more explanation on ROCR graphs.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Eliminated require-calls in favor of
-operator “::”.</span></p>
+operator &quot;::&quot;.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Fixed a bug occurring with the
 rJava-package: The proper installation items for Java are now described in
@@ -47,7 +120,7 @@ RStudio were detected and are now describend in Lesson 06 of TDMR-tutorial.</spa
 <p class=MsoNormal><span lang=EN-US>Bug fix in demo07cma_j.r: missing
 require(rJava) added.</span></p>
 
-<h2><span lang=EN-US>V 1.2 – 30.08.2014</span></h2>
+<h2><span lang=EN-US>V 1.2 - 30.08.2014</span></h2>
 
 <p class=MsoNormal><span lang=EN-US>TDMR-docu and TDMR-tutorial completely
 rewritten as PDF with Sweave/knitr: Better sync of demos and tutorial. </span></p>
@@ -71,7 +144,7 @@ package testit and function assert. </span></p>
 complicated. Remove this parameter from the public interface and from .apd
 files, we set now opts$SRF.cutoff = opts$CLS.cutoff in tdmClassify.r. </span></p>
 
-<h2><span lang=EN-US>V 1.1 – 10.06.2014</span></h2>
+<h2><span lang=EN-US>V 1.1 - 10.06.2014</span></h2>
 
 <p class=MsoNormal><span lang=EN-US>Tutorial extended: new simple TDMR usage
 Lesson 0 (aaClassify.r and aaRegression.r).</span></p>
@@ -86,12 +159,12 @@ added NA-checks for sampsize, cutoff, classwt.</span></p>
 RStudioGD, better check on RStudio.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Improved graphics for <span class=grame>regression,</span>
-check on NA’s. </span></p>
+check on NA's. </span></p>
 
-<p class=MsoNormal><span lang=EN-US>Fixed missing ‘<span class=grame>import’s</span>
+<p class=MsoNormal><span lang=EN-US>Fixed missing '<span class=grame>import's</span>
 in NAMESPACE.</span></p>
 
-<h2><span lang=EN-US>V 1.0.1 – 20.10.2013</span></h2>
+<h2><span lang=EN-US>V 1.0.1 - 20.10.2013</span></h2>
 
 <p class=MsoNormal><span class=grame><span lang=EN-US>Eliminated .path.package
 in favor of path.package.</span></span></p>
@@ -99,21 +172,21 @@ in favor of path.package.</span></span></p>
 <p class=MsoNormal><span class=grame><span lang=EN-US>Eliminated an error in
 tdmROCR.r example reported by Brian Ripley which blocked the package build.</span></span></p>
 
-<p class=MsoNormal><span lang=EN-US>Shortened in DESCRIPTION the “Depends” list
-and moved some packages to “Suggests” list (&amp; adapted the cross-references
-in the R documentation accordingly).</span></p>
+<p class=MsoNormal><span lang=EN-US>Shortened in DESCRIPTION the
+&quot;Depends&quot; list and moved some packages to &quot;Suggests&quot; list
+(&amp; adapted the cross-references in the R documentation accordingly).</span></p>
 
 <p class=MsoNormal><span lang=EN-US>If opts$RF.samp was a vector and not a
 scalar, wrong processing occurred in train.RF (in tdmClassify.r) and in
 tdmModSortedRFimport (in tdmModelingUtils.r). <span class=grame>Now corrected.</span></span></p>
 
 <p class=MsoNormal><span lang=EN-US>Changed parameter SAMPSIZE to SAMPSIZE1 in
-tdmMapDesign.csv and added lines with SAMPSIZE2<span class=grame>, …,</span>
+tdmMapDesign.csv and added lines with SAMPSIZE2<span class=grame>, ...,</span>
 SAMPSIZE5.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h2><span lang=EN-US>V 1.0.0 – 10.04.2013</span></h2>
+<h2><span lang=EN-US>V 1.0.0 - 10.04.2013</span></h2>
 
 <p class=MsoNormal><span class=grame><span lang=EN-US>Eliminated .find.package
 in favor of find.package according to the mail from Brian Ripley.</span></span></p>
@@ -121,36 +194,34 @@ in favor of find.package according to the mail from Brian Ripley.</span></span><
 <p class=MsoNormal><span lang=EN-US>Simplify the code / the workflow:</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span class=grame><span
-lang=EN-US style='font-family:Symbol'>·</span></span><span class=grame><span
-lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+class=grame><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span></span><span class=grame><span lang=EN-US>Allow only one parameter for
-tdm$umode, no longer a vector (Why?</span></span><span lang=EN-US> – Then we do
+tdm$umode, no longer a vector (Why?</span></span><span lang=EN-US> - Then we do
 not need a recipe to check the correctness of tdm$umode: SP_T may only appear
 as first element, only RSUB and CV as further elements.&nbsp; Instead it is
-easier to restart a certain tuning experiment with spotStep=“rep”, where the
-previous tuning result is reused and a new unbiased evaluation is done.)</span></p>
+easier to restart a certain tuning experiment with spotStep=&quot;rep&quot;,
+where the previous tuning result is reused and a new unbiased evaluation is
+done.)</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 0cm;margin-left:17.85pt;margin-bottom:.0001pt;text-indent:-17.85pt'><span
-lang=EN-US style='font-family:Symbol'>·</span><span lang=EN-US
-style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
-lang=EN-US>Added the possibility for umode=”TST” that the training fraction can
-be also in the unbiased run smaller than 100%: set <b>tdm$U.trnFrac</b> to a
-value different from NULL. (<span class=grame>needed</span> for SVM on large
-data sets)</span></p>
+lang=EN-US>* </span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>Added the possibility for umode=&quot;TST&quot; that
+the training fraction can be also in the unbiased run smaller than 100%: set <b>tdm$U.trnFrac</b>
+to a value different from NULL. (<span class=grame>needed</span> for SVM on
+large data sets)</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:Symbol'>·</span><span lang=EN-US
-style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
-lang=EN-US>Simplified tdmBigLoop insofar that spotStep is now only a string,
-not a vector of strings.</span></p>
+lang=EN-US>* </span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>Simplified tdmBigLoop insofar that spotStep is now only
+a string, not a vector of strings.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Introduced the new function
-tdmExecSpotStep, which makes all demos runnable for both spotStep==”auto” and
-spotStep==”rep”. Have a demo03sonar.r and demo03sonar_A.r, where the former
-does the same, but shorter with tdmExecSpotStep. Adjusted all other demos
-according to<span class=grame>&nbsp; demo03sonar.r</span>.</span></p>
+<p class=MsoNormal><span lang=EN-US>Introduced the new function tdmExecSpotStep,
+which makes all demos runnable for both spotStep==&quot;auto&quot; and
+spotStep==&quot;rep&quot;. Have a demo03sonar.r and demo03sonar_A.r, where the
+former does the same, but shorter with tdmExecSpotStep. Adjusted all other
+demos according to<span class=grame>&nbsp; demo03sonar.r</span>.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Introduced <b>package rCMA</b>: Fixed the
 demo in demo07cma_<span class=grame>j.r &nbsp;to</span> run again under Windows
@@ -171,20 +242,20 @@ parameter tdm$U.saveModel.</span></span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h2><span lang=EN-US>V 0.9.0 – 20.02.2013</span></h2>
+<h2><span lang=EN-US>V 0.9.0 - 20.02.2013</span></h2>
 
 <p class=MsoNormal style='margin-bottom:3.0pt'><span lang=EN-US>Parallelilization
 issues:</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:17.85pt;text-indent:-17.85pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:17.85pt;text-indent:-17.85pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Eliminated package snowfall and <b>introduced package
 parallel</b> instead (simpler code, better maintainance) </span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>No read/write of SRF-file &lt;filename&gt;.SRF.V1.Rdata
 anymore in the parallel processes. Instead we </span></p>
 
@@ -207,30 +278,29 @@ SRF-file(s) in case opts$SRF.calc==F prior to branching into parallel runs
 code / the workflow (12/2012):</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Simplified the opts-part connected with data file
 reading: (a) make opts$filesuffix obsolete, only local variable filesuffix
-(tdmReadData); (b) make opts$READ.CMD simpler: a string “<span class=grame>readFunc(</span>filename,opts)”,
-where readFunc is def’d in main_TASK.r and returns dset or tset. A template <span
-class=grame>tdmReadCmd(</span>filename,opts) is def’d in tdmReadData.r. (No
-need for complicated syntax ‘sep=\”<span class=grame>;\</span>”,…’ any more.)</span></p>
+(tdmReadData); (b) make opts$READ.CMD simpler: a string &quot;<span
+class=grame>readFunc(</span>filename,opts)&quot;, where readFunc is defined in
+main_TASK.r and returns dset or tset. A template <span class=grame>tdmReadCmd(</span>filename,opts)
+is defined in tdmReadData.r. (No need for complicated syntax 'sep=\&quot;<span
+class=grame>;\</span>&quot;,...' any more.)</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span lang=EN-US>Change opts$TST.testFrac </span><span lang=EN-US
-style='font-family:Wingdings'>à</span><span lang=EN-US> tdm$TST.testFrac
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>Change opts$TST.testFrac to tdm$TST.testFrac
 (opts$TST.testFrac is only used in tdmSplitTestData<span class=grame>)</span><br>
 and &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; tdm$tstFrac
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span><span
-lang=EN-US style='font-family:Wingdings'>à</span><span lang=EN-US>
+&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; to
 tdm$TST.testFrac (tdm$tstFrac is only used in tdmMapDesign, branch
-umode=”RSUB”). </span></p>
+umode=&quot;RSUB&quot;). </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Make opts$READ.INI=T the recommended choice. But keep
 the possibility to read in main_TASK.r (so that main_TASK can run alone). </span></p>
 
@@ -238,28 +308,29 @@ the possibility to read in main_TASK.r (so that main_TASK can run alone). </span
 (package adabag)</b> as a new learner.</span></span><span lang=EN-US> Tuning
 parameters are opts$ADA.coeflearn, ADA.mfinal, ADA.rpart.minsplit.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Added in function checkOpts (tdmEnvTMakeNew.r)
-a logic that checks opts against new (unusual) parameters in list opts and
-prints a notification: “Note: a new variable xyz has been defined for list
-opts.” (<span class=grame>safeguard</span> against misspelling a parameter)</span></p>
+<p class=MsoNormal><span lang=EN-US>Added in function checkOpts
+(tdmEnvTMakeNew.r) a logic that checks opts against new (unusual) parameters in
+list opts and prints a notification: &quot;Note: a new variable xyz has been
+defined for list opts.&quot; (<span class=grame>safeguard</span> against
+misspelling a parameter)</span></p>
 
 <p class=MsoNormal><span class=grame><span lang=EN-US>Added tuning params for
-SVM with kernel “polynomial”, “linear” or “sigmoid”.</span></span><span
-lang=EN-US> <span class=grame>Added tuning param TRNFRAC.</span> Removed
-opts$SVM.C (never needed).</span></p>
+SVM with kernel &quot;polynomial&quot;, &quot;linear&quot; or
+&quot;sigmoid&quot;.</span></span><span lang=EN-US> <span class=grame>Added
+tuning param TRNFRAC.</span> Removed opts$SVM.C (never needed).</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Bug fix: If opts$filename is not of the
-form “a.suf” but simply “a”, an error occured (connected with filesuffix, see
-tdmReadData). <span class=grame>Now fixed.</span></span></p>
+form &quot;a.suf&quot; but simply &quot;a&quot;, an error occured (connected
+with filesuffix, see tdmReadData). <span class=grame>Now fixed.</span></span></p>
 
 <p class=MsoNormal><span lang=EN-US>Bug fix: Stop when doublettes appear in
 tdm$runList. Rewrote checkRoiParams to work properly in all cases, no need for
 envT$roiNames1 any more.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Bug fix: Column “tdmSplit” was not always
-excluded from input variables (main_sonar). Now <span class=grame>dsetTrnVa(</span>)
+<p class=MsoNormal><span lang=EN-US>Bug fix: Column &quot;tdmSplit&quot; was
+not always excluded from input variables (main_sonar). Now <span class=grame>dsetTrnVa(</span>)
 and dsetTest() return all columns <strong><i>except</i></strong> x$TST.COL,
-which is usually “tdmSplit”.</span></p>
+which is usually &quot;tdmSplit&quot;.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Fixed the lev.resp-bug in tdmClassify: Do
 not take for granted that lev.resp = <span class=grame>levels(</span>d_train[,response.variable])
@@ -277,22 +348,22 @@ BreastCancer<span class=grame>&nbsp; (</span>BC) dataset (has factor variables
 with many levels, has columns with &lt;NA&gt;):</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span class=grame><span lang=EN-US>New</span></span><span lang=EN-US>
-check on NA’s in input variables with na_input_check in tdmClassify.r. This
+check on NA's in input variables with na_input_check in tdmClassify.r. This
 will issue a warning each time a NA is found. </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>New checkData() function in tdmSplitTestData.r: check
 whether dset and tset have the same mode in every column and give a warning if
 a column is factor and has an unusual high number of levels (&gt;32). </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Specifically for BC dataset: New function <span
 class=grame>tdmPreNAroughfix(</span>data) which main_BC() calls prior to
 tdmClassify and avoids those warnings </span></p>
@@ -301,58 +372,53 @@ tdmClassify and avoids those warnings </span></p>
 issues</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span class=grame><span lang=EN-US>options</span></span><span
-lang=EN-US> opts </span><span lang=EN-US style='font-family:Wingdings'>à</span><span
-lang=EN-US> complete list in Appendix B</span></p>
+lang=EN-US> opts: complete list in Appendix B</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span class=grame><span lang=EN-US>mappings</span></span><span
-lang=EN-US> </span><span lang=EN-US style='font-family:Wingdings'>à</span><span
-lang=EN-US> complete list in Appendix A</span></p>
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span class=grame><span lang=EN-US>mappings: </span></span><span
+lang=EN-US>complete list in Appendix A</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span lang=EN-US>opts$gainmat in docu </span><span lang=EN-US
-style='font-family:Wingdings'>à</span><span lang=EN-US> opts$CLS.gainmat</span></p>
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>opts$gainmat in docu: now opts$CLS.gainmat</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span lang=EN-US>“phase” may be misleading, as if a user had to pass all
-three of them </span><span lang=EN-US style='font-family:Wingdings'>à</span><span
-lang=EN-US> use “level” instead</span></p>
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>&quot;phase&quot; may be misleading, as if a user had
+to pass all three of them: now we use &quot;level&quot; instead</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span lang=EN-US>confusing that main-file has opts-settings, should be
-all in .apd file &lt;task&gt;_00.apd </span></p>
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>confusing that main-file has opts-settings, should be all
+in .apd file &lt;task&gt;_00.apd </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span class=grame><span lang=EN-US>flow</span></span><span lang=EN-US>
 diagram for train/test/vali settings (sampling)</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>updated tutorial, lesson 1 and many links and source
 code snippets</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
-lang=EN-US style='font-family:Symbol'>·</span><span lang=EN-US
-style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </span><span
-lang=EN-US>updated tutorial, lesson 2: no more bst and res-files, but now
-returning spotConfig$<span class=grame>alg.currentBest ,</span>
+lang=EN-US>* </span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>updated tutorial, lesson 2: no more bst and res-files,
+but now returning spotConfig$<span class=grame>alg.currentBest ,</span>
 alg.currentResult.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Bug fix: <span class=grame>any open sink’s</span>
+<p class=MsoNormal><span lang=EN-US>Bug fix: <span class=grame>any open sink's</span>
 are now closed in tdmGraAndLogInitialize using sink.number. This avoids that
 *.log grows bigger and bigger.</span></p>
 
@@ -380,20 +446,20 @@ d_preproc = all non-validation data.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Bug fix: many<span class=grame>&nbsp; main</span>_TASK
 functions had the argument tset, but they have inside still a call
-tdmClassifyLoop(dset, …, opts) where it should read instead<br>
+tdmClassifyLoop(dset, ..., opts) where it should read instead<br>
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-tdmClassifyLoop(dset, …, opts, tset)</span></p>
+tdmClassifyLoop(dset, ..., opts, tset)</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h2><span lang=EN-US>V 0.4.0 – 21.11.2012</span></h2>
+<h2><span lang=EN-US>V 0.4.0 - 21.11.2012</span></h2>
 
 <p class=MsoNormal style='margin-top:6.0pt'><span lang=EN-US>Simplified the
 code / the workflow (10/2012):</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Improved modularity: different parts of TDMR construct
 different objects:</span></p>
 
@@ -423,8 +489,8 @@ style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>envT =
 tdmBigLoop(envT,spotStep) does (tuning and) unbiased runs.</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span class=grame><b><span lang=EN-US>tdmBigLoop</span></b></span><span
 lang=EN-US> is now the new function which should supersede the <strong>now
 deprecated tdmCompleteEval</strong>: </span></p>
@@ -438,20 +504,18 @@ parameters: envT, spotStep</span></p>
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 3.0pt;margin-left:72.0pt;text-indent:-18.0pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
-style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>since envT is
-passed instead of tdm, we are more flexible which input to send into
-tdmBigLoop. Example: If spotStep==”rep”, tdmBigLoop requires the data frames
-bst and res from prior tuning runs </span><span lang=EN-US style='font-family:
-Wingdings'>à</span><span lang=EN-US> this is not possible via tdm, but can
-easily be done via envT$bstGrid, envT$resGrid</span></p>
+style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>since envT is passed
+instead of tdm, we are more flexible which input to send into tdmBigLoop.
+Example: If spotStep==&quot;rep&quot;, tdmBigLoop requires the data frames bst
+and res from prior tuning runs: this is not possible via tdm, but can easily be
+done via envT$bstGrid, envT$resGrid</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 3.0pt;margin-left:72.0pt;text-indent:-18.0pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
 style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>simplified
 tdm$fileMode-section (no .res or .bst-file writing &amp; copying any more,
-makes the code <strong>much</strong> simpler to understand!!) </span><span
-lang=EN-US style='font-family:Wingdings'>à</span><span lang=EN-US> <span
+makes the code <strong>much</strong> simpler to understand!!) : <span
 class=grame>bst</span> and res are returned / passed via envT </span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
@@ -469,8 +533,8 @@ style='font-size:7.0pt'>&nbsp;&nbsp; </span><strong><span lang=EN-US>always</spa
 lang=EN-US> envT$spotConfig$<b>spot.fileMode</b>=FALSE&nbsp; </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span class=grame><span lang=EN-US>tdmCompleteEval</span></span><span
 lang=EN-US> is still there for downward compatibility, but it is deprecated:</span></p>
 
@@ -501,158 +565,153 @@ should become obsolete, if all demos / user files are changed to tdmBigLoop
 (but we keep it perhaps for downward compatibility)</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Simplified envT$result, which contained 3x <span
-class=grame>opts !!</span> </span><span lang=EN-US style='font-family:Wingdings'>à</span><span
-lang=EN-US> <span class=grame>now</span> only 1x opts + accessor function
-Opts(). </span></p>
+class=grame>opts !!</span> : <span class=grame>now</span> only 1x opts +
+accessor function Opts(). </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Reformulated the tdm$filemode-sections in
 tdmCompleteEval / tdmBigLoop: The normal case is now tdm$fileMode==FALSE. </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Abandonned the writing of &lt;name&gt;_train.csv.SRF<span
 class=grame>.&lt;</span>target&gt;.RData, &lt;name&gt;_train.log and
 &lt;name&gt;_train_eval.csv when tdm$oFileMode==FALSE, since this may be
 conflicting if we do certain parallel tasks.</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span class=grame><span lang=EN-US>tdmGetObj</span></span><span
 lang=EN-US> is now marked as deprecated (we use it however in unbiasedRun to
 ensure downward compatibility).</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span class=grame><span
-lang=EN-US style='font-family:Symbol'>·</span></span><span class=grame><span
-lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span></span><span class=grame><span lang=EN-US>Renamed “Test2” </span></span><span
-class=grame><span lang=EN-US style='font-family:Wingdings'>à</span></span><span
-class=grame><span lang=EN-US> “Vali2” and other naming issues around “Test” and
-“Validation”.</span></span><span lang=EN-US> <span class=grame>Made variable
-names more meaningful: VALI, if connected with validation data, TST, if
-connected with test data.</span></span></p>
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+class=grame><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span></span><span class=grame><span lang=EN-US>Renamed &quot;Test2&quot; to &quot;Vali2&quot;
+and other naming issues around &quot;Test&quot; and &quot;Validation&quot;.</span></span><span
+lang=EN-US> <span class=grame>Made variable names more meaningful: VALI, if
+connected with validation data, TST, if connected with test data.</span></span></p>
 
 <p class=MsoNormal style='margin-top:6.0pt'><span lang=EN-US>Simplified the
 code / the workflow (06/2012):</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Simplified start of parallel execution: no need for
 sourcing start.tdm.r (except if you want the R developer sources), all
 sfExport-related stuff is now in<span class=grame>&nbsp; function</span>
 prepareParallelExec in tdmBigLoop.r.</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Simplified design mapping: only one function pair
 {tdmMapDesLoad, tdmMapDesApply} and no longer tdmMapDesSpot, no makeTdmDesSpot.
 The maps map (from tdmMapDesign.csv) and mapUser (from userMapDesign.csv) are
 now stored in list tdm.</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Simplified the triangle startFromSource.r, start.tdm.r,
 source.tdm.r: startFromSource.r<span class=grame>&nbsp; and</span> start.tdm.r
 are now only needed for the developer (if you want to start from R sources).
 They are NO LONGER<span class=grame>&nbsp; needed</span> if the normal TDMR
-user wants to initiate parallel execution (all sfExport’s and the like are now
+user wants to initiate parallel execution (all sfExport's and the like are now
 done in function prepareParallelExec in tdmBigLoop.r, which is called if
 tdm$parallelCPUs&gt;1).</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span lang=EN-US>Warning: if tdm$umode=”TST” *and* opts$TST.kind=”col”,
-then tdmSplitTestData will tag all records with opts$TST.col<span class=grame>!=</span>0
-as test data. Later on, tdmStartSpot will hand only the data with
-opts$TST.col==0 to main_TASK, and this will separate into vali and train data
-acc. to opts$TST.col again </span><span lang=EN-US style='font-family:Wingdings'>à</span><span
-lang=EN-US> all data are train, no vali data (this is o.k. for
-opts$MOD.method==”RF”, but may lead to strange results in other cases). – How
-to fix: </span></p>
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>Warning: if tdm$umode=&quot;TST&quot; *and*
+opts$TST.kind=&quot;col&quot;, then tdmSplitTestData will tag all records with
+opts$TST.col<span class=grame>!=</span>0 as test data. Later on, tdmStartSpot
+will hand only the data with opts$TST.col==0 to main_TASK, and this will
+separate into vali and train data acc. to opts$TST.col again : all data are
+train, no vali data (this is o.k. for opts$MOD.method==&quot;RF&quot;, but may
+lead to strange results in other cases). - How to fix: </span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 3.0pt;margin-left:72.0pt;text-indent:-18.0pt'><span lang=EN-US
 style='font-family:"Courier New"'>o</span><span lang=EN-US style='font-size:
 7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>Make a check on number of vali
-records for cases opts$MOD.method<span class=grame>!=</span>”RF”. </span></p>
+records for cases opts$MOD.method<span class=grame>!=</span>&quot;RF&quot;. </span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 3.0pt;margin-left:72.0pt;text-indent:-18.0pt'><span lang=EN-US
 style='font-family:"Courier New"'>o</span><span lang=EN-US style='font-size:
 7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>Issue in tdmBigLoop/tdmCompleteEval
-a warning, if tdm$umode=”TST” <b>and</b> opts$TST.kind=”col” <b>and</b>
-opts$MOD.method<span class=grame>!=</span>”RF”.</span></p>
+a warning, if tdm$umode=&quot;TST&quot; <b>and</b>
+opts$TST.kind=&quot;col&quot; <b>and</b> opts$MOD.method<span class=grame>!=</span>&quot;RF&quot;.</span></p>
 
 <p class=MsoNormal style='margin-top:6.0pt'><span lang=EN-US>Docu TDMR and
 Demos TDMR: </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>added <a href="TDMR-tutorial.html">TDMR-tutorial.html</a>,
-moved the section “Example usage” in there.</span></p>
+moved the section &quot;Example usage&quot; in there.</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span lang=EN-US>added a FAQ section (“How to”) in <a
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>added a FAQ section (&quot;How to&quot;) in <a
 href="TDMR-tutorial.html">TDMR-tutorial.html</a></span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-</span><span lang=EN-US>added two appendices on tdmMapDesign.csv and on elements
-of opts in <a href="TDM-docu.html">TDM-docu.html</a></span></p>
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+</span><span lang=EN-US>added two appendices on tdmMapDesign.csv and on
+elements of opts in <a href="TDM-docu.html">TDM-docu.html</a></span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>adapted all documentation &amp; demos to the new
 tdmBigLoop </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>added citation ROCR</span></p>
 
 <p class=MsoNormal style='margin-top:6.0pt'><span lang=EN-US>Modified the
 function <b>tdmModAdjustCutoff</b>: </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>Extended that <strong>either</strong> parameter
-CUTOFF1, <span class=grame>… ,</span> CUTOFFn can be the missing one.</span></p>
+CUTOFF1, <span class=grame>... ,</span> CUTOFFn can be the missing one.</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span class=grame><span lang=EN-US>Guaranteed</span></span><span
 lang=EN-US> that the dependent CUTOFF can never become negative when enforcing
 the constraint. </span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span lang=EN-US>If tdmModAdjustCutoff is entered with a cutoff with <span
 class=grame>length(</span>cutoff)==n.class-1, then cutoff[n.class] becomes the
 dependent CUTOFF.</span></p>
 
 <p class=MsoListParagraph style='margin-top:5.0pt;margin-right:0cm;margin-bottom:
-3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US
-style='font-family:Symbol'>·</span><span lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+3.0pt;margin-left:18.0pt;text-indent:-18.0pt'><span lang=EN-US>* </span><span
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
 </span><span class=grame><span lang=EN-US>The</span></span><span lang=EN-US>
 old function tdmMapCutoff is now disabled, everything in tdmModAdjustCutoff.</span></p>
 
@@ -671,20 +730,20 @@ nSkip in <span class=grame>tdmPlotResMeta(</span>).</span></p>
 this is applied also when loading &lt;filetest&gt;.RData</span></p>
 
 <p class=MsoNormal><span lang=EN-US>For regression: new option
-opts$rgain.type=”<b>made</b>” (<b>m</b>ean <b>a</b>bsolute <b>de</b>viation)</span></p>
+opts$rgain.type=&quot;<b>made</b>&quot; (<b>m</b>ean <b>a</b>bsolute <b>de</b>viation)</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Extended opts$rgain.string to work also for
 the regression options, adapt column names in theFinals accordingly. </span></p>
 
 <p class=MsoNormal><span class=grame><span lang=EN-US>tdmOptsDefaultsSet</span></span><span
-lang=EN-US> returns now in opts an object of class “tdmOpts”. <span
+lang=EN-US> returns now in opts an object of class &quot;tdmOpts&quot;. <span
 class=grame>Checks for the right class of opts</span> in central TDMR files.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>tdmRegressLoop.r, tdmClassifyLoop.r: More
 accurate averaging of evaluation measures for regression CV case, new variable
-‘result$predictions’. </span></p>
+'result$predictions'. </span></p>
 
-<p class=MsoNormal><span lang=EN-US>Bug fix ‘nfold=<span class=grame>max(</span>cvi,1)’
+<p class=MsoNormal><span lang=EN-US>Bug fix 'nfold=<span class=grame>max(</span>cvi,1)'
 to have not nfold=0 in the special case that all records in dset are training
 cases (zero validation cases)</span></p>
 
@@ -692,23 +751,22 @@ cases (zero validation cases)</span></p>
 (default =FALSE) allows to decide whether result$predictions and
 result$predProbList are saved to .RData.</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Some small bug fixes concerning ‘predProb’
-and ‘predictions’ for the case opts$ncopies&gt;0. <span class=grame><b>predProb</b></span>
+<p class=MsoNormal><span lang=EN-US>Some small bug fixes concerning 'predProb'
+and 'predictions' for the case opts$ncopies&gt;0. <span class=grame><b>predProb</b></span>
 is needed by tdmModConfmat, which is called from tdmClassify (in case
-opts$rgain.type=”ar*”, this will call tdmROCR_calc with predProb). <span
+opts$rgain.type=&quot;ar*&quot;, this will call tdmROCR_calc with predProb). <span
 class=grame><b>predProbList</b></span> is needed by tdmROCR.TDMclassifier.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Added in tdmSortedRFimport the option <b>opts$SRF.scale</b>
 to use scaled or unscaled importance.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Bug fix in tdmClassify: build EVALa
-correctly also in cases where <span class=grame>nrow(</span>d_test)==0 </span><span
-lang=EN-US style='font-family:Wingdings'>à</span><span lang=EN-US> set
+correctly also in cases where <span class=grame>nrow(</span>d_test)==0 : set
 cm.test$* to NA and not cm.test to NULL.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h2><span lang=EN-US>V 0.3.1 – 01.06.2012</span></h2>
+<h2><span lang=EN-US>V 0.3.1 - 01.06.2012</span></h2>
 
 <p class=MsoNormal><span class=grame><span lang=EN-US>tdmSortedRFImport</span></span><span
 lang=EN-US>: negative importance values are now clipped to 0 (no longer
@@ -723,15 +781,14 @@ to 1.</span></p>
 <p class=MsoNormal><span lang=EN-US>Renamed bind_response to tdmBindResponse
 (tdmGeneralUtils.r)</span></p>
 
-<p class=MsoNormal><span lang=EN-US>Bug fix ‘path </span><span lang=EN-US
-style='font-family:Wingdings'>à</span><span lang=EN-US> tdm$path’ in
+<p class=MsoNormal><span lang=EN-US>Bug fix 'path' is now 'tdm$path' in
 tdmMapDesLoad (tdmMapDesign.r)</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Bug fix for cma_es (package cmaes): When
-running demo/demo04cpu.r with tuner cmaes, we got “Error in <span class=grame>eigen.log[</span>iter,
-] &lt;- rev(sort(e$values)): subscript out of bounds&quot;. Solution:
-control$maxit = <span class=grame>round(</span>control$maxit), because this
-error only occurs if control$maxit is NOT an integer.</span></p>
+running demo/demo04cpu.r with tuner cmaes, we got &quot;Error in <span
+class=grame>eigen.log[</span>iter, ] &lt;- rev(sort(e$values)): subscript out
+of bounds&quot;. Solution: control$maxit = <span class=grame>round(</span>control$maxit),
+because this error only occurs if control$maxit is NOT an integer.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Fixed a bug concerning opts$filesuffix
 (tdmOptsDefaultsFill) which could lead to an unwanted stop.</span></p>
@@ -743,29 +800,29 @@ roi with only XPERC). <span class=grame>Now fixed.</span></span></p>
 <p class=MsoNormal><span lang=EN-US>Bug fix: cma_es (and other
 tdmStartOther-tuners) had usually in the BST data frame not the inclusion of
 the last design points (which usually are formed after the last time where
-“des$CONFIG %% tdm$spotConfig$seq.design.new.size==0” was TRUE). <span
+&quot;des$CONFIG %% tdm$spotConfig$seq.design.new.size==0&quot; was TRUE). <span
 class=grame>Now fixed.</span> </span></p>
 
 <p class=MsoNormal><span lang=EN-US>Bug fix in tdmDispatchTuner: cma_jTuner did
 not yet return a list of type spotConfig in tunerVal. Consequence: the above
-“Append” would not work. <span class=grame>Now fixed.</span> </span></p>
+&quot;Append&quot; would not work. <span class=grame>Now fixed.</span> </span></p>
 
 <p class=MsoNormal><span lang=EN-US>tdmDispatchTuner.r: Made <b>all</b> tuners
 return a list of type spotConfig with the proper settings in
 tunerVal$alg.currentResult and tunerVal$alg.currentBest. </span></p>
 
-<p class=MsoNormal><span lang=EN-US>Bug fix in tdmMapDesApply: the “[-1]” in
-“dn=<span class=grame>setdiff(</span>names(des[-1]),
-c(&quot;COUNT&quot;,&quot;CONFIG&quot;,...))” was wrong.</span></p>
+<p class=MsoNormal><span lang=EN-US>Bug fix in tdmMapDesApply: the
+&quot;[-1]&quot; in &quot;dn=<span class=grame>setdiff(</span>names(des[-1]),
+c(&quot;COUNT&quot;,&quot;CONFIG&quot;,...))&quot; was wrong.</span></p>
 
 <p class=MsoNormal><span lang=EN-US>Extended tdmPlotResMeta by a slider
-y_10Exp, which allows to multiply the y-values by 10<sup>0</sup>, 10<sup>1</sup>,…<span
+y_10Exp, which allows to multiply the y-values by 10<sup>0</sup>, 10<sup>1</sup>,...<span
 class=grame>,10<sup>3</sup></span> on the fly in the twiddler interface. This
 usually gives a better color scheme for the 3D-plot in spotReport3d. </span></p>
 
 <p class=MsoNormal><span lang=EN-US>&nbsp;</span></p>
 
-<h2><span lang=EN-US>V 0.3.0 – 08.05.2012</span></h2>
+<h2><span lang=EN-US>V 0.3.0 - 08.05.2012</span></h2>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
@@ -778,14 +835,14 @@ help(tdmROCR).</span></p>
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
 style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>New measures for
-opts$rgain.type= “arROC”, “arLIFT”, “arPRE” for area under ROC, lift or
-precision-recall chart, based on package <b>ROCR</b>.</span></p>
+opts$rgain.type= &quot;arROC&quot;, &quot;arLIFT&quot;, &quot;arPRE&quot; for
+area under ROC, lift or precision-recall chart, based on package <b>ROCR</b>.</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
 style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>Improved and
-extended the set of <b>demos</b> (demo00, … , demo06). <span class=grame>New
+extended the set of <b>demos</b> (demo00, ... , demo06). <span class=grame>New
 demos for interactive visualization.</span></span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
@@ -808,8 +865,8 @@ style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>Changed
 opts$fct.postproc: this is now the <i>name</i> of the postprocessing
 function&nbsp; and not the function itself. Reason: If opts contains a
 function, then it contains also its environment and this can be pretty big
-(contains <span class=grame>envT, …)</span> and makes the .RData saving of envT
-big.</span></p>
+(contains <span class=grame>envT, ...)</span> and makes the .RData saving of
+envT big.</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
@@ -828,16 +885,15 @@ opts$filename). </span></p>
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
 style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>Improved the <b>examples</b>
-section in </span><span class=MsoHyperlink><a href="TDM-docu.html"><strong><span
-lang=EN-US style='color:blue'>TDM-docu.html</span></strong></a></span><span
-lang=EN-US>. Now most examples in </span><span class=MsoHyperlink><a
-href="TDM-docu.html"><strong><span lang=EN-US style='color:blue'>TDM-docu.html</span></strong></a></span><span
-lang=EN-US> are in sync with the set of demos. <span class=grame>Seperated in </span></span><span
-class=MsoHyperlink><a href="TDM-docu.html"><strong><span lang=EN-US
-style='color:blue'>TDM-docu.html</span></strong></a></span><span class=MsoHyperlink>
-</span><span class=grame><span lang=EN-US>the example usage description from
-the example details.</span></span><span lang=EN-US> <span class=grame>New
-chapter describing the interactive visualization example.</span></span></p>
+section in <span class=MsoHyperlink><a href="TDM-docu.html"><strong><u><span
+style='color:blue'>TDM-docu.html</span></u></strong></a></span>. Now most
+examples in <span class=MsoHyperlink><a href="TDM-docu.html"><strong><u><span
+style='color:blue'>TDM-docu.html</span></u></strong></a></span> are in sync
+with the set of demos. <span class=grame>Seperated in </span><span
+class=MsoHyperlink><a href="TDM-docu.html"><strong><u><span style='color:blue'>TDM-docu.html</span></u></strong></a>
+</span><span class=grame>the example usage description from the example
+details.</span> <span class=grame>New chapter describing the interactive
+visualization example.</span></span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
@@ -848,7 +904,7 @@ package documentation (simpler index via @keywords internal, many small fixes).<
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span lang=EN-US>&nbsp;</span></p>
 
-<h2><span lang=EN-US>V 0.2.1 – 15.03.2012</span></h2>
+<h2><span lang=EN-US>V 0.2.1 - 15.03.2012</span></h2>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
@@ -861,7 +917,7 @@ environment envT: see help(tdmPlotResMeta).</span></p>
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
 style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>New print() for
-TDMdata object “dataObj”</span></p>
+TDMdata object &quot;dataObj&quot;</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
@@ -879,15 +935,16 @@ bugs to reactivate parallel mode:&nbsp; some sfExports were missing.</span></p>
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
 style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>Fixed the
-saveEnvT-bug (“[9:9]”) in tdmCompleteEval. New option tdm$filenameEnvT.</span></p>
+saveEnvT-bug (&quot;[9:9]&quot;) in tdmCompleteEval. New option
+tdm$filenameEnvT.</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
 style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>Fixed the
-tdmMapDesign bug (Design variables missing in tdmMapDesign.csv and
-userMapDesign.csv would not be mapped to opts. Now missing variables are
-detected and an error is thrown.)</span></p>
+tdmMapDesign bug (Design variables missing in tdmMapDesign.csv and userMapDesign.csv
+would not be mapped to opts. Now missing variables are detected and an error is
+thrown.)</span></p>
 
 <p class=MsoListParagraph style='margin-top:0cm;margin-right:0cm;margin-bottom:
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
@@ -925,14 +982,13 @@ concerning data reading</span></p>
 5.0pt;margin-left:35.7pt;text-indent:-17.85pt'><span class=grame><span
 lang=EN-US style='font-family:"Courier New"'>o</span></span><span lang=EN-US
 style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>TDMR documentation
-now available in PDF <strong><i>and</i></strong> HTML format (</span><span
-class=MsoHyperlink><a href="TDM-docu.html"><strong><span lang=EN-US
-style='color:blue'>TDM-docu.html</span></strong></a></span><span lang=EN-US>)</span></p>
+now available in PDF <strong><i>and</i></strong> HTML format (<span
+class=MsoHyperlink><a href="TDM-docu.html"><strong><u><span style='color:blue'>TDM-docu.html</span></u></strong></a></span>)</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 lang=EN-US>&nbsp;</span></p>
 
-<h2><span lang=EN-US>V 0.2.0 – 06.02.2012</span></h2>
+<h2><span lang=EN-US>V 0.2.0 - 06.02.2012</span></h2>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
@@ -949,23 +1005,22 @@ extension of tdmMapDesign.csv</span></p>
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
 lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>moved
-PCA feature generation from main_* into tdmClassifyLoop, it uses now only the training
-data for establishing the PCA rotation (same for SFA)</span></p>
+PCA feature generation from main_* into tdmClassifyLoop, it uses now only the
+training data for establishing the PCA rotation (same for SFA)</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
 lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>new <b>training
-/ validation / test set</b> capabilities, see Section “TDM<a
-name="TDMR_train_vali_test"></a>R Data Reading and Data Split …” in </span><span
-class=MsoHyperlink><a href="TDM-docu.html"><strong><span lang=EN-US
-style='color:blue'>TDM-docu.html</span></strong></a></span><span lang=EN-US> and
-help(tdmSplitTestData), help(tdmReadData).</span></p>
+/ validation / test set</b> capabilities, see Section &quot;TDM<a
+name="TDMR_train_vali_test"></a>R Data Reading and Data Split ...&quot; in <span
+class=MsoHyperlink><a href="TDM-docu.html"><strong><u><span style='color:blue'>TDM-docu.html</span></u></strong></a></span>
+and help(tdmSplitTestData), help(tdmReadData).</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
 lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>modified
-TDMR’s seed concept, new option opts$*.seed = “algSeed” (get the seed from
-spotConfig$alg.seed)</span></p>
+TDMR's seed concept, new option opts$*.seed = &quot;algSeed&quot; (get the seed
+from spotConfig$alg.seed)</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
@@ -977,7 +1032,7 @@ tdm$mainFile and tdm$mainCommand)</span></p>
 lang=EN-US style='font-family:"Courier New"'>o</span><span class=grame><span
 lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp;</span></span><span class=grame><span
 lang=EN-US>powell</span></span><span lang=EN-US>, cmaes, rSFA now in the
-“Depends” list of DESCRIPTION</span></p>
+&quot;Depends&quot; list of DESCRIPTION</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 lang=EN-US style='font-family:"Courier New"'>o</span><span class=grame><span
@@ -988,7 +1043,7 @@ lang=EN-US>added</span></span><span lang=EN-US> a TDMR-package description
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 lang=EN-US>&nbsp;</span></p>
 
-<h2><span lang=EN-US>V 0.1.3 – 04.01.2012</span></h2>
+<h2><span lang=EN-US>V 0.1.3 - 04.01.2012</span></h2>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
@@ -1024,7 +1079,7 @@ class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><s
 lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>removed
 the dependencies on packages matlab and mlbench</span></p>
 
-<h2><span lang=EN-US>V 0.1.2 – 05.12.2011</span></h2>
+<h2><span lang=EN-US>V 0.1.2 - 05.12.2011</span></h2>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
@@ -1034,8 +1089,8 @@ opts$ncopies&gt;0</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
-lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>new
-version of TDM-docu.pdf: see documentation index – directory</span></p>
+lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>new version
+of TDM-docu.pdf: see documentation index - directory</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
@@ -1045,7 +1100,7 @@ demo: demo00sonar (with some graphics)</span></p>
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
 lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>fix in
-print.TDMclassifier, print.TDMregressor: optional argument ‘type’</span></p>
+print.TDMclassifier, print.TDMregressor: optional argument 'type'</span></p>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span
@@ -1057,7 +1112,7 @@ class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><s
 lang=EN-US style='font-size:7.0pt'>&nbsp;&nbsp; </span><span lang=EN-US>doc/changes.html
 added (this file)</span></p>
 
-<h2><span lang=EN-US>V 0.1.0<span class=grame>&nbsp; –</span> 10.11.2011</span></h2>
+<h2><span lang=EN-US>V 0.1.0<span class=grame>&nbsp; -</span> 10.11.2011</span></h2>
 
 <p class=MsoListParagraph style='margin-left:18.0pt;text-indent:-18.0pt'><span
 class=grame><span lang=EN-US style='font-family:"Courier New"'>o</span></span><span

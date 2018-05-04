@@ -37,11 +37,10 @@ What is the difference between \code{\link{tdmOptsDefaultsSet}} and \code{\link{
   \code{tdmOptsDefaultsFill} is used to fill in further \code{opts} elements, if not yet defined, depending on 
   previous settings (e. g. \code{opts$LOGFILE} is derived from \code{opts$filename}).
 }
-\author{
-Wolfgang Konen, THK
-}
 \seealso{
 \code{\link{tdmOptsDefaultsSet}}
 }
+\author{
+Wolfgang Konen, THK
+}
 \keyword{internal}
-

@@ -19,4 +19,3 @@ This function replaces <NA> values in a list entry or data frame column with the
 (for numeric columns) or the most frequent mode (for factor columns). 
 It does the same as \code{na.roughfix} in package randomForest, but does so faster.
 }
-

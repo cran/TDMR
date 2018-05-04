@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 1.4\cr
-#' Date: \tab 19.05.2016\cr
+#' Version: \tab 2.0\cr
+#' Date: \tab 04.05.2018\cr
 #' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
 #' }
@@ -15,10 +15,11 @@
 #' TDMR is a package for tuned data mining (predictive analytics, i.e. \bold{classification} and \bold{regression}). Its main features are: \cr
 #' 1) A variety of tuners, with special emphasis on \link{SPOT} (a well-known R package for parameter tuning), but also CMA-ES 
 #'    (package \code{\link[rCMA]{rCMA}}) and other tuning algorithms. \cr
-#' 2) Tuning of preprocessing (feature generation) parameters and model building parameters simultaneously.  \cr
+#' 2) Tuning of preprocessing parameters and model building parameters simultaneously. Preprocessing
+#' often includes feature generation. \cr
 #' 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr
 #' 4) Easy parallelization of those experiments with the help of R package \code{\link{parallel}}.  \cr
-#' 5) Extensibility: New tuning parameters, new feature preprocessing tools, model builders and even new tuners can be added easily.
+#' 5) Extensibility: New tuning parameters, new preprocessing tools, model builders and even new tuners can be added easily.
 #' 
 #' The main entry point functions are \code{\link{tdmClassifyLoop}}, \code{\link{tdmRegressLoop}},
 #' \code{\link{tdmTuneIt}}, and \code{\link{tdmBigLoop}}. 
@@ -35,13 +36,9 @@
 #' @import twiddler 
 #' @import testit
 #' @import tcltk
-# @import grDevices
-# @import graphics
-# @import stats
-# @import utils
 #' @importFrom "grDevices" "colors" "dev.cur" "dev.list" "dev.new" "dev.off" "graphics.off" "pdf" "png"
 #' @importFrom "graphics" "barplot" "legend" "pairs" "par" "plot" "points" "title"
-#' @importFrom "stats" "embed" "formula" "lm" "median.default" "na.omit" "optim" "prcomp" "predict" "rnorm" "runif" "sd"
+#' @importFrom "stats" "embed" "formula" "lm" "median.default" "optim" "prcomp" "predict" "rnorm" "runif" "sd"
 #' @importFrom "utils" "flush.console" "head" "read.csv" "read.table" "tail" "write.table"
 #### @import adabag
 #### no longer needed:  @import e1071     (because e1071 moved from "Depends" to "Suggests" in DESCRIPTION)
@@ -81,19 +78,6 @@ tdmBindResponse <- function(d,response.predict,vec)
       # replace contents of existing column response.predict
       d[,response.predict] <- vec;
     }
-
-    return(d)
-}
-#
-# this older version does the same, but requires three copy-replacements of
-# data frame d (instead of one):
-tdmBindResponse_OLD <- function(d,response.predict,vec)
-{
-    # drop column response.predict if there, do nothing if not there
-    d <- d[,setdiff(names(d),response.predict)]
-    # bind column response.predict as last column to data frame d
-    d <- cbind(d, prediction=vec)
-    names(d)[ncol(d)] <- response.predict
 
     return(d)
 }
@@ -166,15 +150,15 @@ print2 <- function(opts, ...) {  if (opts$VERBOSE>=2) print(...); }
 #' @method predict TDMenvir
 #' @examples
 #'    \dontrun{
-#'        ## This example requires that demo04cpu.r is executed first (it will write demo04cpu.RData)
-#'        path <- paste(find.package("TDMR"), "demo01cpu/",sep="/");
-#'        tdm <- list(  filenameEnvT="demo04cpu.RData" );   # file with environment envT 
-#'        load(paste(path,tdm$filenameEnvT,sep="/"));
-#'                   
-#'        # take only the first 15 records:
-#'        newdata=read.csv2(file=paste(path,"data/cpu.csv", sep=""), dec=".")[1:15,];     
-#'        z=predict(envT,newdata);
-#'        print(z);
+#'    ## This example requires that demo04cpu.r is executed first (it will write demo04cpu.RData)
+#'    path <- paste(find.package("TDMR"), "demo01cpu/",sep="/");
+#'    tdm <- list(  filenameEnvT="demo04cpu.RData" );   # file with environment envT 
+#'    load(paste(path,tdm$filenameEnvT,sep="/"));
+#'               
+#'    # take only the first 15 records:
+#'    newdata=read.csv2(file=paste(path,"data/cpu.csv", sep=""), dec=".")[1:15,];     
+#'    z=predict(envT,newdata);
+#'    print(z);
 #'    }
 #' @export
 predict.TDMenvir <- function(object,...) {
@@ -205,7 +189,7 @@ predict.TDMregressor <- function(object,...) {
 #'
 #' Returns the list \code{opts} from objects of class \code{\link{TDMenvir}}, \code{\link{TDMclassifier}},
 #'                  \code{\link{TDMregressor}}, \code{\link[=tdmClassify]{tdmClass}} or \code{\link[=tdmRegress]{tdmRegre}}.
-#' @param x  an object of class \code{\link{TDMclassifier}}, \code{\link[=tdmClassify]{tdmClass}}, 
+#' @param x  an object of class \code{\link{TDMenvir}}, \code{\link{TDMclassifier}}, \code{\link[=tdmClassify]{tdmClass}}, 
 #'                                \code{\link{TDMregressor}} or \code{\link[=tdmRegress]{tdmRegre}}.
 #' @param ... -- currently not used -- 
 #' @return the list \code{opts} with DM-specific settings contained in the specified object

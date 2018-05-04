@@ -26,4 +26,3 @@ produces an error.
 Wolfgang Konen, FHK, 2010 - 2013
 }
 \keyword{internal}
-

@@ -36,10 +36,9 @@ A normal distribution is approximated from the data given in \code{dset[,input.v
   is filled at random with levels with the same relative frequency as in \code{dset[,resp]}. 
   Other columns of dset are filled by copying the entries from the first row of dset.
 }
-\author{
-Wolfgang Konen, FHK, Nov'2011-Dec'2011
-}
 \seealso{
 \code{\link{tdmClassify}}
 }
-
+\author{
+Wolfgang Konen, FHK, Nov'2011-Dec'2011
+}

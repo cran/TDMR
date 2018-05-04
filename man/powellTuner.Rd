@@ -25,4 +25,3 @@ Perform a parameter tuning by Powell's UObyQA algorithm
 (unconstrained optimization by quadratic approximation), see R-package \code{powell}
 }
 \keyword{internal}
-

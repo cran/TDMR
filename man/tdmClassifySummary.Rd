@@ -28,10 +28,9 @@ tdmClassifySummary(result, opts, dset = NULL)
   \code{result$y} is "minus rgain" on test set (=validation set) for all other methods.
   \code{result$y} is the quantity which the tuner seeks to minimize.
 }
-\author{
-Wolfgang Konen, FHK, Sep'2010 - Oct'2011
-}
 \seealso{
 \code{\link{tdmClassify}}, \code{\link{tdmClassifyLoop}}, \code{\link{print.TDMclassifier}}, \code{\link{tdmRegressSummary}}
 }
-
+\author{
+Wolfgang Konen, FHK, Sep'2010 - Oct'2011
+}

@@ -2,7 +2,7 @@
 % Please edit documentation in R/tdmEnvTMakeNew.r
 \name{tdmEnvTSetOpts}
 \alias{tdmEnvTSetOpts}
-\title{Set list opts for the \code{k}-th \code{.conf}-file}
+\title{Set list opts for the \code{k}-th element of \code{envT$sCList}}
 \usage{
 tdmEnvTSetOpts(envT, opts, k = 1)
 }
@@ -17,6 +17,5 @@ tdmEnvTSetOpts(envT, opts, k = 1)
 envT
 }
 \description{
-Set list opts for the \code{k}-th \code{.conf}-file
+Set list opts for the \code{k}-th element of \code{envT$sCList}
 }
-

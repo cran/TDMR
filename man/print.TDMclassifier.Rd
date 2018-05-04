@@ -24,10 +24,9 @@ or  an object of class \code{\link{TDMclassifier}}, as returned from a prior cal
 \description{
 Print an overview for a \code{\link{TDMclassifier}} or \code{\link[=tdmClassify]{tdmClass}} object.
 }
-\author{
-Wolfgang Konen, THK
-}
 \seealso{
 \code{\link{tdmClassify}}, \code{\link{tdmClassifySummary}}, \code{\link{TDMclassifier}}
 }
-
+\author{
+Wolfgang Konen, THK
+}

@@ -23,4 +23,3 @@ Load the map files \code{"tdmMapDesign.csv"} and optionally
 \seealso{
 \code{\link{tdmMapDesApply}}
 }
-

@@ -1,7 +1,7 @@
 ######################################################################################
 # tdmRegressLoop
 #
-#' Core regression double loop of TDMR returning a \code{\link{TDMregressor}} object. 
+#' Core regression double loop returning a \code{\link{TDMregressor}} object. 
 #'
 #' tdmRegressLoop contains a double loop (opts$NRUN and CV-folds)
 #' and calls \code{\link{tdmRegress}}. It is called  by all R-functions main_*. \cr

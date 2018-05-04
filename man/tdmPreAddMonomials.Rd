@@ -36,4 +36,3 @@ columns of \code{rx}. The naming of these new columns is "R1x2" for the combinat
 CAVEAT: The double for-loop costs some time (e.g. 2-4 sec for ncol(rx)=8 or 10)
 How to fix: make a version w/o for-loop and w/o frequent assigns to dset (**TODO**)
 }
-

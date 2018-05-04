@@ -21,4 +21,3 @@ tdmGraphicInit(opts, ...)
 \description{
 Open multipage PDF or (create and) clear opts$GD.PNGDIR.
 }
-

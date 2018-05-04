@@ -29,4 +29,3 @@ Perform a parameter tuning by CMA-ES, using the *Java*
 implementation by Niko Hansen through the interface package \code{\link[rCMA]{rCMA}}.
 }
 \keyword{internal}
-

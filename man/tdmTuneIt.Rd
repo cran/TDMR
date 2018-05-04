@@ -4,20 +4,18 @@
 \alias{tdmTuneIt}
 \title{Tuning and unbiased evaluation (single tuning).}
 \usage{
-tdmTuneIt(envT, spotStep = "auto", dataObj)
+tdmTuneIt(envT, dataObj)
 }
 \arguments{
 \item{envT}{an environment containing on input at least the element \code{tdm} (a list with general settings for TDMR, 
               see \code{\link{tdmDefaultsFill}}), which has at least the elements  
 \describe{
-\item{\code{tdm$runList}}{ \code{.conf} filename }
+\item{\code{tdm$runList}}{ list of configuration names \code{.conf}  }
 \item{\code{tdm$tuneMethod}}{ the tuner }
 }}
 
-\item{spotStep}{\code{["auto"]} which step of SPOT to execute (either \code{"auto"} or \code{"rep"}).}
-
 \item{dataObj}{object of class \code{\link{TDMdata}} (constructed here with the help of 
-\code{\link{tdmSplitTestData}}).}
+\code{\link{tdmReadAndSplit}}).}
 }
 \value{
 environment \code{envT}, containing  the results
@@ -55,42 +53,30 @@ environment \code{envT}, containing  the results
   \code{tdmBigLoop} and its subfunctions.
 }
 \description{
-For the first \code{.conf} file in \code{tdm$runList} call the first tuning algorithm
+For the first configuration name \code{.conf} in \code{tdm$runList} call the first tuning algorithm
 in \code{tdm$tuneMethod} (via function \code{\link{tdmDispatchTuner}}). 
 After tuning perform with the best parameters a run of \code{tdm$unbiasedFunc}
 (usually \code{\link{unbiasedRun}}). \cr
 This experiment is repeated \code{tdm$nExperim} times.
 }
 \details{
-\code{tdmTuneIt} differs from \code{\link{tdmBigLoop}} in that it processes only one \code{.conf} 
-file and that it has \code{dataObj} as a mandatory calling parameter. This simplifies the data 
-flow and is thus less error-prone.
+\code{tdmTuneIt} differs from \code{\link{tdmBigLoop}} in that it processes only one configuration 
+\code{.conf} and that it has \code{dataObj} as a mandatory calling parameter. This simplifies  
+the data flow and is thus less error-prone.
 \cr\cr
 \code{tdm} refers to \code{envT$tdm}.
-\cr\cr
-Tuning is skipped if \code{spotStep=="rep"}. In this case it is assumed then that 
-\code{envT$bstGrid} and \code{envT$resGrid} contain the appropriate data frames already.
-See \code{\link{tdmEnvTAddBstRes}} on how to fill \code{envT$bstGrid} and \code{envT$resGrid}  from an \code{.RData} file.
 
 See Details in \code{\link{tdmBigLoop}} for the list of avaialble tuners.
 }
 \note{
 Side effects:
-  Irrespective of the value of \code{tdm$fileMode}, 
     \itemize{
-        \item a compressed version of \code{envT} is saved to file \code{tdm$filenameEnvT} (default: \code{<runList[1]>.RData}), 
-              relative to  the directory of the \code{.conf} file. 
+        \item a compressed version of \code{envT} is saved to file \code{tdm$filenameEnvT} 
+              (default: \code{<runList[1]>.RData}), in current directoy.
     }
   If \code{tdm$U.saveModel==TRUE}, then \code{envT$result$lastRes$lastModel} (the last trained model) will be saved to \code{tdm$filenameEnvT}. 
   The default is \code{tdm$U.saveModel==TRUE} (with \code{tdm$U.saveModel==FALSE} smaller \code{.RData} files).
 
-  If \code{tdm$fileMode==TRUE}, more files are written relative to  the directory of the \code{.conf} file:
-    \itemize{
-        \item \code{envT$theFinals } is written to file \code{tdm$finalFile} 
-        \item \code{envT$theFinals } is appended to \code{tdm$experFile}
-     }                                                                                                           
-  If \code{tdm$finalFile==NULL}, then it is set to \code{sub(".conf",".fin",runList[1])}.  \cr
-  If \code{tdm$experFile==NULL}, then nothing is appended to any experiment file.
 
 Example usages of function \code{tdmBigLoop} are shown in \cr
 \tabular{ll}{
@@ -112,36 +98,42 @@ where the corresponding R-sources are in directory \code{demo}.
 #*# Do not expect good numeric results. 
 #*# See demo/demo03sonar_B.r for a somewhat longer tuning run, with two tuners SPOT and LHD.
 
-## set working directory (dir with .apd, .conf and main_*.r file)
-path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
-source(paste(path,"main_sonar.r",sep="/"));    
+  ## path is the dir with data and main_*.r file:
+  path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
+  #path <- paste("../../inst", "demo02sonar",sep="/");
 
-## control settings for TDMR
-tdm <- list( mainFunc="main_sonar"
-           , runList = c("sonar_04.conf")
-           , umode="CV"              # { "CV" | "RSUB" | "TST" | "SP_T" }
-           , tuneMethod = c("lhd")
-           , filenameEnvT="exBigLoop.RData"   # file to save environment envT (in dir 'path')
-           , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
-           , nExperim=1
-           , parallelCPUs=1
-           , parallelFuncs=c("readCmdSonar")
-           , optsVerbosity = 0       # the verbosity for the unbiased runs
-           );
-## Each element of tdm$runList has the settings for one tuning process (e.g. 
-##    - auto.loop.steps = number of SPOT generations       
-##    - auto.loop.evals = budget of model building runs and 
-##    - io.roiFileName = "sonar_04.roi"
-## ). 
-
-spotStep = "auto";   
-source(paste(path,"start_tuneIt.r",sep="/"),chdir=TRUE);    # change dir to 'path' while sourcing
-
+  ## control settings for TDMR
+  tdm <- list( mainFunc="main_sonar"
+             , umode="CV"              # { "CV" | "RSUB" | "TST" | "SP_T" }
+             , tuneMethod = c("lhd")
+             , filenameEnvT="exBigLoop.RData"   # file to save environment envT
+             , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
+             , nExperim=1
+             , optsVerbosity = 0       # the verbosity for the unbiased runs
+             );
+  source(paste(path,"main_sonar.r",sep="/"));    # main_sonar, readTrnSonar
+\dontshow{
+  #*# This demo is for "R CMD check" (runs in half the time) 
+  source(paste(path,"control_sonar_check.r",sep="/")); # controlDM, controlSC
 }
-\author{
-Wolfgang Konen (\email{wolfgang.konen@th-koeln.de})
+\donttest{
+  #*# This demo is for example and help (more meaningful, a bit higher budget)
+  source(paste(path,"control_sonar.r",sep="/"));       # controlDM, controlSC
+}
+  ctrlSC <- controlSC();
+  ctrlSC$opts <- controlDM();
+
+  #
+  # perform a complete tuning + unbiased eval
+  # 
+  envT <- tdmEnvTMakeNew(tdm,sCList=list(ctrlSC)); # construct envT from settings in tdm and ctrlSC
+  dataObj <- tdmReadTaskData(envT,envT$tdm);
+  envT <- tdmTuneIt(envT,dataObj=dataObj);       # start the tuning loop 
+
 }
 \seealso{
 \code{\link{tdmBigLoop}}, \code{\link{tdmDispatchTuner}}, \code{\link{unbiasedRun}}
 }
-
+\author{
+Wolfgang Konen (\email{wolfgang.konen@th-koeln.de}), THK
+}

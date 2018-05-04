@@ -7,5 +7,5 @@ tdm <- list(tdmPath="../../TDMR"  # NULL or source TDMR-files from the R subdir 
         , theRsfaPath=NULL # "USE.SOURCE"  # NULL or source R-files for rSFA from the dir def'd in source.tdm.r. If NULL, load rSFA library.
         , parallelCPUs=1
         );
-
+#tdm$theSpotPath="C:/user/datasets/Vorlesungen/R-Project/SPOT_2.0.1/SPOT/R";
 source("start.tdm.r");

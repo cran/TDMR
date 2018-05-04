@@ -26,4 +26,3 @@ variable it contains and how many cases are in each level
 SIDE EFFECTS:
     some printed output
 }
-

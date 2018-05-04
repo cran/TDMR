@@ -38,10 +38,9 @@ tdmPrePCA.train is capable of linear PCA, based on prcomp (which uses SVD), and
 CAUTION: Kernel PCA (opts$PRE.PCA=="kernel") is currently disabled in code, it *crashes*
       for large number of records or large number of columns.
 }
-\author{
-Wolfgang Konen, FHK, Mar'2011 - Jan'2012
-}
 \seealso{
 \code{\link{tdmPrePCA.apply}}
 }
-
+\author{
+Wolfgang Konen, FHK, Mar'2011 - Jan'2012
+}

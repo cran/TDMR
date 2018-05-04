@@ -1,8 +1,8 @@
 ######################################################################################
 # tdmClassifyLoop:
 #
-#'    Core classification double loop of TDMR returning a \code{\link{TDMclassifier}} object. 
-#'    
+#'    Core classification double loop returning a \code{\link{TDMclassifier}} object. 
+#'
 #'    tdmClassifyLoop contains a double loop (opts$NRUN and CV-folds)
 #'    and calls \code{\link{tdmClassify}}. It is called  by all classification R-functions main_*. \cr
 #'    It splits - if \code{tset} is NULL - the data in \code{dset} into training and validation
@@ -40,8 +40,8 @@
 #'       \item{predictions}{ last run: data frame with dimensions [nrow(dset),length(response.variable)]. In case of CV, all 
 #'              CV predictions (for each record in dset), in other cases mixed validation / train set predictions.  }
 #'       \item{predictTest}{ predictions on the test set \code{tset} (NULL if \code{tset==NULL} )}
-#'       \item{predProbList}{ the ith element in this list has data on the prediction probabilities of the ith run. See info on 
-#'              \code{predProb} in \code{\link{tdmClassify}}. }
+#'       \item{predProbList}{ a list, \code{predProbList[[i]]} has the prediction probabilities  
+#'              of the ith run. See info on \code{predProb} in \code{\link{tdmClassify}}. }
 #'
 #'    Each performance measure \code{C_*, G_*, R_*} is a vector of length \code{opts$NRUN}. To be specific, \code{C_train[i]} is the
 #'    classification error on the training set from the \code{i}-th run. This error is \code{mean(res$allEVAL$cerr.trn)}, i.e. the
@@ -73,7 +73,14 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
   	  stop(sprintf("Not all response.variables are in names(dset)!\n  %s\n  response.variables=%s",
   	               "Note that response.variables have to be strings (names of columns in dset), not the columns themselves.",
   	               paste(response.variables,collapse=",")))
-
+    if (!is.null(opts$CLS.gainmat)) {
+     #browser()
+     for (respVar in response.variables)
+      testit::assert(sprintf("tdmClassifyLoop: Size of opts$CLS.gainmat and number of levels in dset$%s do not match", respVar)
+                    , nrow(opts$CLS.gainmat)==length(levels(dset[,respVar])) 
+                    , ncol(opts$CLS.gainmat)==length(levels(dset[,respVar])) )
+    }
+    
     predProbList=list();
     C_train <- C_vali <- C_vali2 <- G_train <- G_vali <- NULL # reserve names (dynamic extension of
     R_train <- R_vali <- R_vali2 <- G_vali2 <- NULL           # these vectors at and of for-i-loop)
@@ -93,7 +100,7 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
           #      But we want different seeds (for test set selection) to see the variability
           set.seed(tdmRandomSeed());
         } else if (opts$TST.SEED=="algSeed") {    # use the seed from SPOT:
-          # opts$ALG.SEED is set in tdmStartSpot to des$SEED[k]+r. This meens that the overall r'th 
+          # opts$ALG.SEED is set in tdmStartSpot2 to des$SEED[k]+r. This meens that the overall r'th 
           # evaluation of a design point gets the seed spotConfig$alg.seed+r
           newseed=opts$ALG.SEED+(opts$i-1)+opts$NRUN*(opts$rep-1);
           set.seed(newseed); 
@@ -209,8 +216,10 @@ tdmClassifyLoop <- function(dset,response.variables,input.variables,opts,tset=NU
         predProbList[[i]]$Val <- predProb$Val;
         predProbList[[i]]$Trn <- predProb$Trn;
 
-        cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV",""),"Relative gain on   training set   ",Err[i,"rgain.trn"],"%\n")
-        cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV",""),paste0("Relative gain on ",tsetStr[2]," set   "),Err[i,"rgain.tst"],"%\n\n")
+        cat1(opts,"\n",ifelse(opts$TST.kind=="cv","CV","")
+                 ,paste0("Relative gain (",opts$rgain.type,") on   training set   "),Err[i,"rgain.trn"],"%\n")
+        cat1(opts,"",  ifelse(opts$TST.kind=="cv","CV","")
+                 ,paste0("Relative gain (",opts$rgain.type,") on ",tsetStr[2]," set   "),Err[i,"rgain.tst"],"%\n\n")
 
         #opts$name.of.prediction <- paste("pred_", response.variable, sep="")
         C_train[i] = Err[i,"cerr.trn"]
@@ -315,9 +324,10 @@ tdmClassifySummary <- function(result,opts,dset=NULL)
     ytr = mean(result$R_train);
     maxScore    = result$G_vali[1]/(result$R_vali[1]/100);
     maxScore.tr = result$G_train[1]/(result$R_train[1]/100);
-    z=data.frame(TYPE=c("rgain","meanCA","minCA")
+    z=data.frame(TYPE=c("rgain","meanCA","minCA","bYouden")
                 ,DESC=c("relative gain, i.e. percent of correctly classified records"
-                        ,"mean class accuracy, i.e. average over class levels","minimum class accuracy"));
+                        ,"mean class accuracy, i.e. average over class levels"
+                        ,"minimum class accuracy", "balanced Youden index"));
     cat1(opts,sprintf("\nRelative gain is \"%s\"",opts$rgain.type));
     cat1(opts,sprintf(" (%s)", z$DESC[which(z$TYPE==opts$rgain.type)]));
     if (opts$MOD.method %in% c("RF","MC.RF") & opts$RF.OOB==TRUE) {

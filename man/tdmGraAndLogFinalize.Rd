@@ -17,4 +17,3 @@ see \code{\link{tdmGraphicInit}}}
 \description{
 Finalize graphics and log file
 }
-

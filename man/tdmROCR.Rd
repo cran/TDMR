@@ -19,4 +19,3 @@ See \code{\link{tdmROCR.TDMclassifier}} for details.
 \code{\link{tdmROCR.TDMclassifier}}   \code{\link{tdmROCRbase}}
 }
 \keyword{internal}
-

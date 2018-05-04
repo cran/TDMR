@@ -29,11 +29,10 @@ tdmRandomSeed = makeTdmRandomSeed();
 for (i in 1:10) print(c(as.integer(Sys.time()), tdmRandomSeed()));
 
 }
-\author{
-Wolfgang Konen, Patrick Koch \email{wolfgang.konen@th-koeln.de}
-}
 \seealso{
 \code{\link{tdmRandomSeed}}
 }
+\author{
+Wolfgang Konen, Patrick Koch \email{wolfgang.konen@th-koeln.de}
+}
 \keyword{internal}
-

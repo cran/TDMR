@@ -4,33 +4,30 @@
 \alias{tdmOptsDefaultsSet}
 \title{Default values for list \code{opts}.}
 \usage{
-tdmOptsDefaultsSet(opts = NULL, path = "./")
+tdmOptsDefaultsSet(opts = NULL, path = ".")
 }
 \arguments{
 \item{opts}{(optional) the options already set}
 
-\item{path}{["./"] the path string to precede all settings \code{opts$dir.*}. 
-If \code{path=="./"} then nothing is preceeded to \code{opts$dir.*}.}
+\item{path}{["."] where to find everything for the DM task.}
 }
 \value{
 a list \code{opts}, with defaults set for all options relevant for a DM task, 
    containing the following elements
-			\item{dir.txt}{[<path>/data] where to find .txt/.csv files} 
-			\item{dir.data}{[<path>/data] where to find other data files, including .Rdata  } 
-			\item{dir.Rdata}{[<path>/Rdata] -- deprecated, use opts$dir.data -- } 
-			\item{dir.output}{[<path>/Output] where to put output files} 
+			\item{path}{["."] where to find everything for the DM task} 
+			\item{dir.txt}{[data] where to find .txt/.csv files} 
+			\item{dir.data}{[data] where to find other data files, including .Rdata  } 
+			\item{dir.output}{[Output] where to put output files} 
 			\item{filename}{["default.txt"] the task data} 
 			\item{filetest}{[NULL] the test data, only relevant for READ.TstFn!=NULL}
-			\item{fileMode}{[TRUE] if =T, write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file} 
-  		\item{logFile}{[TRUE] if =T, and if opts$fileMode=T, write log file to *_train.log } 
 			\item{data.title}{["Default Data"] title for plots} 
 			\item{READ.TXT}{[T] =T: read data from .csv and save as .Rdata, =F: read from .Rdata}                                                   
 			\item{READ.NROW}{[-1] read this amount of rows or -1 for 'read all rows'} 
-  		\item{READ.TrnFn}{ function to be passed into \code{\link{tdmReadData2}}. Signature: function(opts)  
+  		\item{READ.TrnFn}{ function to be passed into \code{\link{tdmReadDataset}}. Signature: function(opts)  
     	                returning a data frame. It reads the train-validation data.   } 
-    	\item{READ.TstFn}{ [NULL] function to be passed into \code{\link{tdmReadData2}}. Signature: function(opts)  
+    	\item{READ.TstFn}{ [NULL] function to be passed into \code{\link{tdmReadDataset}}. Signature: function(opts)  
     	                returning a data frame. It reads a separate test data file. If NULL, this reading step is skipped.   } 
-			\item{READ.INI}{[TRUE] read the task data initially, i.e. prior to tuning, using \code{\link{tdmReadData2}} .  
+			\item{READ.INI}{[TRUE] read the task data initially, i.e. prior to tuning, using \code{\link{tdmReadDataset}} .  
                      If =FALSE, the data are read anew in each pass through main_TASK, i.e. in each tuning step (deprecated). } 
 			\item{TST.kind}{["rand"] one of the choices from \{"cv","rand","col"\}, see \code{\link{tdmModCreateCVindex}} for details  } 
 			\item{TST.COL}{["TST.COL"] name of column with train/test/disregard-flag} 
@@ -74,7 +71,7 @@ a list \code{opts}, with defaults set for all options relevant for a DM task,
 			\item{MOD.method}{["RF" (default) |"MC.RF" |"SVM" |"NB" ]: use [RF | MetaCost-RF | SVM | Naive Bayes ] in \code{\link{tdmClassify}}  \cr
                      ["RF" (default) |"SVM" |"LM" ]: use [RF | SVM | linear model ] in \code{\link{tdmRegress}}  } 
 			\item{RF.ntree}{[500] } 
-			\item{RF.samp}{[NULL] sampsize for RF in model training. If RF.samp is a scalar, then it specifies the 
+			\item{RF.samp}{[1000] sampsize for RF in model training. If RF.samp is a scalar, then it specifies the 
   		                      total size of the sample. For classification, it can also be a vector of length n.class 
     	                      (= # of levels in response variable), then it specifies the size of each strata. The sum 
                             of the vector is the total sample size. If NULL, RF.samp will be replaced by 3000 later
@@ -102,15 +99,16 @@ a list \code{opts}, with defaults set for all options relevant for a DM task,
                      length and names as the levels of the response variable. If no names are given, the levels of the response variables 
                      in lexicographical order will be attached in \code{\link{tdmClassify}}. CLS.CLASSWT=NULL for no weights.  }
 			\item{CLS.gainmat}{[NULL] (n.class x n.class) gain matrix. If NULL, CLS.gainmat will be set to unit matrix in \code{\link{tdmClassify}} }
-			\item{rgain.type}{["rgain" (default) |"meanCA" |"minCA" ] in case of \code{\link{tdmClassify}}: For classification, the measure 
-                     \code{Rgain} returned from \code{\link{tdmClassifyLoop}} in \code{result$R_*} is
-                     [relative gain (i.e. gain/gainmax) | mean class accuracy | minimum class accuracy ]. 
-                     The goal is to maximize  \code{Rgain}. \cr 
-                     For binary classification there are the additional measures [ "arROC" | "arLIFT" | "arPRE" ], see 
-                     \code{\link{tdmModConfmat}}. \cr
-                     For regression, the goal is to minimize \code{result$R_*} returned from \code{\link{tdmRegress}}. In this case, possible values are 
-                     \code{rgain.type} = ["rmae" (default) |"rmse"  | "made" ] which stands for 
-                     [ relative mean absolute error | root mean squared error | mean absolute deviation ].  } 
+			\item{rgain.type}{["rgain" (default) |"meanCA" |"minCA" ] in case of \code{\link{tdmClassify}}: For  
+                     classification, the measure \code{Rgain} returned from \code{\link{tdmClassifyLoop}} in 
+                     \code{result$R_*} is [relative gain (i.e. gain/gainmax) | mean class accuracy | minimum 
+                     class accuracy | minus Y ]. The goal is to maximize  \code{Rgain}. \cr 
+                     For binary classification there are the additional measures [ "arROC" | "arLIFT" 
+                     | "arPRE" | "bYouden" ], see 'Value' in \code{\link{tdmModConfmat}}. \cr 
+                     For regression, the goal is to minimize \code{result$R_*} returned from \code{\link{tdmRegress}}. 
+                     In this case, possible values are \code{rgain.type} = ["rmae" (default) |"rmse"  | "made" ] 
+                     which stands for [ relative mean absolute error | root mean squared error | 
+                     mean absolute deviation ].  } 
 			\item{ncopies}{[0] if >0, activate \code{\link{tdmParaBootstrap}} in \code{\link{tdmClassify}}  } 
      \item{fct.postproc}{[NULL] name of a function with signature \code{(pred, dframe, opts)} where \code{pred} is the prediction of the model on the 
                      data frame \code{dframe} and \code{opts} is this list. This function may do some postprocessing on \code{pred}  and
@@ -127,7 +125,7 @@ a list \code{opts}, with defaults set for all options relevant for a DM task,
                      multi-page pdf) in each call to \code{\link{tdmClassify}} or \code{\link{tdmRegress}}, resp. \cr
                      =F: leave all windows open (suitable for calls from SPOT) or write more pages in same pdf. } 
 			\item{GD.CLOSE}{[T] =T: close graphics device "png", "pdf" at the end of main_*.r (suitable for main_*.r solo) or \cr
-                     =F: do not close (suitable for call from tdmStartSpot, where all windows should remain open)  } 
+                     =F: do not close (suitable for call from tdmStartSpot2, where all windows should remain open)  } 
 			\item{NRUN}{[2] how many runs with different train & test samples  - or - how many CV-runs, if \code{opts$TST.kind}="cv"  } 
   		\item{APPLY_TIME}{[FALSE]   } 
   		\item{test2.show}{[FALSE]   } 
@@ -154,7 +152,7 @@ Set up and return a list \code{opts} with default settings. The list \code{opts}
     }
 }
 \details{
-The path-related settings are relative to \code{dir(tdm$mainFile)}, if it is def'd, else relative to the current dir. \cr
+The path-related settings are relative to \code{opts$path}, if it is def'd, else relative to the current dir. \cr
   Finally, the function \code{\link{tdmOptsDefaultsFill}(opts)} is called to fill in further details, depending on the current 
   settings of \code{opts}.
 }
@@ -163,10 +161,9 @@ The variables opts$PRE.PCA.numericV and opts$PRE.SFA.numericV (string vectors of
      are not set by \code{\link{tdmOptsDefaultsSet}} or \code{\link{tdmOptsDefaultsFill}}. Either they are supplied by the user or, 
      if NULL, TDMR will set them to \code{input.variables} in \code{\link{tdmClassifyLoop}}, assuming that all columns are numeric.
 }
-\author{
-Wolfgang Konen, FHK, 2011 - 2013
-}
 \seealso{
 \code{\link{tdmOptsDefaultsFill}} \code{\link{tdmDefaultsFill}}
 }
-
+\author{
+Wolfgang Konen, THK, 2013 - 2018
+}

@@ -28,4 +28,3 @@ The L-BFGS-B version allowing box constraints is used.
 Wolfgang Konen \email{wolfgang.konen@Th-koeln.de}, Patrick Koch
 }
 \keyword{internal}
-

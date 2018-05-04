@@ -32,4 +32,3 @@ This function is somewhat specialized for the DMC2010-task.
 \author{
 Wolfgang Konen \email{wolfgang.konen@th-koeln.de}
 }
-

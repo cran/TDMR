@@ -196,18 +196,6 @@ tdmRegress <- function(d_train,d_test,d_preproc,response.variables,input.variabl
           set.seed(newseed) # if you want reproducably the same model training,
         }                   # but different for each run i
 
-    		# Boruta: Alternative to Calc variable importance
-    		#cat1(opts,filename,": Boruta... This may take a while...\n")
-    		#library(Boruta)
-    		#na.omit(to.model)->"CH4";
-    		#Boruta(formula, data=to.model, doTrace=2)->Bor.biogas
-    		#print(Bor.biogas)
-    		#stats<-attStats(Bor.biogas);
-    		#print(stats);
-    		#plot(normHits~meanZ,col=stats$decision,data=stats);
-        ##TODO: NDROP columns which are unimportant to boruta
-
-
         #=========================================================
         # PART 4.3: MODELING: TRAIN RANDOM FOREST (OR OTHER METHOD)
         #=========================================================

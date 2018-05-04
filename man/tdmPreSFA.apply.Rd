@@ -34,10 +34,9 @@ the data set returned from \code{\link{tdmPreSFA.train}} in \code{sfa$dset}.}
 \description{
 The SFA projection is taken from \code{sfaList}, a value returned from a prior call to  \code{\link{tdmPreSFA.train}}.
 }
-\author{
-Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 - Feb'2012
-}
 \seealso{
 \code{\link{tdmPreSFA.train}}
 }
-
+\author{
+Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 - Feb'2012
+}

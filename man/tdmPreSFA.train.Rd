@@ -37,10 +37,9 @@ tdmPreSFA.train uses package \code{\link[rSFA]{rSFA}}. It is assumed that classi
     contained in column \code{response.var} is done. SFA seeks features in an expanded function space for which  
     the intra-class variation w.r.t.  \code{response.var} is as low as possible.
 }
-\author{
-Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 - Feb'2012
-}
 \seealso{
 \code{\link{tdmPreSFA.apply}}
 }
-
+\author{
+Wolfgang Konen, Martin Zaefferer, FHK, Jan'2012 - Feb'2012
+}

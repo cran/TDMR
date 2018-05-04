@@ -22,11 +22,10 @@ and in addition \code{envT$spotConfig$alg.roi}}
 \code{opts}, the modified list of options
 }
 \description{
-For each variable which appears in .roi (and thus in .des file and design point data frame \code{des}): 
+For each variable which appears in .roi (and thus in design point data frame \code{des}): 
    set its counterpart in list \code{opts} to the values of the \code{k}-th row in \code{des}.
-   For each variable not appearing: leave its counterpart in \code{opts} at its default value from .apd file.
+   For each variable not appearing: leave its counterpart in \code{opts} at its default value from \code{\link{defaultOpts}}.
 }
 \seealso{
 \code{\link{tdmMapDesLoad}}
 }
-

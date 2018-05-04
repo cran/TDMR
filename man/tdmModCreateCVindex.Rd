@@ -42,7 +42,10 @@ Depending on the value of member TST.kind in list opts, the returned index cvi i
   Special case TST.kind="cv" and TST.NFOLD=1: make *every* record a training record, i.e. index [000...]. \cr
   In case TST.kind="rand" and stratified=TRUE a \emph{stratified} sample is drawn, where the strata in the 
   training case reflect the rel. frequency of each level of the **1st** response variable
-  and are ensured to be at least of size 1.
+  and are ensured to be at least of size 1.\cr
+  In summary, TST.kind="cv" means cross validation (TST.NFOLD models are built with TST.NFOLD
+  different train-validation data sets), while TST.kind="rand" or "col" means one model build 
+  with a random ("rand") or user-defined ("col") training-validation split.
 }
 \note{
 Currently stratified sampling in case TST.KIND='rand' does only work correctly for \emph{one} response variable.  
@@ -50,4 +53,3 @@ Currently stratified sampling in case TST.KIND='rand' does only work correctly f
    first response variable. (For multiple response variables we would have to return a list of cvi's or to
    call tdmModCreateCVindex for each response variable anew.)
 }
-

@@ -23,10 +23,9 @@ or  an object of class \code{\link{TDMregressor}}, as returned from a prior call
 \description{
 Print an overview for a \code{\link{TDMregressor}} or \code{\link[=tdmRegress]{tdmRegre}} object.
 }
-\author{
-Wolfgang Konen, THK
-}
 \seealso{
 \code{\link{tdmRegress}}, \code{\link{tdmRegressSummary}}, \code{\link{TDMregressor}}
 }
-
+\author{
+Wolfgang Konen, THK
+}

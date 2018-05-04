@@ -20,4 +20,3 @@ data frame \code{d} with column added
 Bind the column with name \code{response.predict} and 
 contents \code{vec} as last column to data frame \code{d}
 }
-

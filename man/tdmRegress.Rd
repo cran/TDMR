@@ -90,10 +90,9 @@ print(res$allRMAE)
 print(res$allRMSE)
 
 }
-\author{
-Wolfgang Konen, FHK, Sep'2009 - Jun'2012
-}
 \seealso{
 \code{\link{print.tdmRegre}} \code{\link{tdmRegressLoop}} \code{\link{tdmClassifyLoop}}
 }
-
+\author{
+Wolfgang Konen, FHK, Sep'2009 - Jun'2012
+}

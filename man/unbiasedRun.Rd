@@ -4,11 +4,11 @@
 \alias{unbiasedRun}
 \title{Perform unbiased runs with best-solution parameters.}
 \usage{
-unbiasedRun(confFile, envT, dataObj = NULL, finals = NULL, umode = "RSUB",
+unbiasedRun(confFile, envT, dataObj = NULL, umode = "RSUB",
   withParams = FALSE, tdm = NULL)
 }
 \arguments{
-\item{confFile}{the .conf filename, e.g. "appAcid_02.conf"}
+\item{confFile}{the configuration name, e.g. \code{"appAcid_02.conf"}}
 
 \item{envT}{environment, from which we need the objects
 \describe{
@@ -16,16 +16,15 @@ unbiasedRun(confFile, envT, dataObj = NULL, finals = NULL, umode = "RSUB",
   \item{\code{res}}{ data frame containing all results}
   \item{\code{theTuner}}{ ["spot"] string}
   \item{\code{spotConfig}}{ [NULL] a list with SPOT settings. If NULL, try to read spotConfig from confFile.} 
+  \item{\code{finals}}{ [NULL] a one-row data frame to which new columns with final results are added}
 }}
 
 \item{dataObj}{[NULL] contains the pre-fetched data with training-set and test-set part. 
-If NULL, set it to \code{tdmSplitTestData(opts,tdm)}. \cr
+If NULL, set it to \code{tdmReadAndSplit(opts,tdm)}. \cr
 It is now \strong{deprecated} to have dataObj==NULL.}
 
-\item{finals}{[NULL] a one-row data frame to which new columns with final results are added}
-
 \item{umode}{--- deprecated as argument to unbiasedRun --- , use the division provided 
-                 in \code{dataObj = tdmSplitTestData(opts,tdm)} which makes use of \code{tdm$umode}.\cr
+                 in \code{dataObj = tdmReadAndSplit(opts,tdm)} which makes use of \code{tdm$umode}.\cr
                  For downward compatibility only (if \code{dataObj==NULL} :\cr
                  [ "RSUB" (default) | "CV" | "TST" | "SP_T" ], how to divide in training and test data for the unbiased runs:
 \describe{
@@ -53,7 +52,10 @@ It is now \strong{deprecated} to have dataObj==NULL.}
 The defaults in '[...]' are set by  \code{\link{tdmDefaultsFill}}, if they are not defined on input.}
 }
 \value{
-\code{finals}     a one-row data frame with final results
+\code{envT} the augmdented environment envT, with the following items updated
+   \item{finals}{the final results}
+   \item{tdm}{the updated list with TDM settings}
+   \item{results}{last results (from last unbiased training)}
 }
 \description{
 Read the best solution of a parameter-tuning run from \code{envT$bst}, 
@@ -66,8 +68,7 @@ Side Effects:
    The list \code{result}, an object of class \code{\link{TDMclassifier}} or \code{\link{TDMregressor}} as returned 
    from \code{tdm$mainFunc} is written onto \code{envT$result}. \cr
    If  \code{envT$spotConfig} is NULL, it is constructed from confFile. \cr
-   If \code{spotConfig$opts} (list with all parameter settings for the DM task) is NULL, we try to read it from  
-   \code{spotConfig$io.apdFileName}. This will issue a warning '... might not work in parallel mode', but is perfectly fine for non-parallel mode.
+   \code{spotConfig$opts} (list with all parameter settings for the DM task) has to be non-NULL.
 }
 \examples{
    ## Load the best results obtained in a prior tuning for the configuration "sonar_04.conf"
@@ -75,28 +76,24 @@ Side Effects:
    ## is read from demo02sonar/demoSonar.RData.
    ## Run task main_sonar again with these best parameters, using the default settings from 
    ## tdmDefaultsFill: umode="RSUB", tdm$nrun=5  and tdm$TST.testFrac=0.2.
-   oldwd <- getwd();
-   setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
-   ## The best results are read from demo02sonar/demoSonar.RData 
-   ## (relative to the TDMR package directory):
-   load("demoSonar.RData");
-   opts <- tdmEnvTGetOpts(envT,1);
-   envT$tdm$optsVerbosity=0;
-   dataObj <- tdmSplitTestData(opts,envT$tdm);
-   source("main_sonar.r");
-   finals <- unbiasedRun("sonar_04.conf",envT,dataObj,tdm=envT$tdm);
-   print(finals);
-   setwd(oldwd);
+   path = paste(find.package("TDMR"), "demo02sonar",sep="/")
+   envT = tdmEnvTLoad("demoSonar.RData",path);    # loads envT
+   source(paste(path,"main_sonar.r",sep="/"));
+   envT$tdm$optsVerbosity=1;
+   envT$sCList[[1]]$opts$path=path;       # overwrite a possibly older stored path
+   envT$spotConfig <- envT$sCList[[1]];
+   dataObj <- tdmReadTaskData(envT,envT$tdm);
+   envT <- unbiasedRun("sonar_04.conf",envT,dataObj,tdm=envT$tdm);
+   print(envT$finals);
 
 }
+\seealso{
+\code{\link{tdmBigLoop}}, \code{\link{TDMclassifier}}, \code{\link{TDMregressor}}
+}
 \author{
-Wolfgang Konen, FHK, 2010 - 2013
+Wolfgang Konen, THK, 2013 - 2018
 
     If envT$bst or envT$res is NULL, try to read it from the file (the filename is
     inferred envT$spotConfig. If this is NULL, it is constructed from confFile). 
     We try to find the files for envT$bst or envT$res in dir envT$theTuner).
 }
-\seealso{
-\code{\link{tdmBigLoop}}, \code{\link{TDMclassifier}}, \code{\link{TDMregressor}}
-}
-

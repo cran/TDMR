@@ -28,4 +28,3 @@ least cases together in "OTHER" such that the total number of new levels
 is opts$PRE.MaxLevel. From these two choices for "OTHER" take the one which binds more 
 variables in column "OTHER".
 }
-

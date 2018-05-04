@@ -14,4 +14,3 @@ see \code{\link{tdmGraphicInit}}}
 \description{
 Only relevant for opts$GD.DEVICE=="win".
 }
-

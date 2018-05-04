@@ -24,7 +24,10 @@
 #'   Special case TST.kind="cv" and TST.NFOLD=1: make *every* record a training record, i.e. index [000...]. \cr
 #'   In case TST.kind="rand" and stratified=TRUE a \emph{stratified} sample is drawn, where the strata in the 
 #'   training case reflect the rel. frequency of each level of the **1st** response variable
-#'   and are ensured to be at least of size 1.
+#'   and are ensured to be at least of size 1.\cr
+#'   In summary, TST.kind="cv" means cross validation (TST.NFOLD models are built with TST.NFOLD
+#'   different train-validation data sets), while TST.kind="rand" or "col" means one model build 
+#'   with a random ("rand") or user-defined ("col") training-validation split.
 #'
 #' @param dset    the data frame for which cvi is needed
 #' @param response.variables  issue a warning if \code{length(response.variables)>1}. Use the first
@@ -178,7 +181,7 @@ tdmModAdjustSampsizeC <- function(samp, to.model, response.variable, opts) {
     }
     
     if (any(is.na(newsamp))) 
-      stop(sprintf("sampsize 'samp' contains NA's! Consider appropriate lines 'opts$RF.samp[i] = ...' in APD file.\n  samp = "),
+      stop(sprintf("sampsize 'samp' contains NA's! Consider appropriate lines 'opts$RF.samp[i] = ...' in opts-construction.\n  samp = "),
            paste(samp,collapse=", "))
     if (any(samp!=newsamp)) cat1(opts,"Clipping sampsize to ",newsamp,"\n");
     newsamp;
@@ -213,7 +216,7 @@ tdmModAdjustCutoff <- function(cutoff,n.class,text="cutoff")
 {
     if (!is.null(cutoff)) {
       if (any(is.na(cutoff))) 
-        stop(sprintf("cutoff '%s' contains NA's! Consider appropriate lines '%s[i] = ...' in APD file.\n  %s = ",text,text,text),
+        stop(sprintf("cutoff '%s' contains NA's! Consider appropriate lines '%s[i] = ...' in opts-construction.\n  %s = ",text,text,text),
              paste(cutoff,collapse=", "))
       
       if (length(cutoff)==n.class-1) cutoff=c(cutoff,-1);   # assume that the last element is to be adjusted as remainder to 1
@@ -439,7 +442,12 @@ tdmModSortedRFimport <- function(d_train, response.variable, input.variables, op
     lsd <- length(s_dropped);
     # what percentage of total importance is in the dropped variables:
     perc <- (1-sum(s_imp2[1:(length(s_imp2)-lsd)])/sum(s_imp2))*100;
-    if (opts$SRF.kind=="xperc" & (perc/100>1-opts$SRF.XPerc | perc<0)) {
+    if (opts$SRF.kind=="xperc" ) {
+      if (sum(s_imp2)==0)
+        stop(sprintf("Can't continue: None of the importances is >0 --> probably you have very imbalanced data!\n %s %s",
+                     "Consider to enlarge your dataset with more examples from every class - OR -\n",
+                     "to set opts$SRF.kind='none'."));
+      if (perc/100>1-opts$SRF.XPerc | perc<0)
         stop(sprintf("Something wrong with perc: %f",perc));
     }
 
@@ -652,11 +660,13 @@ tdmModVote2Target <- function(vote0,pred,target) {
 #'     \item \code{gainmat}:   the gain matrix for each possible outcome, same size as \code{cm$mat} (see below). \cr
 #'               \code{gainmat[R1,P2]} is the gain associated with a record of real class R1 which we
 #'               predict as class P2. (gain matrix = - cost matrix)
-#'     \item \code{rgain.type}: one out of \{"rgain" | "meanCA" | "minCA" | "arROC" | "arLIFT" | "arPRE" \},
+#'     \item \code{rgain.type}: one out of \{"rgain" | "meanCA" | "minCA" | "bYouden" 
+#'               | "arROC" | "arLIFT" | "arPRE" \},
 #'               affects output \code{cm$mat} and \code{cm$rgain}, see below.
 #'    }
-#' @param  predProb    if not NULL, a data frame with as many rows as data frame \code{d}, containing columns 
-#'               (index, true label, predicted label, prediction score). Is only needed for \code{opts$rgain.type=="ar*"}.
+#' @param  predProb    if not NULL, a data frame with as many rows as data frame \code{d}, containing 
+#'               columns (index, true label, predicted label, prediction score). Is only needed 
+#'               for \code{opts$rgain.type=="ar*"}.
 #'
 #' @return \code{cm}, a list containing: 
 #'     \item{mat}{ matrix with real class levels as rows, predicted class levels columns.  \cr
@@ -664,8 +674,9 @@ tdmModVote2Target <- function(vote0,pred,target) {
 #'               predicted as class P2, if opts$rgain.type=="rgain".
 #'               If opts$rgain.type=="meanCA" or "minCA", then show this number as percentage
 #'               of "records with real class R1" (percentage of each row).
-#'               CAUTION: If colpred contains NA's, those cases are missing in mat (!)
-#'               (but the class errors are correct as long as there are no NA's in colreal)}
+#'               CAUTION: If there are NA's in column \code{colpred}, those cases are missing 
+#'               in \code{mat} (!) (but the class errors are correct as long as there are 
+#'               no NA's in column \code{colreal})}
 #'     \item{cerr}{ class error rates, vector of size nlevels(colreal)+1.  \cr
 #'               \code{cerr[X]} is the misclassification rate for real class X. \cr
 #'               \code{cerr["Total"]} is the total classification error rate.}
@@ -673,13 +684,22 @@ tdmModVote2Target <- function(vote0,pred,target) {
 #'     \item{gain.vector}{ gain.vector[X] is the gain attributed to real class label X.
 #'               gain.vector["Total"] is again the total gain.}
 #'     \item{gainmax}{    the maximum achievable gain, assuming perfect prediction}
-#'     \item{rgain}{      ratio gain/gainmax in percent, if \code{opts$rgain.type=="rgain"};  \cr
-#'               mean class accuracy percentage (i.e. mean(diag(cm$mat)), if \code{opts$rgain.type=="meanCA"}; \cr
-#'               min class accuracy percentage (i.e. min(diag(cm$mat)), if \code{opts$rgain.type=="minCA"}; \cr
-#'               area under ROC curve (a number in [0,1]), if \code{opts$rgain.type=="arROC"}; \cr
-#'               area between lift curve and horizontal line 1.0, if \code{opts$rgain.type=="arLIFT"}; \cr
-#'               area under precision-recall curve (a number in [0,1]), if \code{opts$rgain.type=="arPRE"}; \cr
+#'     \item{rgain}{      Depending on the value of \code{opts$rgain.type}:  \cr
+#'               \code{"rgain"}: ratio gain/gainmax in percent, \cr
+#'               \code{"meanCA"}: mean class accuracy percentage (i.e. mean(diag(cm$mat)), \cr
+#'               \code{"minCA"}: min class accuracy percentage (i.e. min(diag(cm$mat)), \cr
+#'               \code{"bYouden"}: balanced Youden index: min(sensitivity,specificity), \cr
+#'               \code{"arROC"}: area under ROC curve (a number in [0,1]),  \cr
+#'               \code{"arLIFT"}: area between lift curve and horizontal line 1.0, \cr
+#'               \code{"arPRE"}: area under precision-recall curve (a number in [0,1]) 
 #'               } 
+#'               
+#' @note For all measures \code{rgain} holds: The higher, the better. \cr
+#'    The last four elements of \code{opts$rgain.type=} \code{"bYouden","arROC",} 
+#'    \code{"arLIFT","arPre"} are only available for binary classification. \cr
+#'    For case \code{"bYouden"}: \cr
+#'      sensitivity = \code{TP/(TP+FN)} \cr 
+#'      specificity = \code{TN/(TN+FP)} \cr 
 #' 
 #' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), Patrick Koch 
 #' @seealso  \code{\link{tdmClassify}}    \code{\link{tdmROCRbase}}
@@ -688,8 +708,8 @@ tdmModVote2Target <- function(vote0,pred,target) {
 tdmModConfmat <- function(d,colreal,colpred,opts,predProb=NULL)
 {
     if (is.null(opts$rgain.type)) opts$rgain.type="rgain";
-    if (!(opts$rgain.type %in% c("rgain","meanCA","minCA","arROC","arLIFT","arPRE")))
-      stop(sprintf("Invalid option opts$rgain.type=\"%s\"\n  Allowed values are \"rgain\",\"meanCA\",\"minCA\",\"arROC\",\"arLIFT\",\"arPRE\"",opts$rgain.type));
+    if (!(opts$rgain.type %in% c("rgain","meanCA","minCA","bYouden","arROC","arLIFT","arPRE")))
+      stop(sprintf("Invalid option opts$rgain.type=\"%s\"\n  Allowed values are \"rgain\",\"meanCA\",\"minCA\",\"bYouden\",\"arROC\",\"arLIFT\",\"arPRE\"",opts$rgain.type));
     AREA = opts$rgain.type %in% c("arROC","arLIFT","arPRE");
     if (AREA & is.null(predProb))
       stop(sprintf("Can not calculate the measure rgain for opts$rgain.type==%s, if argument predProb is NULL",opts$rgain.type));
@@ -740,8 +760,10 @@ tdmModConfmat <- function(d,colreal,colpred,opts,predProb=NULL)
 
     rgain = gain/gainmax*100;
     nacase = length(which(is.na(col.pred)));
-    if (sum(cmat)+nacase!=ccase[1,"Total"])
-        stop("tdmModConfmat: Something wrong in NA-counting!");
+    if (sum(cmat)+nacase!=ccase[1,"Total"]) {
+      #browser()
+      stop("tdmModConfmat: Something wrong in NA-counting!");
+    }
 
     if (opts$rgain.type %in% c("meanCA","minCA")) {
       for (rc in levels(col.real)) {
@@ -763,7 +785,16 @@ tdmModConfmat <- function(d,colreal,colpred,opts,predProb=NULL)
             , "arLIFT" = tdmROCR_area(perf,"lift")
             );
     }
-
+    balancedYouden <- function(cm) {
+      testit::assert("Confusion matrix cm has to have two rows for opts$rgain.type=='bYouden'",nrow(cm)==2)
+      sensitivity <- cm[2,2]/(cm[2,1]+cm[2,2])
+      specificity <- cm[1,1]/(cm[1,1]+cm[1,2])
+      return(min(sensitivity,specificity))
+    }
+    if (opts$rgain.type=="bYouden") {
+      rgain = balancedYouden(cmat)
+    }
+    
     cm = list( mat=cmat
               ,cerr=cerr
               ,ccase=ccase

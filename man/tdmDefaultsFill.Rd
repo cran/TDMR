@@ -15,34 +15,29 @@ tdmDefaultsFill(tdm = NULL, mainFile = NULL)
 \code{tdm}     the new / extended list,  where additional elements, if they are not yet def'd,  are set as: 
      \item{mainFile}{[NULL] if not NULL, source this file from the current dir. It should contain the definition of tdm$mainFunc.  }
      \item{mainFunc}{\code{sub(".r","",basename(tdm$mainFile),fixed=TRUE)}, if \code{tdm$mainFile} is set and \code{tdm$mainFunc} is NULL, else \code{"mainFunc"} 
-             This is the name of the function called in \code{\link{tdmStartSpot}} and \code{\link{unbiasedRun}}   }
+             This is the name of the function called in \code{\link{tdmStartSpot2}} and \code{\link{unbiasedRun}}   }
      \item{unbiasedFunc}{["unbiasedRun"] which function to call for unbiased evaluation}
      \item{tuneMethod}{["spot"] other choices: "cmaes", "bfgs", ..., see \code{\link{tdmDispatchTuner}} }
      \item{nExperim}{[1]}
      \item{umode}{["RSUB"], one out of [ "RSUB" | "CV" | "TST" | "SP_T" ], see \code{\link{unbiasedRun}}}
      \item{timeMode}{[1] 1: proc time, 2: system time, 3: elapsed time (columns \code{Time.TST} and \code{Time.TRN} in \code{envT$theFinals}}
-     \item{fileMode}{[FALSE] see "Note" section in \code{\link{tdmBigLoop}}   }
-     \item{finalFile}{[NULL]  filename where to save \code{envT$theFinals}, only relevant for \code{tdm$fileMode==TRUE}}
-     \item{experFile}{[NULL] filename where to append \code{envT$theFinals}, only relevant for \code{tdm$fileMode==TRUE}  }
      \item{filenameEnvT}{filename where \code{\link{tdmBigLoop}} will save a small version of environment \code{envT}. If NULL, 
-               it is set to \code{sub(".conf",".RData",tdm$runList[1])}. This RData file is written irrespective of 
-               \code{fileMode}'s value, but only in case \code{spotStep=="auto"}. }
+               it is set to \code{sub(".conf",".RData",tdm$runList[1])}.  }
      \item{theSpotPath}{[NA] use SPOT's package version}
      \item{parallelCPUs}{[1] 1: sequential, >1: parallel execution with this many CPUs (package \code{\link{parallel}})  }
      \item{parallelFuncs}{[NULL] in case tdm$parallelCPUs>1: a string vector with functions which are clusterExport'ed in addition
-               to tdm$mainFunc.  }
-     \item{path}{[NULL] where to search .conf and .apd file. If it is NULL, path is set 
-               to the actual working directory at the time when tdmEnvTMakeNew is executed  }
-     \item{runList}{ [NULL] a list of .conf filenames}
-     \item{spotList}{[NULL] a list of .conf filenames}
-     \item{stratified}{[NULL] see \code{\link{tdmSplitTestData}}  }
+               to \code{tdm$mainFunc}.  }
+     \item{path}{[NULL] from where to load and save \code{envT} resp. \code{filenameEnvT}. If it is NULL, 
+               \code{tdm$path} is set to the actual working directory at the time when tdmEnvTMakeNew is executed.  }
+     \item{runList}{ [NULL] a list of configuration names \code{.conf}}
+     \item{stratified}{[NULL] see \code{\link{tdmReadAndSplit}}  }
      \item{tdmPath}{[NULL] from where to source the R sources. If NULL load library TDMR instead.  }
      \item{test2.string}{["default cutoff"] }
      \item{optsVerbosity}{[0] the verbosity for the unbiased runs}
      \item{withParams}{[TRUE] list the columns with tuned parameter in final results  }
      \item{nrun}{[5] number of runs for unbiased run}
      \item{U.saveModel}{[TRUE] if TRUE, save the last model, which is trained in unbiasedRun, onto \code{filenameEnvT}}
-     \item{tstCol}{["TST"] opts$TST.COL for unbiased runs (only for umode="TST") }
+     \item{tstCol}{["TST.COL"] opts$TST.COL for unbiased runs (only for umode="TST") }
      \item{nfold}{[10] number of CV-folds for unbiased runs (only for umode="CV") }
      \item{TST.trnFrac}{[NULL] train set fraction (of all train-vali data),OVERWRITES opts$TST.trnFrac if not NULL. }
      \item{TST.valiFrac}{[NULL] validation set fraction (of all train-vali data), OVERWRITES to opts$TST.valiFrac if not NULL. }
@@ -63,7 +58,7 @@ will set \preformatted{tdm$mainFunc=sub(".r","",basename(tdm$mainFile),fixed=TRU
 }
 \note{
 The settings \code{tdm$TST.trnFrac} and \code{tdm$TST.valiFrac} allow to set programmatically certain values for
-     \code{opts$TST.trnFrac} and \code{opts$TST.valiFrac} *after* \code{opts} has been read from APD file. So use 
+     \code{opts$TST.trnFrac} and \code{opts$TST.valiFrac} *after* \code{opts} has been constructed. So use 
      \code{tdm$TST.trnFrac} and \code{tdm$TST.valiFrac} with CAUTION!
 
      For \code{tdm$timeMode}, the 'user time' is the CPU time charged for the execution of user instructions of the calling process. 
@@ -71,6 +66,5 @@ The settings \code{tdm$TST.trnFrac} and \code{tdm$TST.valiFrac} allow to set pro
      The 'elapsed time' is the 'real' (wall-clock) time since the process was started.
 }
 \author{
-Wolfgang Konen, Patrick Koch, THK
+Wolfgang Konen, THK, Patrick Koch
 }
-

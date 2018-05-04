@@ -16,4 +16,3 @@ see \code{\link{tdmGraphicInit}}}
 \description{
 Close active file ("png").
 }
-

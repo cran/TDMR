@@ -7,11 +7,12 @@
 # Author: Wolfgang Konen, FHK, Oct'2009 - Apr'2014
 #
 # Example usage:
-#       result <- main_cpu();
+#       result <- main_cpu(opts);
 #
-main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {           
+main_cpu <- function(opts,dset=NULL,tset=NULL) {           
 
-    if (is.null(opts)) source("cpu_00.apd", local=TRUE);
+    # if (is.null(opts)) source("cpu_00.apd", local=TRUE);  # --- APD file is deprecated
+  
     if (opts$rgain.type=="rgain") opts$rgain.type="rmae";
     opts <- tdmOptsDefaultsSet(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     
@@ -22,7 +23,7 @@ main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {
     #===============================================
     if (is.null(dset)) {
       cat1(opts,opts$filename,": Read data ...\n")
-      dset <- tdmReadData2(opts);
+      dset <- tdmReadDataset(opts);
     }
 
     # which variable is response variable:
@@ -69,7 +70,7 @@ main_cpu <- function(opts=NULL,dset=NULL,tset=NULL) {
 }                                                   
 
 readCmdCpu <- function(filename,opts) {
-  read.csv2(file=paste(opts$dir.data, filename, sep=""), dec=".", na.string="-1",nrow=opts$READ.NROW);
+  read.csv2(file=paste(opts$path,opts$dir.data, filename, sep="/"), dec=".", na.string="-1",nrow=opts$READ.NROW);
 }
 
 readTrnCpu <- function(opts) {

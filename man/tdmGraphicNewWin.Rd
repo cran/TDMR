@@ -17,4 +17,3 @@ package grDevices (the other devices require no further arguments)}
 \description{
 Initialize a new window ("win") / a new file ("png") for current graphic device.
 }
-

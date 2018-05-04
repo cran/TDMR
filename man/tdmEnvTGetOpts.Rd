@@ -2,7 +2,7 @@
 % Please edit documentation in R/tdmEnvTMakeNew.r
 \name{tdmEnvTGetOpts}
 \alias{tdmEnvTGetOpts}
-\title{Return list opts from the \code{k}-th \code{.conf}-file}
+\title{Return list opts from the \code{k}-th element of \code{envT$sCList}}
 \usage{
 tdmEnvTGetOpts(envT, k = 1)
 }
@@ -15,6 +15,5 @@ tdmEnvTGetOpts(envT, k = 1)
 opts
 }
 \description{
-Return list opts from the \code{k}-th \code{.conf}-file
+Return list opts from the \code{k}-th element of \code{envT$sCList}
 }
-

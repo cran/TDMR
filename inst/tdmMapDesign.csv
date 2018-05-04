@@ -1,5 +1,5 @@
 # For each variable which appears in .roi (and thus in .des file): set its counterpart in list opts.
-# (For each variable not appearing: leave its opts value at its default from .apd file.)
+# (For each variable not appearing: leave its opts value at its default from defaultOPts().)
 roiValue;   optsValue;          isInt
 PCA.npc;    opts$PRE.PCA.npc;   1
 SFA.npc;    opts$PRE.SFA.npc;   1

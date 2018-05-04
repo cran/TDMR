@@ -53,4 +53,3 @@ Build a Random Forest using \code{importance=TRUE}. Usually the RF is smaller (5
 \author{
 Wolfgang Konen, Patrick Koch \email{wolfgang.konen@th-koeln.de}
 }
-

@@ -9,9 +9,9 @@ tdmDispatchTuner(tuneMethod, confFile, spotStep, tdm, envT, dataObj)
 \arguments{
 \item{tuneMethod}{the tuning algorithm given as a string. Possible values are \{ "spot" | "lhd" | "cmaes" | "cma_j" | "bfgs" | "powell" \}.}
 
-\item{confFile}{the configuration file.}
+\item{confFile}{the configuration name.}
 
-\item{spotStep}{which step to execute for \link{SPOT} . Values "rep" ("report") and "auto" are supported by TDMR.}
+\item{spotStep}{--DEPRECATED-- SPOT 2.0 supports only spotStep="auto".}
 
 \item{tdm}{the TDMR object}
 
@@ -37,11 +37,10 @@ Side effects: Environment \code{envT} is extended by
         \item \code{envT$bst  } the BST data frame
      }
 }
-\author{
-Wolfgang Konen, FHK, 2010 - 2013
-}
 \seealso{
 \code{\link{tdmBigLoop}}
 }
+\author{
+Wolfgang Konen, THK, 2018
+}
 \keyword{internal}
-

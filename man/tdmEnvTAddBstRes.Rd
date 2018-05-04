@@ -19,4 +19,3 @@ Load an \code{envT}-type environment from file \code{fileRData}. Its elements
 \code{bst}, \code{bstGrid} \code{res}, and \code{resGrid} 
 overwrite the elements in \code{envT} passed in as argument.
 }
-

@@ -17,12 +17,14 @@ tdmModConfmat(d, colreal, colpred, opts, predProb = NULL)
  \item \code{gainmat}:   the gain matrix for each possible outcome, same size as \code{cm$mat} (see below). \cr
            \code{gainmat[R1,P2]} is the gain associated with a record of real class R1 which we
            predict as class P2. (gain matrix = - cost matrix)
- \item \code{rgain.type}: one out of \{"rgain" | "meanCA" | "minCA" | "arROC" | "arLIFT" | "arPRE" \},
+ \item \code{rgain.type}: one out of \{"rgain" | "meanCA" | "minCA" | "bYouden" 
+           | "arROC" | "arLIFT" | "arPRE" \},
            affects output \code{cm$mat} and \code{cm$rgain}, see below.
 }}
 
-\item{predProb}{if not NULL, a data frame with as many rows as data frame \code{d}, containing columns 
-(index, true label, predicted label, prediction score). Is only needed for \code{opts$rgain.type=="ar*"}.}
+\item{predProb}{if not NULL, a data frame with as many rows as data frame \code{d}, containing 
+columns (index, true label, predicted label, prediction score). Is only needed 
+for \code{opts$rgain.type=="ar*"}.}
 }
 \value{
 \code{cm}, a list containing: 
@@ -31,8 +33,9 @@ tdmModConfmat(d, colreal, colpred, opts, predProb = NULL)
               predicted as class P2, if opts$rgain.type=="rgain".
               If opts$rgain.type=="meanCA" or "minCA", then show this number as percentage
               of "records with real class R1" (percentage of each row).
-              CAUTION: If colpred contains NA's, those cases are missing in mat (!)
-              (but the class errors are correct as long as there are no NA's in colreal)}
+              CAUTION: If there are NA's in column \code{colpred}, those cases are missing 
+              in \code{mat} (!) (but the class errors are correct as long as there are 
+              no NA's in column \code{colreal})}
     \item{cerr}{ class error rates, vector of size nlevels(colreal)+1.  \cr
               \code{cerr[X]} is the misclassification rate for real class X. \cr
               \code{cerr["Total"]} is the total classification error rate.}
@@ -40,21 +43,30 @@ tdmModConfmat(d, colreal, colpred, opts, predProb = NULL)
     \item{gain.vector}{ gain.vector[X] is the gain attributed to real class label X.
               gain.vector["Total"] is again the total gain.}
     \item{gainmax}{    the maximum achievable gain, assuming perfect prediction}
-    \item{rgain}{      ratio gain/gainmax in percent, if \code{opts$rgain.type=="rgain"};  \cr
-              mean class accuracy percentage (i.e. mean(diag(cm$mat)), if \code{opts$rgain.type=="meanCA"}; \cr
-              min class accuracy percentage (i.e. min(diag(cm$mat)), if \code{opts$rgain.type=="minCA"}; \cr
-              area under ROC curve (a number in [0,1]), if \code{opts$rgain.type=="arROC"}; \cr
-              area between lift curve and horizontal line 1.0, if \code{opts$rgain.type=="arLIFT"}; \cr
-              area under precision-recall curve (a number in [0,1]), if \code{opts$rgain.type=="arPRE"}; \cr
+    \item{rgain}{      Depending on the value of \code{opts$rgain.type}:  \cr
+              \code{"rgain"}: ratio gain/gainmax in percent, \cr
+              \code{"meanCA"}: mean class accuracy percentage (i.e. mean(diag(cm$mat)), \cr
+              \code{"minCA"}: min class accuracy percentage (i.e. min(diag(cm$mat)), \cr
+              \code{"bYouden"}: balanced Youden index: min(sensitivity,specificity), \cr
+              \code{"arROC"}: area under ROC curve (a number in [0,1]),  \cr
+              \code{"arLIFT"}: area between lift curve and horizontal line 1.0, \cr
+              \code{"arPRE"}: area under precision-recall curve (a number in [0,1]) 
               }
 }
 \description{
 Calculate confusion matrix, gain and RGain measure.
 }
-\author{
-Wolfgang Konen (\email{wolfgang.konen@th-koeln.de}), Patrick Koch
+\note{
+For all measures \code{rgain} holds: The higher, the better. \cr
+   The last four elements of \code{opts$rgain.type=} \code{"bYouden","arROC",} 
+   \code{"arLIFT","arPre"} are only available for binary classification. \cr
+   For case \code{"bYouden"}: \cr
+     sensitivity = \code{TP/(TP+FN)} \cr 
+     specificity = \code{TN/(TN+FP)} \cr
 }
 \seealso{
 \code{\link{tdmClassify}}    \code{\link{tdmROCRbase}}
 }
-
+\author{
+Wolfgang Konen (\email{wolfgang.konen@th-koeln.de}), Patrick Koch
+}

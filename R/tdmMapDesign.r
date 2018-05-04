@@ -40,9 +40,9 @@ tdmMapDesLoad <- function(tdm=list()) {
 #
 #'    Apply the mapping from \code{des} to \code{opts}.     
 #'
-#'    For each variable which appears in .roi (and thus in .des file and design point data frame \code{des}): 
+#'    For each variable which appears in .roi (and thus in design point data frame \code{des}): 
 #'    set its counterpart in list \code{opts} to the values of the \code{k}-th row in \code{des}.
-#'    For each variable not appearing: leave its counterpart in \code{opts} at its default value from .apd file.
+#'    For each variable not appearing: leave its counterpart in \code{opts} at its default value from \code{\link{defaultOpts}}.
 #'
 #' @param des   design points data frame
 #' @param opts  list of options
@@ -70,8 +70,8 @@ tdmMapDesApply <- function(des,opts,k,spotConfig,tdm) {
     for (d in pNames) {
       if (length(which(tdm$map$roiValue==d))+length(which(tdm$mapUser$roiValue==d))==0)
         stop(sprintf("tdmMapDesApply: cannot find a mapping for design variable %s.\n  ",d),
-             sprintf("Please check spelling in ROI file %s %s", spotConfig$io.roiFileName,
-                     "or extend tdmMapDesign.csv or userMapDesign.csv appropriately!"));
+             sprintf("Please check spelling in spotConfig$alg.roi \n"),
+             sprintf("or extend tdmMapDesign.csv or userMapDesign.csv appropriately!\n"));
     }
     
     if (nrow(tdm$map)>0) {
@@ -125,7 +125,7 @@ tdmMapDesInt <- function(des,printSummary=T,spotConfig=NULL)
 #               # ="RSUB": activate random subsampling with tdm$TST.testFrac test data
 #               # ="CV": activate cross validation with tdm$nfold [10] folds
 #               # ="TST": activate test on unseen test data (user-def'd)
-#               # ="SP_T": activate test on unseen test data (randomly selected by tdmSplitTestData)
+#               # ="SP_T": activate test on unseen test data (randomly selected by tdmReadAndSplit)
 #   opts        # current state of parameter settings
 #   tdm         # list, here we use the elements
 #     nfold         # [10] value for opts$TST.NFOLD during unbiased runs with umode="CV"
@@ -285,3 +285,26 @@ tdmMapCutoff <- function(des,k,spotConfig) {
 #browser()   
     des;
 }
+
+tdmMapDesFromX <- function(x,envT) {    
+  # put parameter vector x in a one-row data frame and attach param names from .roi file:
+  des <- as.data.frame(x);
+  names(des) <- rownames(envT$spotConfig$alg.roi);
+  # round INT columns of data frame des and print its summary (see tdmMapDesign.r):	
+  des <- tdmMapDesInt(des,printSummary=F,envT$spotConfig);     
+  
+  if (!is.null(envT$res)) {
+    des$CONFIG = max(envT$res$CONFIG)+1;
+  } else des$CONFIG=1;
+  if (!is.null(envT$bst)) {
+    des$STEP = nrow(envT$bst);
+  } else des$STEP=0;
+  
+  des$REPEATS=envT$spotConfig$replicates;
+  des$SEED=envT$spotConfig$alg.seed  + seq(1,nrow(x));    
+  #if (!is.null(envT$res)) des$SEED = des$SEED + nrow(envT$res);
+  if (is.null(des$repeatsLastConfig)) des$repeatsLastConfig=1; # dummy  
+  des;
+}  	
+
+

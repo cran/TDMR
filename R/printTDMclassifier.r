@@ -18,6 +18,7 @@
 #' @seealso   \code{\link{tdmClassify}}, \code{\link{tdmClassifySummary}}, \code{\link{TDMclassifier}}
 #' @export
 #' @author Wolfgang Konen, THK
+######################################################################################
 print.TDMclassifier <- function(x,...) {
   internalPrintC <- function(result,type) {
     opts = result$lastRes$opts;

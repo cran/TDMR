@@ -4,12 +4,10 @@
 \alias{spotTuner}
 \title{Perform a \link{SPOT} tuning.}
 \usage{
-spotTuner(confFile, spotStep, theSpotPath, tdm, envT, dataObj)
+spotTuner(confFile, theSpotPath, tdm, envT, dataObj)
 }
 \arguments{
 \item{confFile}{task configuration for tuning algorithm}
-
-\item{spotStep}{needed for spot}
 
 \item{theSpotPath}{needed for spot}
 
@@ -26,4 +24,3 @@ the result of SPOT tuning, i.e. the list \code{spotConfig}
 \code{spotTuner} calls \code{\link{spot}} and write the necessary information on environment \code{envT}.
 }
 \keyword{internal}
-

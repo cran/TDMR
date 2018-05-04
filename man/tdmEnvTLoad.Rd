@@ -4,10 +4,12 @@
 \alias{tdmEnvTLoad}
 \title{Load an \code{envT}-type environment from file \code{fileRData}.}
 \usage{
-tdmEnvTLoad(fileRData)
+tdmEnvTLoad(fileRData, path = NULL)
 }
 \arguments{
-\item{fileRData}{string with filename to load. This file is searched in the working dir.}
+\item{fileRData}{string with filename to load.}
+
+\item{path}{[NULL] dir where to search \code{fileRData}. If NULL, use current dir.}
 }
 \value{
 envT
@@ -15,4 +17,3 @@ envT
 \description{
 The loaded envT is augmented with getter functions, see \code{\link{tdmEnvTAddGetters}}.
 }
-

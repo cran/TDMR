@@ -28,4 +28,3 @@ Perform a parameter tuning by CMA-ES, using the *R*-implementation
 This tuner \code{cmaesTuner} is deprecated. Use instead \code{\link{cma_jTuner}}.
 }
 \keyword{internal}
-

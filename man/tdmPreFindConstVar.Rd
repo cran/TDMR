@@ -16,4 +16,3 @@ name vector of constant columns
 Find all those columns in data frame \code{dset} which are completely constant or
 completely NA and return a vector with their names.
 }
-

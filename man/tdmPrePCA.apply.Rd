@@ -33,10 +33,9 @@ the data set returned from \code{\link{tdmPrePCA.train}} in \code{pca$dset}.}
 \description{
 The PCA rotation is taken from \code{pcaList}, a value returned from a prior call to  \code{\link{tdmPrePCA.train}}.
 }
-\author{
-Wolfgang Konen, FHK, Mar'2011 - Jan'2012
-}
 \seealso{
 \code{\link{tdmPrePCA.train}}
 }
-
+\author{
+Wolfgang Konen, FHK, Mar'2011 - Jan'2012
+}

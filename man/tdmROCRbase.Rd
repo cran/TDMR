@@ -35,7 +35,7 @@ The area between the curve and the bottom line y=0.0 in the case of \code{typ=="
 Single plot of ROC, lift or other chart for a \code{\link{TDMclassifier}} object.
 }
 \examples{
-#*# --------- demo/demo06ROCR.r ---------
+#*# --------- demo/demo05ROCR.r ---------
 #*# Run task SONAR with "area under ROC curve" as performance measure (rgain.type="arROC").
 #*# Other settings are similar to demo01-1sonar.r (level 1 of TDMR).
 #*# Finally, plot ROC curve for validataion data set and 
@@ -46,15 +46,26 @@ Single plot of ROC, lift or other chart for a \code{\link{TDMclassifier}} object
 
     source(paste(path,"main_sonar.r",sep="/"));    # defines readTrnSonar
 
-    ## set the elements of list opts. See ?tdmOptsDefaultsSet
-    ## for a complete list of all default settings and explanatory comments
-    opts = tdmOptsDefaultsSet();    
-    opts$filename = "sonar.txt"
-    opts$READ.TrnFn = readTrnSonar      # def'd in main_sonar.r
-    opts$data.title <- "Sonar Data";
-    opts$rgain.type <- "arROC";
-
-    source(paste(path,"start_sonar.r",sep="/"),chdir=TRUE);  # contains: result=main_sonar(opts);
+    controlDM <- function() {
+      #
+      # settings for the DM process (former sonar_00.apd file): 
+      # (see ?tdmOptsDefaultsSet for a complete list of all default settings 
+      # and many explanatory comments)
+      #
+      opts = list(path = path,
+                  dir.data = "data",            # relative to path
+                  filename = "sonar.txt",
+                  READ.TrnFn = readTrnSonar,    # defined in main_sonar.r
+                  data.title = "Sonar Data",
+                  NRUN =  1,
+                  rgain.type = "arROC",
+                  VERBOSE = 2
+      );
+      opts <- setParams(opts, defaultOpts(), keepNotMatching = TRUE);
+    }
+    
+    opts <- controlDM();
+    result <- main_sonar(opts);     
     
     tdmGraphicNewWin(opts);
     cat("Area under ROC-curve for validation data set: ",
@@ -62,9 +73,7 @@ Single plot of ROC, lift or other chart for a \code{\link{TDMclassifier}} object
     tdmGraphicNewWin(opts);
     cat("Area under lift curve for  training data set: ",
         tdmROCRbase(result,dataset="training",typ="lift"),"\\n");  # side effect: plot lift chart
-    #setwd(oldwd);
 }
 \seealso{
 \code{\link{tdmClassifyLoop}}   \code{\link{tdmROCR.TDMclassifier}}
 }
-

@@ -21,4 +21,3 @@ Output objects to \code{cat} if \code{opts$VERBOSE>=1}.
 \code{\link{cat}}
 }
 \keyword{internal}
-

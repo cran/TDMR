@@ -16,4 +16,3 @@ see \code{\link{tdmGraphicInit}}}
 \description{
 Close all open graphic devices.
 }
-

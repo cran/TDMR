@@ -21,32 +21,32 @@
 #'      \code{GD.*} \tab  settings for the graphic devices  \cr
 #'     }
 #'
-#'   The path-related settings are relative to \code{dir(tdm$mainFile)}, if it is def'd, else relative to the current dir. \cr
+#'   The path-related settings are relative to \code{opts$path}, if it is def'd, else relative to the current dir. \cr
 #'   Finally, the function \code{\link{tdmOptsDefaultsFill}(opts)} is called to fill in further details, depending on the current 
 #'   settings of \code{opts}.
 #'
 #' @param opts    (optional) the options already set
-#' @param path    ["./"] the path string to precede all settings \code{opts$dir.*}. 
-#'                If \code{path=="./"} then nothing is preceeded to \code{opts$dir.*}.   
+#' @param path    ["."] where to find everything for the DM task. 
 #'
 #' @return a list \code{opts}, with defaults set for all options relevant for a DM task, 
 #'    containing the following elements
-#' 			\item{dir.txt}{[<path>/data] where to find .txt/.csv files} 
-#' 			\item{dir.data}{[<path>/data] where to find other data files, including .Rdata  } 
-#' 			\item{dir.Rdata}{[<path>/Rdata] -- deprecated, use opts$dir.data -- } 
-#' 			\item{dir.output}{[<path>/Output] where to put output files} 
+#' 			\item{path}{["."] where to find everything for the DM task} 
+#' 			\item{dir.txt}{[data] where to find .txt/.csv files} 
+#' 			\item{dir.data}{[data] where to find other data files, including .Rdata  } 
+# 			\item{dir.Rdata}{[Rdata] -- deprecated, use opts$dir.data -- } 
+#' 			\item{dir.output}{[Output] where to put output files} 
 #' 			\item{filename}{["default.txt"] the task data} 
 #' 			\item{filetest}{[NULL] the test data, only relevant for READ.TstFn!=NULL}
-#' 			\item{fileMode}{[TRUE] if =T, write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file} 
-#'   		\item{logFile}{[TRUE] if =T, and if opts$fileMode=T, write log file to *_train.log } 
+# 			\item{fileMode}{[FALSE] if =T, write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file} 
+#   		\item{logFile}{[FALSE] if =T, and if opts$fileMode=T, write log file to *_train.log } 
 #' 			\item{data.title}{["Default Data"] title for plots} 
 #' 			\item{READ.TXT}{[T] =T: read data from .csv and save as .Rdata, =F: read from .Rdata}                                                   
 #' 			\item{READ.NROW}{[-1] read this amount of rows or -1 for 'read all rows'} 
-#'   		\item{READ.TrnFn}{ function to be passed into \code{\link{tdmReadData2}}. Signature: function(opts)  
+#'   		\item{READ.TrnFn}{ function to be passed into \code{\link{tdmReadDataset}}. Signature: function(opts)  
 #'     	                returning a data frame. It reads the train-validation data.   } 
-#'     	\item{READ.TstFn}{ [NULL] function to be passed into \code{\link{tdmReadData2}}. Signature: function(opts)  
+#'     	\item{READ.TstFn}{ [NULL] function to be passed into \code{\link{tdmReadDataset}}. Signature: function(opts)  
 #'     	                returning a data frame. It reads a separate test data file. If NULL, this reading step is skipped.   } 
-#' 			\item{READ.INI}{[TRUE] read the task data initially, i.e. prior to tuning, using \code{\link{tdmReadData2}} .  
+#' 			\item{READ.INI}{[TRUE] read the task data initially, i.e. prior to tuning, using \code{\link{tdmReadDataset}} .  
 #'                      If =FALSE, the data are read anew in each pass through main_TASK, i.e. in each tuning step (deprecated). } 
 #' 			\item{TST.kind}{["rand"] one of the choices from \{"cv","rand","col"\}, see \code{\link{tdmModCreateCVindex}} for details  } 
 #' 			\item{TST.COL}{["TST.COL"] name of column with train/test/disregard-flag} 
@@ -90,7 +90,7 @@
 #' 			\item{MOD.method}{["RF" (default) |"MC.RF" |"SVM" |"NB" ]: use [RF | MetaCost-RF | SVM | Naive Bayes ] in \code{\link{tdmClassify}}  \cr
 #'                      ["RF" (default) |"SVM" |"LM" ]: use [RF | SVM | linear model ] in \code{\link{tdmRegress}}  } 
 #' 			\item{RF.ntree}{[500] } 
-#' 			\item{RF.samp}{[NULL] sampsize for RF in model training. If RF.samp is a scalar, then it specifies the 
+#' 			\item{RF.samp}{[1000] sampsize for RF in model training. If RF.samp is a scalar, then it specifies the 
 #'   		                      total size of the sample. For classification, it can also be a vector of length n.class 
 #'     	                      (= # of levels in response variable), then it specifies the size of each strata. The sum 
 #'                             of the vector is the total sample size. If NULL, RF.samp will be replaced by 3000 later
@@ -118,15 +118,16 @@
 #'                      length and names as the levels of the response variable. If no names are given, the levels of the response variables 
 #'                      in lexicographical order will be attached in \code{\link{tdmClassify}}. CLS.CLASSWT=NULL for no weights.  }
 #' 			\item{CLS.gainmat}{[NULL] (n.class x n.class) gain matrix. If NULL, CLS.gainmat will be set to unit matrix in \code{\link{tdmClassify}} }
-#' 			\item{rgain.type}{["rgain" (default) |"meanCA" |"minCA" ] in case of \code{\link{tdmClassify}}: For classification, the measure 
-#'                      \code{Rgain} returned from \code{\link{tdmClassifyLoop}} in \code{result$R_*} is
-#'                      [relative gain (i.e. gain/gainmax) | mean class accuracy | minimum class accuracy ]. 
-#'                      The goal is to maximize  \code{Rgain}. \cr 
-#'                      For binary classification there are the additional measures [ "arROC" | "arLIFT" | "arPRE" ], see 
-#'                      \code{\link{tdmModConfmat}}. \cr
-#'                      For regression, the goal is to minimize \code{result$R_*} returned from \code{\link{tdmRegress}}. In this case, possible values are 
-#'                      \code{rgain.type} = ["rmae" (default) |"rmse"  | "made" ] which stands for 
-#'                      [ relative mean absolute error | root mean squared error | mean absolute deviation ].  } 
+#' 			\item{rgain.type}{["rgain" (default) |"meanCA" |"minCA" ] in case of \code{\link{tdmClassify}}: For  
+#'                      classification, the measure \code{Rgain} returned from \code{\link{tdmClassifyLoop}} in 
+#'                      \code{result$R_*} is [relative gain (i.e. gain/gainmax) | mean class accuracy | minimum 
+#'                      class accuracy | minus Y ]. The goal is to maximize  \code{Rgain}. \cr 
+#'                      For binary classification there are the additional measures [ "arROC" | "arLIFT" 
+#'                      | "arPRE" | "bYouden" ], see 'Value' in \code{\link{tdmModConfmat}}. \cr 
+#'                      For regression, the goal is to minimize \code{result$R_*} returned from \code{\link{tdmRegress}}. 
+#'                      In this case, possible values are \code{rgain.type} = ["rmae" (default) |"rmse"  | "made" ] 
+#'                      which stands for [ relative mean absolute error | root mean squared error | 
+#'                      mean absolute deviation ].  } 
 #' 			\item{ncopies}{[0] if >0, activate \code{\link{tdmParaBootstrap}} in \code{\link{tdmClassify}}  } 
 #'      \item{fct.postproc}{[NULL] name of a function with signature \code{(pred, dframe, opts)} where \code{pred} is the prediction of the model on the 
 #'                      data frame \code{dframe} and \code{opts} is this list. This function may do some postprocessing on \code{pred}  and
@@ -143,7 +144,7 @@
 #'                      multi-page pdf) in each call to \code{\link{tdmClassify}} or \code{\link{tdmRegress}}, resp. \cr
 #'                      =F: leave all windows open (suitable for calls from SPOT) or write more pages in same pdf. } 
 #' 			\item{GD.CLOSE}{[T] =T: close graphics device "png", "pdf" at the end of main_*.r (suitable for main_*.r solo) or \cr
-#'                      =F: do not close (suitable for call from tdmStartSpot, where all windows should remain open)  } 
+#'                      =F: do not close (suitable for call from tdmStartSpot2, where all windows should remain open)  } 
 #' 			\item{NRUN}{[2] how many runs with different train & test samples  - or - how many CV-runs, if \code{opts$TST.kind}="cv"  } 
 #'   		\item{APPLY_TIME}{[FALSE]   } 
 #'   		\item{test2.show}{[FALSE]   } 
@@ -158,21 +159,24 @@
 #      after PCA become the input for SFA).
 #'
 #' @seealso  \code{\link{tdmOptsDefaultsFill}} \code{\link{tdmDefaultsFill}}
-#' @author Wolfgang Konen, FHK, 2011 - 2013
+#' @author Wolfgang Konen, THK, 2013 - 2018
 #' @export
 ######################################################################################
-tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
+tdmOptsDefaultsSet <- function(opts=NULL, path=".") {
+  # --- keep opts a flat list (no other list as members), so that the user can set 
+  # --- individual members before calling setParams(myOpts,defaultOpts())
   if (is.null(opts)) {
       opts = list()
-
-      opts$dir.data <- paste("./", "data/", sep="")
-      opts$dir.txt  <- paste("./", "data/", sep="")
-      opts$dir.Rdata <- paste("./", "Rdata/", sep="")
-      opts$dir.output <- paste("./", "Output/", sep="")
+      
+      opts$path <- path
+      opts$dir.data <- paste(".", "data/", sep="/")
+      opts$dir.txt  <- paste(".", "data/", sep="/")
+      opts$dir.Rdata <- paste(".", "Rdata/", sep="/")
+      opts$dir.output <- paste(".", "Output/", sep="/")
       opts$filename = "default.txt"
       opts$data.title <- "Default Data"
-      opts$fileMode = TRUE    # =T: write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file
-      opts$logFile = TRUE
+      opts$fileMode = FALSE   # =T: write opts$EVALFILE=*_train_eval.csv, *_train.csv.SRF.*.RData file and *_train.log file
+      opts$logFile = FALSE
       
       opts$READ.TXT = TRUE    # =T: read data from .csv and save as .Rdata, =F: read from .Rdata
       opts$READ.NROW = -1     # [-1] read this amount of rows or -1 for 'read all rows' 
@@ -215,7 +219,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
                               # ["RF"|"SVM"|"LM"]: use [RF| SVM| linear model] in tdmRegress
 
       opts$RF.ntree = 500
-      opts$RF.samp = NULL # 1000
+      opts$RF.samp = 1000 # NULL 
       opts$RF.mtry = NULL
       opts$RF.nodesize = 1
       opts$RF.OOB = TRUE;     # if =T, return OOB-training set error as tuning measure; if =F, return test set error
@@ -255,7 +259,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
                               # or write more pages in same pdf
       opts$GD.CLOSE=TRUE      # [T] =T: close graphics device "png", "pdf" at the end of main_*.r
                               # (suitable for main_*.r solo) or =F: do not close (suitable for
-                              # call from tdmStartSpot, where all windows should remain open)
+                              # call from tdmStartSpot2, where all windows should remain open)
       opts$NRUN =  2          # how many runs with different train & test samples  - or -
                               # how many CV-runs, if opts$TST.kind=="cv"
       opts$rep=1;             # the number of the repeat (1,...,spotConfig$max.repeats) in case of repeated evocations from tuner
@@ -273,6 +277,7 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
 #           (perhaps on another computer where the absolute path does not exist) --> this made the example in unbiasedRun.r
 #           not runnable on CRAN computers, because demoSonar.RData had the path 
 #           dir.data = "C:/Users/wolfgang/Documents/R/win-library/2.15/TDMR/demo02sonar/./data/"
+# Instead, use opts$path as separate object when reading / writing files.  
 #
 #  if (!is.null(path)) 
 #    if (!(path=="./" | length(grep(path,opts$dir.data))==1)) {
@@ -287,7 +292,9 @@ tdmOptsDefaultsSet <- function(opts=NULL, path="./") {
 
   class(opts) <- c("tdmOpts","TDM")     
 
-  tdmOptsDefaultsFill(opts);
+  opts <- tdmOptsDefaultsFill(opts);
+  
+  opts;
 }
 
 ######################################################################################
@@ -351,11 +358,11 @@ tdmOptsDefaultsFill <- function(opts) {  #,suffix=NULL) {
     
     if (is.null(opts$rgain.type)) opts$rgain.type="rgain";
     #if (is.null(opts$rgain.string)) {
-      rgainTypeVals = c("rgain","meanCA","minCA","rmae","rmse","made","arROC","arLIFT","arPRE");
-      rgainStringVals=c("RGain","MeanCA","MinCA","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe");
+      rgainTypeVals = c("rgain","meanCA","minCA","bYouden","rmae","rmse","made","arROC","arLIFT","arPRE");
+      rgainStringVals=c("RGain","MeanCA","MinCA","balYouden","RMAE","RMSE","MADE","AreaROC","AreaLift","AreaPrRe");
       ind = which(opts$rgain.type==rgainTypeVals);
-      if (length(ind)==0) stop(sprintf("Could not find opts$rgain.type=%s in c(%s)"
-                                        ,opts$rgain.type,"'rgain','meanCA','minCA','rmae','rmse','made','arROC','arLIFT','arPRE'"));
+      if (length(ind)==0) stop(sprintf("Could not find opts$rgain.type='%s' in c(%s)"
+                                        ,opts$rgain.type,"'rgain','meanCA','minCA','bYouden','rmae','rmse','made','arROC','arLIFT','arPRE'"));
       opts$rgain.string = rgainStringVals[ind];
     #}
 

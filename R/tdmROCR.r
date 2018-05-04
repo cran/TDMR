@@ -43,8 +43,8 @@ tdmROCR.default <- function(x, ...)  cat("This is tdmROCR.default\n");
 #'
 #' @examples
 #'    \dontrun{
-#'      setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
-#'      source("main_sonar.r");
+#'      path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
+#'      source(paste(path,"main_sonar.r",sep="/"));
 #'      result = main_sonar();
 #'      tdmROCR(result);
 #'    }
@@ -107,7 +107,7 @@ tdmROCR.TDMclassifier <- function(x,...) {
 #'      or  the area between the curve and the bottom line y=1.0 in the case of \code{typ=="lift"}. \cr
 #'      If object \code{x} does not contain a prediction score, a warning is issued and the return value is NULL.
 #'
-#' @example  demo/demo06ROCR.r
+#' @example  demo/demo05ROCR.r
 #'
 #' @seealso   \code{\link{tdmClassifyLoop}}   \code{\link{tdmROCR.TDMclassifier}}
 #' @export

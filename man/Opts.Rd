@@ -2,12 +2,12 @@
 % Please edit documentation in R/tdmGeneralUtils.r
 \name{Opts}
 \alias{Opts}
-\alias{Opts.TDMclassifier}
 \alias{Opts.TDMenvir}
+\alias{Opts.TDMclassifier}
 \alias{Opts.TDMregressor}
-\alias{Opts.default}
 \alias{Opts.tdmClass}
 \alias{Opts.tdmRegre}
+\alias{Opts.default}
 \title{Return the list 'opts'.}
 \usage{
 Opts(x, ...)
@@ -25,7 +25,7 @@ Opts(x, ...)
 \method{Opts}{default}(x, ...)
 }
 \arguments{
-\item{x}{an object of class \code{\link{TDMclassifier}}, \code{\link[=tdmClassify]{tdmClass}}, 
+\item{x}{an object of class \code{\link{TDMenvir}}, \code{\link{TDMclassifier}}, \code{\link[=tdmClassify]{tdmClass}}, 
 \code{\link{TDMregressor}} or \code{\link[=tdmRegress]{tdmRegre}}.}
 
 \item{...}{-- currently not used --}
@@ -37,4 +37,3 @@ the list \code{opts} with DM-specific settings contained in the specified object
 Returns the list \code{opts} from objects of class \code{\link{TDMenvir}}, \code{\link{TDMclassifier}},
                  \code{\link{TDMregressor}}, \code{\link[=tdmClassify]{tdmClass}} or \code{\link[=tdmRegress]{tdmRegre}}.
 }
-

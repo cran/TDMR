@@ -21,4 +21,3 @@ Print objects using \code{print} if \code{opts$VERBOSE>=1}.
 \code{\link{print}}
 }
 \keyword{internal}
-

@@ -9,28 +9,28 @@
 #*# Do not expect good numeric results. 
 #*# See demo/demo03sonar_B.r for a somewhat longer tuning run, with two tuners SPOT and LHD.
 
-## set working directory (dir with .apd, .conf and main_*.r file)
-path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
-source(paste(path,"main_sonar.r",sep="/"));    
+   ## path is the dir with data and main_*.r file:
+   path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
+   #path <- paste("../../inst", "demo02sonar",sep="/");
+ 
+   ## control settings for TDMR
+   tdm <- list( mainFunc="main_sonar"
+              , umode="CV"              # { "CV" | "RSUB" | "TST" | "SP_T" }
+              , tuneMethod = c("lhd")
+              , filenameEnvT="exBigLoop.RData"   # file to save environment envT 
+              , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
+              , nExperim=1
+              , optsVerbosity = 0       # the verbosity for the unbiased runs
+              );
+   source(paste(path,"main_sonar.r",sep="/"));    # main_sonar, readTrnSonar
+   source(paste(path,"control_sonar.r",sep="/")); # controlDM, controlSC
+   
+   ctrlSC <- controlSC();
+   ctrlSC$opts <- controlDM();
 
-## control settings for TDMR
-tdm <- list( mainFunc="main_sonar"
-           , runList = c("sonar_04.conf")
-           , umode="CV"              # { "CV" | "RSUB" | "TST" | "SP_T" }
-           , tuneMethod = c("lhd")
-           , filenameEnvT="exBigLoop.RData"   # file to save environment envT (in dir 'path')
-           , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
-           , nExperim=1
-           , parallelCPUs=1
-           , parallelFuncs=c("readCmdSonar")
-           , optsVerbosity = 0       # the verbosity for the unbiased runs
-           );
-## Each element of tdm$runList has the settings for one tuning process (e.g. 
-##    - auto.loop.steps = number of SPOT generations       
-##    - auto.loop.evals = budget of model building runs and 
-##    - io.roiFileName = "sonar_04.roi"
-## ). 
-
-spotStep = "auto";   
-source(paste(path,"start_tuneIt.r",sep="/"),chdir=TRUE);    # change dir to 'path' while sourcing
-
+   #
+   # perform a complete tuning + unbiased eval
+   # 
+   envT <- tdmEnvTMakeNew(tdm,sCList=list(ctrlSC)); # construct envT from settings in tdm and ctrlSC
+   dataObj <- tdmReadTaskData(envT,envT$tdm);
+   envT <- tdmTuneIt(envT,dataObj=dataObj);       # start the tuning loop 

@@ -7,18 +7,18 @@
 # Author: Wolfgang Konen, FHK, Oct'2009 - Apr'2014
 #
 # Example usage:
-#       result <- main_sonar();
+#       result <- main_sonar(opts);
 #
-readCmdSonar <- function(filename,opts) {
-  read.csv2(file=paste(opts$dir.data, filename, sep=""), dec=".", sep=",", nrow=opts$READ.NROW,header=FALSE);
-}
+
+#readCmdSonar <- function(filename,opts) {
+#  read.csv2(file=paste(opts$path,opts$dir.data, filename, sep="/"), dec=".", sep=",", nrow=opts$READ.NROW,header=FALSE);
+#}
 readTrnSonar <- function(opts) {
-  read.csv2(file=paste(opts$dir.data, opts$filename, sep=""), dec=".", sep=",", nrow=opts$READ.NROW,header=FALSE);
+  read.csv2(file=paste(opts$path,opts$dir.data, opts$filename, sep="/"), dec=".", sep=",", nrow=opts$READ.NROW,header=FALSE);
 }
 
-main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {          
+main_sonar <- function(opts,dset=NULL,tset=NULL) {          
 
-    if (is.null(opts)) source("sonar_00.apd", local=TRUE);
     opts <- tdmOptsDefaultsSet(opts);  # fill in all opts params which are not yet set (see tdmOptsDefaults.r)
     
     gdObj <- tdmGraAndLogInitialize(opts);     # init graphics and log file
@@ -28,7 +28,7 @@ main_sonar <- function(opts=NULL,dset=NULL,tset=NULL) {
     #===============================================
     if (is.null(dset)) {
       cat1(opts,opts$filename,": Read data ...\n")
-      dset <- tdmReadData2(opts);
+      dset <- tdmReadDataset(opts);
     }
     names(dset)[61] <- "Class"
     if (!is.null(tset)) names(tset)[61] <- "Class"

@@ -108,10 +108,9 @@ cat("\\n")
 print(res$allEVAL)
 
 }
-\author{
-Wolfgang Konen, FHK, Sep'2009 - Jun'2012
-}
 \seealso{
 \code{\link{print.tdmClass}} \code{\link{tdmClassifyLoop}} \code{\link{tdmRegressLoop}}
 }
-
+\author{
+Wolfgang Konen, THK, 2013
+}

@@ -25,8 +25,8 @@ Side effect: Ror each chart, calculate and print the area between the curve and 
 }
 \examples{
    \dontrun{
-     setwd(paste(find.package("TDMR"), "demo02sonar",sep="/"));
-     source("main_sonar.r");
+     path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
+     source(paste(path,"main_sonar.r",sep="/"));
      result = main_sonar();
      tdmROCR(result);
    }
@@ -34,4 +34,3 @@ Side effect: Ror each chart, calculate and print the area between the curve and 
 \seealso{
 \code{\link{tdmClassifyLoop}}   \code{\link{tdmROCRbase}}
 }
-

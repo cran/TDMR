@@ -15,4 +15,3 @@ the augmented \code{envT}
 \description{
 Add getter functions getBst and getRes to environment envT
 }
-

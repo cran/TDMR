@@ -5,37 +5,34 @@
 #
 #' Tuning and unbiased evaluation in a big loop.
 #'
-#' For each \code{.conf} file in \code{tdm$runList} call all tuning algorithms (SPOT, CMA-ES or other) specified in \code{tdm$tuneMethod}
-#' (via function \code{\link{tdmDispatchTuner}}). After each tuning process perform a run 
-#' of \code{tdm$unbiasedFunc} (usually \code{\link{unbiasedRun}}). \cr
+#' For each configuration object \code{.conf} in \code{tdm$runList} call all tuning algorithms (SPOT, CMA-ES 
+#' or other) specified in \code{tdm$tuneMethod} (via function \code{\link{tdmDispatchTuner}}).
+#' After each tuning process perform a run of \code{tdm$unbiasedFunc} 
+#' (usually \code{\link{unbiasedRun}}). \cr
 #' Each of these experiments is repeated \code{tdm$nExperim} times. Thus we have for each tripel \cr
 #'    \tabular{ll}{
-#'        \tab \code{   (confFile,nExp,theTuner)} \cr
+#'        \tab \code{   (confName,nExp,theTuner)} \cr
 #'    }
 #' a tuning result. The ranges of the triple elements are: \cr
 #'    \tabular{ll}{
-#'        \tab \code{   confFile in tdm$runList} \cr
+#'        \tab \code{   confName in tdm$runList} \cr
 #'        \tab \code{   nExp in 1,...,tdm$nExperim} \cr
 #'        \tab \code{   theTuner in tdm$tuneMethod} \cr
 #'    }
 #' 
 #Details:
 #' \code{tdm} refers to \code{envT$tdm}.
-#' \cr\cr
-#' Tuning is skipped if the \code{.conf} file does not appear in \code{tdm$spotList} or if \code{spotStep=="rep"}. In this
-#' case it is assumed then that \code{envT$bstGrid} and \code{envT$resGrid} contain the appropriate data frames already.
-#' See \code{\link{tdmEnvTAddBstRes}} on how to fill \code{envT$bstGrid} and \code{envT$resGrid}  from an \code{.RData} file.
 #'
 #' The available tuning algorithms (tuners) are 
 #'      \itemize{
-#'      \item{\code{\link{spotTuner}}:  Call \code{\link{spot}}.   }
+#'      \item{\code{\link{spotTuner}}:  Call \code{\link[SPOT]{spot}}.   }
 #'      \item{\code{\link{lhdTuner}}:  Perform a parameter tuning using a Latin hypercube design (LHD) 
 #'            for obtaining best design points. LHD is performed by configuring SPOT 
 #'            in such a way that all the budget is used for the initial design (usually LHD). }
 #'      \item{\code{\link{cma_jTuner}}:  Perform a parameter tuning by CMA-ES, using the *Java* 
 #'            implementation by Niko Hansen through the interface package \code{\link[rCMA]{rCMA}}.    }
 #'      \item{\code{\link{cmaesTuner}}:  Perform a parameter tuning by CMA-ES, using the *R*-implementation 
-#'            (package \href{http://cran.r-project.org/package=cmaes}{\code{cmaes}} by Olaf Mersmann) 
+#'            (package \code{\link[cmaes]{cma_es}} by Olaf Mersmann) 
 #'            (deprecated, use \code{\link{cma_jTuner}} instead).  }
 #'      \item{\code{\link{bfgsTuner}}:   Perform a parameter tuning by Broyden, Fletcher, Goldfarb and Shanno (BFGS) method.
 #'            The L-BFGS-B version allowing box constraints is used.  }
@@ -46,14 +43,14 @@
 #' @param envT      an environment containing on input at least the element \code{tdm} (a list with general settings for TDMR, 
 #'                   see \code{\link{tdmDefaultsFill}}), which has at least the elements  
 #'     \describe{
-#'     \item{\code{tdm$runList}}{ vector of \code{.conf} filenames }
-#'     \item{\code{tdm$spotList}}{ \code{[NULL]} vector of \code{.conf} filenames for which spot tuning is done. 
-#'                             If \code{NULL}, then \code{spotList=runList} }
+#'     \item{\code{tdm$runList}}{ vector of configuration names \code{.conf} }
+#     \item{\code{tdm$spotList}}{ \code{[NULL]} vector of \code{.conf} filenames for which spot tuning is done. 
+#                             If \code{NULL}, then \code{spotList=runList} }
 #'     }
-#' @param spotStep  \code{["auto"]} which step of SPOT to execute (either \code{"auto"} or \code{"rep"}).
+# @param spotStep  \code{["auto"]} which step of SPOT to execute (either \code{"auto"} or \code{"rep"}).
 #' @param dataObj   \code{[NULL]} optional object of class \code{\link{TDMdata}} (the same for all runs in big loop). 
-#'      If it is \code{NULL}, it will be constructed here with the help of \code{\link{tdmSplitTestData}}.
-#'      Then it can be different for each .conf file in the big loop.
+#'      If it is \code{NULL}, it will be constructed here with the help of \code{\link{tdmReadAndSplit}}.
+#'      Then it can be different for each configuration object in the big loop.
 #'
 #' @return environment \code{envT}, containing  the results
 #'      \item{res}{ data frame with results from last tuning (one line for each call of \code{tdmStart*})} 
@@ -90,22 +87,29 @@
 #'   \code{tdmBigLoop} and its subfunctions.
 #'
 #' @note Side effects:
-#'   Irrespective of the value of \code{tdm$fileMode}, 
-#'     \itemize{
-#'         \item a compressed version of \code{envT } is saved to file \code{tdm$filenameEnvT} (default: \code{<runList[1]>.RData}), 
-#'               relative to  the directory of the \code{.conf} file. 
-#'               This is done only for \code{spotStep=="auto"}.
-#'     }
-#'   If \code{tdm$U.saveModel==TRUE}, then \code{envT$result$lastRes$lastModel} (the last trained model) will be saved to \code{tdm$filenameEnvT}. 
-#'   The default is \code{tdm$U.saveModel==TRUE} (with \code{tdm$U.saveModel==FALSE} smaller \code{.RData} files).
-#' 
-#'   If \code{tdm$fileMode==TRUE}, more files are written relative to  the directory of the \code{.conf} file:
-#'     \itemize{
-#'         \item \code{envT$theFinals } is written to file \code{tdm$finalFile} 
-#'         \item \code{envT$theFinals } is appended to \code{tdm$experFile}
-#'      }                                                                                                           
-#'   If \code{tdm$finalFile==NULL}, then it is set to \code{sub(".conf",".fin",runList[1])}.  \cr
-#'   If \code{tdm$experFile==NULL}, then nothing is appended to any experiment file.
+#---- now deleted, we act always as if tdm$fileMode==FALSE ---------------- 
+#   Irrespective of the value of \code{tdm$fileMode}, 
+#     \itemize{
+#         \item 
+#--------------------------------------------------------------------------
+#'   A compressed version of \code{envT } is saved to file \code{tdm$filenameEnvT} 
+#'   (default: \code{<runList[1]>.RData}) in directory \code{tdm$path}. If \code{tdm$path==NULL}
+#'   use the current directory.\cr
+#       }
+#'   If \code{tdm$U.saveModel==TRUE}, then \code{envT$result$lastRes$lastModel} (the last 
+#'   trained model) will be saved to \code{tdm$filenameEnvT}. 
+#'   The default is \code{tdm$U.saveModel==TRUE}. If \code{tdm$U.saveModel==FALSE} 
+#'   then smaller \code{.RData} files will result.
+#'
+#---- now deleted, we act always as if tdm$fileMode==FALSE ---------------- 
+#   If \code{tdm$fileMode==TRUE}, more files are written relative to  the directory of the \code{.conf} file:
+#     \itemize{
+#         \item \code{envT$theFinals } is written to file \code{tdm$finalFile} 
+#         \item \code{envT$theFinals } is appended to \code{tdm$experFile}
+#      }                                                                                                           
+#   If \code{tdm$finalFile==NULL}, then it is set to \code{sub(".conf",".fin",runList[1])}.  \cr
+#   If \code{tdm$experFile==NULL}, then nothing is appended to any experiment file.
+#--------------------------------------------------------------------------
 #'
 #' Example usages of function \code{tdmBigLoop} are shown in \cr
 #' \tabular{ll}{
@@ -122,61 +126,68 @@
 #' #*# The data mining process is in main_sonar.r, which calls tdmClassifyLoop and tdmClassify
 #' #*# with Random Forest as the prediction model. 
 #' #*# The three parameter to be tuned are CUTOFF1, CLASSWT2 and XPERC, as specified 
-#' #*# in file sonar_04.roi. The tuner used here is LHD.  
+#' #*# in controlSC() (control_sonar.r). The tuner used here is LHD.  
 #' #*# Tuning runs are rather short, to make the example run quickly. 
 #' #*# Do not expect good numeric results. 
 #' #*# See demo/demo03sonar_B.r for a somewhat longer tuning run, with two tuners SPOT and LHD.
-#' 
-#' ## set working directory (dir with .apd, .conf and main_*.r file)
-#' path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
-#' source(paste(path,"main_sonar.r",sep="/"));    
-#' 
-#' ## control settings for TDMR
-#' tdm <- list( mainFunc="main_sonar"
-#'            , runList = c("sonar_04.conf")
-#'            , umode="CV"              # { "CV" | "RSUB" | "TST" | "SP_T" }
-#'            , tuneMethod = c("lhd")
-#'            , filenameEnvT="exBigLoop.RData"   # file to save environment envT (in dir 'path')
-#'            , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
-#'            , nExperim=1
-#'            , parallelCPUs=1
-#'            , parallelFuncs=c("readCmdSonar")
-#'            , optsVerbosity = 0       # the verbosity for the unbiased runs
-#'            );
-#' ## Each element of tdm$runList has the settings for one tuning process (e.g. 
-#' ##    - auto.loop.steps = number of SPOT generations       
-#' ##    - auto.loop.evals = budget of model building runs and 
-#' ##    - io.roiFileName = "sonar_04.roi"
-#' ## ). 
-#' 
-#' spotStep = "auto";   
-#' source(paste(path,"start_bigLoop.r",sep="/"),chdir=TRUE);    # change dir to 'path' while sourcing
 #'
+#'   ## path is the dir with data and main_*.r file:
+#'   path <- paste(find.package("TDMR"), "demo02sonar",sep="/");
+#'   #path <- paste("../../inst", "demo02sonar",sep="/");
+#' 
+#'   ## control settings for TDMR
+#'   tdm <- list( mainFunc="main_sonar"
+#'              , runList = c("sonar_04.conf")
+#'              , umode="CV"              # { "CV" | "RSUB" | "TST" | "SP_T" }
+#'              , tuneMethod = c("lhd")
+#'              , filenameEnvT="exBigLoop.RData"   # file to save environment envT 
+#'              , nrun=1, nfold=2         # repeats and CV-folds for the unbiased runs
+#'              , nExperim=1
+#'              , optsVerbosity = 0       # the verbosity for the unbiased runs
+#'              );
+#'   source(paste(path,"main_sonar.r",sep="/"));    # main_sonar, readTrnSonar
+#' \dontshow{
+#'   #*# This demo is for "R CMD check" (runs in half the time) 
+#'   source(paste(path,"control_sonar_check.r",sep="/")); # controlDM, controlSC
+#' }
+#' \donttest{
+#'   #*# This demo is for example and help (more meaningful, a bit higher budget)
+#'   source(paste(path,"control_sonar.r",sep="/")); # controlDM, controlSC
+#' }
+#'   
+#'   
+#'   ctrlSC <- controlSC();
+#'   ctrlSC$opts <- controlDM();
+#'   
+#'   # construct envT from settings given in tdm & sCList
+#'   envT <- tdmEnvTMakeNew(tdm,sCList=list(ctrlSC));
+#'   dataObj <- tdmReadTaskData(envT,envT$tdm);
+#'   envT <- tdmBigLoop(envT,dataObj=dataObj);     # start the big tuning loop 
 #' @seealso   \code{\link{tdmDispatchTuner}}, \code{\link{unbiasedRun}}
-#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), Patrick Koch
+#' @author Wolfgang Konen (\email{wolfgang.konen@@th-koeln.de}), THK, Patrick Koch
 #' @export
 ######################################################################################
-tdmBigLoop <- function(envT,spotStep="auto",dataObj=NULL) {
+tdmBigLoop <- function(envT,dataObj=NULL) {
                             # The environment envT is passed by reference into the inner functions
                             # which means that it can be used a) to transport information back from
                             # those inner functions and b) to transport information to and back even 
                             # for functions like tdmStartOther which are not allowed to have envT in 
                             # their argument list
-  
   tdm <- envT$tdm;
   tdm <- tdmMapDesLoad(tdm);
-
+  spotStep="auto";   # --- deprecated, only to have a value for spotStep (no longer used)
+  
   if (is.null(envT$getBst)) envT <- tdmEnvTAddGetters(envT);
   # just in case the user loaded envT via load("myFile.Rdata") and not tdmEnvTLoad("myFile.Rdata") 
       
-  if (!is.null(tdm$mainFile)) source(tdm$mainFile);           # deprecated (sourcing main_TASK should be done in caller of tdmBigLoop)
+  #if (!is.null(tdm$mainFile)) source(tdm$mainFile);           # deprecated (sourcing main_TASK should be done in caller of tdmBigLoop)
   nTuner <- length(tdm$tuneMethod);
   nRunList <- length(tdm$runList);
 
 	# depending on tdm$parallelCPUs, the following lines execute the code either in parallel 
 	# or sequential: For each value of indVec the function bigLoopStep is 
 	# called. The vectors tuneVec, expeVec, confVec contain for each element of indVec the
-	# corresponding value of tuner, experiment number and .conf file, resp.
+	# corresponding value of tuner, experiment number and configuration, resp.
 	# In case of parallel execution, parSapply will only return after the last parallel job has finished.
 	#
 	indVec <- 1:(tdm$nExperim*nTuner*nRunList);
@@ -194,16 +205,13 @@ tdmBigLoop <- function(envT,spotStep="auto",dataObj=NULL) {
     cl = prepareParallelExec(tdm);
     sappResult <- parallel::parSapply(cl, indVec, bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,dataObj,envT,tdm);
     parallel::stopCluster(cl);
-    #--- old version was:
-    #prepareParallelExec_SF(tdm);   # this is now in deprecated sources
-    #sappResult <- sfSapply(indVec, fun=bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,dataObj,envT,tdm);
   } else {  
 		sappResult <- sapply(indVec, bigLoopStep, tuneVec,expeVec,confVec,tdm$spotList,spotStep,dataObj,envT,tdm);
   }
   # populate envT with the results returned in matrix sappResult:
 	envT <- populateEnvT(sappResult,envT,tdm,spotStep);
   
-  if (spotStep == "auto") {
+  if (TRUE) { # (spotStep == "auto") {
     saveEnvT(envT,tdm$runList,saveModel=tdm$U.saveModel);
     saveSRFinfo(envT);
   } 
@@ -222,6 +230,7 @@ tdmBigLoop <- function(envT,spotStep="auto",dataObj=NULL) {
       #  bigLoopStep: helper function for tdmBigLoop, called via sapply or parSapply:
       #  (ind is an index where confFile varies slowest, nExp varies 2nd-slowest and theTuner varies fastest)
       bigLoopStep <- function(ind,tuneVec,expeVec,confVec,spotList,spotStep,dataObj,envT,tdm) {
+        #browser()
         if (tdm$parallelCPUs>1) library(TDMR);
         theTuner = tuneVec[ind];
         nExp = expeVec[ind];
@@ -232,52 +241,57 @@ tdmBigLoop <- function(envT,spotStep="auto",dataObj=NULL) {
         #--- deprecated, now spotStep is only a string, "auto" or "rep" or "report"
         
         print(c(ind,confFile,nExp,theTuner));
-        envT$spotConfig <- sC <- envT$sCList[[nConf]]; # spotGetOptions(srcPath=tdm$theSpotPath,confFile);
+        envT$spotConfig <- sC <- envT$sCList[[nConf]]; 
         envT$theTuner <- theTuner;
         envT$nExp <- envT$spotConfig$nExp <- nExp;
         envT$bst <- NULL;
         envT$res <- NULL; 
-        if (spotStep=="rep" | spotStep=="report" | !(confFile %in% spotList)) {
-          envT$bst = envT$getBst(envT,confFile,nExp,theTuner);
-          envT$res = envT$getRes(envT,confFile,nExp,theTuner);
-        }
+        
+        # --- DEPRECATED --- 
+        # The variable spotStep is no longer relevant, it should be always "auto"
+        # if (spotStep=="rep" | spotStep=="report" | !(confFile %in% spotList)) {
+        #   envT$bst = envT$getBst(envT,confFile,nExp,theTuner);
+        #   envT$res = envT$getRes(envT,confFile,nExp,theTuner);
+        # }
 
-        if (tdm$fileMode) {  
-          if (is.null(tdm$finalFile)) tdm$finalFile = sub(".conf",".fin",confFile);
-          tFinalFile <- ifelse(tdm$nExperim>1, sprintf("%s-e%02d%s",sub(".fin","",tdm$finalFile,fixed=TRUE),nExp,".fin"), tdm$finalFile);
-          # i.e. if tdm$finalFile="cpu.fin", then tFinalFile="cpu-e02.fin" for nExp=2
-          if (file.exists(tFinalFile) & theTuner==tuneVec[1] & confFile==envT$runList[1]) file.remove(tFinalFile);
-        } 
+        # if (tdm$fileMode) {  
+        #   if (is.null(tdm$finalFile)) tdm$finalFile = sub(".conf",".fin",confFile);
+        #   tFinalFile <- ifelse(tdm$nExperim>1, sprintf("%s-e%02d%s",sub(".fin","",tdm$finalFile,fixed=TRUE),nExp,".fin"), tdm$finalFile);
+        #   # i.e. if tdm$finalFile="cpu.fin", then tFinalFile="cpu-e02.fin" for nExp=2
+        #   if (file.exists(tFinalFile) & theTuner==tuneVec[1] & confFile==envT$runList[1]) file.remove(tFinalFile);
+        # } 
+        
         # NEW 09/2012: always operate SPOT with spot.fileMode=FALSE (take everything from  envT$spotConfig)
         envT$spotConfig$spot.fileMode=FALSE;
         
         #
         # --- DEPRECATED --- This is no longer the preferred place to read the data. The preferred 
-        # place is a cmd dataObj <- tdmSplitTestData(opts,tdm) in the user's startup-file; prior to 
+        # place is a cmd dataObj <- tdmReadAndSplit(opts,tdm) in the user's startup-file; prior to 
         # entering tdmBigLoop and passing dataObj into tdmBigLoop.
         # We allow tdmBigLoop's argument dataObj to be NULL only for the rare case where different 
-        # .conf files require different dataObj's so that the reading should be done here inside
+        # conf objects require different dataObj's so that the reading should be done here inside
         # bigLoopStep. But this is only for downward compatibily and should be normally avoided. 
         #
-        if (is.null(dataObj)) dataObj <- tdmSplitTestData(sC$opts,tdm,nExp);
-        # (tdmSplitTestData splits the data into test data and train/vali data.)
+        if (is.null(dataObj)) dataObj <- tdmReadAndSplit(sC$opts,tdm,nExp);
+        # (tdmReadAndSplit splits the data into test data and train/vali data.)
         if (!is.null(dataObj)) envT$spotConfig$opts$TST.COL = dataObj$TST.COL;    # this column has to be subtracted in main_* from the input variables
 
         ptm <- proc.time();
-        if (confFile %in% spotList) {
+        # --- COMMENTED OUT --- spotList is no longer used 
+        # if (confFile %in% spotList) {
             # this is for the case spotStep=="rep":
             envT$spotConfig$alg.currentResult <- envT$res;
             envT$spotConfig$alg.currentBest <- envT$bst;	
-            cat(sprintf("*** Starting TUNER %s, spotStep=%s, on task %s ***\n",theTuner,spotStep,confFile));
+            writeLines(sprintf("\n*** Starting TUNER %s on task %s, experiment %d ***",theTuner,confFile,nExp),con=stderr());
             tdmDispatchTuner(theTuner,confFile,spotStep,tdm,envT,dataObj);
             # If spotStep=="auto" then tdmDispatchTuner runs the tuning process, puts its results in envT$bst, envT$res 
             # and returns the (extended) spotConfig in envT$tunerVal.
             # If spotStep=="rep" then tdmDispatchTuner expects that envT$bst, envT$res contain already the right data frames 
             # and it runs just the reporting step of SPOT.
-        } 
-        else {    # i.e. !(confFile %in% spotList)
-            # we assume that envT$bst and envT$res contain already the right data frames (filled in from a previous setting)
-        }    
+        # } 
+        # else {    # i.e. !(confFile %in% spotList)
+        #     # we assume that envT$bst and envT$res contain already the right data frames (filled in from a previous setting)
+        # }    
         
         #
         # now we have envT$bst and envT$res filled in any case (either from tdmDispatchTuner or from a previous setting)
@@ -291,53 +305,53 @@ tdmBigLoop <- function(envT,spotStep="auto",dataObj=NULL) {
         cat1(opts2,paste(time.txt[tdm$timeMode], "time for tuning with tdmDispatchTuner:",envT$time.TRN,"sec\n"));     
 
         ptm <- proc.time();
-        finals <- NULL;
+        envT$finals <- NULL;
         if (tdm$nrun>0) {
           for (umode in tdm$umode) {
-            writeLines(paste("*** starting",tdm$unbiasedFunc,"for",confFile,"with umode=",umode,"***"),con=stderr());
-            cmd=paste("finals <-",tdm$unbiasedFunc,"(confFile,envT,dataObj,umode=umode,finals=finals,withParams=envT$wP,tdm=tdm)",sep="");
-            eval(parse(text=cmd));
+            writeLines(sprintf("\n*** Starting %s for %s with umode= %s ***",tdm$unbiasedFunc,confFile,tdm$umode),con=stderr());
+            #browser()
+            envT <- eval(call(tdm$unbiasedFunc,confFile,envT,dataObj,umode=umode,withParams=envT$wP,tdm=tdm))
           }
           time.TST=(proc.time()-ptm)[tdm$timeMode];   
           cat1(opts2,paste(time.txt[tdm$timeMode], "time for",tdm$unbiasedFunc,":",time.TST,"sec\n"));   
-          finals <- cbind(finals,Time.TST=time.TST);  
+          envT$finals <- cbind(envT$finals,Time.TST=time.TST);  
 
           # transport back opts$srf (data frame with SRF info in case opts$SRF.calc==TRUE)
           envT$sCList[[nConf]]$opts$srf = envT$result$lastRes$opts$srf
 
-          if (tdm$fileMode) {  
-            #removeTmpfiles2(confFile);
-            if (!file.exists(dirname(tFinalFile))) {
-              success = dir.create(dirname(tFinalFile));     
-              if (!success) stop(sprintf("Could not create dirname(tFinalFile)=%s",dirname(tFinalFile)));
-            }
-        		colNames = ifelse(file.exists(tFinalFile),FALSE,TRUE);
-        		write.table(finals
-        				, file = tFinalFile
-        				, col.names= colNames
-        				, row.names= FALSE
-        				, append = !colNames
-        				, sep = " ",
-        				, quote = FALSE
-        				, eol = "\n"
-        		);
-        		if (!is.null(tdm$experFile)) {
-              if (!file.exists(dirname(tdm$experFile))) {
-                success = dir.create(dirname(tdm$experFile));     
-                if (!success) stop(sprintf("Could not create dirname(tdm$experFile)=%s",dirname(tdm$experFile)));
-              }
-          		colNames = ifelse(file.exists(tdm$experFile),FALSE,TRUE);
-          		write.table(finals             # multiple execution of same experiment (nExperim>1 in script_all.R)
-          				, file = tdm$experFile
-          				, col.names= colNames
-          				, row.names= FALSE
-          				, append = !colNames
-          				, sep = " ",
-          				, quote = FALSE
-          				, eol = "\n"
-          		);
-        		}
-          } # if(tdm$fileMode)
+        #   if (tdm$fileMode) {  
+        #     #removeTmpfiles2(confFile);
+        #     if (!file.exists(dirname(tFinalFile))) {
+        #       success = dir.create(dirname(tFinalFile));     
+        #       if (!success) stop(sprintf("Could not create dirname(tFinalFile)=%s",dirname(tFinalFile)));
+        #     }
+        # 		colNames = ifelse(file.exists(tFinalFile),FALSE,TRUE);
+        # 		write.table(envT$finals
+        # 				, file = tFinalFile
+        # 				, col.names= colNames
+        # 				, row.names= FALSE
+        # 				, append = !colNames
+        # 				, sep = " ",
+        # 				, quote = FALSE
+        # 				, eol = "\n"
+        # 		);
+        # 		if (!is.null(tdm$experFile)) {
+        #       if (!file.exists(dirname(tdm$experFile))) {
+        #         success = dir.create(dirname(tdm$experFile));     
+        #         if (!success) stop(sprintf("Could not create dirname(tdm$experFile)=%s",dirname(tdm$experFile)));
+        #       }
+        #   		colNames = ifelse(file.exists(tdm$experFile),FALSE,TRUE);
+        #   		write.table(envT$finals       # multiple execution of same experiment (nExperim>1 in script_all.R)
+        #   				, file = tdm$experFile
+        #   				, col.names= colNames
+        #   				, row.names= FALSE
+        #   				, append = !colNames
+        #   				, sep = " ",
+        #   				, quote = FALSE
+        #   				, eol = "\n"
+        #   		);
+        # 		}
+        #   } # if(tdm$fileMode)
           flush.console(); 
         } # if(tdm$nrun>0)
          
@@ -348,7 +362,7 @@ tdmBigLoop <- function(envT,spotStep="auto",dataObj=NULL) {
              ,res=envT$res              # last tuning result  
              ,result=envT$result        # last tuning result
              ,roi=envT$tunerVal$alg.roi      
-             ,theFinals=finals   ###tail(envT$theFinals,1)
+             ,theFinals=envT$finals   
              );      
   		} # end of function bigLoopStep
   		#------------------------------------------------------------------------------------------------------
@@ -367,7 +381,7 @@ populateEnvT <- function(sappResult,envT,tdm,spotStep) {
     }
   }
   
-  if (spotStep=="auto") {
+  # if (spotStep=="auto") {
     nGrid = length(envT$bstGrid);
     for (ind in 1:(tdm$nExperim*length(tdm$tuneMethod)*length(envT$runList))) {
       nGrid = nGrid+1;
@@ -383,37 +397,40 @@ populateEnvT <- function(sappResult,envT,tdm,spotStep) {
     envT$res <- as.data.frame(sappResult["res",ncol(sappResult)][[1]]);
     envT$tunerVal <- sappResult["tunerVal",ncol(sappResult)][[1]];    # last tuning result
     envT$result <- sappResult["result",ncol(sappResult)][[1]];        # last tuning result
-  }
-  else {     # i.e. if spotStep == "rep" or == "report"
-    nGrid = nrow(envT$theFinals);
-    if (ncol(sappResult) > nGrid) stop("There are more columns in sappResult than rows in envT$theFinals");
-    for (ind in 1:ncol(sappResult)) {
-      #theFinals <- sappResult["theFinals",ind][[1]]
-      #names_finals <-  paste(c(Opts(envT$result)$rgain.string,"sdR"),tdm$umode,sep=".");
-      #check_names(names_finals,theFinals,"theFinals");
-      #check_names(names_finals,envT$theFinals,"envT$theFinals");
-      #envT$theFinals[ind,names_finals] <- theFinals[names_finals];
-      #envT$theFinals[ind,"Time.TST"] <- theFinals["Time.TST"];
-      envT$theFinals[ind,] <- sappResult["theFinals",ind][[1]]
-      names(envT$theFinals) <- names(sappResult["theFinals",ind][[1]])
-    }
-  }
+  # }
+  # else {     # i.e. if spotStep == "rep" or == "report"
+  #   nGrid = nrow(envT$theFinals);
+  #   if (ncol(sappResult) > nGrid) stop("There are more columns in sappResult than rows in envT$theFinals");
+  #   for (ind in 1:ncol(sappResult)) {
+  #     #theFinals <- sappResult["theFinals",ind][[1]]
+  #     #names_finals <-  paste(c(Opts(envT$result)$rgain.string,"sdR"),tdm$umode,sep=".");
+  #     #check_names(names_finals,theFinals,"theFinals");
+  #     #check_names(names_finals,envT$theFinals,"envT$theFinals");
+  #     #envT$theFinals[ind,names_finals] <- theFinals[names_finals];
+  #     #envT$theFinals[ind,"Time.TST"] <- theFinals["Time.TST"];
+  #     envT$theFinals[ind,] <- sappResult["theFinals",ind][[1]]
+  #     names(envT$theFinals) <- names(sappResult["theFinals",ind][[1]])
+  #   }
+  #   envT$result <- sappResult["result",ncol(sappResult)][[1]];    # last result from unbiased run training
+  # }
   envT;
 }
 
 ######################################################################################
-# helper fct for tdmBigLoop: 
+# helper fct for tdmBigLoop and tdmTuneIt: 
 #     Save a small version of environment envT (passed in as thisEnvT) on filenameEnvT
 #     (if NULL, use <runList[1]>.RData).
-#     If savePredictions is TRUE, the elements envT$result$predictions, envT$result$predProbList, envT$result$lastRes$predProb are
-#     saved. The default is savePredictions==FALSE.
-#     If saveModel is TRUE, the element envT$result$lastRes$lastModel is saved. The default is saveModel=TRUE.
+#     If savePredictions is TRUE, the elements envT$result$predictions, envT$result$predProbList, 
+#     envT$result$lastRes$predProb are saved. The default is savePredictions==FALSE.
+#     If saveModel is TRUE, the element envT$result$lastRes$lastModel is saved. 
+#     The default is saveModel=TRUE.
 saveEnvT <- function(thisEnvT,runList,savePredictions=FALSE,saveModel=TRUE) {
       envT = list() # new.env(); #            # when saving thisEnvT, we copy the relevant elements to a *list* envT
                                               # and skip the function elements (getBst,getInd,getRes) in envT, because 
                                               # they would also save *their* environment which tends to make the .RData file rather big
       class(envT) = c("TDMenvir")
       filenameEnvT = thisEnvT$tdm$filenameEnvT;
+      filepath = thisEnvT$tdm$path;
       if (is.null(filenameEnvT)) stop(sprintf("tdm$filenameEnvT is NULL. Consider %s",
                                               "using 'tdm <- tdmDefaultsFill(tdm)'"));
         {
@@ -439,9 +456,11 @@ saveEnvT <- function(thisEnvT,runList,savePredictions=FALSE,saveModel=TRUE) {
       envT$nExp=NULL;           # see envT$tdm$nExperim for number of experiments
       #browser()
       
-      save(envT,file=filenameEnvT);              
-                                              # ... but we leave thisEnvT (which is envT in tdmBigLoop) untouched
-                                              #     and thus return the full envT environment to the caller of tdmBigLoop
+      fname <- paste(filepath,filenameEnvT,sep="/");
+      cat("Saving envT to ", fname, "\n");
+      save(envT,file=fname);              
+                        # ... but we leave thisEnvT (which is envT in tdmBigLoop) untouched
+                        #     and thus return the full envT environment to the caller of tdmBigLoop
 }
 
 ######################################################################################

@@ -73,7 +73,7 @@
 #'    specific for the *last* model (the one built for the last response variable in the last run and last fold) 
 #'
 #' @seealso  \code{\link{print.tdmClass}} \code{\link{tdmClassifyLoop}} \code{\link{tdmRegressLoop}}
-#' @author Wolfgang Konen, FHK, Sep'2009 - Jun'2012
+#' @author Wolfgang Konen, THK, 2013
 #' @examples
 #' #*# This demo shows a simple data mining process (phase 1 of TDMR) for classification on
 #' #*# dataset iris.
@@ -174,7 +174,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
         n.class <- length(lev.resp);
         if (!is.null(opts$CLS.CLASSWT)) {
           if (any(is.na(opts$CLS.CLASSWT))) 
-            stop(sprintf("opts$CLS.CLASSWT contains NA's! Consider appropriate lines 'opts$CLS.CLASSWT[i] = ...' in APD file.\n  opts$CLS.CLASSWT = "),
+            stop(sprintf("opts$CLS.CLASSWT contains NA's! Consider appropriate lines 'opts$CLS.CLASSWT[i] = ...' for opts.\n  opts$CLS.CLASSWT = "),
                  paste(opts$CLS.CLASSWT,collapse=", "))
           
           if (n.class !=  length(opts$CLS.CLASSWT)) 
@@ -220,7 +220,6 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
           opts$RF.sampsize <- tdmModAdjustSampsizeC(opts$SRF.samp, d_train, response.variable, opts);
           SRF <- tdmModSortedRFimport(d_train,response.variable,
                                       input.variables,opts)
-
           input.variables <- as.character(SRF$input.variables);
           opts <- SRF$opts;       # some defaults might have been added, some opts$SRF.* values or list opts$srf might be changed
           SRF$opts <- NULL;       # simplify list result, which will contain both, SRF and opts
@@ -240,7 +239,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
           #      But if MOD.SEED==NULL we want different seeds (for RF training) to see the variability       
           set.seed(tdmRandomSeed());                                                                  
         } else if (opts$MOD.SEED=="algSeed") {  # use the seed from SPOT:
-          # opts$ALG.SEED is set in tdmStartSpot to des$SEED[k]+r. This meens that the overall r'th 
+          # opts$ALG.SEED is set in tdmStartSpot2 to des$SEED[k]+r. This meens that the overall r'th 
           # evaluation of a design point gets the seed spotConfig$alg.seed+r
           newseed=opts$ALG.SEED+(opts$i-1)+opts$NRUN*(opts$rep-1);
           set.seed(newseed); 
@@ -322,7 +321,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
 #                        	       , cost=opts$SVM.cost
 #                         	       , type="spoc-svc"  ### type=spoc-svc   #type="C-svc"
 #            							       , class.weights=opts$CLS.CLASSWT 
-#            							       , na.action=na.omit)
+#            							       , na.action=stats::na.omit)
 #            res.rf$HasVotes = FALSE;            
 #            res.rf$HasProbs = FALSE; 
 #	        res.rf;
@@ -346,7 +345,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
                           , type="C-classification"
             							, class.weights = opts$CLS.CLASSWT
             							, tolerance = opts$SVM.tolerance
-            							, na.action=na.omit
+            							, na.action=stats::na.omit
             							, probability=TRUE)
             res.rf$HasVotes = FALSE;            
             res.rf$HasProbs = TRUE; 
@@ -697,7 +696,7 @@ tdmClassify <- function(d_train,d_test,d_dis,d_preproc,response.variables,input.
           cm.vali2 <- cm.vali;
           #cm.vali <- cm.vali2 <- NULL;   # OLD, this had problems when constructing as.data.frame(EVALa) below
         }
-        
+
         EVAL =  list(        # a list of eval-quantities which can be summed
                      cerr.trn=cm.train$cerr[1,"Total"]       # misclassification error 
                     ,gain.trn=cm.train$gain
