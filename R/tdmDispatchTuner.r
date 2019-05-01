@@ -9,7 +9,8 @@ require(SPOT);
 #'     tdmDispatchTuner selects and starts the tuner specified by tuneMethod. \cr
 #'     See the 'Details' section of \code{\link{tdmBigLoop}} for a list of available tuners.
 #'
-#' @param tuneMethod the tuning algorithm given as a string. Possible values are \{ "spot" | "lhd" | "cmaes" | "cma_j" | "bfgs" | "powell" \}.
+#' @param tuneMethod the tuning algorithm given as a string. Possible values are \{ "spot" | "lhd" | "cmaes" | "cma_j" | "bfgs"  \}.
+#         --- removed: "powell"  
 #' @param confFile the configuration name.
 #' @param spotStep --DEPRECATED-- SPOT 2.0 supports only spotStep="auto".
 #' @param tdm the TDMR object
@@ -60,7 +61,7 @@ tdmDispatchTuner <- function(tuneMethod,confFile,spotStep,tdm,envT,dataObj)
                 #,"mies" = miesTuner(confFile,tdm,envT,dataObj)  
                 ,"cma_j" = cma_jTuner(confFile,tdm,envT,dataObj) 
                 ,"bfgs" = bfgsTuner(confFile,tdm,envT,dataObj) 
-                ,"powell" = powellTuner(confFile,tdm,envT,dataObj) 
+                #,"powell" = powellTuner(confFile,tdm,envT,dataObj) 
                 ,"INVALID1"
                 )
       ,"INVALID2"
@@ -383,76 +384,6 @@ cma_jInternRCma <- function(tdm,envT,dataObj) {
     cat(sprintf("Function calls to tdmStartOther: %d\n",tunerVal$cma$count[1]));
 
     tunerVal;
-}
-
-
-######################################################################################
-#' Perform Powell's tuning. 
-#'
-#' Perform a parameter tuning by Powell's UObyQA algorithm 
-#' (unconstrained optimization by quadratic approximation), see R-package \code{powell}
-#' 
-#' @param confFile task configuration for tuning algorithm
-#' @param tdm the TDMR object
-#' @param envT the environment variable
-#' @param dataObj the \code{\link{TDMdata}} object containing the data set (train/vali part and test part)
-#'
-#' @return the result of Powell tuning, i.e. the list \code{envT$spotConfig}, extended by
-#'    \item{\code{powell}}{ the return value from \code{\link[powell]{powell}}   }
-#'    \item{\code{powell$count}}{ the number of calls to \code{tdmStartOther}  }
-#' @export
-#' @keywords internal
-######################################################################################
-powellTuner <- function(confFile,tdm,envT,dataObj){
-    # require(powell)       # now via direct call 'powell::'
-  
-    #function to fix constraint violating steps:
-    tdm$constraintFnc <- function(x,tdm) {
-      for(i in 1:length(x)){
-        if(x[i] < envT$spotConfig$alg.roi[i,1]) {x[i] <- envT$spotConfig$alg.roi[i,1]}
-        if(x[i] > envT$spotConfig$alg.roi[i,2]) {x[i] <- envT$spotConfig$alg.roi[i,2]}
-      }
-      x;
-    }
-    
-    #if (tdm$fileMode==FALSE) envT$spotConfig$spot.fileMode=FALSE;
-    envT$spotConfig$alg.currentResult <- NULL;
- 
-    sC <- envT$spotConfig;
-    roiLower <- sC$alg.roi[,1];
-    roiUpper <- sC$alg.roi[,2];
-  
-    # if (tdm$fileMode) {
-    #   tdm$resFile <-  sC$io.resFileName;   
-    #   tdm$bstFile <-  sC$io.bstFileName;   
-    #   if (file.exists(sC$io.resFileName)) file.remove(sC$io.resFileName);
-    #   if (file.exists(sC$io.bstFileName)) file.remove(sC$io.bstFileName);
-    # }
-  
-    fitFunc <- function(x,opts=NULL) {
-      ## tdmStartOther returns the fitness (mean(yres)) and saves other
-      ## diagnostic results in envT$spotConfig, envT$res, envT$bst
-      tdmStartOther(x,tdm,envT,dataObj,opts);
-    }
-    #--- old, deprecated: 
-    #if(is.null(tdm$startOtherFunc)) tdmStartOther = makeTdmStartOther(tdm,envT,dataObj) else
-    #  tdmStartOther = tdm$startOtherFunc;
-
-
-    param <- (roiLower+roiUpper)/2;    # start configuration
-  
-    maxEvaluations = sC$funEvals/sC$replicates;
-
-    resPowell <- powell::powell(param, fn=fitFunc, control=list(maxit=maxEvaluations), check.hessian=FALSE, opts=sC$opts);
-    # powell calls tdmStartOther and tdmStartOther writes envT$res and envT$bst
-    # (and to envT$spotConfig$alg.currentResult and ...$alg.currentBest as well).
-
-    tunerVal = envT$spotConfig;
-		tunerVal$alg.currentResult <- envT$res;       
-		tunerVal$alg.currentBest <- envT$bst;         
-    tunerVal$powell = resPowell;
-    tunerVal$powell$count=nrow(envT$res);
-    tunerVal;  
 }
 
 

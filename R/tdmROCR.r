@@ -39,7 +39,7 @@ tdmROCR.default <- function(x, ...)  cat("This is tdmROCR.default\n");
 #'
 #' @return The area under the curve plotted most recently.
 #'
-#' @note Side effect: Ror each chart, calculate and print the area between the curve and the bottom line (y=1.0 for \code{typ=="lift"}, y=0.0 else).
+#' @note Side effect: For each chart, calculate and print the area between the curve and the bottom line (y=1.0 for \code{typ=="lift"}, y=0.0 else).
 #'
 #' @examples
 #'    \dontrun{

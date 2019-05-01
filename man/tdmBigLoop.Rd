@@ -84,8 +84,6 @@ The available tuning algorithms (tuners) are
            (deprecated, use \code{\link{cma_jTuner}} instead).  }
      \item{\code{\link{bfgsTuner}}:   Perform a parameter tuning by Broyden, Fletcher, Goldfarb and Shanno (BFGS) method.
            The L-BFGS-B version allowing box constraints is used.  }
-     \item{\code{\link{powellTuner}}:  Perform a parameter tuning by Powell's UObyQA algorithm 
-           (unconstrained optimization by quadratic approximation), see package \code{\link[powell]{powell}}).   } 
      }
 }
 \note{

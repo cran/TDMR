@@ -3,7 +3,7 @@
 #     returns the fitness (mean(yres)) and saves other
 #     diagnostic results in envT$spotConfig, envT$res, envT$bst
 # 
-# Known callers: cmaesTuner, powellTuner, bfgsTuner in tdmDispatchTuner.r
+# Known callers: cmaesTuner, bfgsTuner in tdmDispatchTuner.r
 #
 # Author: Wolfgang Konen, FHK, 2011 - 2013
 #

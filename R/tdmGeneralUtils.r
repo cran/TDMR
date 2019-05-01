@@ -6,8 +6,8 @@
 #' \tabular{ll}{
 #' Package: \tab TDMR\cr
 #' Type: \tab Package\cr
-#' Version: \tab 2.0\cr
-#' Date: \tab 04.05.2018\cr
+#' Version: \tab 2.1\cr
+#' Date: \tab 01.05.2019\cr
 #' License: \tab GPL (>= 2)\cr
 #' LazyLoad: \tab yes\cr
 #' }

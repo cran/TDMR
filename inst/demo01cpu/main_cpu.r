@@ -27,7 +27,7 @@ main_cpu <- function(opts,dset=NULL,tset=NULL) {
     }
 
     # which variable is response variable:
-    response.variables <- c("ERP")  
+    response.variables <- c("ERP")   #,"CHMAX"
     ID.variable <- "ID"
     
     #===============================================
@@ -62,7 +62,7 @@ main_cpu <- function(opts,dset=NULL,tset=NULL) {
 
     # print summary output and attach certain columns (here: y,sd.y,dset) to list result:
     result <- tdmRegressSummary(result,opts,dset);
-    
+
     tdmGraAndLogFinalize(opts,gdObj);      # close graphics and log file
     
     result;

@@ -7,7 +7,7 @@
 tdmDispatchTuner(tuneMethod, confFile, spotStep, tdm, envT, dataObj)
 }
 \arguments{
-\item{tuneMethod}{the tuning algorithm given as a string. Possible values are \{ "spot" | "lhd" | "cmaes" | "cma_j" | "bfgs" | "powell" \}.}
+\item{tuneMethod}{the tuning algorithm given as a string. Possible values are \{ "spot" | "lhd" | "cmaes" | "cma_j" | "bfgs"  \}.}
 
 \item{confFile}{the configuration name.}
 

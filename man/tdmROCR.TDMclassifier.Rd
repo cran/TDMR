@@ -21,7 +21,7 @@ and a type-of-chart, see \code{\link{tdmROCRbase}} for details. Using \code{\lin
 the appropriate chart is plotted on the current graphics device.
 }
 \note{
-Side effect: Ror each chart, calculate and print the area between the curve and the bottom line (y=1.0 for \code{typ=="lift"}, y=0.0 else).
+Side effect: For each chart, calculate and print the area between the curve and the bottom line (y=1.0 for \code{typ=="lift"}, y=0.0 else).
 }
 \examples{
    \dontrun{
