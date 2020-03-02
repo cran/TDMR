@@ -12,15 +12,15 @@ Tuned Data Mining in R
 \tabular{ll}{
 Package: \tab TDMR\cr
 Type: \tab Package\cr
-Version: \tab 2.1\cr
-Date: \tab 01.05.2019\cr
+Version: \tab 2.2\cr
+Date: \tab 01.03.2020\cr
 License: \tab GPL (>= 2)\cr
 LazyLoad: \tab yes\cr
 }
 
 TDMR is a package for tuned data mining (predictive analytics, i.e. \bold{classification} and \bold{regression}). Its main features are: \cr
 1) A variety of tuners, with special emphasis on \link{SPOT} (a well-known R package for parameter tuning), but also CMA-ES 
-   (package \code{\link[rCMA]{rCMA}}) and other tuning algorithms. \cr
+   (package \code{\link[rCMA]{rCMA-package}}) and other tuning algorithms. \cr
 2) Tuning of preprocessing parameters and model building parameters simultaneously. Preprocessing
 often includes feature generation. \cr
 3) Support for multiple tuning experiments (different settings, repetitions with different resamplings, ...).  \cr

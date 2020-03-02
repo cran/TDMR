@@ -28,7 +28,7 @@ tdmROCR.default <- function(x, ...)  cat("This is tdmROCR.default\n");
 #
 #' Interactive plot of ROC, lift or other charts for a \code{\link{TDMclassifier}} object.
 #'
-#' Brings up a \code{\link[twiddler]{twiddle}} user interface, where the user may select a part of the dataset
+#' Brings up a \code{\link[=twiddle]{twiddle}} user interface, where the user may select a part of the dataset
 #' ("training" or "validation"), a run number (if \code{\link{Opts}}(x)$NRUN>1) 
 #' and a type-of-chart, see \code{\link{tdmROCRbase}} for details. Using \code{\link{tdmROCRbase}}, 
 #' the appropriate chart is plotted on the current graphics device.
@@ -149,10 +149,20 @@ tdmROCR_calc <- function(ppVal,ymeasure,xmeasure) {
     #    
     ll = ppVal[,2];         # the true class labels (for the first response variable)
     pp = ppVal[,4];         # the prediction score (for the first response variable)
-    lo =levels(ll);
+    lo = unique(ll);# bug fix 02/2020: this was lo=levels(ll); before and that led to
+                    # a bug on Debian systems due to a new stringAsFactors=FALSE default.
+                    # The reason for the bug is that levels(ll) returned strings, but 
+                    # ll is a factor vector. unique(ll) is a factor vector as well.
+                    # To make this work, we have to change below label.ordering=lo to
+                    # label.ordering=as.character(lo), because ROCR::prediction needs
+                    # strings.
+    ll_c = as.character(ll)
+    lo_c = as.character(lo)
     # estimate which class label has the higher average score: order 'lo' in such a way that this label is the last one:
-    if ( mean(pp[ll==lo[1]]) > mean(pp[ll==lo[2]]) ) lo = rev(lo);
-    pred = ROCR::prediction(pp,ll,label.ordering=lo);
+    if (length(lo)>1)
+      if ( mean(pp[ll_c==lo_c[1]]) > mean(pp[ll_c==lo_c[2]]) ) 
+        lo = rev(lo);
+    pred = ROCR::prediction(pp,ll,label.ordering=lo_c);
     perf = ROCR::performance(pred,ymeasure,xmeasure);
 }
 tdmROCR_area <- function(perf,typ="ROC") {
@@ -178,10 +188,11 @@ tdmROCR.tdmClass <- function(x,...) {
     cat1(x$opts,"Showing ROC curve for training data (tdmClass)\n");
     ll = x$d_train$Class;         # the true class labels
     pp = x$d_train$votes;         # the prediction score
-    lo =levels(ll);
+    lo =unique(ll);
     # estimate which class label has the higher average score: order 'lo' in such a way that this label is the last one:
-    if ( mean(pp[ll==lo[1]]) > mean(pp[ll==lo[2]]) ) lo = rev(lo);
-    predTr = ROCR::prediction(pp,ll,label.ordering=lo);
+    if ( mean(pp[ll==lo[1]]) > mean(pp[ll==lo[2]]) ) 
+      lo = rev(lo);
+    predTr = ROCR::prediction(pp,ll,label.ordering=as.character(lo));
     perfTr = ROCR::performance(predTr,"tpr","fpr");
     ROCR::plot(perfTr,colorize=T,lwd=2,main="ROC Training Set")
   }

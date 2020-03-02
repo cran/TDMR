@@ -60,14 +60,14 @@
 #' 			\item{PRE.PCA}{["none" (default)|"linear"] PCA preprocessing: [don't | do normal PCA (prcomp) ] } 
 #' 			\item{PRE.PCA.REPLACE}{[T] =T: replace with the PCA columns the original numerical columns, =F: add the PCA columns  } 
 #' 			\item{PRE.PCA.npc}{[0] if >0: add monomials of degree 2 from the first PRE.PCA.npc columns (PCs) (only active, if opts$PRE.PCA!="none")} 
-#' 			\item{PRE.SFA}{["none" (default)|"2nd"] SFA preprocessing (see package \code{\link[rSFA]{rSFA}}: [don't | do ormal SFA with 2nd degree expansion ] } 
+#' 			\item{PRE.SFA}{["none" (default)|"2nd"] SFA preprocessing (see package \code{\link[rSFA]{rSFA-package}}: [don't | do ormal SFA with 2nd degree expansion ] } 
 #' 			\item{PRE.SFA.REPLACE}{[F] =T: replace the original numerical columns with the SFA columns; =F: add the SFA columns } 
 #' 			\item{PRE.SFA.npc}{[0] if >0: add monomials of degree 2 from the first PRE.SFA.npc columns (only acitve, if opts$PRE.SFA!="none") } 
 #' 			\item{PRE.SFA.PPRANGE}{[11] number of inputs after SFA preprocessing, only those inputs enter into SFA expansion } 
 #' 			\item{PRE.SFA.ODIM}{[5] number of SFA output dimensions (slowest signals) to return } 
 #' 			\item{PRE.SFA.doPB}{[T] =F|T: don't | do parametric bootstrap for SFA in case of marginal training data } 
 #' 			\item{PRE.SFA.fctPB}{[sfaPBootstrap] the function to call in case of parametric bootstrap, see \code{\link[rSFA]{sfaPBootstrap}} 
-#'                      in package \code{\link[rSFA]{rSFA}} for its interface description } 
+#'                      in package \code{\link[rSFA]{rSFA-package}} for its interface description } 
 #'      \item{PRE.allNonVali}{[F] if =T, then use all non-validation data in the training-validation set for PCA or SFA preprocessing.
 #'                      If =F, use only the training set for PCA or SFA processing (only relevant if opts$PRE.PCA!="none" or opts$PRE.SFA!="none").  } 
 #' 			\item{PRE.Xpgroup}{[0.99] bind the fraction 1-PRE.Xpgroup in column OTHER (see \code{\link{tdmPreGroupLevels}})  } 

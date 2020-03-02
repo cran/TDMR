@@ -337,7 +337,7 @@ tdmPrePCA.apply <- function(dset,pcaList,opts,dtrain=NULL)  {
 #
 #'     SFA (Slow Feature Analysis) for numeric columns in a data frame. 
 #'
-#'     tdmPreSFA.train uses package \code{\link[rSFA]{rSFA}}. It is assumed that classification for the variable 
+#'     tdmPreSFA.train uses package \code{\link[rSFA]{rSFA-package}}. It is assumed that classification for the variable 
 #'     contained in column \code{response.var} is done. SFA seeks features in an expanded function space for which  
 #'     the intra-class variation w.r.t.  \code{response.var} is as low as possible.
 #'

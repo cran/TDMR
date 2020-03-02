@@ -36,3 +36,4 @@
     tdmGraphicNewWin(opts);
     cat("Area under lift curve for  training data set: ",
         tdmROCRbase(result,dataset="training",typ="lift"),"\n");  # side effect: plot lift chart
+    

@@ -34,7 +34,11 @@ ctrlSC$opts <- controlDM();
 # construct envT from settings given in tdm & sCList
 envT <- tdmEnvTMakeNew(tdm,sCList=list(ctrlSC));
 dataObj <- tdmReadTaskData(envT,envT$tdm);
-envT <- tdmBigLoop(envT,dataObj=dataObj);     # start the big tuning loop 
+envT <- tdmBigLoop(envT,dataObj=dataObj);     # start the big tuning loop
+cat("Deleting exBigLoop.RData again\n")
+unlink(paste(envT$tdm$path,"exBigLoop.RData",sep="/"));
+
+
 
 
 

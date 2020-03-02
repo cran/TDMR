@@ -4,8 +4,16 @@
 \alias{tdmClassify}
 \title{Core classification function of TDMR.}
 \usage{
-tdmClassify(d_train, d_test, d_dis, d_preproc, response.variables,
-  input.variables, opts, tsetStr = c("Validation", "validation"))
+tdmClassify(
+  d_train,
+  d_test,
+  d_dis,
+  d_preproc,
+  response.variables,
+  input.variables,
+  opts,
+  tsetStr = c("Validation", "validation")
+)
 }
 \arguments{
 \item{d_train}{training set}
@@ -104,7 +112,7 @@ d_vali=iris[-idx_train,]
 d_dis=iris[numeric(0),]
 res <- tdmClassify(d_train,d_vali,d_dis,NULL,response.variables,input.variables,opts)
 
-cat("\\n")
+cat("\n")
 print(res$allEVAL)
 
 }

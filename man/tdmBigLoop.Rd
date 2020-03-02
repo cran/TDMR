@@ -78,7 +78,7 @@ The available tuning algorithms (tuners) are
            for obtaining best design points. LHD is performed by configuring SPOT 
            in such a way that all the budget is used for the initial design (usually LHD). }
      \item{\code{\link{cma_jTuner}}:  Perform a parameter tuning by CMA-ES, using the *Java* 
-           implementation by Niko Hansen through the interface package \code{\link[rCMA]{rCMA}}.    }
+           implementation by Niko Hansen through the interface package \code{\link[rCMA]{rCMA-package}}.    }
      \item{\code{\link{cmaesTuner}}:  Perform a parameter tuning by CMA-ES, using the *R*-implementation 
            (package \code{\link[cmaes]{cma_es}} by Olaf Mersmann) 
            (deprecated, use \code{\link{cma_jTuner}} instead).  }
@@ -149,6 +149,10 @@ where the corresponding R-sources are in directory \code{demo}.
   envT <- tdmEnvTMakeNew(tdm,sCList=list(ctrlSC));
   dataObj <- tdmReadTaskData(envT,envT$tdm);
   envT <- tdmBigLoop(envT,dataObj=dataObj);     # start the big tuning loop 
+\dontshow{
+  #*# This demo is for "R CMD check" (to remove the output files) 
+  unlink(paste(envT$tdm$path,"exBigLoop.RData",sep="/"));
+}
 }
 \seealso{
 \code{\link{tdmDispatchTuner}}, \code{\link{unbiasedRun}}

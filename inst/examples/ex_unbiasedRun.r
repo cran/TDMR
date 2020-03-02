@@ -16,6 +16,10 @@
     envT <- unbiasedRun("sonar_04.conf",envT,dataObj,tdm=envT$tdm);
     print(envT$theFinals);
 
+    cat("Deleting Output again\n")
+    unlink("Output",recursive=TRUE);
+    #unlink(paste(tdmEnvTGetOpts(envT,1)$dir.output,sep="/"),recursive=TRUE);
+    
     #    --- The following example is now deprecated, because we do not support .bst-files any longer ----
     #    \dontrun{
     #    ## If you do not have 'envT' but only a .bst file from a prior tuning run:

@@ -15,7 +15,7 @@
 The area under the curve plotted most recently.
 }
 \description{
-Brings up a \code{\link[twiddler]{twiddle}} user interface, where the user may select a part of the dataset
+Brings up a \code{\link[=twiddle]{twiddle}} user interface, where the user may select a part of the dataset
 ("training" or "validation"), a run number (if \code{\link{Opts}}(x)$NRUN>1) 
 and a type-of-chart, see \code{\link{tdmROCRbase}} for details. Using \code{\link{tdmROCRbase}}, 
 the appropriate chart is plotted on the current graphics device.

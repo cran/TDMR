@@ -4,8 +4,14 @@
 \alias{tdmROCRbase}
 \title{Single plot of ROC, lift or other chart for a \code{\link{TDMclassifier}} object.}
 \usage{
-tdmROCRbase(x, dataset = "validation", nRun = 1, typ = "ROC",
-  noPlot = FALSE, ...)
+tdmROCRbase(
+  x,
+  dataset = "validation",
+  nRun = 1,
+  typ = "ROC",
+  noPlot = FALSE,
+  ...
+)
 }
 \arguments{
 \item{x}{return value from a prior call to \code{\link{tdmClassifyLoop}}, an object of class \code{\link{TDMclassifier}}.}
@@ -69,10 +75,11 @@ Single plot of ROC, lift or other chart for a \code{\link{TDMclassifier}} object
     
     tdmGraphicNewWin(opts);
     cat("Area under ROC-curve for validation data set: ",
-        tdmROCRbase(result),"\\n");                                # side effect: plot ROC-curve
+        tdmROCRbase(result),"\n");                                # side effect: plot ROC-curve
     tdmGraphicNewWin(opts);
     cat("Area under lift curve for  training data set: ",
-        tdmROCRbase(result,dataset="training",typ="lift"),"\\n");  # side effect: plot lift chart
+        tdmROCRbase(result,dataset="training",typ="lift"),"\n");  # side effect: plot lift chart
+    
 }
 \seealso{
 \code{\link{tdmClassifyLoop}}   \code{\link{tdmROCR.TDMclassifier}}

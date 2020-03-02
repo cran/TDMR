@@ -129,6 +129,12 @@ where the corresponding R-sources are in directory \code{demo}.
   envT <- tdmEnvTMakeNew(tdm,sCList=list(ctrlSC)); # construct envT from settings in tdm and ctrlSC
   dataObj <- tdmReadTaskData(envT,envT$tdm);
   envT <- tdmTuneIt(envT,dataObj=dataObj);       # start the tuning loop 
+\dontshow{
+  #*# This demo is for "R CMD check" (to remove the output files) 
+  unlink(paste(envT$tdm$path,"exBigLoop.RData",sep="/"));
+  unlink("Output",recursive=TRUE);
+  #unlink(paste(envT$tdm$path,"Output",sep="/"),recursive=TRUE);
+}
 
 }
 \seealso{

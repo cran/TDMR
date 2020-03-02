@@ -4,8 +4,15 @@
 \alias{tdmRegress}
 \title{Core regression function of TDMR.}
 \usage{
-tdmRegress(d_train, d_test, d_preproc, response.variables, input.variables,
-  opts, tsetStr = c("Validation", "validation", ".vali"))
+tdmRegress(
+  d_train,
+  d_test,
+  d_preproc,
+  response.variables,
+  input.variables,
+  opts,
+  tsetStr = c("Validation", "validation", ".vali")
+)
 }
 \arguments{
 \item{d_train}{training set}

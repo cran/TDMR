@@ -4,8 +4,14 @@
 \alias{unbiasedRun}
 \title{Perform unbiased runs with best-solution parameters.}
 \usage{
-unbiasedRun(confFile, envT, dataObj = NULL, umode = "RSUB",
-  withParams = FALSE, tdm = NULL)
+unbiasedRun(
+  confFile,
+  envT,
+  dataObj = NULL,
+  umode = "RSUB",
+  withParams = FALSE,
+  tdm = NULL
+)
 }
 \arguments{
 \item{confFile}{the configuration name, e.g. \code{"appAcid_02.conf"}}
@@ -85,6 +91,10 @@ Side Effects:
    dataObj <- tdmReadTaskData(envT,envT$tdm);
    envT <- unbiasedRun("sonar_04.conf",envT,dataObj,tdm=envT$tdm);
    print(envT$finals);
+\dontshow{
+   #*# This demo is for "R CMD check" (to remove the output files) 
+   unlink("Output",recursive=TRUE);
+}
 
 }
 \seealso{

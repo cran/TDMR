@@ -74,6 +74,11 @@
 #'    dataObj <- tdmReadTaskData(envT,envT$tdm);
 #'    envT <- unbiasedRun("sonar_04.conf",envT,dataObj,tdm=envT$tdm);
 #'    print(envT$finals);
+#' \dontshow{
+#'    #*# This demo is for "R CMD check" (to remove the output files) 
+#'    unlink("Output",recursive=TRUE);
+#     ##unlink(paste(tdmEnvTGetOpts(envT,1)$dir.output,sep="/"),recursive=TRUE);
+#' }
 #'
 #' @seealso   \code{\link{tdmBigLoop}}, \code{\link{TDMclassifier}}, \code{\link{TDMregressor}} 
 #' @export
